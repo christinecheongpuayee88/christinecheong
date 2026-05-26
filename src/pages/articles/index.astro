@@ -1,0 +1,129 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+function formatDate(d: Date) {
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+---
+
+<Base
+  title="Articles"
+  description="Practical writing on data science, teaching, and what it really takes to work with data — by Christine Cheong."
+>
+
+  <section class="page-header">
+    <div class="wrap">
+      <p class="eyebrow anim anim-1">Articles</p>
+      <h1 class="page-header__h1 anim anim-2">Writing on data science<br />and how to teach it</h1>
+      <p class="page-header__sub anim anim-3">
+        Practical writing on data science, teaching, and what it really takes
+        to work with data &mdash; for students, professionals, and anyone
+        trying to make sense of it all.
+      </p>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <section class="section">
+    <div class="wrap">
+      {posts.length === 0 ? (
+        <p style="color:var(--text-2);font-size:17px;">Articles coming soon.</p>
+      ) : (
+        <ol class="article-list">
+          {posts.map((post, i) => (
+            <li class="article-item">
+              <a href={`/articles/${post.id}/`} class="article-link">
+                <div class="article-meta">
+                  <time datetime={post.data.date.toISOString()} class="article-date">
+                    {formatDate(post.data.date)}
+                  </time>
+                  <span class="article-num">{String(i + 1).padStart(2, '0')}</span>
+                </div>
+                <div class="article-content">
+                  <h2 class="article-title">{post.data.title}</h2>
+                  <p class="article-desc">{post.data.description}</p>
+                  <span class="article-read">Read article &rarr;</span>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .page-header {
+    padding: var(--sp-10) 0 var(--sp-8);
+    background: var(--surface);
+  }
+  .page-header__h1 {
+    font-size: clamp(36px, 4.5vw, 58px);
+    margin-top: var(--sp-3);
+    letter-spacing: -.02em;
+  }
+  .page-header__sub {
+    font-size: 18px;
+    color: var(--text-2);
+    margin-top: var(--sp-4);
+    max-width: 52ch;
+  }
+
+  .article-list { display: flex; flex-direction: column; gap: 0; }
+  .article-item { border-bottom: 1px solid var(--border); }
+  .article-item:first-child { border-top: 1px solid var(--border); }
+
+  .article-link {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--sp-7);
+    padding: var(--sp-7) 0;
+    text-decoration: none;
+    transition: all var(--ease);
+  }
+  .article-link:hover .article-title { color: var(--accent); }
+  .article-link:hover .article-read  { color: var(--accent); }
+
+  .article-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    padding-top: 4px;
+  }
+  .article-date { font-size: 13px; color: var(--text-3); display: block; }
+  .article-num  {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .article-content { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .article-title {
+    font-size: clamp(22px, 2.5vw, 30px);
+    letter-spacing: -.01em;
+    transition: color var(--ease);
+    line-height: 1.25;
+  }
+  .article-desc { font-size: 16px; color: var(--text-2); line-height: 1.7; max-width: 60ch; }
+  .article-read {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-3);
+    transition: color var(--ease);
+    margin-top: var(--sp-2);
+  }
+
+  @media (max-width: 700px) {
+    .article-link { grid-template-columns: 1fr; gap: var(--sp-3); }
+    .article-meta { flex-direction: row; align-items: center; gap: var(--sp-4); }
+  }
+</style>

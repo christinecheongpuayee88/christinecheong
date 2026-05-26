@@ -1,0 +1,92 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div class="footer__brand">
+      <a href="/" class="footer__name">Christine Cheong</a>
+      <p class="footer__sub">Data Science Educator &mdash; NUS-ISS</p>
+    </div>
+
+    <nav class="footer__nav" aria-label="Footer">
+      <a href="/about">About</a>
+      <a href="/articles">Articles</a>
+      <a href="/courses">Courses</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  </div>
+
+  <div class="wrap footer__base">
+    <p>&copy; {year} Christine Cheong. All rights reserved.</p>
+    <a href="mailto:christinecheong88@gmail.com" class="footer__email">
+      christinecheong88@gmail.com
+    </a>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    margin-top: var(--sp-10);
+  }
+
+  .footer__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-top: var(--sp-8);
+    padding-bottom: var(--sp-8);
+    gap: var(--sp-7);
+  }
+
+  .footer__name {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--text);
+    display: block;
+    margin-bottom: var(--sp-2);
+  }
+
+  .footer__sub {
+    font-size: 14px;
+    color: var(--text-2);
+  }
+
+  .footer__nav {
+    display: flex;
+    gap: var(--sp-6);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .footer__nav a {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-2);
+    transition: color var(--ease);
+  }
+  .footer__nav a:hover { color: var(--text); }
+
+  .footer__base {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--sp-4);
+    padding-bottom: var(--sp-5);
+    border-top: 1px solid var(--border);
+  }
+  .footer__base p { font-size: 13px; color: var(--text-3); }
+
+  .footer__email {
+    font-size: 13px;
+    color: var(--text-2);
+    transition: color var(--ease);
+  }
+  .footer__email:hover { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .footer__inner { flex-direction: column; gap: var(--sp-5); }
+    .footer__base  { flex-direction: column; gap: var(--sp-2); text-align: center; }
+  }
+</style>

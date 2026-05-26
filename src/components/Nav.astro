@@ -1,0 +1,169 @@
+---
+const path = Astro.url.pathname;
+
+const links = [
+  { href: '/about',   label: 'About' },
+  { href: '/articles', label: 'Articles' },
+  { href: '/courses', label: 'Courses' },
+];
+
+function active(href: string) {
+  return path === href || (href !== '/' && path.startsWith(href));
+}
+---
+
+<header class="nav" id="nav">
+  <div class="wrap nav__row">
+    <a href="/" class="nav__logo">Christine Cheong</a>
+
+    <nav class="nav__links" aria-label="Primary">
+      {links.map(l => (
+        <a href={l.href} class={`nav__link ${active(l.href) ? 'nav__link--on' : ''}`}>
+          {l.label}
+        </a>
+      ))}
+    </nav>
+
+    <a href="/contact" class="btn btn--primary nav__cta">Get In Touch</a>
+
+    <button class="nav__burger" id="nav-burger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div class="nav__drawer" id="nav-drawer" aria-hidden="true">
+    {links.map(l => (
+      <a href={l.href} class={`nav__drawer-link ${active(l.href) ? 'nav__drawer-link--on' : ''}`}>
+        {l.label}
+      </a>
+    ))}
+    <a href="/contact" class="btn btn--primary" style="align-self:flex-start;margin-top:4px;">
+      Get In Touch
+    </a>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: rgba(250,250,248,.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow var(--ease);
+  }
+  .nav.raised { box-shadow: 0 2px 20px rgba(0,0,0,.06); }
+
+  .nav__row {
+    display: flex;
+    align-items: center;
+    height: var(--nav-h);
+    gap: var(--sp-6);
+  }
+
+  .nav__logo {
+    font-family: var(--serif);
+    font-size: 19px;
+    color: var(--text);
+    flex-shrink: 0;
+    letter-spacing: -.01em;
+  }
+
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-6);
+    margin-left: auto;
+  }
+
+  .nav__link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-2);
+    position: relative;
+    padding-bottom: 2px;
+    transition: color var(--ease);
+  }
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 0; height: 1.5px;
+    background: var(--accent);
+    transition: width var(--ease);
+  }
+  .nav__link:hover           { color: var(--text); }
+  .nav__link:hover::after,
+  .nav__link--on::after      { width: 100%; }
+  .nav__link--on             { color: var(--text); }
+
+  .nav__cta { padding: 10px 20px; font-size: 14px; }
+
+  /* Burger */
+  .nav__burger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 4px;
+    margin-left: auto;
+  }
+  .nav__burger span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all .25s;
+  }
+  .nav__burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav__burger.open span:nth-child(2) { opacity: 0; }
+  .nav__burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Drawer */
+  .nav__drawer {
+    display: none;
+    flex-direction: column;
+    gap: var(--sp-4);
+    padding: var(--sp-4) var(--sp-5) var(--sp-5);
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .nav__drawer.open { display: flex; }
+
+  .nav__drawer-link {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-2);
+    padding: var(--sp-2) 0;
+    border-bottom: 1px solid var(--border);
+    transition: color var(--ease);
+  }
+  .nav__drawer-link:hover,
+  .nav__drawer-link--on { color: var(--accent); }
+
+  @media (max-width: 700px) {
+    .nav__links, .nav__cta { display: none; }
+    .nav__burger { display: flex; }
+  }
+</style>
+
+<script>
+  const burger  = document.getElementById('nav-burger');
+  const drawer  = document.getElementById('nav-drawer');
+  const navEl   = document.getElementById('nav');
+
+  burger?.addEventListener('click', () => {
+    const open = drawer?.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    drawer?.setAttribute('aria-hidden', String(!open));
+  });
+
+  window.addEventListener('scroll', () => {
+    navEl?.classList.toggle('raised', window.scrollY > 8);
+  }, { passive: true });
+</script>

@@ -1,0 +1,211 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="About"
+  description="Christine Cheong is a Data Science Lecturer with experience teaching across university and executive education settings. Learn her story and approach."
+>
+
+  <!-- ── Page header ─────────────────────────────────────────── -->
+  <section class="page-header">
+    <div class="wrap">
+      <p class="eyebrow anim anim-1">About</p>
+      <h1 class="page-header__h1 anim anim-2">Christine Cheong</h1>
+      <p class="page-header__sub anim anim-3">Data Science Educator &mdash; NUS-ISS</p>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ── Main content ────────────────────────────────────────── -->
+  <section class="section">
+    <div class="about-layout wrap">
+
+      <!-- Story -->
+      <div class="prose">
+        <p class="prose__lead">
+          I&rsquo;m a data science lecturer with experience teaching in both university and
+          executive education settings. My work sits at the intersection of rigorous academic
+          grounding and practical, workplace-ready skills.
+        </p>
+
+        <p>
+          I came to education through a career in data &mdash; and the thing that kept striking me
+          was this: the hardest part of working with data is rarely the analysis itself. It&rsquo;s
+          helping people understand what the data is actually saying, and why it matters. That
+          realisation shapes how I teach. I know what it looks like when someone finally gets it,
+          and I design my sessions to get people there faster.
+        </p>
+
+        <h2>What I believe about teaching data science</h2>
+
+        <p>
+          Most people don&rsquo;t struggle with data science because it&rsquo;s too hard.
+          They struggle because it&rsquo;s taught poorly &mdash; with too much theory, too little
+          context, and examples that bear no resemblance to the decisions they&rsquo;ll actually face.
+        </p>
+
+        <p>
+          My approach is different. Every concept I teach is anchored to a real use case. Every
+          exercise is designed to build genuine confidence, not just exam performance. I&rsquo;d
+          rather a participant leave slightly slower but genuinely understanding than fast and fuzzy.
+        </p>
+
+        <h2>Background</h2>
+
+        <ul class="prose__list">
+          <li>Data Science Lecturer, NUS-ISS</li>
+          <li>[Previous roles or industry experience &mdash; add yours here]</li>
+          <li>[Relevant qualifications or credentials]</li>
+          <li>[Specialisations &mdash; e.g. machine learning, applied statistics, Python]</li>
+        </ul>
+
+        <h2>Beyond the classroom</h2>
+
+        <p>
+          [2&ndash;3 sentences on what you do outside of teaching &mdash; writing, research,
+          consulting, speaking, or what keeps you connected to the field.]
+        </p>
+
+        <div class="prose__cta">
+          <a href="/contact" class="btn btn--primary">Get In Touch</a>
+          <a href="/courses" class="btn btn--ghost">See My Courses</a>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="about-sidebar">
+        <div class="sidebar-card">
+          <p class="sidebar-card__label">Teaching Areas</p>
+          <ul class="sidebar-card__list">
+            <li>Data Science Fundamentals</li>
+            <li>Machine Learning</li>
+            <li>Data Literacy for Leaders</li>
+            <li>Applied Statistics</li>
+            <li>Python for Data Analysis</li>
+          </ul>
+        </div>
+
+        <div class="sidebar-card">
+          <p class="sidebar-card__label">I Work With</p>
+          <ul class="sidebar-card__list">
+            <li>University students</li>
+            <li>Executive education participants</li>
+            <li>Corporate training programmes</li>
+            <li>Programme coordinators</li>
+          </ul>
+        </div>
+
+        <div class="sidebar-card sidebar-card--accent">
+          <p class="sidebar-card__label">Contact</p>
+          <p style="font-size:14px;color:var(--text-2);margin-bottom:var(--sp-4);">
+            Open to questions, course enquiries, and speaking opportunities.
+          </p>
+          <a href="/contact" class="btn btn--primary" style="width:100%;justify-content:center;">
+            Get In Touch
+          </a>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  /* Page header */
+  .page-header {
+    padding: var(--sp-10) 0 var(--sp-8);
+    background: var(--surface);
+  }
+  .page-header__h1 {
+    font-size: clamp(40px, 5vw, 64px);
+    margin-top: var(--sp-3);
+    letter-spacing: -.02em;
+  }
+  .page-header__sub {
+    font-size: 18px;
+    color: var(--text-2);
+    margin-top: var(--sp-3);
+  }
+
+  /* Layout */
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--sp-10);
+    align-items: start;
+  }
+
+  /* Prose */
+  .prose { display: flex; flex-direction: column; gap: var(--sp-5); }
+  .prose__lead {
+    font-size: 20px;
+    color: var(--text);
+    line-height: 1.7;
+    font-family: var(--serif);
+    font-style: italic;
+  }
+  .prose p  { font-size: 17px; color: var(--text-2); line-height: 1.85; }
+  .prose h2 {
+    font-size: 28px;
+    color: var(--text);
+    margin-top: var(--sp-4);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--border);
+  }
+  .prose__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    padding-left: var(--sp-4);
+  }
+  .prose__list li {
+    list-style: disc;
+    font-size: 16px;
+    color: var(--text-2);
+  }
+  .prose__cta {
+    display: flex;
+    gap: var(--sp-3);
+    flex-wrap: wrap;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--border);
+    margin-top: var(--sp-4);
+  }
+
+  /* Sidebar */
+  .about-sidebar { display: flex; flex-direction: column; gap: var(--sp-4); }
+  .sidebar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--sp-5) var(--sp-6);
+  }
+  .sidebar-card--accent {
+    background: var(--accent-light);
+    border-color: #D0D9F5;
+  }
+  .sidebar-card__label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: var(--sp-4);
+  }
+  .sidebar-card__list { display: flex; flex-direction: column; gap: var(--sp-2); }
+  .sidebar-card__list li {
+    font-size: 14px;
+    color: var(--text-2);
+    padding: var(--sp-2) 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-card__list li:last-child { border-bottom: none; }
+
+  @media (max-width: 900px) {
+    .about-layout { grid-template-columns: 1fr; }
+    .about-sidebar { order: -1; }
+  }
+</style>

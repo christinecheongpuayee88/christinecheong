@@ -1,0 +1,200 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+}
+
+const { title, description, canonicalUrl, ogImage } = Astro.props;
+const siteUrl = 'https://christinecheong.com';
+const pageUrl = canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
+const image = ogImage || `${siteUrl}/og-default.png`;
+const fullTitle =
+  title === 'Christine Cheong'
+    ? 'Christine Cheong — Data Science Educator'
+    : `${title} | Christine Cheong`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={pageUrl} />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <style is:global>
+      /* ── Design tokens ───────────────────────────────────────── */
+      :root {
+        --bg:           #FAFAF8;
+        --surface:      #F4F2EC;
+        --surface-alt:  #ECEAE2;
+        --text:         #1C1917;
+        --text-2:       #57534E;
+        --text-3:       #A8A29E;
+        --accent:       #2D5BE3;
+        --accent-light: #EEF1FD;
+        --accent-dark:  #1A3EB0;
+        --border:       #E7E5E0;
+        --white:        #FFFFFF;
+
+        --serif: 'DM Serif Display', Georgia, serif;
+        --sans:  'Plus Jakarta Sans', system-ui, sans-serif;
+
+        --sp-1: 4px;   --sp-2: 8px;   --sp-3: 12px;
+        --sp-4: 16px;  --sp-5: 24px;  --sp-6: 32px;
+        --sp-7: 48px;  --sp-8: 64px;  --sp-9: 96px;
+        --sp-10: 128px;
+
+        --nav-h: 68px;
+        --max-w: 1120px;
+        --prose-w: 720px;
+        --r: 4px;
+        --ease: 0.2s ease;
+      }
+
+      /* ── Reset ───────────────────────────────────────────────── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        font-family: var(--sans);
+        background: var(--bg);
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1.75;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--serif);
+        font-weight: 400;
+        line-height: 1.2;
+        text-wrap: balance;
+      }
+      p { text-wrap: pretty; }
+      a { color: inherit; text-decoration: none; }
+      img { max-width: 100%; display: block; }
+      ul { list-style: none; }
+
+      /* ── Layout helpers ──────────────────────────────────────── */
+      .wrap {
+        width: 100%;
+        max-width: var(--max-w);
+        margin: 0 auto;
+        padding: 0 var(--sp-5);
+      }
+      .wrap--prose {
+        max-width: var(--prose-w);
+        margin: 0 auto;
+        padding: 0 var(--sp-5);
+      }
+      .section      { padding: var(--sp-10) 0; }
+      .section--sm  { padding: var(--sp-8) 0; }
+      .section--xs  { padding: var(--sp-6) 0; }
+
+      /* ── Buttons ─────────────────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: 14px 28px;
+        font-family: var(--sans);
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: var(--r);
+        cursor: pointer;
+        transition: all var(--ease);
+        border: none;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .btn--primary {
+        background: var(--accent);
+        color: var(--white);
+      }
+      .btn--primary:hover {
+        background: var(--accent-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 20px rgba(45,91,227,.28);
+      }
+      .btn--ghost {
+        background: transparent;
+        color: var(--text);
+        border: 1.5px solid var(--border);
+      }
+      .btn--ghost:hover {
+        border-color: var(--text-2);
+        background: var(--surface);
+      }
+
+      /* ── Typography helpers ──────────────────────────────────── */
+      .label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--text-3);
+      }
+      .eyebrow {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      /* ── Divider ─────────────────────────────────────────────── */
+      .hr { height: 1px; background: var(--border); border: none; }
+
+      /* ── Animations ──────────────────────────────────────────── */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .anim   { animation: fadeUp .6s ease both; }
+      .anim-1 { animation-delay: .05s; }
+      .anim-2 { animation-delay: .15s; }
+      .anim-3 { animation-delay: .25s; }
+      .anim-4 { animation-delay: .35s; }
+      .anim-5 { animation-delay: .48s; }
+
+      /* ── Responsive ──────────────────────────────────────────── */
+      @media (max-width: 768px) {
+        .section    { padding: var(--sp-8) 0; }
+        .section--sm { padding: var(--sp-6) 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

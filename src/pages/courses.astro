@@ -1,0 +1,234 @@
+---
+import Base from '../layouts/Base.astro';
+
+const courses = [
+  {
+    id: 'ds-foundations',
+    eyebrow: 'University Programme',
+    title: 'Data Science Foundations',
+    audience: 'Students in [programme/discipline] building their analytical skills as part of a structured academic curriculum.',
+    description: 'A rigorous but accessible introduction to the concepts, tools, and thinking that underpin data science. This course emphasises application — students work with real datasets and produce analysis they can stand behind.',
+    topics: [
+      'Data types, structures, and quality',
+      'Exploratory data analysis and visualisation',
+      'Statistical thinking and inference',
+      'Introduction to machine learning',
+      'Communicating findings to non-technical audiences',
+    ],
+    format: 'Semester-length · Lecture + Lab · [12 weeks]',
+  },
+  {
+    id: 'ds-professionals',
+    eyebrow: 'Executive Education',
+    title: 'Data Science for Working Professionals',
+    audience: 'Working professionals with no prior data science background who need a practical grounding in how data analysis works and how to apply it in their role.',
+    description: 'Practical, intensive, and designed around the questions professionals actually face. No fluff, no unnecessary theory — just the skills and vocabulary you need to work effectively with data in a business context.',
+    topics: [
+      'What data science can and cannot do',
+      'Reading and interpreting data outputs',
+      'Python fundamentals for data analysis',
+      'Building simple models and understanding the results',
+      'Evaluating data projects and vendors',
+    ],
+    format: '2-day intensive · In-person or hybrid · Corporate or open enrolment',
+  },
+  {
+    id: 'data-literacy',
+    eyebrow: 'Executive Briefing',
+    title: 'Data Literacy for Leaders',
+    audience: 'Executives and team leads who need to understand data science well enough to make decisions, manage data projects, and ask the right questions — without writing any code.',
+    description: 'A focused programme for leaders who work with data teams but don\'t need to become data scientists. You\'ll leave with the confidence to challenge assumptions, ask better questions, and make smarter decisions about data investments.',
+    topics: [
+      'How to evaluate data claims and spot weak analysis',
+      'What good data infrastructure looks like — and how to ask for it',
+      'How to work effectively with data scientists and analysts',
+      'Common mistakes in data-driven decision making',
+      'Building a data-literate culture in your team',
+    ],
+    format: 'Half-day executive briefing · Bespoke corporate delivery available',
+  },
+];
+---
+
+<Base
+  title="Courses"
+  description="Data science courses for university students and executive education participants — from foundational skills to leadership-level data literacy."
+>
+
+  <!-- ── Page header ─────────────────────────────────────────── -->
+  <section class="page-header">
+    <div class="wrap">
+      <p class="eyebrow anim anim-1">Courses</p>
+      <h1 class="page-header__h1 anim anim-2">
+        Programmes that build<br />skills that actually transfer
+      </h1>
+      <p class="page-header__sub anim anim-3">
+        Whether you&rsquo;re starting from scratch or leading a data team,
+        there&rsquo;s a programme here for you.
+      </p>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ── Course listings ─────────────────────────────────────── -->
+  <section class="section">
+    <div class="wrap">
+      <div class="course-list">
+        {courses.map((course, i) => (
+          <article class="course" id={course.id}>
+            <div class="course__meta">
+              <p class="eyebrow">{course.eyebrow}</p>
+              <span class="course__format">{course.format}</span>
+            </div>
+
+            <div class="course__body">
+              <h2 class="course__title">{course.title}</h2>
+              <p class="course__audience">
+                <strong>Who it&rsquo;s for:</strong> {course.audience}
+              </p>
+              <p class="course__desc">{course.description}</p>
+
+              <div class="course__topics">
+                <p class="course__topics-label">What you&rsquo;ll learn</p>
+                <ul>
+                  {course.topics.map(t => (
+                    <li>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                        <path d="M2.5 7l3 3 6-6" stroke="#2D5BE3" stroke-width="1.8"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <a href="/contact" class="btn btn--primary course__cta">
+                Get In Touch About This Course
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Not sure CTA ────────────────────────────────────────── -->
+  <section class="section--sm not-sure" style="background:var(--surface);border-top:1px solid var(--border);">
+    <div class="wrap not-sure__inner">
+      <div>
+        <h2>Not sure which is right for you?</h2>
+        <p>Get in touch and I&rsquo;ll help you figure out the best fit.</p>
+      </div>
+      <a href="/contact" class="btn btn--primary">Get In Touch</a>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .page-header {
+    padding: var(--sp-10) 0 var(--sp-8);
+    background: var(--surface);
+  }
+  .page-header__h1 {
+    font-size: clamp(36px, 4.5vw, 58px);
+    margin-top: var(--sp-3);
+    letter-spacing: -.02em;
+  }
+  .page-header__sub {
+    font-size: 18px;
+    color: var(--text-2);
+    margin-top: var(--sp-4);
+    max-width: 52ch;
+  }
+
+  /* Course list */
+  .course-list { display: flex; flex-direction: column; gap: 0; }
+
+  .course {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: var(--sp-8);
+    padding: var(--sp-9) 0;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+  }
+  .course:first-child { border-top: 1px solid var(--border); }
+
+  .course__meta {
+    position: sticky;
+    top: calc(var(--nav-h) + var(--sp-5));
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .course__format {
+    font-size: 13px;
+    color: var(--text-3);
+    line-height: 1.6;
+    margin-top: var(--sp-2);
+  }
+
+  .course__body { display: flex; flex-direction: column; gap: var(--sp-5); }
+
+  .course__title {
+    font-size: clamp(26px, 3vw, 36px);
+    letter-spacing: -.01em;
+  }
+  .course__audience {
+    font-size: 15px;
+    color: var(--text-2);
+    padding: var(--sp-4);
+    background: var(--surface);
+    border-radius: var(--r);
+    border-left: 3px solid var(--accent);
+  }
+  .course__audience strong { color: var(--text); }
+
+  .course__desc { font-size: 16px; color: var(--text-2); line-height: 1.8; }
+
+  .course__topics {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--sp-5) var(--sp-6);
+  }
+  .course__topics-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: var(--sp-4);
+  }
+  .course__topics ul { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .course__topics li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .course__topics svg { flex-shrink: 0; margin-top: 2px; }
+
+  .course__cta { align-self: flex-start; }
+
+  /* Not sure */
+  .not-sure__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--sp-6);
+  }
+  .not-sure h2 { font-size: 28px; }
+  .not-sure p  { font-size: 16px; color: var(--text-2); margin-top: var(--sp-2); }
+
+  @media (max-width: 800px) {
+    .course { grid-template-columns: 1fr; gap: var(--sp-5); }
+    .course__meta { position: static; }
+    .not-sure__inner { flex-direction: column; text-align: center; align-items: flex-start; }
+  }
+</style>

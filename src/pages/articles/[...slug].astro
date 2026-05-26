@@ -1,0 +1,154 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('articles', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+function formatDate(d: Date) {
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+---
+
+<Base title={post.data.title} description={post.data.description}>
+
+  <section class="article-header">
+    <div class="wrap--prose">
+      <a href="/articles" class="back-link">&larr; All Articles</a>
+      <h1 class="article-title">{post.data.title}</h1>
+      <p class="article-desc">{post.data.description}</p>
+      <time class="article-date" datetime={post.data.date.toISOString()}>
+        {formatDate(post.data.date)}
+      </time>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <article class="section">
+    <div class="wrap--prose article-body">
+      <Content />
+    </div>
+  </article>
+
+  <div class="article-footer">
+    <div class="wrap--prose">
+      <a href="/articles" class="btn btn--ghost">&larr; Back to Articles</a>
+      <a href="/contact" class="btn btn--primary">Get In Touch</a>
+    </div>
+  </div>
+
+</Base>
+
+<style>
+  .article-header {
+    padding: var(--sp-10) 0 var(--sp-8);
+    background: var(--surface);
+  }
+  .back-link {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-3);
+    margin-bottom: var(--sp-5);
+    transition: color var(--ease);
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  .article-title {
+    font-size: clamp(32px, 4.5vw, 52px);
+    letter-spacing: -.02em;
+    line-height: 1.15;
+    margin-bottom: var(--sp-5);
+  }
+  .article-desc {
+    font-size: 19px;
+    color: var(--text-2);
+    line-height: 1.65;
+    margin-bottom: var(--sp-5);
+    max-width: 55ch;
+  }
+  .article-date { font-size: 13px; color: var(--text-3); display: block; }
+
+  /* Prose styling */
+  .article-body { font-size: 17px; line-height: 1.85; color: var(--text-2); }
+  .article-body :global(h2) {
+    font-size: 28px;
+    color: var(--text);
+    margin: var(--sp-8) 0 var(--sp-4);
+    padding-top: var(--sp-7);
+    border-top: 1px solid var(--border);
+  }
+  .article-body :global(h3) {
+    font-size: 22px;
+    color: var(--text);
+    margin: var(--sp-6) 0 var(--sp-3);
+  }
+  .article-body :global(p)  { margin-bottom: var(--sp-5); }
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin: var(--sp-4) 0 var(--sp-5) var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .article-body :global(li)         { list-style: disc; }
+  .article-body :global(ol li)      { list-style: decimal; }
+  .article-body :global(strong)     { color: var(--text); font-weight: 600; }
+  .article-body :global(em)         { font-style: italic; }
+  .article-body :global(blockquote) {
+    border-left: 3px solid var(--accent);
+    padding: var(--sp-4) var(--sp-6);
+    margin: var(--sp-6) 0;
+    background: var(--surface);
+    border-radius: 0 var(--r) var(--r) 0;
+    font-style: italic;
+    color: var(--text);
+  }
+  .article-body :global(code) {
+    font-size: .9em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: 'Courier New', monospace;
+  }
+  .article-body :global(pre) {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: var(--sp-5);
+    overflow-x: auto;
+    margin: var(--sp-5) 0;
+  }
+  .article-body :global(pre code) { background: none; border: none; padding: 0; font-size: 14px; }
+  .article-body :global(a) {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .article-body :global(a:hover) { color: var(--accent-dark); }
+  .article-body :global(hr) {
+    height: 1px;
+    background: var(--border);
+    border: none;
+    margin: var(--sp-8) 0;
+  }
+
+  .article-footer {
+    border-top: 1px solid var(--border);
+    padding: var(--sp-7) 0;
+    background: var(--surface);
+  }
+  .article-footer .wrap--prose { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+</style>
