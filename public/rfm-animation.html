@@ -1,0 +1,823 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Segmentation: RFM Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #1E2761; --navy-dark: #0D1335; --navy-light: #2A3580;
+  --blue: #2E86C1; --blue-light: #5DADE2;
+  --gold: #F0B429; --gold-light: #F8D06B;
+  --green: #27AE60; --green-light: #2ECC71;
+  --red: #E74C3C; --orange: #E67E22;
+  --white: #FFFFFF; --muted: rgba(255,255,255,0.65); --dim: rgba(255,255,255,0.25);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--navy-dark);}
+body{font-family:'Inter',sans-serif;color:var(--white);}
+
+/* ── Presentation shell ── */
+.deck{position:relative;width:100vw;height:100vh;overflow:hidden;}
+
+/* ── Slides ── */
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:clamp(32px,8vh,80px) clamp(20px,6vw,80px) 120px;
+  overflow-y:auto;overflow-x:hidden;
+  opacity:0;transform:translateY(28px);
+  transition:opacity .55s ease,transform .55s ease;
+  pointer-events:none;
+}
+/* Scrollbar styling — visible but subtle */
+.slide::-webkit-scrollbar{width:4px;}
+.slide::-webkit-scrollbar-track{background:transparent;}
+.slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:2px;}
+.slide.active{opacity:1;transform:translateY(0);pointer-events:all;}
+.slide.out{opacity:0;transform:translateY(-28px);}
+
+/* ── Shared typography ── */
+.section-tag{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;opacity:0;}
+.slide-h1{font-family:'Playfair Display',serif;font-size:clamp(30px,3.8vw,48px);font-weight:900;text-align:center;line-height:1.18;margin-bottom:10px;opacity:0;}
+.slide-lead{font-size:16px;color:var(--muted);text-align:center;margin-bottom:44px;font-weight:300;opacity:0;}
+.slide.active .section-tag{animation:upFade .5s .15s forwards;}
+.slide.active .slide-h1    {animation:upFade .6s .35s forwards;}
+.slide.active .slide-lead  {animation:upFade .5s .55s forwards;}
+@keyframes upFade{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+@keyframes barGrow{from{height:0%;}to{height:var(--h);}}
+
+/* ════════════════════════════════════════════════
+   SCENE 1 — TITLE
+════════════════════════════════════════════════ */
+#s1{background:radial-gradient(ellipse at 30% 40%,#1e3a80 0%,var(--navy-dark) 65%);}
+.particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.p{position:absolute;border-radius:50%;animation:drift linear infinite;}
+@keyframes drift{
+  0%  {transform:translateY(110vh) scale(0);opacity:0;}
+  8%  {opacity:.55;}
+  90% {opacity:.15;}
+  100%{transform:translateY(-80px) scale(1.2);opacity:0;}
+}
+.hero-badge{
+  display:inline-block;background:rgba(240,180,41,.15);border:1px solid rgba(240,180,41,.35);
+  border-radius:100px;padding:7px 20px;font-size:12px;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;color:var(--gold);margin-bottom:28px;opacity:0;
+}
+.hero-title{
+  font-family:'Playfair Display',serif;font-size:clamp(38px,5.5vw,68px);font-weight:900;
+  text-align:center;line-height:1.12;opacity:0;
+}
+.hero-title em{color:var(--gold);font-style:normal;}
+.hero-line{width:72px;height:3px;background:linear-gradient(90deg,var(--gold),var(--blue));border-radius:2px;margin:28px auto;opacity:0;}
+.hero-sub{font-size:19px;font-weight:300;color:var(--muted);text-align:center;opacity:0;max-width:560px;}
+#s1.active .hero-badge {animation:upFade .5s .2s forwards;}
+#s1.active .hero-title {animation:upFade .7s .5s forwards;}
+#s1.active .hero-line  {animation:upFade .4s .95s forwards;}
+#s1.active .hero-sub   {animation:upFade .5s 1.1s forwards;}
+
+/* ════════════════════════════════════════════════
+   SCENE 2 — WHAT IS RFM
+════════════════════════════════════════════════ */
+#s2{background:linear-gradient(145deg,#162050 0%,#1E2761 100%);}
+.rfm-trio{display:flex;gap:28px;justify-content:center;}
+.rfm-card{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:36px 28px;width:220px;text-align:center;
+  opacity:0;backdrop-filter:blur(8px);transition:transform .3s,box-shadow .3s;
+}
+.rfm-card:hover{transform:translateY(-10px);box-shadow:0 24px 48px rgba(0,0,0,.35);}
+.rfm-card.r{border-top:3px solid var(--gold);}
+.rfm-card.f{border-top:3px solid var(--blue-light);}
+.rfm-card.m{border-top:3px solid var(--green-light);}
+.rfm-big{font-family:'Playfair Display',serif;font-size:80px;font-weight:900;line-height:1;}
+.rfm-card.r .rfm-big{color:var(--gold);}
+.rfm-card.f .rfm-big{color:var(--blue-light);}
+.rfm-card.m .rfm-big{color:var(--green-light);}
+.rfm-word{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin:6px 0 16px;}
+.rfm-q{font-size:15px;font-weight:600;line-height:1.45;}
+.rfm-hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5;}
+#s2.active .rfm-card:nth-child(1){animation:upFade .6s .55s forwards;}
+#s2.active .rfm-card:nth-child(2){animation:upFade .6s .8s  forwards;}
+#s2.active .rfm-card:nth-child(3){animation:upFade .6s 1.05s forwards;}
+
+/* ════════════════════════════════════════════════
+   SCENE 3 — SCORES
+════════════════════════════════════════════════ */
+#s3{background:linear-gradient(145deg,#1a2a6c 0%,#1E2761 100%);}
+.score-wrap{width:100%;max-width:780px;}
+.score-row{display:flex;align-items:center;gap:14px;margin-bottom:18px;opacity:0;}
+.sr-label{width:100px;text-align:right;font-size:13px;font-weight:600;color:var(--muted);}
+.sr-boxes{display:flex;gap:8px;flex:1;}
+.sb{
+  flex:1;height:54px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:24px;font-weight:900;
+  transition:transform .2s;cursor:default;
+}
+.sb:hover{transform:scale(1.1);}
+.sb.v1{background:rgba(231,76,60,.18);border:1px solid rgba(231,76,60,.4);color:#e74c3c;}
+.sb.v2{background:rgba(230,126,34,.18);border:1px solid rgba(230,126,34,.4);color:#e67e22;}
+.sb.v3{background:rgba(241,196,15,.13);border:1px solid rgba(241,196,15,.35);color:#f1c40f;}
+.sb.v4{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.4);color:#2ecc71;}
+.sb.v5{background:rgba(46,204,113,.28);border:2px solid rgba(46,204,113,.7);color:#2ecc71;box-shadow:0 0 18px rgba(46,204,113,.3);}
+.sr-hint{width:75px;font-size:11px;color:var(--muted);}
+#s3.active .score-row:nth-child(1){animation:upFade .5s .45s forwards;}
+#s3.active .score-row:nth-child(2){animation:upFade .5s .7s  forwards;}
+#s3.active .score-row:nth-child(3){animation:upFade .5s .95s forwards;}
+.score-badges{display:flex;justify-content:center;gap:36px;margin-top:24px;opacity:0;}
+.sc-badge{background:rgba(255,255,255,.06);border-radius:14px;padding:18px 32px;text-align:center;border:1px solid rgba(255,255,255,.1);}
+.sc-badge.best{border-color:rgba(46,204,113,.5);box-shadow:0 0 28px rgba(46,204,113,.18);}
+.sc-badge.worst{border-color:rgba(231,76,60,.35);}
+.badge-num{font-family:'Playfair Display',serif;font-size:40px;font-weight:900;}
+.best .badge-num{color:#2ecc71;} .worst .badge-num{color:#e74c3c;}
+.badge-lbl{font-size:12px;color:var(--muted);margin-top:4px;}
+#s3.active .score-badges{animation:upFade .6s 1.3s forwards;}
+
+/* ════════════════════════════════════════════════
+   SCENE 4 — WORKFLOW
+════════════════════════════════════════════════ */
+#s4{background:linear-gradient(145deg,#1E2761 0%,#1a3060 100%);}
+.wf-row{display:flex;align-items:center;width:100%;max-width:960px;margin-top:4px;}
+.wf-step{flex:1;text-align:center;opacity:0;}
+.wf-icon-ring{
+  width:82px;height:82px;border-radius:50%;
+  background:rgba(255,255,255,.05);border:2px solid var(--blue);
+  margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
+  font-size:34px;position:relative;transition:all .3s;
+}
+.wf-step:hover .wf-icon-ring{background:var(--blue);box-shadow:0 0 32px rgba(46,134,193,.5);transform:scale(1.08);}
+.wf-num{
+  position:absolute;top:-8px;right:-8px;width:24px;height:24px;
+  background:var(--gold);color:var(--navy);border-radius:50%;
+  font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;
+}
+.wf-title{font-size:15px;font-weight:700;margin-bottom:6px;}
+.wf-desc{font-size:12px;color:var(--muted);line-height:1.55;padding:0 6px;}
+.wf-arrow{width:48px;flex-shrink:0;text-align:center;font-size:26px;color:var(--gold);opacity:0;padding-bottom:68px;}
+#s4.active .wf-step:nth-child(1)  {animation:upFade .5s .4s  forwards;}
+#s4.active .wf-arrow:nth-child(2) {animation:fadeIn .4s .7s  forwards;}
+#s4.active .wf-step:nth-child(3)  {animation:upFade .5s .9s  forwards;}
+#s4.active .wf-arrow:nth-child(4) {animation:fadeIn .4s 1.1s forwards;}
+#s4.active .wf-step:nth-child(5)  {animation:upFade .5s 1.2s forwards;}
+#s4.active .wf-arrow:nth-child(6) {animation:fadeIn .4s 1.4s forwards;}
+#s4.active .wf-step:nth-child(7)  {animation:upFade .5s 1.5s forwards;}
+
+/* ════════════════════════════════════════════════
+   SCENE 5 — SEGMENT GRID
+════════════════════════════════════════════════ */
+#s5{background:linear-gradient(145deg,#162050 0%,#1E2761 100%);}
+.grid-outer{display:flex;gap:40px;align-items:center;opacity:0;}
+.grid-axis-wrap{position:relative;padding-left:48px;}
+.axis-y{
+  position:absolute;left:0;top:50%;transform:translateY(-50%) rotate(-90deg);
+  font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;
+}
+.seg-grid{display:grid;grid-template-columns:repeat(5,74px);grid-template-rows:repeat(5,52px);gap:4px;}
+.axis-x{text-align:center;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:8px;}
+.gc{
+  border-radius:7px;display:flex;align-items:center;justify-content:center;
+  font-size:9.5px;font-weight:600;text-align:center;padding:4px;line-height:1.3;
+  cursor:pointer;transition:transform .2s,box-shadow .2s;
+}
+.gc:hover{transform:scale(1.18);z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.champ {background:rgba(240,180,41,.72);color:#1a1000;border:1px solid rgba(240,180,41,.9);}
+.loyal {background:rgba(46,134,193,.5); color:#fff;   border:1px solid rgba(46,134,193,.7);}
+.atrisk{background:rgba(230,126,34,.5); color:#fff;   border:1px solid rgba(230,126,34,.7);}
+.promis{background:rgba(93,173,226,.3); color:#fff;   border:1px solid rgba(93,173,226,.5);}
+.lost  {background:rgba(100,100,130,.3);color:rgba(255,255,255,.45);border:1px solid rgba(100,100,130,.4);}
+.legend-col{display:flex;flex-direction:column;gap:14px;}
+.leg{display:flex;align-items:flex-start;gap:12px;opacity:0;}
+.leg-dot{width:16px;height:16px;border-radius:4px;flex-shrink:0;margin-top:2px;}
+.leg h4{font-size:14px;font-weight:700;margin-bottom:2px;}
+.leg p {font-size:12px;color:var(--muted);}
+#s5.active .grid-outer          {animation:upFade .6s .4s  forwards;}
+#s5.active .leg:nth-child(1)    {animation:upFade .4s .85s forwards;}
+#s5.active .leg:nth-child(2)    {animation:upFade .4s 1.05s forwards;}
+#s5.active .leg:nth-child(3)    {animation:upFade .4s 1.2s forwards;}
+#s5.active .leg:nth-child(4)    {animation:upFade .4s 1.35s forwards;}
+#s5.active .leg:nth-child(5)    {animation:upFade .4s 1.5s forwards;}
+
+/* ════════════════════════════════════════════════
+   SCENE 6 — HURDLE RATES
+════════════════════════════════════════════════ */
+#s6{background:linear-gradient(145deg,#1E2761 0%,#162050 100%);}
+.hurdle-row{display:flex;gap:52px;align-items:flex-end;margin-top:12px;}
+.hchart{display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0;}
+.bar-track{
+  width:110px;height:200px;background:rgba(255,255,255,.06);
+  border-radius:12px;position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);
+}
+.bar-fill{
+  position:absolute;bottom:0;left:0;right:0;height:0%;
+  border-radius:0 0 12px 12px;
+  transition:height 1.4s cubic-bezier(.34,1.56,.64,1);
+}
+.hchart.hc-r .bar-fill{background:linear-gradient(180deg,#1e8449,#2ecc71);}
+.hchart.hc-f .bar-fill{background:linear-gradient(180deg,#1a5276,#5dade2);}
+.hchart.hc-m .bar-fill{background:linear-gradient(180deg,#b7770d,#f8d06b);}
+.bar-pct{
+  position:absolute;bottom:10px;left:0;right:0;
+  text-align:center;font-size:22px;font-weight:800;color:rgba(255,255,255,.92);
+}
+.hchart-title{font-size:15px;font-weight:700;text-align:center;}
+.hchart-sub  {font-size:11px;color:var(--muted);text-align:center;}
+.hurdle-cards{display:flex;gap:24px;margin-top:24px;opacity:0;}
+.hcard{
+  background:rgba(255,255,255,.05);border-radius:12px;
+  padding:14px 20px;font-size:13px;flex:1;max-width:260px;
+  border-left:3px solid;line-height:1.55;
+}
+.hcard.good{border-color:var(--green);}
+.hcard.warn{border-color:var(--red);}
+.hcard-icon{font-size:18px;margin-bottom:5px;}
+#s6.active .hchart:nth-child(1){animation:upFade .5s .4s forwards;}
+#s6.active .hchart:nth-child(2){animation:upFade .5s .6s forwards;}
+#s6.active .hchart:nth-child(3){animation:upFade .5s .8s forwards;}
+#s6.active .hurdle-cards       {animation:upFade .5s 1.3s forwards;}
+
+/* ════════════════════════════════════════════════
+   SCENE 7 — TAKEAWAYS
+════════════════════════════════════════════════ */
+#s7{background:radial-gradient(ellipse at 70% 30%,#1e3a80 0%,var(--navy-dark) 65%);}
+.ta-list{width:100%;max-width:680px;}
+.ta-item{
+  display:flex;align-items:flex-start;gap:18px;
+  padding:15px 0;border-bottom:1px solid rgba(255,255,255,.08);opacity:0;
+}
+.ta-num{
+  width:34px;height:34px;background:var(--gold);color:var(--navy);
+  border-radius:50%;font-size:15px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ta-body strong{font-size:16px;font-weight:600;display:block;margin-bottom:3px;}
+.ta-body span  {font-size:13px;color:var(--muted);}
+.ta-footer{margin-top:20px;font-size:12px;color:var(--dim);text-align:center;opacity:0;}
+#s7.active .ta-item:nth-child(1){animation:upFade .5s .3s  forwards;}
+#s7.active .ta-item:nth-child(2){animation:upFade .5s .5s  forwards;}
+#s7.active .ta-item:nth-child(3){animation:upFade .5s .7s  forwards;}
+#s7.active .ta-item:nth-child(4){animation:upFade .5s .9s  forwards;}
+#s7.active .ta-item:nth-child(5){animation:upFade .5s 1.1s forwards;}
+#s7.active .ta-footer           {animation:fadeIn .5s 1.6s forwards;}
+
+/* ════════════════════════════════════════════════
+   NAV BAR
+════════════════════════════════════════════════ */
+.nav-bar{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:14px;z-index:200;
+  background:rgba(13,19,53,.75);backdrop-filter:blur(14px);
+  padding:10px 22px;border-radius:50px;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.nb-btn{
+  width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.08);color:var(--white);
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.nb-btn:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);transform:scale(1.1);}
+.nb-play{
+  width:38px;height:38px;border-radius:50%;background:var(--gold);border:none;
+  color:var(--navy);font-size:15px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.nb-play:hover{background:var(--gold-light);transform:scale(1.1);}
+.nb-count{font-size:13px;font-weight:500;color:var(--muted);min-width:42px;text-align:center;}
+.dots{display:flex;gap:7px;align-items:center;}
+.dot{
+  width:7px;height:7px;border-radius:50%;background:var(--dim);
+  transition:all .3s;cursor:pointer;
+}
+.dot.on{background:var(--gold);width:20px;border-radius:4px;}
+
+/* Audio button pulse when speaking */
+#btnAudio.speaking{
+  background:rgba(240,180,41,.22);border-color:var(--gold);
+  animation:audioPulse 1.6s ease-in-out infinite;
+}
+@keyframes audioPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(240,180,41,.45);}
+  50%     {box-shadow:0 0 0 8px rgba(240,180,41,0);}
+}
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE — narrow viewports / small laptops
+════════════════════════════════════════════════ */
+@media (max-width:720px){
+  /* S2 — RFM cards: allow wrap so they don't overflow */
+  .rfm-trio{flex-wrap:wrap;gap:14px;justify-content:center;}
+  .rfm-card{width:clamp(130px,43vw,220px);padding:24px 16px;}
+  .rfm-big{font-size:clamp(52px,14vw,80px);}
+  .rfm-q{font-size:13px;}
+  .rfm-hint{font-size:11px;}
+
+  /* S3 — score boxes */
+  .sb{height:42px;font-size:19px;}
+  .sr-label{width:72px;font-size:11px;}
+  .sr-hint{width:56px;font-size:10px;}
+  .score-badges{flex-wrap:wrap;gap:14px;justify-content:center;}
+  .sc-badge{padding:14px 26px;}
+  .badge-num{font-size:34px;}
+
+  /* S4 — workflow row */
+  .wf-icon-ring{width:66px;height:66px;font-size:26px;}
+  .wf-arrow{width:28px;font-size:20px;}
+  .wf-title{font-size:13px;}
+  .wf-desc{font-size:11px;}
+
+  /* S5 — segment grid: shrink cells to fit */
+  .seg-grid{
+    grid-template-columns:repeat(5,clamp(44px,11vw,74px));
+    grid-template-rows:repeat(5,clamp(34px,8.5vw,52px));
+  }
+  .gc{font-size:8px;padding:3px;}
+  .grid-outer{flex-direction:column;gap:18px;}
+  .legend-col{flex-direction:row;flex-wrap:wrap;gap:8px;}
+  .leg{flex:1 1 44%;min-width:140px;}
+  .leg h4{font-size:13px;}
+  .leg p{font-size:11px;}
+
+  /* S6 — hurdle bars */
+  .hurdle-row{gap:28px;}
+  .bar-track{width:82px;height:155px;}
+  .bar-pct{font-size:18px;}
+  .hchart-title{font-size:13px;}
+  .hchart-sub{font-size:10px;}
+  .hurdle-cards{flex-direction:column;gap:10px;}
+  .hcard{max-width:100%;font-size:12px;}
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ── SLIDE 1: TITLE ── -->
+<section class="slide active" id="s1">
+  <div class="particles" id="pts"></div>
+  <div class="hero-badge">NUS Customer Analytics</div>
+  <h1 class="hero-title">Customer Segmentation:<br><em>RFM Analysis</em></h1>
+  <div class="hero-line"></div>
+  <p class="hero-sub">Understanding your most valuable customers — and what to do about it</p>
+</section>
+
+<!-- ── SLIDE 2: WHAT IS RFM ── -->
+<section class="slide" id="s2">
+  <p class="section-tag">The Foundation</p>
+  <h1 class="slide-h1">What Does <em style="color:var(--gold)">RFM</em> Stand For?</h1>
+  <p class="slide-lead">Three dimensions that reveal exactly how valuable each customer is</p>
+  <div class="rfm-trio">
+    <div class="rfm-card r">
+      <div class="rfm-big">R</div>
+      <div class="rfm-word">Recency</div>
+      <div class="rfm-q">How recently did they buy?</div>
+      <div class="rfm-hint">Recent buyers are more likely to purchase again — the product is still top of mind.</div>
+    </div>
+    <div class="rfm-card f">
+      <div class="rfm-big">F</div>
+      <div class="rfm-word">Frequency</div>
+      <div class="rfm-q">How often do they buy?</div>
+      <div class="rfm-hint">Frequent buyers are your loyalists — they've already proven they love what you offer.</div>
+    </div>
+    <div class="rfm-card m">
+      <div class="rfm-big">M</div>
+      <div class="rfm-word">Monetary</div>
+      <div class="rfm-q">How much do they spend?</div>
+      <div class="rfm-hint">High spenders drive your revenue — and are most likely to spend again in the future.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SLIDE 3: SCORES ── -->
+<section class="slide" id="s3">
+  <p class="section-tag">Scoring System</p>
+  <h1 class="slide-h1">Every Customer Gets a Score:<em style="color:var(--gold)"> 1 to 5</em></h1>
+  <p class="slide-lead">Each dimension is scored independently. 5 = best, 1 = worst.</p>
+  <div class="score-wrap">
+    <div class="score-row">
+      <span class="sr-label">Recency</span>
+      <div class="sr-boxes">
+        <div class="sb v1">1</div><div class="sb v2">2</div><div class="sb v3">3</div><div class="sb v4">4</div><div class="sb v5">5</div>
+      </div>
+      <span class="sr-hint">5 = bought recently</span>
+    </div>
+    <div class="score-row">
+      <span class="sr-label">Frequency</span>
+      <div class="sr-boxes">
+        <div class="sb v1">1</div><div class="sb v2">2</div><div class="sb v3">3</div><div class="sb v4">4</div><div class="sb v5">5</div>
+      </div>
+      <span class="sr-hint">5 = buys most often</span>
+    </div>
+    <div class="score-row">
+      <span class="sr-label">Monetary</span>
+      <div class="sr-boxes">
+        <div class="sb v1">1</div><div class="sb v2">2</div><div class="sb v3">3</div><div class="sb v4">4</div><div class="sb v5">5</div>
+      </div>
+      <span class="sr-hint">5 = spends the most</span>
+    </div>
+  </div>
+  <div class="score-badges">
+    <div class="sc-badge best">
+      <div class="badge-num">555</div>
+      <div class="badge-lbl">🏆 Best Customer<br>Recent · Frequent · High-spend</div>
+    </div>
+    <div class="sc-badge worst">
+      <div class="badge-num">111</div>
+      <div class="badge-lbl">⚠️ At-Risk Customer<br>Lapsed · Rare · Low-spend</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SLIDE 4: WORKFLOW ── -->
+<section class="slide" id="s4">
+  <p class="section-tag">How It Works</p>
+  <h1 class="slide-h1">The <em style="color:var(--gold)">4-Step</em> RFM Workflow</h1>
+  <p class="slide-lead">From raw transactions to actionable customer segments</p>
+  <div class="wf-row">
+    <div class="wf-step">
+      <div class="wf-icon-ring">🗄️<span class="wf-num">1</span></div>
+      <div class="wf-title">Collect Data</div>
+      <div class="wf-desc">Customer ID, transaction dates &amp; revenue amounts</div>
+    </div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-step">
+      <div class="wf-icon-ring">📊<span class="wf-num">2</span></div>
+      <div class="wf-title">Build RFM Table</div>
+      <div class="wf-desc">Aggregate to one row per customer with R, F &amp; M values</div>
+    </div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-step">
+      <div class="wf-icon-ring">⭐<span class="wf-num">3</span></div>
+      <div class="wf-title">Assign Scores</div>
+      <div class="wf-desc">Divide each dimension into 5 equal quintiles → score 1–5</div>
+    </div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-step">
+      <div class="wf-icon-ring">👥<span class="wf-num">4</span></div>
+      <div class="wf-title">Create Segments</div>
+      <div class="wf-desc">Group customers by RFM score into named, actionable segments</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SLIDE 5: SEGMENT GRID ── -->
+<section class="slide" id="s5">
+  <p class="section-tag">Customer Segments</p>
+  <h1 class="slide-h1">The <em style="color:var(--gold)">5×5</em> Segment Map</h1>
+  <p class="slide-lead">Recency vs. Frequency — every cell reveals a customer story</p>
+  <div class="grid-outer">
+    <div class="grid-axis-wrap">
+      <div class="axis-y">← Recency →</div>
+      <div class="seg-grid" id="segGrid"></div>
+      <div class="axis-x">← Frequency →</div>
+    </div>
+    <div class="legend-col" id="segLegend">
+      <div class="leg"><div class="leg-dot" style="background:rgba(240,180,41,.8)"></div><div><h4>🏆 Champions</h4><p>High R + High F — your best customers. Reward them.</p></div></div>
+      <div class="leg"><div class="leg-dot" style="background:rgba(46,134,193,.6)"></div><div><h4>💙 Loyal Customers</h4><p>Frequent buyers, moderately recent. Upsell opportunities.</p></div></div>
+      <div class="leg"><div class="leg-dot" style="background:rgba(230,126,34,.6)"></div><div><h4>⚠️ At Risk</h4><p>Used to buy often, but haven't recently. Win them back.</p></div></div>
+      <div class="leg"><div class="leg-dot" style="background:rgba(93,173,226,.4)"></div><div><h4>🌱 Promising</h4><p>New customers — nurture early loyalty now.</p></div></div>
+      <div class="leg"><div class="leg-dot" style="background:rgba(100,100,130,.4)"></div><div><h4>😴 Lost / Inactive</h4><p>Low R + Low F — re-engage or accept the loss.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SLIDE 6: HURDLE RATES ── -->
+<section class="slide" id="s6">
+  <p class="section-tag">Business Health Check</p>
+  <h1 class="slide-h1">Hurdle Rate Analysis</h1>
+  <p class="slide-lead">Track the % of customers clearing each threshold — it tells you if your business is healthy</p>
+  <div class="hurdle-row">
+    <div class="hchart hc-r">
+      <div class="bar-track">
+        <div class="bar-fill" id="br" style="--h:30%"></div>
+        <div class="bar-pct">30%</div>
+      </div>
+      <div class="hchart-title" style="color:var(--green-light)">Recency</div>
+      <div class="hchart-sub">Bought in last 90 days</div>
+    </div>
+    <div class="hchart hc-f">
+      <div class="bar-track">
+        <div class="bar-fill" id="bf" style="--h:20%"></div>
+        <div class="bar-pct">20%</div>
+      </div>
+      <div class="hchart-title" style="color:var(--blue-light)">Frequency</div>
+      <div class="hchart-sub">≥ 3 purchases/year</div>
+    </div>
+    <div class="hchart hc-m">
+      <div class="bar-track">
+        <div class="bar-fill" id="bm" style="--h:15%"></div>
+        <div class="bar-pct">15%</div>
+      </div>
+      <div class="hchart-title" style="color:var(--gold)">Monetary</div>
+      <div class="hchart-sub">Spent ≥ $500</div>
+    </div>
+  </div>
+  <div class="hurdle-cards">
+    <div class="hcard good">
+      <div class="hcard-icon">📈</div>
+      <strong>Hurdle rates rising?</strong> Your business is healthy. Customers respond positively and are likely to generate more revenue.
+    </div>
+    <div class="hcard warn">
+      <div class="hcard-icon">📉</div>
+      <strong>Hurdle rates falling?</strong> High-value customers are defecting. Time for re-engagement campaigns, loyalty programs, or better service.
+    </div>
+  </div>
+</section>
+
+<!-- ── SLIDE 7: TAKEAWAYS ── -->
+<section class="slide" id="s7">
+  <p class="section-tag">Summary</p>
+  <h1 class="slide-h1">Key <em style="color:var(--gold)">Takeaways</em></h1>
+  <div class="ta-list">
+    <div class="ta-item">
+      <div class="ta-num">1</div>
+      <div class="ta-body"><strong>Segmentation moves you from mass to personalised marketing</strong><span>Speak directly to each customer group's needs instead of sending the same message to everyone.</span></div>
+    </div>
+    <div class="ta-item">
+      <div class="ta-num">2</div>
+      <div class="ta-body"><strong>RFM scores customers on three behavioural dimensions</strong><span>Recency, Frequency &amp; Monetary — together they reveal your most (and least) valuable customers.</span></div>
+    </div>
+    <div class="ta-item">
+      <div class="ta-num">3</div>
+      <div class="ta-body"><strong>Best customers score 555 — worst score 111</strong><span>The 5×5 grid gives you 25 segments to act on. Focus on Champions &amp; At-Risk first.</span></div>
+    </div>
+    <div class="ta-item">
+      <div class="ta-num">4</div>
+      <div class="ta-body"><strong>Hurdle rates are an early-warning business health check</strong><span>Track the % of customers clearing each RFM threshold. Rising = healthy; falling = take action.</span></div>
+    </div>
+    <div class="ta-item">
+      <div class="ta-num">5</div>
+      <div class="ta-body"><strong>Next: Cluster Analysis</strong><span>Machine learning can automatically discover hidden customer groups — no predefined labels needed.</span></div>
+    </div>
+  </div>
+  <div class="ta-footer">NUS Customer Analytics · Customer Segmentation Series · Charles Pang T-Howe</div>
+</section>
+
+</div><!-- /deck -->
+
+<!-- ── NAV BAR ── -->
+<div class="nav-bar">
+  <button class="nb-btn" id="btnPrev" title="Previous (←)">‹</button>
+  <div class="dots" id="dots"></div>
+  <span class="nb-count" id="counter">1 / 7</span>
+  <button class="nb-btn" id="btnAudio" title="Toggle narration (N)">🔇</button>
+  <button class="nb-play" id="btnPlay" title="Auto-play">▶</button>
+  <button class="nb-btn" id="btnNext" title="Next (→)">›</button>
+</div>
+
+<script>
+// ── Config ──
+const TOTAL = 7;
+const AUTO_INTERVAL = 8000;
+let cur = 0, autoTimer = null, playing = false;
+
+const slides  = document.querySelectorAll('.slide');
+const dotsEl  = document.getElementById('dots');
+const counter = document.getElementById('counter');
+const btnPlay = document.getElementById('btnPlay');
+
+// Build dots
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' on':'');
+  d.onclick=()=>goto(i);
+  dotsEl.appendChild(d);
+}
+
+function goto(n){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('out');
+  setTimeout(()=>slides[n-1>=0?cur:cur]?.classList.remove('out'),600); // clean up
+  const prev=cur; cur=n;
+  slides[prev].classList.remove('active');
+  setTimeout(()=>slides[prev].classList.remove('out'),600);
+  slides[cur].classList.remove('out');
+  slides[cur].classList.add('active');
+  // refresh dots & counter
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  counter.textContent=`${cur+1} / ${TOTAL}`;
+  // trigger bar animations on slide 6
+  if(cur===5) triggerBars();
+  // narrate after transition settles
+  setTimeout(()=>speakSlide(cur), 650);
+}
+
+function next(){goto(cur===TOTAL-1?0:cur+1);}
+function prev(){goto(cur===0?TOTAL-1:cur-1);}
+
+document.getElementById('btnNext').onclick=next;
+document.getElementById('btnPrev').onclick=prev;
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') next();
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   prev();
+  if(e.key==='n'||e.key==='N') document.getElementById('btnAudio').click();
+});
+
+// Auto-play
+btnPlay.onclick=function(){
+  playing=!playing;
+  btnPlay.textContent=playing?'⏸':'▶';
+  if(playing){autoTimer=setInterval(next,AUTO_INTERVAL);}
+  else{clearInterval(autoTimer);}
+};
+
+// ── Narration (Web Speech API) ──
+const NARRATION = [
+  "Welcome to Customer Segmentation: RFM Analysis. In this session, we'll explore a powerful framework for understanding your most valuable customers — and deciding what to do about it.",
+  "RFM stands for three behavioural dimensions. Recency — how recently did the customer last buy? Frequency — how often do they purchase? And Monetary — how much do they spend in total? Together, these three measures reveal exactly how valuable each customer is to your business.",
+  "Every customer receives a score from 1 to 5 on each dimension, scored independently. A 5 is the best, and a 1 is the worst. Your champion customers score 5-5-5: they bought recently, buy frequently, and spend the most. Customers scoring 1-1-1 are lapsed, infrequent, and low-spending — your at-risk group.",
+  "The RFM workflow follows four steps. First, collect transaction data: customer IDs, purchase dates, and revenue amounts. Second, build an RFM table with one aggregated row per customer. Third, divide each dimension into five equal quintiles and assign a score from 1 to 5. Fourth, group customers by their combined score into named, actionable segments.",
+  "The five-by-five segment map plots Recency on the vertical axis against Frequency on the horizontal. This gives you 25 distinct customer groups. Champions sit in the top-right corner — high recency, high frequency. At-risk customers used to buy often but haven't recently. Lost or inactive customers sit in the bottom-left with low scores on both axes.",
+  "Hurdle rates measure the percentage of your customers who clear a defined threshold for each RFM dimension. In this example: 30 percent bought within the last 90 days, 20 percent made at least 3 purchases per year, and 15 percent spent over 500 dollars. If hurdle rates are rising over time, your business is healthy. If they're falling, your best customers may be defecting — time to act.",
+  "Five key takeaways. First: segmentation moves you from mass marketing to personalised outreach. Second: RFM scores customers on recency, frequency, and monetary value. Third: best customers score 5-5-5 and worst score 1-1-1. Fourth: hurdle rates provide an early-warning health check for your business. And fifth: next up is Cluster Analysis — where machine learning automatically discovers hidden customer groups with no predefined labels."
+];
+
+const synth   = window.speechSynthesis;
+let audioOn   = false;
+let voices    = [];
+
+function loadVoices(){ voices = synth ? synth.getVoices() : []; }
+if(synth && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
+loadVoices();
+
+function getBestVoice(){
+  // Prefer natural-sounding English voices
+  const preferred = ['Samantha','Karen','Victoria','Serena','Moira','Fiona','Tessa','Zira','Helena','Susan','Google UK English Female','Microsoft Zira','Microsoft Susan'];
+  for(const name of preferred){
+    const v = voices.find(v => v.name.includes(name));
+    if(v) return v;
+  }
+  return voices.find(v => /en-US|en-GB|en-AU/i.test(v.lang))
+      || voices.find(v => v.lang.startsWith('en'))
+      || (voices.length ? voices[0] : null);
+}
+
+// ── Chrome TTS keep-alive + watchdog ──
+let ttsKeepAlive = null, ttsWatchdog = null, ttsActive = false;
+
+function startKeepAlive(){
+  clearInterval(ttsKeepAlive);
+  // Pause+resume every 8s — prevents Chrome's silent kill at ~14s
+  ttsKeepAlive = setInterval(()=>{
+    if(!synth) return;
+    if(synth.paused)          synth.resume();
+    else if(synth.speaking)  { synth.pause(); synth.resume(); }
+  }, 8000);
+}
+function stopKeepAlive(){
+  clearInterval(ttsKeepAlive); ttsKeepAlive = null;
+  clearTimeout(ttsWatchdog);   ttsWatchdog  = null;
+  ttsActive = false;
+}
+
+// Split narration into short chunks (max 20 words) -- Chrome TTS dies on long utterances
+function splitChunks(text){
+  const SEP = ""; // BEL char safe separator
+  // Step 1: break at sentence endings
+  const sents = text.replace(/([.!?])\s+/g, "$1" + SEP)
+                    .split(SEP).map(s => s.trim()).filter(s => s);
+  const out = [];
+  for (const sent of sents) {
+    if (sent.split(" ").length <= 20) {
+      out.push(sent);
+    } else {
+      const parts = sent.replace(/([,;:])\s+/g, "$1" + SEP)
+                        .split(SEP).map(p => p.trim()).filter(p => p);
+      for (const part of parts) {
+        const words = part.split(" ");
+        if (words.length <= 20) {
+          out.push(part);
+        } else {
+          for (let i = 0; i < words.length; i += 16)
+            out.push(words.slice(i, i + 16).join(" "));
+        }
+      }
+    }
+  }
+  return out.filter(s => s.length > 1);
+}
+
+function speakSlide(idx){
+  if(!audioOn || !synth) return;
+  synth.cancel();
+  stopKeepAlive();
+
+  const chunks = splitChunks(NARRATION[idx]);
+  const btn    = document.getElementById('btnAudio');
+  const voice  = getBestVoice();
+  let   cidx   = 0;
+  ttsActive = true;
+
+  btn.classList.add('speaking');
+  startKeepAlive();
+
+  function speakNext(){
+    if(!audioOn || !ttsActive || cidx >= chunks.length){
+      btn.classList.remove('speaking');
+      stopKeepAlive();
+      return;
+    }
+    const chunk = chunks[cidx];
+    const utt   = new SpeechSynthesisUtterance(chunk);
+    if(voice) utt.voice = voice;
+    utt.rate   = 0.90;
+    utt.pitch  = 1.05;
+    utt.volume = 1.0;
+
+    // Watchdog: if onend never fires (Chrome silent kill), force-advance after timeout
+    clearTimeout(ttsWatchdog);
+    const wordCount  = chunk.split(' ').length;
+    const expectedMs = Math.max(2500, (wordCount / 2.2) * 1000 / 0.9); // words/min ÷ rate
+    ttsWatchdog = setTimeout(()=>{
+      if(ttsActive && audioOn){ cidx++; speakNext(); }
+    }, expectedMs + 2500);
+
+    utt.onend  = ()=>{ clearTimeout(ttsWatchdog); cidx++; speakNext(); };
+    utt.onerror= ()=>{ clearTimeout(ttsWatchdog); btn.classList.remove('speaking'); stopKeepAlive(); };
+    synth.speak(utt);
+  }
+  speakNext();
+}
+
+const btnAudio = document.getElementById('btnAudio');
+btnAudio.onclick = function(){
+  audioOn = !audioOn;
+  btnAudio.textContent = audioOn ? '🔊' : '🔇';
+  if(audioOn){
+    // Reload voices in case they weren't ready yet
+    loadVoices();
+    speakSlide(cur);
+  } else {
+    synth.cancel();
+    stopKeepAlive();
+    btnAudio.classList.remove('speaking');
+  }
+};
+
+// ── Particles (slide 1) ──
+(function buildParticles(){
+  const c=document.getElementById('pts');
+  for(let i=0;i<28;i++){
+    const p=document.createElement('div');
+    p.className='p';
+    const sz=Math.random()*6+3;
+    const hue=Math.random()>.5?'46,134,193':'240,180,41';
+    p.style.cssText=`
+      left:${Math.random()*100}%;
+      width:${sz}px;height:${sz}px;
+      background:rgba(${hue},.6);
+      animation-duration:${8+Math.random()*12}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    c.appendChild(p);
+  }
+})();
+
+// ── Segment grid (slide 5) ──
+(function buildGrid(){
+  const g=document.getElementById('segGrid');
+  // grid[row][col]: row 0 = top (R=5), col 0 = left (F=1)
+  const labels=[
+    ['Loyal','Champion','Champion','Champion','Champion'],
+    ['Promising','Loyal','Loyal','Champion','Champion'],
+    ['Promising','Promising','Neutral','Loyal','Loyal'],
+    ['Lost','At Risk','At Risk','Neutral','Promising'],
+    ['Lost','Lost','At Risk','At Risk','Neutral']
+  ];
+  const zones=[
+    ['loyal','champ','champ','champ','champ'],
+    ['promis','loyal','loyal','champ','champ'],
+    ['promis','promis','lost','loyal','loyal'],
+    ['lost','atrisk','atrisk','lost','promis'],
+    ['lost','lost','atrisk','atrisk','lost']
+  ];
+  for(let r=0;r<5;r++){
+    for(let c=0;c<5;c++){
+      const cell=document.createElement('div');
+      cell.className=`gc ${zones[r][c]}`;
+      cell.textContent=labels[r][c];
+      g.appendChild(cell);
+    }
+  }
+})();
+
+// ── Animate hurdle bars ──
+function triggerBars(){
+  setTimeout(()=>{
+    document.getElementById('br').style.height='30%';
+    document.getElementById('bf').style.height='20%';
+    document.getElementById('bm').style.height='15%';
+  },600);
+}
+// Reset bars when leaving slide 6
+const origGoto=goto;
+</script>
+</body>
+</html>
