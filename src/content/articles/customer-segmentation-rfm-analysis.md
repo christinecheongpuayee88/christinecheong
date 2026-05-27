@@ -3,7 +3,6 @@ title: "Customer Segmentation: RFM Analysis"
 description: "A step-by-step visual guide to RFM Analysis — the framework that scores every customer on Recency, Frequency, and Monetary value so you know exactly who to focus on."
 date: 2026-05-27
 draft: false
-password: "3912b8eb4f96c22c9157a0757f2e3b10b6c9ab26c24bf6e1a8363a213b4a7950"
 ---
 
 Every business has customers — but not all customers are equal. Some buy frequently, spend generously, and came back just last week. Others placed one order two years ago and have never returned. Treating both the same way is one of the most common (and costly) mistakes in marketing.

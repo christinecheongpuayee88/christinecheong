@@ -12,7 +12,6 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
-const pwHash = post.data.password ?? null;
 
 function formatDate(d: Date) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -34,35 +33,13 @@ function formatDate(d: Date) {
 
   <hr class="hr" />
 
-  <!-- Password gate overlay — only rendered when article has a password field -->
-  {pwHash && (
-    <div class="pw-gate" id="pwGate">
-      <div class="pw-card">
-        <div class="pw-icon">🔒</div>
-        <h2 class="pw-title">Password Required</h2>
-        <p class="pw-desc">This content is restricted. Please enter the access password to continue.</p>
-        <div class="pw-field-wrap">
-          <input
-            type="password"
-            id="pwInput"
-            class="pw-input"
-            placeholder="Enter password"
-            autocomplete="off"
-          />
-          <button class="pw-btn" id="pwBtn">Unlock</button>
-        </div>
-        <p class="pw-error" id="pwError"></p>
-      </div>
-    </div>
-  )}
-
-  <article class="section" id="articleBody" style={pwHash ? "display:none" : ""}>
+  <article class="section" id="articleBody">
     <div class="wrap--prose article-body">
       <Content />
     </div>
   </article>
 
-  <div class="article-footer" id="articleFooter" style={pwHash ? "display:none" : ""}>
+  <div class="article-footer" id="articleFooter">
     <div class="wrap--prose">
       <a href="/articles" class="btn btn--ghost">&larr; Back to Articles</a>
       <a href="/contact" class="btn btn--primary">Get In Touch</a>
@@ -71,103 +48,7 @@ function formatDate(d: Date) {
 
 </Base>
 
-{pwHash && (
-  <script define:vars={{ pwHash }}>
-    const STORAGE_KEY = 'pw_' + location.pathname;
-
-    async function sha256(str) {
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-    }
-
-    function unlock() {
-      document.getElementById('pwGate').style.display = 'none';
-      document.getElementById('articleBody').style.display = '';
-      document.getElementById('articleFooter').style.display = '';
-      sessionStorage.setItem(STORAGE_KEY, '1');
-    }
-
-    // Auto-unlock if already verified this session
-    if (sessionStorage.getItem(STORAGE_KEY) === '1') { unlock(); }
-
-    document.getElementById('pwBtn').addEventListener('click', async () => {
-      const val = document.getElementById('pwInput').value.trim();
-      const hash = await sha256(val);
-      if (hash === pwHash) {
-        unlock();
-      } else {
-        const err = document.getElementById('pwError');
-        err.textContent = 'Incorrect password. Please try again.';
-        document.getElementById('pwInput').value = '';
-        document.getElementById('pwInput').focus();
-        setTimeout(() => { err.textContent = ''; }, 3000);
-      }
-    });
-
-    document.getElementById('pwInput').addEventListener('keydown', e => {
-      if (e.key === 'Enter') document.getElementById('pwBtn').click();
-    });
-  </script>
-)}
-
 <style>
-  /* ── Password gate ── */
-  .pw-gate {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 55vh;
-    padding: var(--sp-8) var(--sp-5);
-    background: var(--bg);
-  }
-  .pw-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: var(--sp-8) var(--sp-8);
-    max-width: 420px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 4px 32px rgba(0,0,0,.07);
-  }
-  .pw-icon { font-size: 40px; margin-bottom: var(--sp-4); }
-  .pw-title { font-size: 22px; font-weight: 700; margin-bottom: var(--sp-3); letter-spacing: -.02em; }
-  .pw-desc  { font-size: 15px; color: var(--text-2); line-height: 1.6; margin-bottom: var(--sp-6); }
-  .pw-field-wrap { display: flex; gap: var(--sp-2); }
-  .pw-input {
-    flex: 1;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 15px;
-    font-family: inherit;
-    background: var(--bg);
-    color: var(--text);
-    outline: none;
-    transition: border-color .2s;
-  }
-  .pw-input:focus { border-color: var(--accent); }
-  .pw-btn {
-    padding: 10px 20px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: opacity .2s;
-    white-space: nowrap;
-  }
-  .pw-btn:hover { opacity: .85; }
-  .pw-error {
-    margin-top: var(--sp-3);
-    font-size: 13px;
-    color: #e03e3e;
-    min-height: 18px;
-  }
-
   /* ── Article header ── */
   .article-header {
     padding: var(--sp-10) 0 var(--sp-8);
