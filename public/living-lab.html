@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -880,37 +880,37 @@
     .proj-card:hover::after { border-color: var(--navy); }
 
     /* ============================================================
-       SUNTORY PROBLEM CATEGORY CARDS
+       FEATURED PARTNER PROBLEM CATEGORY CARDS
        ============================================================ */
-    .suntory-grid {
+    .partner-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 3px;
     }
 
-    .suntory-card {
+    .partner-card {
       background: var(--surface);
       position: relative;
       overflow: hidden;
       transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-spring);
     }
-    .suntory-card:hover {
+    .partner-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 20px 56px rgba(0,30,76,0.11);
       z-index: 1;
     }
 
-    .suntory-card-stripe {
+    .partner-card-stripe {
       height: 5px;
       width: 100%;
     }
-    .suntory-card--service .suntory-card-stripe { background: var(--orange); }
-    .suntory-card--product .suntory-card-stripe { background: var(--blue); }
-    .suntory-card--process .suntory-card-stripe { background: var(--teal); }
+    .partner-card--service .partner-card-stripe { background: var(--orange); }
+    .partner-card--product .partner-card-stripe { background: var(--blue); }
+    .partner-card--process .partner-card-stripe { background: var(--teal); }
 
-    .suntory-card-inner { padding: 40px 36px 44px; }
+    .partner-card-inner { padding: 40px 36px 44px; }
 
-    .suntory-card-icon {
+    .partner-card-icon {
       width: 52px;
       height: 52px;
       border-radius: 12px;
@@ -920,11 +920,11 @@
       font-size: 26px;
       margin-bottom: 18px;
     }
-    .suntory-card--service .suntory-card-icon { background: var(--orange-light); }
-    .suntory-card--product .suntory-card-icon { background: var(--blue-light); }
-    .suntory-card--process .suntory-card-icon { background: var(--teal-light); }
+    .partner-card--service .partner-card-icon { background: var(--orange-light); }
+    .partner-card--product .partner-card-icon { background: var(--blue-light); }
+    .partner-card--process .partner-card-icon { background: var(--teal-light); }
 
-    .suntory-card-badge {
+    .partner-card-badge {
       font-size: 10px;
       font-weight: 600;
       letter-spacing: 0.22em;
@@ -934,11 +934,11 @@
       margin-bottom: 14px;
       display: inline-block;
     }
-    .suntory-card--service .suntory-card-badge { background: var(--orange-light); color: var(--orange); }
-    .suntory-card--product .suntory-card-badge { background: var(--blue-light);   color: var(--blue); }
-    .suntory-card--process .suntory-card-badge { background: var(--teal-light);   color: var(--teal); }
+    .partner-card--service .partner-card-badge { background: var(--orange-light); color: var(--orange); }
+    .partner-card--product .partner-card-badge { background: var(--blue-light);   color: var(--blue); }
+    .partner-card--process .partner-card-badge { background: var(--teal-light);   color: var(--teal); }
 
-    .suntory-card-title {
+    .partner-card-title {
       font-family: var(--font-display);
       font-size: clamp(17px, 1.8vw, 21px);
       font-weight: 700;
@@ -947,7 +947,7 @@
       margin-bottom: 12px;
     }
 
-    .suntory-card-desc {
+    .partner-card-desc {
       font-size: 13px;
       font-weight: 300;
       color: var(--text-muted);
@@ -957,7 +957,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .suntory-problem-list {
+    .partner-problem-list {
       list-style: none;
       display: flex;
       flex-direction: column;
@@ -965,30 +965,30 @@
       margin-bottom: 26px;
     }
 
-    .suntory-problem-item {
+    .partner-problem-item {
       display: flex;
       gap: 11px;
       align-items: flex-start;
     }
 
-    .suntory-problem-dot {
+    .partner-problem-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
       flex-shrink: 0;
       margin-top: 5px;
     }
-    .suntory-card--service .suntory-problem-dot { background: var(--orange); }
-    .suntory-card--product .suntory-problem-dot { background: var(--blue); }
-    .suntory-card--process .suntory-problem-dot { background: var(--teal); }
+    .partner-card--service .partner-problem-dot { background: var(--orange); }
+    .partner-card--product .partner-problem-dot { background: var(--blue); }
+    .partner-card--process .partner-problem-dot { background: var(--teal); }
 
-    .suntory-problem-text {
+    .partner-problem-text {
       font-size: 13px;
       line-height: 1.52;
       color: var(--text);
     }
-    .suntory-problem-text strong { font-weight: 600; }
-    .suntory-problem-sub {
+    .partner-problem-text strong { font-weight: 600; }
+    .partner-problem-sub {
       font-size: 11px;
       font-weight: 300;
       color: var(--text-muted);
@@ -996,18 +996,18 @@
       display: block;
     }
 
-    .suntory-card-count {
+    .partner-card-count {
       font-family: var(--font-display);
       font-size: 36px;
       font-weight: 700;
       line-height: 1;
       margin-bottom: 4px;
     }
-    .suntory-card--service .suntory-card-count { color: var(--orange); }
-    .suntory-card--product .suntory-card-count { color: var(--blue); }
-    .suntory-card--process .suntory-card-count { color: var(--teal); }
+    .partner-card--service .partner-card-count { color: var(--orange); }
+    .partner-card--product .partner-card-count { color: var(--blue); }
+    .partner-card--process .partner-card-count { color: var(--teal); }
 
-    .suntory-card-interns {
+    .partner-card-interns {
       font-size: 11px;
       font-weight: 300;
       color: var(--text-muted);
@@ -1015,10 +1015,10 @@
       border-top: 1px solid var(--border);
       line-height: 1.6;
     }
-    .suntory-card-interns strong { font-weight: 600; color: var(--text); }
+    .partner-card-interns strong { font-weight: 600; color: var(--text); }
 
     @media (max-width: 900px) {
-      .suntory-grid { grid-template-columns: 1fr; }
+      .partner-grid { grid-template-columns: 1fr; }
     }
 
     /* ============================================================
@@ -1893,169 +1893,169 @@
 
       <div class="projects-header">
         <div>
-          <p class="label reveal">Suntory &times; NUS-ISS</p>
+          <p class="label reveal">Featured Project &times; NUS-ISS</p>
           <h2 class="section-h2 reveal d1" id="proj-h">Analytics across <em>Service, Product &amp;&nbsp;Process</em></h2>
         </div>
-        <p class="section-lead reveal d2">Three major problem domains identified in partnership with Suntory Beverage &amp; Food Asia Pacific — each addressed through applied analytics, predictive modelling, and data-driven strategy.</p>
+        <p class="section-lead reveal d2">Three major problem domains identified in partnership with a leading FMCG enterprise in Asia Pacific — each addressed through applied analytics, predictive modelling, and data-driven strategy.</p>
       </div>
 
-      <div class="suntory-grid">
+      <div class="partner-grid">
 
         <!-- SERVICE ANALYTICS -->
-        <article class="suntory-card suntory-card--service reveal">
-          <div class="suntory-card-stripe"></div>
-          <div class="suntory-card-inner">
-            <div class="suntory-card-icon" aria-hidden="true">🙋</div>
-            <span class="suntory-card-badge">Service Analytics</span>
-            <h3 class="suntory-card-title">Customer &amp; Stakeholder Engagement</h3>
-            <p class="suntory-card-desc">Analytics that directly serve consumers, marketing teams, and business stakeholders — delivering value through data-driven touchpoints across campaigns and CRM.</p>
-            <ul class="suntory-problem-list" aria-label="Service analytics problems">
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+        <article class="partner-card partner-card--service reveal">
+          <div class="partner-card-stripe"></div>
+          <div class="partner-card-inner">
+            <div class="partner-card-icon" aria-hidden="true">🙋</div>
+            <span class="partner-card-badge">Service Analytics</span>
+            <h3 class="partner-card-title">Customer &amp; Stakeholder Engagement</h3>
+            <p class="partner-card-desc">Analytics that directly serve consumers, marketing teams, and business stakeholders — delivering value through data-driven touchpoints across campaigns and CRM.</p>
+            <ul class="partner-problem-list" aria-label="Service analytics problems">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Consumer Needs Assessment</strong>
-                  <span class="suntory-problem-sub">Mapping AI productivity opportunities for employees across APAC markets</span>
+                  <span class="partner-problem-sub">Mapping AI productivity opportunities for employees across APAC markets</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Business Problem Definition</strong>
-                  <span class="suntory-problem-sub">Translating RGM and supply chain challenges into analytics use cases with data PMs</span>
+                  <span class="partner-problem-sub">Translating RGM and supply chain challenges into analytics use cases with data PMs</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Digital Campaign Activation</strong>
-                  <span class="suntory-problem-sub">Designing and executing consumer acquisition funnels across paid and owned channels</span>
+                  <span class="partner-problem-sub">Designing and executing consumer acquisition funnels across paid and owned channels</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>CRM Planning &amp; Customer Engagement</strong>
-                  <span class="suntory-problem-sub">Supporting CRM execution with data accuracy, segmentation, and campaign readiness</span>
+                  <span class="partner-problem-sub">Supporting CRM execution with data accuracy, segmentation, and campaign readiness</span>
                 </span>
               </li>
             </ul>
-            <div class="suntory-card-interns">
+            <div class="partner-card-interns">
               <strong>Interns:</strong> Yang Yaming &nbsp;·&nbsp; Nicole Khoo &nbsp;·&nbsp; Jaikishen S.N. &nbsp;·&nbsp; Zhao Xiangkun
             </div>
           </div>
         </article>
 
         <!-- PRODUCT ANALYTICS -->
-        <article class="suntory-card suntory-card--product reveal d1">
-          <div class="suntory-card-stripe"></div>
-          <div class="suntory-card-inner">
-            <div class="suntory-card-icon" aria-hidden="true">📦</div>
-            <span class="suntory-card-badge">Product Analytics</span>
-            <h3 class="suntory-card-title">Predictive Models &amp; Data Products</h3>
-            <p class="suntory-card-desc">Building tangible analytical artefacts — predictive models, dashboards, and data products that generate actionable intelligence for Suntory's marketing, CRM, and operations teams.</p>
-            <ul class="suntory-problem-list" aria-label="Product analytics problems">
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+        <article class="partner-card partner-card--product reveal d1">
+          <div class="partner-card-stripe"></div>
+          <div class="partner-card-inner">
+            <div class="partner-card-icon" aria-hidden="true">📦</div>
+            <span class="partner-card-badge">Product Analytics</span>
+            <h3 class="partner-card-title">Predictive Models &amp; Data Products</h3>
+            <p class="partner-card-desc">Building tangible analytical artefacts — predictive models, dashboards, and data products that generate actionable intelligence for the enterprise partner's marketing, CRM, and operations teams.</p>
+            <ul class="partner-problem-list" aria-label="Product analytics problems">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Propensity &amp; Conversion Modelling</strong>
-                  <span class="suntory-problem-sub">Predict user conversion likelihood across channels; enable lookalike targeting</span>
+                  <span class="partner-problem-sub">Predict user conversion likelihood across channels; enable lookalike targeting</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Customer Churn Prediction Model</strong>
-                  <span class="suntory-problem-sub">Identify at-risk consumers to trigger CRM retention interventions</span>
+                  <span class="partner-problem-sub">Identify at-risk consumers to trigger CRM retention interventions</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Dormant Consumer Reactivation Model</strong>
-                  <span class="suntory-problem-sub">Score inactive customers for prioritised CRM messaging allocation</span>
+                  <span class="partner-problem-sub">Score inactive customers for prioritised CRM messaging allocation</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Conversion &amp; Revenue Forecasting</strong>
-                  <span class="suntory-problem-sub">Forecast campaign CVR and revenue outcomes to guide budget planning</span>
+                  <span class="partner-problem-sub">Forecast campaign CVR and revenue outcomes to guide budget planning</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Power BI Campaign Dashboards</strong>
-                  <span class="suntory-problem-sub">Real-time performance tracking and insight reporting for stakeholders</span>
+                  <span class="partner-problem-sub">Real-time performance tracking and insight reporting for stakeholders</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>RFM &amp; Demand Forecasting Models</strong>
-                  <span class="suntory-problem-sub">Time series and behavioural segmentation for supply chain and customer analytics</span>
+                  <span class="partner-problem-sub">Time series and behavioural segmentation for supply chain and customer analytics</span>
                 </span>
               </li>
             </ul>
-            <div class="suntory-card-interns">
+            <div class="partner-card-interns">
               <strong>Interns:</strong> Jin Yifan &nbsp;·&nbsp; Nicole Khoo &nbsp;·&nbsp; Jaikishen S.N. &nbsp;·&nbsp; Zhao Xiangkun
             </div>
           </div>
         </article>
 
         <!-- PROCESS ANALYTICS -->
-        <article class="suntory-card suntory-card--process reveal d2">
-          <div class="suntory-card-stripe"></div>
-          <div class="suntory-card-inner">
-            <div class="suntory-card-icon" aria-hidden="true">⚙️</div>
-            <span class="suntory-card-badge">Process Analytics</span>
-            <h3 class="suntory-card-title">Operations &amp; Workflow Optimisation</h3>
-            <p class="suntory-card-desc">Using analytics to streamline internal marketing, supply chain, and technology processes — improving efficiency, quality, and scalability across Suntory's APAC operations.</p>
-            <ul class="suntory-problem-list" aria-label="Process analytics problems">
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+        <article class="partner-card partner-card--process reveal d2">
+          <div class="partner-card-stripe"></div>
+          <div class="partner-card-inner">
+            <div class="partner-card-icon" aria-hidden="true">⚙️</div>
+            <span class="partner-card-badge">Process Analytics</span>
+            <h3 class="partner-card-title">Operations &amp; Workflow Optimisation</h3>
+            <p class="partner-card-desc">Using analytics to streamline internal marketing, supply chain, and technology processes — improving efficiency, quality, and scalability across APAC operations.</p>
+            <ul class="partner-problem-list" aria-label="Process analytics problems">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Revenue Growth Management (RGM)</strong>
-                  <span class="suntory-problem-sub">Promo effectiveness modelling and pricing elasticity analysis</span>
+                  <span class="partner-problem-sub">Promo effectiveness modelling and pricing elasticity analysis</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Supply Chain Optimisation</strong>
-                  <span class="suntory-problem-sub">Demand forecasting and inventory management using ML algorithms</span>
+                  <span class="partner-problem-sub">Demand forecasting and inventory management using ML algorithms</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Martech Operations &amp; Integration</strong>
-                  <span class="suntory-problem-sub">Operating CRM, marketing automation, CMS and analytics platforms</span>
+                  <span class="partner-problem-sub">Operating CRM, marketing automation, CMS and analytics platforms</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>AI Adoption &amp; Change Management</strong>
-                  <span class="suntory-problem-sub">Driving GenAI tool adoption through structured communication and rollout plans</span>
+                  <span class="partner-problem-sub">Driving GenAI tool adoption through structured communication and rollout plans</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>Attribution &amp; Media Performance</strong>
-                  <span class="suntory-problem-sub">Channel attribution analysis to optimise media spend ROI across campaigns</span>
+                  <span class="partner-problem-sub">Channel attribution analysis to optimise media spend ROI across campaigns</span>
                 </span>
               </li>
-              <li class="suntory-problem-item">
-                <span class="suntory-problem-dot" aria-hidden="true"></span>
-                <span class="suntory-problem-text">
+              <li class="partner-problem-item">
+                <span class="partner-problem-dot" aria-hidden="true"></span>
+                <span class="partner-problem-text">
                   <strong>UAT Coordination &amp; QA</strong>
-                  <span class="suntory-problem-sub">Test case development and resolution tracking for AI product quality assurance</span>
+                  <span class="partner-problem-sub">Test case development and resolution tracking for AI product quality assurance</span>
                 </span>
               </li>
             </ul>
-            <div class="suntory-card-interns">
+            <div class="partner-card-interns">
               <strong>Interns:</strong> Yang Yaming &nbsp;·&nbsp; Nicole Khoo &nbsp;·&nbsp; Jaikishen S.N. &nbsp;·&nbsp; Zhao Xiangkun
             </div>
           </div>
@@ -2455,3 +2455,4 @@
   </script>
 </body>
 </html>
+
