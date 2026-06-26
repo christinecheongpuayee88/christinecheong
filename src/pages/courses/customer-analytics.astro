@@ -77,6 +77,21 @@ import Base from '../../layouts/Base.astro';
             </div>
 
             <div class="info-card info-card--wide">
+              <h3>Segmentation Variables</h3>
+              <table class="mini-table">
+                <thead><tr><th>Type</th><th>Example Variables</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Demographic</strong></td><td>Gender, age, marital status, occupation, income</td></tr>
+                  <tr><td><strong>Geographic</strong></td><td>City, region, country</td></tr>
+                  <tr><td><strong>Psychographic</strong></td><td>Interests, values, character &amp; personality traits</td></tr>
+                  <tr><td><strong>Behavioural</strong></td><td>Purchases, product preference, frequency, amount spent</td></tr>
+                  <tr><td><strong>Technographic</strong></td><td>Device type, browser, software, websites</td></tr>
+                  <tr><td><strong>Needs-based</strong></td><td>Financial (discounts), emotional (service feedback), physical</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="info-card info-card--wide">
               <h3>Why segment?</h3>
               <ul class="benefit-list">
                 <li><strong>Targeted campaigns</strong> &mdash; Personalised messaging to each segment&rsquo;s interests</li>
@@ -212,7 +227,29 @@ import Base from '../../layouts/Base.astro';
               </div>
               <div class="info-card">
                 <h3>11-Segment Strategy</h3>
-                <p>A popular industry approach that maps RFM scores into named personas: Champions, Loyal Customers, Potential Loyalists, At Risk, Can&rsquo;t Lose Them, Hibernating, Lost, and more. Each gets a tailored engagement strategy.</p>
+                <p>A popular industry approach that maps RFM scores into named personas. Each gets a tailored engagement strategy.</p>
+              </div>
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>The 11 RFM Segments &amp; Engagement Strategies</h3>
+              <div class="table-scroll">
+                <table class="mini-table">
+                  <thead><tr><th>Segment</th><th>R</th><th>F</th><th>M</th><th>Action</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Champions</strong></td><td>5</td><td>4&ndash;5</td><td>4&ndash;5</td><td>Reward them; early access to new launches</td></tr>
+                    <tr><td><strong>Loyal Customers</strong></td><td>3&ndash;4</td><td>4&ndash;5</td><td>4&ndash;5</td><td>Suggest higher-value products; ask for reviews</td></tr>
+                    <tr><td><strong>Potential Loyalists</strong></td><td>4&ndash;5</td><td>2&ndash;3</td><td>2&ndash;3</td><td>Loyalty programmes; cross-category recommendations</td></tr>
+                    <tr><td><strong>New Customers</strong></td><td>4&ndash;5</td><td>1&ndash;2</td><td>1&ndash;2</td><td>Smooth onboarding; post-sale support</td></tr>
+                    <tr><td><strong>Promising</strong></td><td>3&ndash;4</td><td>1&ndash;2</td><td>1&ndash;2</td><td>Brand awareness; free trials</td></tr>
+                    <tr><td><strong>Need Attention</strong></td><td>3</td><td>2&ndash;3</td><td>2&ndash;3</td><td>Limited-period offers; personalised recommendations</td></tr>
+                    <tr><td><strong>About to Sleep</strong></td><td>2&ndash;3</td><td>1&ndash;3</td><td>1&ndash;3</td><td>Reactivation offers; popular products</td></tr>
+                    <tr><td><strong>At Risk</strong></td><td>1&ndash;2</td><td>3&ndash;4</td><td>3&ndash;4</td><td>Best deals; highest-rated product recommendations</td></tr>
+                    <tr><td><strong>Can&rsquo;t Lose Them</strong></td><td>&lt;2</td><td>4&ndash;5</td><td>4&ndash;5</td><td>Listen to feedback; win them back with new products</td></tr>
+                    <tr><td><strong>Hibernating</strong></td><td>1&ndash;2</td><td>1&ndash;2</td><td>1&ndash;2</td><td>Cross-category offers; personalised outreach</td></tr>
+                    <tr><td><strong>Lost</strong></td><td>1</td><td>1</td><td>1</td><td>Periodic brand awareness campaigns</td></tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
@@ -245,6 +282,16 @@ import Base from '../../layouts/Base.astro';
                 <li><strong>Rates rising?</strong> &mdash; Business is healthy; customers respond positively</li>
                 <li><strong>Rates falling?</strong> &mdash; High-value customers are defecting; future value is declining</li>
                 <li><strong>One hurdle drops?</strong> &mdash; Pinpoints exactly which behaviour needs attention</li>
+              </ul>
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>RFM Across Industries</h3>
+              <ul class="benefit-list">
+                <li><strong>E-commerce</strong> &mdash; Personalised product recommendations based on purchase recency, frequency, and spend</li>
+                <li><strong>Travel &amp; Hospitality</strong> &mdash; Loyalty programme enhancement by segmenting booking behaviour</li>
+                <li><strong>Gaming</strong> &mdash; In-game purchase optimisation using login frequency and monetisation patterns</li>
+                <li><strong>Media &amp; Content</strong> &mdash; Subscription renewal and engagement strategy based on consumption behaviour</li>
               </ul>
             </div>
 
@@ -337,6 +384,18 @@ import Base from '../../layouts/Base.astro';
             <div class="callout">
               <strong>The clustering goal:</strong> Minimise intra-cluster distance (members are similar) while maximising inter-cluster distance (groups are distinct).
             </div>
+
+            <div class="info-card info-card--wide">
+              <h3>The Cluster Analysis Process</h3>
+              <ul class="benefit-list">
+                <li><strong>Select variables</strong> &mdash; Choose relevant features; reduce dimensions if too many correlated variables</li>
+                <li><strong>Define distance metric</strong> &mdash; Choose how to measure similarity between data points</li>
+                <li><strong>Apply clustering technique</strong> &mdash; Split observations into clearly different groups</li>
+                <li><strong>Determine number of clusters</strong> &mdash; Use technical and business criteria to find optimal K</li>
+                <li><strong>Profile each cluster</strong> &mdash; Create descriptions based on variable values within each cluster</li>
+                <li><strong>Validate</strong> &mdash; Confirm clusters are meaningful and actionable; iterate if needed</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -368,8 +427,17 @@ import Base from '../../layouts/Base.astro';
               </div>
               <div class="info-card">
                 <h3>Non-Numerical Data</h3>
-                <p><strong>Ordinal data</strong> (e.g., Poor → Excellent) uses index values. <strong>Nominal data</strong> (e.g., Lawyer, Doctor) uses exact match: same = 0, different = 1.</p>
+                <p><strong>Ordinal data</strong> (e.g., Likert scale: Strongly Disagree → Strongly Agree) can use index-based distances. <strong>Nominal data</strong> (e.g., gender, marital status) generally should not be used for clustering — use them later for profiling instead.</p>
               </div>
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>Other Distance Measures</h3>
+              <ul class="benefit-list">
+                <li><strong>Manhattan (City-block)</strong> &mdash; Sum of absolute differences; less sensitive to outliers than Euclidean</li>
+                <li><strong>Chebychev</strong> &mdash; Maximum difference across any single dimension</li>
+                <li><strong>Mahalanobis</strong> &mdash; Accounts for correlations between variables and differences in scale</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -767,6 +835,34 @@ import Base from '../../layouts/Base.astro';
     background: var(--accent);
   }
   .benefit-list li strong { color: var(--text); }
+
+  /* ── Tables ──────────────────────────────────────────── */
+  .table-scroll { overflow-x: auto; }
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: var(--sp-3);
+  }
+  .mini-table th {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-3);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .mini-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .mini-table td strong { color: var(--text); }
+  .mini-table tbody tr:hover { background: rgba(45,91,227,.03); }
 
   /* ── Callout ─────────────────────────────────────────── */
   .callout {
