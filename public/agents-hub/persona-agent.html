@@ -388,12 +388,7 @@
             <span class="toolbar-dot toolbar-dot--green"></span>
             <span class="toolbar-title">persona-agent v1.0</span>
           </div>
-          <div class="toolbar-right">
-            <div class="api-key-group">
-              <span class="api-key-label">API Key</span>
-              <input type="password" class="api-key-input" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false">
-            </div>
-          </div>
+          <div class="toolbar-right"></div>
         </div>
 
         <div class="workspace-body">
@@ -487,9 +482,6 @@ Example: &quot;I'm launching a plant-based protein snack aimed at busy professio
     const dataInput=document.getElementById('dataInput'), charCount=document.getElementById('charCount');
     dataInput.addEventListener('input',()=>{const l=dataInput.value.length;charCount.textContent=l.toLocaleString()+' character'+(l!==1?'s':'');});
 
-    const apiKeyInput=document.getElementById('apiKeyInput');
-    const sk=localStorage.getItem('pa_api_key'); if(sk) apiKeyInput.value=sk;
-    apiKeyInput.addEventListener('change',()=>localStorage.setItem('pa_api_key',apiKeyInput.value.trim()));
 
     // Mode selector
     let currentMode='persona';
@@ -581,14 +573,15 @@ Rules:
 - Make outputs actionable for product, insights, and marketing teams.
 - Keep personas meaningfully distinct when multiple are involved.`;
 
-    async function callClaude(apiKey, systemPrompt, userMessage) {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+    async function callClaude(systemPrompt, userMessage) {
+      const res = await fetch('/api/chat', {
         method:'POST',
-        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4096,system:systemPrompt,messages:[{role:'user',content:userMessage}]})
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({system:systemPrompt,message:userMessage})
       });
-      if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||'API returned '+res.status);}
-      const data=await res.json();return data.content[0].text;
+      const data=await res.json();
+      if(!res.ok) throw new Error(data.error||'API request failed');
+      return data.content[0].text;
     }
 
     function renderResults(parsed){
@@ -625,9 +618,8 @@ Rules:
     }
 
     analyzeBtn.addEventListener('click',async()=>{
-      const apiKey=apiKeyInput.value.trim(),inputText=dataInput.value.trim();
+      const inputText=dataInput.value.trim();
       hideError();
-      if(!apiKey){showError('API Key Required','Enter your Anthropic API key above. Stored locally, never sent anywhere except the Anthropic API.');return;}
       if(!inputText||inputText.length<30){showError('Input Too Short','Please provide at least 30 characters describing your scenario.');return;}
 
       outputEmpty.style.display='none';resultsContainer.classList.remove('active');resultsContainer.innerHTML='';
@@ -638,7 +630,7 @@ Rules:
         const t1=setTimeout(()=>{setStep('step-1','done');setStep('step-2','active');},2500);
         const t2=setTimeout(()=>{setStep('step-2','done');setStep('step-3','active');},5000);
         const modeInstruction=MODE_INSTRUCTIONS[currentMode]||MODE_INSTRUCTIONS.persona;
-        const result=await callClaude(apiKey,SYSTEM_PROMPT,modeInstruction+'\n\n---\n\nUser input:\n'+inputText);
+        const result=await callClaude(SYSTEM_PROMPT,modeInstruction+'\n\n---\n\nUser input:\n'+inputText);
         clearTimeout(t1);clearTimeout(t2);
         setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
         let parsed;
