@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consumer Persona Agent — NUS-ISS Living Lab</title>
+  <meta name="description" content="AI-powered consumer persona simulation, trend analysis, and concept testing — model realistic consumer reactions to pressure-test your ideas.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:           #F6F8FB;
+      --surface:      #FFFFFF;
+      --navy:         #001E4C;
+      --navy-mid:     #003080;
+      --blue:         #0055B3;
+      --blue-light:   #E8F0FB;
+      --orange:       #E05C20;
+      --orange-light: #FEF2EC;
+      --teal:         #0A7C6E;
+      --teal-light:   #E6F4F2;
+      --text:         #0D1B2A;
+      --text-muted:   #5C6778;
+      --border:       #DDE3EC;
+      --red:          #C0392B;
+      --red-light:    #FDEDEC;
+      --purple:       #5B3B9B;
+      --purple-light: #F0EBF8;
+      --amber:        #B7791F;
+      --amber-light:  #FEFCBF;
+      --green:        #16A34A;
+      --green-light:  #DCFCE7;
+
+      --sp-xl: 112px;
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 400; line-height: 1.65; overflow-x: hidden; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    h1,h2,h3,h4,.label { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* ── NAV ─────────────────────────────────────── */
+    .nav { position:fixed; inset:0 0 auto; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 56px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
+    .nav-brand { display:flex; flex-direction:column; gap:1px; }
+    .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
+    .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
+    .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
+    .nav-links a:hover { color:var(--navy); }
+    .nav-cta { font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; padding:10px 24px; border-radius:6px; background:var(--teal); color:#fff !important; transition:background 0.25s, transform 0.25s, box-shadow 0.25s; }
+    .nav-cta:hover { background:#065F56; transform:translateY(-1px); box-shadow:0 6px 20px rgba(10,124,110,0.38); }
+    .hamburger { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:4px; }
+    .hamburger span { display:block; width:24px; height:1.5px; background:var(--text); border-radius:2px; }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero { position:relative; padding:calc(var(--nav-h) + 80px) 56px 80px; background:var(--navy); overflow:hidden; }
+    .hero-geo { position:absolute; inset:0; pointer-events:none; }
+    .hero-geo::before { content:''; position:absolute; top:-200px; right:-100px; width:600px; height:600px; border-radius:50%; border:1px solid rgba(255,255,255,0.05); }
+    .hero-geo::after { content:''; position:absolute; bottom:-100px; left:30%; width:400px; height:400px; border-radius:50%; border:1px solid rgba(255,255,255,0.03); }
+    .hero-inner { max-width:1280px; margin:0 auto; position:relative; z-index:2; display:grid; grid-template-columns:1.2fr 1fr; gap:80px; align-items:center; }
+    .hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); margin-bottom:24px; }
+    .hero-eyebrow::before { content:''; width:28px; height:2px; background:var(--orange); }
+    .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:rgba(10,124,110,0.25); color:var(--teal); margin-bottom:20px; }
+    .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,64px); font-weight:700; line-height:1.02; letter-spacing:-0.025em; color:#fff; margin-bottom:22px; }
+    .hero-h1 em { font-style:italic; font-weight:300; color:rgba(255,255,255,0.55); }
+    .hero-h1 mark { background:none; color:var(--teal); }
+    .hero-sub { font-size:16px; font-weight:300; color:rgba(255,255,255,0.58); line-height:1.75; max-width:520px; margin-bottom:32px; }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:14px; }
+
+    .hero-visual { display:flex; flex-direction:column; gap:16px; }
+    .mode-preview { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:20px 24px; }
+    .mode-preview-label { font-size:10px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .mode-preview--persona .mode-preview-label { color:var(--teal); }
+    .mode-preview--trend .mode-preview-label { color:#60A5FA; }
+    .mode-preview--concept .mode-preview-label { color:var(--orange); }
+    .mode-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .mode-preview-item { font-size:13px; font-weight:300; color:rgba(255,255,255,0.6); line-height:1.6; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .mode-preview-item:last-child { border-bottom:none; }
+    .mode-preview-item strong { font-weight:500; color:rgba(255,255,255,0.85); }
+
+    /* ── BUTTONS ─────────────────────────────────── */
+    .btn { display:inline-flex; align-items:center; gap:8px; font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em; border-radius:6px; border:none; cursor:pointer; transition:background 0.25s, transform 0.25s, box-shadow 0.25s; }
+    .btn-teal { padding:16px 36px; background:var(--teal); color:#fff; }
+    .btn-teal:hover { background:#065F56; transform:translateY(-2px); box-shadow:0 12px 32px rgba(10,124,110,0.40); }
+    .btn-outline-white { padding:16px 36px; background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.38); }
+    .btn-outline-white:hover { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.7); }
+    .btn-arrow::after { content:'\2192'; font-size:15px; }
+
+    /* ── SECTIONS ────────────────────────────────── */
+    .section { padding:var(--sp-xl) 56px; }
+    .section-inner { max-width:1280px; margin:0 auto; }
+    .label { font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); margin-bottom:16px; }
+    .section-h2 { font-family:var(--font-display); font-size:clamp(28px,3.5vw,46px); font-weight:700; line-height:1.1; letter-spacing:-0.02em; color:var(--text); margin-bottom:18px; }
+    .section-h2 em { font-style:italic; font-weight:300; color:var(--text-muted); }
+    .section-lead { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.78; max-width:560px; }
+    .reveal { opacity:0; transform:translateY(28px); transition:opacity 0.8s var(--ease-spring), transform 0.8s var(--ease-spring); }
+    .reveal.in { opacity:1; transform:translateY(0); }
+    .d1 { transition-delay:0.10s; } .d2 { transition-delay:0.20s; } .d3 { transition-delay:0.30s; } .d4 { transition-delay:0.42s; }
+
+    /* ── MODES GRID ──────────────────────────────── */
+    .modes { background:var(--surface); border-bottom:1px solid var(--border); }
+    .modes-header { text-align:center; margin-bottom:64px; }
+    .modes-header .section-lead { margin:0 auto; text-align:center; }
+    .modes-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; }
+    .mode-card { background:var(--bg); padding:44px 32px; position:relative; overflow:hidden; transition:transform 0.35s var(--ease-spring), box-shadow 0.35s; }
+    .mode-card:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(0,30,76,0.1); z-index:1; }
+    .mode-card-stripe { position:absolute; top:0; left:0; right:0; height:4px; }
+    .mode-card--persona .mode-card-stripe { background:var(--teal); }
+    .mode-card--trend .mode-card-stripe { background:var(--blue); }
+    .mode-card--concept .mode-card-stripe { background:var(--orange); }
+    .mode-card--panel .mode-card-stripe { background:var(--purple); }
+    .mode-card--research .mode-card-stripe { background:var(--amber); }
+    .mode-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:20px; }
+    .mode-card--persona .mode-icon { background:var(--teal-light); }
+    .mode-card--trend .mode-icon { background:var(--blue-light); }
+    .mode-card--concept .mode-icon { background:var(--orange-light); }
+    .mode-card--panel .mode-icon { background:var(--purple-light); }
+    .mode-card--research .mode-icon { background:var(--amber-light); }
+    .mode-title { font-family:var(--font-display); font-size:20px; font-weight:700; color:var(--text); margin-bottom:10px; line-height:1.2; }
+    .mode-desc { font-size:13px; font-weight:300; color:var(--text-muted); line-height:1.72; margin-bottom:18px; }
+    .mode-outputs { list-style:none; display:flex; flex-direction:column; gap:6px; }
+    .mode-outputs li { font-size:12px; font-weight:400; color:var(--text-muted); display:flex; align-items:center; gap:8px; }
+    .mode-outputs li::before { content:''; width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+    .mode-card--persona .mode-outputs li::before { background:var(--teal); }
+    .mode-card--trend .mode-outputs li::before { background:var(--blue); }
+    .mode-card--concept .mode-outputs li::before { background:var(--orange); }
+    .mode-card--panel .mode-outputs li::before { background:var(--purple); }
+    .mode-card--research .mode-outputs li::before { background:var(--amber); }
+
+    /* ── AGENT INTERFACE ─────────────────────────── */
+    .agent-interface { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .agent-ui-header { text-align:center; margin-bottom:48px; }
+    .agent-ui-header .section-lead { margin:0 auto; text-align:center; }
+
+    .agent-workspace { background:var(--bg); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .workspace-toolbar { display:flex; align-items:center; justify-content:space-between; padding:16px 24px; background:var(--surface); border-bottom:1px solid var(--border); flex-wrap:wrap; gap:12px; }
+    .toolbar-left { display:flex; align-items:center; gap:12px; }
+    .toolbar-dot { width:10px; height:10px; border-radius:50%; }
+    .toolbar-dot--red { background:#EF4444; } .toolbar-dot--yellow { background:#F59E0B; } .toolbar-dot--green { background:#10B981; }
+    .toolbar-title { font-family:var(--font-mono); font-size:12px; font-weight:500; color:var(--text-muted); margin-left:8px; }
+    .toolbar-right { display:flex; align-items:center; gap:12px; }
+    .api-key-group { display:flex; align-items:center; gap:8px; }
+    .api-key-label { font-size:11px; font-weight:500; color:var(--text-muted); letter-spacing:0.06em; }
+    .api-key-input { font-family:var(--font-mono); font-size:12px; padding:8px 14px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); width:260px; outline:none; transition:border-color 0.25s; }
+    .api-key-input:focus { border-color:var(--blue); }
+    .api-key-input::placeholder { color:var(--text-muted); opacity:0.5; }
+
+    .workspace-body { display:grid; grid-template-columns:1fr 1fr; min-height:520px; }
+    .input-pane { padding:24px; border-right:1px solid var(--border); display:flex; flex-direction:column; }
+    .pane-label { font-size:10px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .pane-label-dot { width:6px; height:6px; border-radius:50%; background:var(--teal); }
+
+    .mode-selector { display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
+    .mode-btn { font-family:var(--font-body); font-size:11px; font-weight:600; padding:7px 14px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; transition:all 0.25s; letter-spacing:0.02em; }
+    .mode-btn:hover { border-color:var(--teal); color:var(--teal); }
+    .mode-btn.active { background:var(--teal); border-color:var(--teal); color:#fff; }
+
+    .data-input { flex:1; font-family:var(--font-body); font-size:14px; font-weight:300; color:var(--text); line-height:1.7; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:20px; resize:none; outline:none; transition:border-color 0.25s; }
+    .data-input:focus { border-color:var(--teal); }
+    .data-input::placeholder { color:var(--text-muted); opacity:0.5; }
+
+    .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:16px; }
+    .char-count { font-size:11px; font-weight:400; color:var(--text-muted); font-family:var(--font-mono); }
+    .analyze-btn { display:inline-flex; align-items:center; gap:10px; padding:14px 32px; background:var(--navy); color:#fff; font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em; border:none; border-radius:8px; cursor:pointer; transition:background 0.25s, transform 0.25s, box-shadow 0.25s; }
+    .analyze-btn:hover:not(:disabled) { background:#000F28; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,30,76,0.3); }
+    .analyze-btn:disabled { opacity:0.5; cursor:not-allowed; }
+    .analyze-btn .spinner { display:none; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
+    .analyze-btn.loading .spinner { display:block; }
+    .analyze-btn.loading .btn-text { display:none; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── OUTPUT ───────────────────────────────────── */
+    .output-pane { padding:24px; display:flex; flex-direction:column; overflow-y:auto; max-height:700px; }
+    .output-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; }
+    .output-empty-icon { font-size:48px; margin-bottom:18px; opacity:0.3; }
+    .output-empty-title { font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--text-muted); margin-bottom:8px; }
+    .output-empty-desc { font-size:13px; font-weight:300; color:var(--text-muted); opacity:0.7; }
+
+    .agent-progress { display:none; flex-direction:column; gap:8px; margin-bottom:24px; }
+    .agent-progress.active { display:flex; }
+    .progress-step { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:6px; background:var(--surface); border:1px solid var(--border); font-size:12px; font-weight:500; color:var(--text-muted); transition:all 0.3s; }
+    .progress-step.active { border-color:var(--teal); color:var(--teal); background:var(--teal-light); }
+    .progress-step.done { border-color:var(--teal); color:var(--teal); background:var(--teal-light); }
+    .progress-dot { width:8px; height:8px; border-radius:50%; background:var(--border); flex-shrink:0; transition:background 0.3s; }
+    .progress-step.active .progress-dot { background:var(--teal); animation:pulse 1.2s ease-in-out infinite; }
+    .progress-step.done .progress-dot { background:var(--teal); }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.7);} }
+
+    .results-container { display:none; flex-direction:column; gap:20px; }
+    .results-container.active { display:flex; }
+    .result-section { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .result-header { display:flex; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid var(--border); }
+    .result-header-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .result-header-title { font-size:13px; font-weight:600; letter-spacing:0.06em; }
+    .result-body { padding:16px 20px; }
+    .result-item { padding:12px 0; border-bottom:1px solid var(--border); font-size:13px; font-weight:300; color:var(--text-muted); line-height:1.65; }
+    .result-item:last-child { border-bottom:none; }
+    .result-item strong { font-weight:600; color:var(--text); }
+    .result-item-title { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
+
+    .error-box { display:none; background:var(--red-light); border:1px solid rgba(192,57,43,0.2); border-radius:8px; padding:16px 20px; margin-bottom:16px; }
+    .error-box.active { display:block; }
+    .error-title { font-size:13px; font-weight:600; color:var(--red); margin-bottom:4px; }
+    .error-detail { font-size:12px; font-weight:300; color:var(--red); opacity:0.8; }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    .footer { background:#000F28; color:#fff; padding:60px 56px 36px; }
+    .footer-inner { max-width:1280px; margin:0 auto; }
+    .footer-top { display:flex; align-items:center; justify-content:space-between; padding-bottom:32px; border-bottom:1px solid rgba(255,255,255,0.07); margin-bottom:24px; }
+    .footer-brand { font-family:var(--font-display); font-size:18px; font-weight:700; }
+    .footer-brand-sup { font-size:10px; font-weight:400; color:var(--orange); letter-spacing:0.12em; text-transform:uppercase; }
+    .footer-links { display:flex; gap:28px; list-style:none; }
+    .footer-links a { font-size:13px; font-weight:300; color:rgba(255,255,255,0.48); transition:color 0.25s; }
+    .footer-links a:hover { color:#fff; }
+    .footer-bottom { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:rgba(255,255,255,0.24); }
+
+    /* ── MOBILE DRAWER ───────────────────────────── */
+    .mobile-drawer { position:fixed; inset:0 0 0 auto; width:min(320px,88vw); background:var(--navy); z-index:300; display:flex; flex-direction:column; padding:32px 36px 48px; transform:translateX(100%); transition:transform 0.42s var(--ease-spring); overflow-y:auto; }
+    .mobile-drawer.open { transform:translateX(0); }
+    .drawer-overlay { position:fixed; inset:0; background:rgba(0,15,40,0.6); z-index:299; opacity:0; pointer-events:none; transition:opacity 0.35s var(--ease-out); backdrop-filter:blur(4px); }
+    .drawer-overlay.open { opacity:1; pointer-events:all; }
+    .drawer-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:52px; }
+    .drawer-logo { font-family:var(--font-display); font-size:17px; font-weight:700; color:#fff; }
+    .drawer-close { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.5); font-size:20px; line-height:1; padding:4px; transition:color 0.3s; }
+    .drawer-close:hover { color:#fff; }
+    .drawer-links { list-style:none; display:flex; flex-direction:column; }
+    .drawer-links a { display:block; font-family:var(--font-display); font-size:24px; font-weight:700; color:rgba(255,255,255,0.65); padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.07); transition:color 0.25s, padding-left 0.25s; }
+    .drawer-links a:hover { color:#fff; padding-left:6px; }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media(max-width:1100px) { .section,.hero,.footer { padding-left:36px; padding-right:36px; } .nav { padding:0 36px; } .hero-inner { gap:48px; } }
+    @media(max-width:900px) { .hero-inner { grid-template-columns:1fr; gap:48px; } .hero-visual { order:-1; } .modes-grid { grid-template-columns:1fr; } .workspace-body { grid-template-columns:1fr; } .input-pane { border-right:none; border-bottom:1px solid var(--border); } .workspace-toolbar { flex-direction:column; align-items:flex-start; } .api-key-input { width:100%; } .footer-top { flex-direction:column; gap:24px; align-items:flex-start; } }
+    @media(max-width:680px) { :root{--sp-xl:72px;} .section,.hero,.footer{padding-left:22px;padding-right:22px;} .nav{padding:0 22px;} .nav-links,.nav-cta{display:none;} .hamburger{display:flex;} .footer-links{flex-direction:column;gap:10px;} .footer-bottom{flex-direction:column;gap:12px;text-align:center;} }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; transition-delay:0ms!important; } .reveal{opacity:1!important;transform:none!important;} }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="./" class="nav-brand">
+      <span class="nav-brand-sup">NUS-ISS Living Lab</span>
+      <span class="nav-brand-name">Agents Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="./">All Agents</a></li>
+      <li><a href="#modes">Modes</a></li>
+      <li><a href="#agent">Try It</a></li>
+    </ul>
+    <a href="#agent" class="nav-cta">Launch&nbsp;Agent</a>
+    <button class="hamburger" aria-label="Open menu" id="hamburger" aria-expanded="false" aria-controls="mobileDrawer"><span></span><span></span><span></span></button>
+  </nav>
+
+  <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+  <div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-label="Navigation menu" aria-modal="true">
+    <div class="drawer-header">
+      <span class="drawer-logo">Persona Agent</span>
+      <button class="drawer-close" id="drawerClose" aria-label="Close menu">&#10005;</button>
+    </div>
+    <ul class="drawer-links">
+      <li><a href="./">Agents Hub</a></li>
+      <li><a href="#modes">Modes</a></li>
+      <li><a href="#agent">Try It</a></li>
+    </ul>
+  </div>
+
+  <!-- ── HERO ────────────────────────────────────── -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-geo" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div>
+        <p class="hero-eyebrow">NUS-ISS Living Lab</p>
+        <span class="hero-badge">Insight Agent</span>
+        <h1 class="hero-h1">Consumer<br><mark>Persona</mark>&nbsp;<em>Agent</em></h1>
+        <p class="hero-sub">Simulate realistic consumer reactions, synthesise trend insights, and pressure-test concepts through AI-powered persona modelling. Directional guidance for sharper strategy.</p>
+        <div class="hero-actions">
+          <a href="#agent" class="btn btn-teal btn-arrow">Launch Agent</a>
+          <a href="#modes" class="btn btn-outline-white">See Modes</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="mode-preview mode-preview--persona">
+          <div class="mode-preview-label"><span class="mode-dot" style="background:var(--teal)"></span>Persona Simulation</div>
+          <div class="mode-preview-item"><strong>Sarah, 34, working mum</strong> &mdash; "I love the idea but I'd need to see it works before switching from what I know"</div>
+        </div>
+        <div class="mode-preview mode-preview--trend">
+          <div class="mode-preview-label"><span class="mode-dot" style="background:#60A5FA"></span>Trend Synthesis</div>
+          <div class="mode-preview-item"><strong>Convenience paradox:</strong> consumers want simplicity but distrust anything that feels too automated</div>
+        </div>
+        <div class="mode-preview mode-preview--concept">
+          <div class="mode-preview-label"><span class="mode-dot" style="background:var(--orange)"></span>Concept Test</div>
+          <div class="mode-preview-item"><strong>Appeal: 7/10</strong> &mdash; strong on relevance, weak on distinctiveness vs. existing alternatives</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MODES ───────────────────────────────────── -->
+  <section class="section modes" id="modes" aria-labelledby="modes-h">
+    <div class="section-inner">
+      <div class="modes-header">
+        <p class="label reveal">Five Modes</p>
+        <h2 class="section-h2 reveal d1" id="modes-h">One agent, <em>five ways to use it</em></h2>
+        <p class="section-lead reveal d2">Each mode is tuned for a different stage of the insight and innovation process &mdash; from early trend scanning to concept validation.</p>
+      </div>
+      <div class="modes-grid">
+        <article class="mode-card mode-card--persona reveal">
+          <div class="mode-card-stripe"></div>
+          <div class="mode-icon">&#128100;</div>
+          <h3 class="mode-title">Talk to Consumers</h3>
+          <p class="mode-desc">Interact with simulated personas that match your target audience. Each stays internally consistent in attitudes, motivations, and constraints.</p>
+          <ul class="mode-outputs">
+            <li>Natural persona responses</li>
+            <li>Emotional &amp; practical drivers</li>
+            <li>Says vs. likely does</li>
+          </ul>
+        </article>
+        <article class="mode-card mode-card--trend reveal d1">
+          <div class="mode-card-stripe"></div>
+          <div class="mode-icon">&#128200;</div>
+          <h3 class="mode-title">Trend Analysis</h3>
+          <p class="mode-desc">Synthesise research inputs into actionable trend digests &mdash; themes, drivers, consumer implications, brand opportunities, and risks.</p>
+          <ul class="mode-outputs">
+            <li>Key trend themes</li>
+            <li>Consumer &amp; brand implications</li>
+            <li>Recommended next moves</li>
+          </ul>
+        </article>
+        <article class="mode-card mode-card--concept reveal d2">
+          <div class="mode-card-stripe"></div>
+          <div class="mode-icon">&#128161;</div>
+          <h3 class="mode-title">Concept Testing</h3>
+          <p class="mode-desc">Evaluate a concept, proposition, or campaign through persona lenses &mdash; appeal, clarity, distinctiveness, barriers, and improvement opportunities.</p>
+          <ul class="mode-outputs">
+            <li>Structured evaluation</li>
+            <li>Likely verbatim reactions</li>
+            <li>Improvement opportunities</li>
+          </ul>
+        </article>
+        <article class="mode-card mode-card--panel reveal d3">
+          <div class="mode-card-stripe"></div>
+          <div class="mode-icon">&#128101;</div>
+          <h3 class="mode-title">Panel Comparison</h3>
+          <p class="mode-desc">See how multiple distinct personas respond to the same stimulus &mdash; find common patterns, sharp differences, and best-fit audiences.</p>
+          <ul class="mode-outputs">
+            <li>Persona-by-persona reactions</li>
+            <li>Strongest &amp; weakest fit</li>
+            <li>Segment-specific actions</li>
+          </ul>
+        </article>
+        <article class="mode-card mode-card--research reveal d4">
+          <div class="mode-card-stripe"></div>
+          <div class="mode-icon">&#128203;</div>
+          <h3 class="mode-title">Research Design</h3>
+          <p class="mode-desc">Generate interview guides, survey questions, screening logic, and learning agendas to validate ideas with real consumers.</p>
+          <ul class="mode-outputs">
+            <li>Discussion guides</li>
+            <li>Survey frameworks</li>
+            <li>Test plan structure</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AGENT INTERFACE ─────────────────────────── -->
+  <section class="section agent-interface" id="agent" aria-labelledby="agent-h">
+    <div class="section-inner">
+      <div class="agent-ui-header">
+        <p class="label reveal">Interactive Agent</p>
+        <h2 class="section-h2 reveal d1" id="agent-h">Try the Consumer <em>Persona Agent</em></h2>
+        <p class="section-lead reveal d2">Select a mode, describe your audience and objective, then let the agent generate insight you can act on.</p>
+      </div>
+
+      <div class="agent-workspace reveal d3">
+        <div class="workspace-toolbar">
+          <div class="toolbar-left">
+            <span class="toolbar-dot toolbar-dot--red"></span>
+            <span class="toolbar-dot toolbar-dot--yellow"></span>
+            <span class="toolbar-dot toolbar-dot--green"></span>
+            <span class="toolbar-title">persona-agent v1.0</span>
+          </div>
+          <div class="toolbar-right">
+            <div class="api-key-group">
+              <span class="api-key-label">API Key</span>
+              <input type="password" class="api-key-input" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+        </div>
+
+        <div class="workspace-body">
+          <div class="input-pane">
+            <div class="pane-label"><span class="pane-label-dot"></span>Input</div>
+            <div class="mode-selector" id="modeSelector">
+              <button class="mode-btn active" data-mode="persona">Talk to Consumer</button>
+              <button class="mode-btn" data-mode="trend">Trend Analysis</button>
+              <button class="mode-btn" data-mode="concept">Concept Test</button>
+              <button class="mode-btn" data-mode="panel">Panel Compare</button>
+              <button class="mode-btn" data-mode="research">Research Design</button>
+            </div>
+            <textarea class="data-input" id="dataInput" placeholder="Describe your target audience, market, and what you want to explore...
+
+Example: &quot;I'm launching a plant-based protein snack aimed at busy professionals aged 25-40 in Singapore. The proposition is convenience + clean label. How would this audience react?&quot;" spellcheck="false"></textarea>
+            <div class="input-footer">
+              <span class="char-count" id="charCount">0 characters</span>
+              <button class="analyze-btn" id="analyzeBtn" type="button">
+                <span class="btn-text">Run Agent</span>
+                <span class="spinner"></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="output-pane" id="outputPane">
+            <div class="output-empty" id="outputEmpty">
+              <div class="output-empty-icon">&#128100;</div>
+              <div class="output-empty-title">Awaiting Input</div>
+              <div class="output-empty-desc">Select a mode and describe your scenario</div>
+            </div>
+            <div class="error-box" id="errorBox">
+              <div class="error-title" id="errorTitle">Error</div>
+              <div class="error-detail" id="errorDetail"></div>
+            </div>
+            <div class="agent-progress" id="agentProgress">
+              <div class="progress-step" id="step-1"><span class="progress-dot"></span>Building persona models</div>
+              <div class="progress-step" id="step-2"><span class="progress-dot"></span>Running simulation &amp; analysis</div>
+              <div class="progress-step" id="step-3"><span class="progress-dot"></span>Synthesising insights</div>
+            </div>
+            <div class="results-container" id="resultsContainer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-sup">NUS-ISS</div>
+          <div class="footer-brand">Living Lab &mdash; Consumer Persona Agent</div>
+        </div>
+        <ul class="footer-links">
+          <li><a href="./">Agents Hub</a></li>
+          <li><a href="#modes">Modes</a></li>
+          <li><a href="#agent">Launch Agent</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2025 National University of Singapore. All rights reserved.</span>
+        <span>Built by NUS-ISS Living Lab</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObserver.unobserve(e.target); } });
+    }, { threshold:0.08, rootMargin:'0px 0px -32px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const id = link.getAttribute('href'); if (id === '#') return;
+        const target = document.querySelector(id); if (!target) return;
+        e.preventDefault();
+        window.scrollTo({ top: target.offsetTop - document.querySelector('.nav').offsetHeight, behavior:'smooth' });
+      });
+    });
+
+    (function initDrawer() {
+      const h=document.getElementById('hamburger'),d=document.getElementById('mobileDrawer'),o=document.getElementById('drawerOverlay'),c=document.getElementById('drawerClose');
+      function open(){d.classList.add('open');o.classList.add('open');h.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';c.focus();}
+      function close(){d.classList.remove('open');o.classList.remove('open');h.setAttribute('aria-expanded','false');document.body.style.overflow='';h.focus();}
+      h.addEventListener('click',open);c.addEventListener('click',close);o.addEventListener('click',close);
+      d.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+      d.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+    })();
+
+    const dataInput=document.getElementById('dataInput'), charCount=document.getElementById('charCount');
+    dataInput.addEventListener('input',()=>{const l=dataInput.value.length;charCount.textContent=l.toLocaleString()+' character'+(l!==1?'s':'');});
+
+    const apiKeyInput=document.getElementById('apiKeyInput');
+    const sk=localStorage.getItem('pa_api_key'); if(sk) apiKeyInput.value=sk;
+    apiKeyInput.addEventListener('change',()=>localStorage.setItem('pa_api_key',apiKeyInput.value.trim()));
+
+    // Mode selector
+    let currentMode='persona';
+    const modeBtns=document.querySelectorAll('.mode-btn');
+    const placeholders = {
+      persona: 'Describe your target consumer and what you want to ask them...\n\nExample: "I\'m targeting health-conscious millennials in Singapore for a new kombucha brand. What would they think about a subscription model with weekly home delivery?"',
+      trend: 'Paste trend data, research notes, or market observations to synthesise...\n\nExample: Paste a trend report, interview findings, or market observations and ask for key themes, implications, and opportunities.',
+      concept: 'Describe the concept you want to test and the target audience...\n\nExample: "Concept: A meal-kit service that uses AI to personalise recipes based on dietary needs and fridge contents. Target: dual-income couples, 28-42, urban Singapore."',
+      panel: 'Describe the stimulus and the audience segments you want to compare...\n\nExample: "Compare reactions to a premium organic baby food line across: first-time parents under 30, experienced parents 35-45, and grandparents who buy for grandchildren."',
+      research: 'Describe what you want to validate and with whom...\n\nExample: "I need a discussion guide for 1-hour interviews with Gen Z consumers about their relationship with fast fashion and sustainability claims."'
+    };
+    modeBtns.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        modeBtns.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode=btn.dataset.mode;
+        dataInput.placeholder=placeholders[currentMode]||placeholders.persona;
+      });
+    });
+
+    const analyzeBtn=document.getElementById('analyzeBtn'),outputEmpty=document.getElementById('outputEmpty'),agentProgress=document.getElementById('agentProgress'),resultsContainer=document.getElementById('resultsContainer'),errorBox=document.getElementById('errorBox'),errorTitle=document.getElementById('errorTitle'),errorDetail=document.getElementById('errorDetail');
+
+    function setStep(id,state){const el=document.getElementById(id);el.classList.remove('active','done');if(state)el.classList.add(state);}
+    function showError(t,d){errorBox.classList.add('active');errorTitle.textContent=t;errorDetail.textContent=d;}
+    function hideError(){errorBox.classList.remove('active');}
+    function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+    const MODE_INSTRUCTIONS = {
+      persona: 'The user wants PERSONA SIMULATION mode. Generate or adopt a realistic consumer persona matching their description. Respond AS the persona in natural language, then provide analysis of motivations, drivers, barriers, and likely behavior.',
+      trend: 'The user wants TREND ANALYSIS mode. Synthesize the provided inputs into actionable trend insights with: key themes, what is driving each trend, consumer implications, brand/product implications, opportunities & risks, and recommended next moves.',
+      concept: 'The user wants CONCEPT TESTING mode. Evaluate the concept through relevant persona lenses. Assess: appeal, clarity, relevance, distinctiveness, believability, value, emotional resonance, practical fit, barriers, likely intent, and improvement opportunities.',
+      panel: 'The user wants PANEL COMPARISON mode. Create 3-4 meaningfully distinct personas and show how each responds to the same stimulus. Include: persona-by-persona reactions, common patterns, sharp differences, strongest-fit audience, weakest-fit audience, and actions to improve fit.',
+      research: 'The user wants RESEARCH DESIGN mode. Generate a professional research instrument (discussion guide, survey questions, screening criteria, or learning agenda) based on their validation needs.'
+    };
+
+    const SYSTEM_PROMPT = `You are an AI Consumer Persona Agent for simulated consumer insight generation, trend interpretation, and concept testing.
+
+Your job is to help users explore market shifts, model likely consumer reactions, and pressure-test new ideas through realistic persona-based responses and structured insight summaries.
+
+Treat outputs as modeled directional guidance unless the user provides real research data to analyze.
+
+## Persona Modeling Rules
+- Build personas around plausible consumer attributes: life stage, identity, motivations, category behaviors, attitudes, routines, aspirations, and constraints.
+- Include emotional, social, and practical drivers, not just demographics.
+- Keep each persona coherent. Avoid stereotypes or caricatures.
+- Distinguish between what the persona says and what they are likely to do.
+- Model realistic tradeoffs rather than universally positive or negative reactions.
+
+## Trend Analysis Rules
+- Treat trend inputs as signals to interpret, not facts to exaggerate.
+- Distinguish between observed patterns, inferred implications, and speculative opportunities.
+- Focus on what is changing, why it matters, who it affects, and what action it suggests.
+- Do not fabricate external reports, benchmarks, or citations.
+
+## Concept Testing Criteria
+When evaluating concepts, consider: first impression, clarity, relevance, distinctiveness, trust, perceived value, emotional resonance, practical fit, barriers, likely intent, and improvement opportunities.
+
+## Evidence and Confidence
+- Be explicit that simulated responses are modeled outputs, not substitutes for primary research.
+- Do not present simulated verbatims as real consumer quotes — label them as modeled.
+- When confidence is limited, explain what is missing or uncertain.
+- If the user provides real data, prioritize grounded analysis over speculation.
+
+## Output Format
+Respond in valid JSON matching the requested mode. Structure:
+
+{
+  "mode": "persona|trend|concept|panel|research",
+  "summary": "1-2 sentence overview of the analysis",
+  "sections": [
+    {
+      "title": "Section heading",
+      "type": "text|list|persona|comparison",
+      "content": "Text content for text type",
+      "items": ["Item 1", "Item 2"],
+      "persona_name": "Name (for persona type)",
+      "persona_summary": "Brief persona description",
+      "reaction": "Their response"
+    }
+  ],
+  "confidence": "high|medium|low",
+  "caveats": "What is modeled vs. evidence-based, what is missing"
+}
+
+Rules:
+- Return ONLY valid JSON.
+- Be concise, insightful, and commercially useful.
+- Prefer specific observations over abstract marketing jargon.
+- Make outputs actionable for product, insights, and marketing teams.
+- Keep personas meaningfully distinct when multiple are involved.`;
+
+    async function callClaude(apiKey, systemPrompt, userMessage) {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4096,system:systemPrompt,messages:[{role:'user',content:userMessage}]})
+      });
+      if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||'API returned '+res.status);}
+      const data=await res.json();return data.content[0].text;
+    }
+
+    function renderResults(parsed){
+      resultsContainer.innerHTML='';
+      if(parsed.summary){
+        const s=document.createElement('div');s.className='result-section';
+        s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--teal)"></span><span class="result-header-title" style="color:var(--teal)">SUMMARY</span></div><div class="result-body"><div class="result-item" style="color:var(--text);font-weight:400;">'+escapeHtml(parsed.summary)+'</div></div>';
+        resultsContainer.appendChild(s);
+      }
+      if(parsed.sections&&parsed.sections.length){
+        parsed.sections.forEach(sec=>{
+          const s=document.createElement('div');s.className='result-section';
+          let bodyHtml='';
+          if(sec.type==='persona'){
+            bodyHtml='<div class="result-item"><div class="result-item-title">'+escapeHtml(sec.persona_name||sec.title)+'</div><div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-style:italic;">'+escapeHtml(sec.persona_summary||'')+'</div><div style="font-size:13px;color:var(--text);line-height:1.7;">'+escapeHtml(sec.reaction||sec.content||'')+'</div></div>';
+          } else if(sec.type==='list'&&sec.items){
+            bodyHtml=sec.items.map(i=>'<div class="result-item">'+escapeHtml(i)+'</div>').join('');
+          } else if(sec.type==='comparison'&&sec.items){
+            bodyHtml=sec.items.map(i=>'<div class="result-item"><strong>'+escapeHtml(typeof i==='object'?i.label||'':'')+'</strong> '+escapeHtml(typeof i==='object'?i.value||'':i)+'</div>').join('');
+          } else {
+            bodyHtml='<div class="result-item">'+escapeHtml(sec.content||JSON.stringify(sec))+'</div>';
+          }
+          const color = sec.type==='persona'?'var(--teal)':sec.type==='list'?'var(--blue)':'var(--orange)';
+          s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:'+color+'"></span><span class="result-header-title" style="color:'+color+'">'+escapeHtml((sec.title||'').toUpperCase())+'</span></div><div class="result-body">'+bodyHtml+'</div>';
+          resultsContainer.appendChild(s);
+        });
+      }
+      if(parsed.caveats){
+        const s=document.createElement('div');s.className='result-section';
+        s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--amber)"></span><span class="result-header-title" style="color:var(--amber)">CAVEATS &amp; CONFIDENCE: '+escapeHtml((parsed.confidence||'').toUpperCase())+'</span></div><div class="result-body"><div class="result-item">'+escapeHtml(parsed.caveats)+'</div></div>';
+        resultsContainer.appendChild(s);
+      }
+      resultsContainer.classList.add('active');
+    }
+
+    analyzeBtn.addEventListener('click',async()=>{
+      const apiKey=apiKeyInput.value.trim(),inputText=dataInput.value.trim();
+      hideError();
+      if(!apiKey){showError('API Key Required','Enter your Anthropic API key above. Stored locally, never sent anywhere except the Anthropic API.');return;}
+      if(!inputText||inputText.length<30){showError('Input Too Short','Please provide at least 30 characters describing your scenario.');return;}
+
+      outputEmpty.style.display='none';resultsContainer.classList.remove('active');resultsContainer.innerHTML='';
+      agentProgress.classList.add('active');analyzeBtn.classList.add('loading');analyzeBtn.disabled=true;
+      setStep('step-1','active');setStep('step-2','');setStep('step-3','');
+
+      try{
+        const t1=setTimeout(()=>{setStep('step-1','done');setStep('step-2','active');},2500);
+        const t2=setTimeout(()=>{setStep('step-2','done');setStep('step-3','active');},5000);
+        const modeInstruction=MODE_INSTRUCTIONS[currentMode]||MODE_INSTRUCTIONS.persona;
+        const result=await callClaude(apiKey,SYSTEM_PROMPT,modeInstruction+'\n\n---\n\nUser input:\n'+inputText);
+        clearTimeout(t1);clearTimeout(t2);
+        setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
+        let parsed;
+        try{const m=result.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error('No JSON');}
+        catch(e){throw new Error('Failed to parse agent response.');}
+        await new Promise(r=>setTimeout(r,400));
+        agentProgress.classList.remove('active');renderResults(parsed);
+      }catch(err){agentProgress.classList.remove('active');outputEmpty.style.display='none';showError('Analysis Failed',err.message);}
+      finally{analyzeBtn.classList.remove('loading');analyzeBtn.disabled=false;}
+    });
+  </script>
+</body>
+</html>
