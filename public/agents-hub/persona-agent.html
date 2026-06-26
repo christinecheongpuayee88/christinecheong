@@ -13,16 +13,16 @@
     :root {
       --bg:           #FFFFFF;
       --surface:      #F2F2F2;
-      --navy:         #1F3A5F;
-      --navy-mid:     #4A6F8A;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
       --blue:         #1E88C7;
       --blue-light:   #E8F4FB;
       --orange:       #1E88C7;
       --orange-light: #E8F4FB;
       --teal:         #1E88C7;
       --teal-light:   #E8F4FB;
-      --text:         #333333;
-      --text-muted:   #4A6F8A;
+      --text:         #111827;
+      --text-muted:   #4B5563;
       --border:       #DADADA;
       --red:          #C0392B;
       --red-light:    #FDEDEC;
@@ -171,7 +171,7 @@
     .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:16px; }
     .char-count { font-size:11px; font-weight:400; color:var(--text-muted); font-family:var(--font-mono); }
     .analyze-btn { display:inline-flex; align-items:center; gap:10px; padding:14px 32px; background:var(--navy); color:#fff; font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em; border:none; border-radius:8px; cursor:pointer; transition:background 0.25s, transform 0.25s, box-shadow 0.25s; }
-    .analyze-btn:hover:not(:disabled) { background:#1F3A5F; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,30,76,0.3); }
+    .analyze-btn:hover:not(:disabled) { background:#111827; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,30,76,0.3); }
     .analyze-btn:disabled { opacity:0.5; cursor:not-allowed; }
     .analyze-btn .spinner { display:none; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
     .analyze-btn.loading .spinner { display:block; }
@@ -213,7 +213,7 @@
     .error-detail { font-size:12px; font-weight:300; color:var(--red); opacity:0.8; }
 
     /* ── FOOTER ──────────────────────────────────── */
-    .footer { background:#1F3A5F; color:#fff; padding:60px 56px 36px; }
+    .footer { background:#111827; color:#fff; padding:60px 56px 36px; }
     .footer-inner { max-width:1280px; margin:0 auto; }
     .footer-top { display:flex; align-items:center; justify-content:space-between; padding-bottom:32px; border-bottom:1px solid rgba(255,255,255,0.07); margin-bottom:24px; }
     .footer-brand { font-family:var(--font-display); font-size:18px; font-weight:700; }
