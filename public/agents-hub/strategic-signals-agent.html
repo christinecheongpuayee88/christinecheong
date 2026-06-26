@@ -1383,19 +1383,7 @@
             <span class="toolbar-dot toolbar-dot--green"></span>
             <span class="toolbar-title">strategic-signals-agent v1.0</span>
           </div>
-          <div class="toolbar-right">
-            <div class="api-key-group">
-              <span class="api-key-label">API Key</span>
-              <input
-                type="password"
-                class="api-key-input"
-                id="apiKeyInput"
-                placeholder="sk-ant-api03-..."
-                autocomplete="off"
-                spellcheck="false"
-              >
-            </div>
-          </div>
+          <div class="toolbar-right"></div>
         </div>
 
         <div class="workspace-body">
@@ -1550,14 +1538,6 @@ Tip: The more detailed your input, the richer the analysis."
       charCount.textContent = len.toLocaleString() + ' character' + (len !== 1 ? 's' : '');
     });
 
-    /* ── API KEY PERSISTENCE ─────────────────────── */
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    const storedKey = localStorage.getItem('ssa_api_key');
-    if (storedKey) apiKeyInput.value = storedKey;
-    apiKeyInput.addEventListener('change', () => {
-      localStorage.setItem('ssa_api_key', apiKeyInput.value.trim());
-    });
-
     /* ── AGENT ANALYSIS ──────────────────────────── */
     const analyzeBtn       = document.getElementById('analyzeBtn');
     const outputEmpty      = document.getElementById('outputEmpty');
@@ -1583,29 +1563,15 @@ Tip: The more detailed your input, the richer the analysis."
       errorBox.classList.remove('active');
     }
 
-    async function callClaude(apiKey, systemPrompt, userMessage) {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+    async function callClaude(systemPrompt, userMessage) {
+      const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 4096,
-          system: systemPrompt,
-          messages: [{ role: 'user', content: userMessage }]
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system: systemPrompt, message: userMessage })
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error?.message || `API returned ${res.status}`);
-      }
-
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API request failed');
       return data.content[0].text;
     }
 
@@ -1821,15 +1787,9 @@ Rules:
 - If the input is too short or vague, return fewer signals and note this in critic_notes.`;
 
     analyzeBtn.addEventListener('click', async () => {
-      const apiKey = apiKeyInput.value.trim();
       const inputText = dataInput.value.trim();
 
       hideError();
-
-      if (!apiKey) {
-        showError('API Key Required', 'Enter your Anthropic API key in the toolbar above. Your key is stored locally in your browser and never sent to any server other than the Anthropic API.');
-        return;
-      }
 
       if (!inputText || inputText.length < 50) {
         showError('Input Too Short', 'Please provide at least 50 characters of data to analyse. The richer your input, the better the analysis.');
@@ -1860,7 +1820,7 @@ Rules:
           setStep('step-critic', 'active');
         }, 6000);
 
-        const result = await callClaude(apiKey, SYSTEM_PROMPT, inputText);
+        const result = await callClaude(SYSTEM_PROMPT, inputText);
 
         clearTimeout(progressTimer1);
         clearTimeout(progressTimer2);
