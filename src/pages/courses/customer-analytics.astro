@@ -1,0 +1,906 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base
+  title="Customer Analytics"
+  description="A hands-on course covering customer segmentation through RFM Analysis and Cluster Analysis — from concepts to implementation with real-world datasets."
+>
+
+  <!-- ── Page header ─────────────────────────────────────────── -->
+  <section class="page-header">
+    <div class="wrap">
+      <a href="/courses" class="back-link anim anim-1">&larr; All Courses</a>
+      <p class="eyebrow anim anim-2">NUS-ISS &middot; Customer Analytics</p>
+      <h1 class="page-header__h1 anim anim-3">
+        Customer Segmentation
+      </h1>
+      <p class="page-header__sub anim anim-4">
+        Two complementary techniques for understanding your customers &mdash;
+        RFM Analysis for behaviour-based scoring, and Cluster Analysis for
+        data-driven grouping. From theory to implementation with real datasets.
+      </p>
+      <div class="page-header__meta anim anim-5">
+        <span class="meta-chip">Day 3 Module</span>
+        <span class="meta-chip">Hands-on Workshop</span>
+        <span class="meta-chip">R &amp; Python</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tab switcher ────────────────────────────────────────── -->
+  <div class="tab-bar" id="tab-bar">
+    <div class="wrap">
+      <div class="tab-bar__inner">
+        <button class="tab-btn tab-btn--active" data-tab="rfm" id="tab-rfm">
+          <span class="tab-btn__icon">📊</span>
+          RFM Analysis
+        </button>
+        <button class="tab-btn" data-tab="cluster" id="tab-cluster">
+          <span class="tab-btn__icon">🔬</span>
+          Cluster Analysis
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       RFM TAB
+       ================================================================ -->
+  <div class="tab-panel" id="panel-rfm">
+
+    <!-- 1 · Introduction to Segmentation -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">01</span>
+            <p class="eyebrow">Foundation</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Introduction to Segmentation</h2>
+            <p class="topic-lead">Before diving into RFM, it helps to understand the broader landscape of how businesses group their audiences.</p>
+
+            <div class="card-row">
+              <div class="info-card">
+                <h3>Market Segmentation</h3>
+                <p>Dividing a broad target market into segments based on demographics, geography, psychographics, or behaviour. The goal: develop customised strategies for each group to maximise marketing effectiveness and resource allocation.</p>
+              </div>
+              <div class="info-card">
+                <h3>Customer Segmentation</h3>
+                <p>Goes deeper than market segmentation by incorporating past interactions, purchase history, lifetime value, visit frequency, and spending patterns. Uncovers the shared characteristics of your most profitable customer groups.</p>
+              </div>
+            </div>
+
+            <div class="callout">
+              <strong>Key distinction:</strong> Market segmentation identifies your target audience; customer segmentation uncovers types within your existing customer base.
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>Why segment?</h3>
+              <ul class="benefit-list">
+                <li><strong>Targeted campaigns</strong> &mdash; Personalised messaging to each segment&rsquo;s interests</li>
+                <li><strong>Better communication</strong> &mdash; Right channel for the right customer</li>
+                <li><strong>Product improvements</strong> &mdash; Direct view into customer challenges</li>
+                <li><strong>Stronger relationships</strong> &mdash; Every customer feels valued, not generic</li>
+                <li><strong>Revenue growth</strong> &mdash; Informed upselling and cross-selling</li>
+                <li><strong>Cost efficiency</strong> &mdash; Focus spend on responsive segments</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 2 · What is RFM? -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">02</span>
+            <p class="eyebrow">Core Concept</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">What is RFM?</h2>
+            <p class="topic-lead">A quantitative method that scores every customer on three behavioural dimensions.</p>
+
+            <div class="rfm-trio">
+              <div class="rfm-dim rfm-dim--r">
+                <span class="rfm-letter">R</span>
+                <h3>Recency</h3>
+                <p>How recently did the customer purchase? Recent buyers still have the product on their mind and are more likely to buy again.</p>
+              </div>
+              <div class="rfm-dim rfm-dim--f">
+                <span class="rfm-letter">F</span>
+                <h3>Frequency</h3>
+                <p>How often do they buy? Frequent purchasers have established a habit and are more likely to return.</p>
+              </div>
+              <div class="rfm-dim rfm-dim--m">
+                <span class="rfm-letter">M</span>
+                <h3>Monetary</h3>
+                <p>How much do they spend? High spenders deliver the most revenue and tend to continue spending.</p>
+              </div>
+            </div>
+
+            <div class="callout">
+              <strong>Origin:</strong> Introduced in 1995 by Bult &amp; Wansbeek in <em>Marketing Science</em> for catalogue retailers. It confirmed the Pareto Principle &mdash; 80% of sales come from 20% of customers.
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>What can you do with RFM?</h3>
+              <ul class="benefit-list">
+                <li><strong>Identify high-value customers</strong> &mdash; Score 555 = VIP. Foster deeper relationships</li>
+                <li><strong>Customise marketing</strong> &mdash; Different strategies per segment</li>
+                <li><strong>Improve retention</strong> &mdash; Score 1XX = at risk. Trigger win-back campaigns</li>
+                <li><strong>Reduce costs</strong> &mdash; Stop sending campaigns to unresponsive customers</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 3 · RFM Workflow -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">03</span>
+            <p class="eyebrow">Methodology</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">The 4-Step RFM Workflow</h2>
+            <p class="topic-lead">From raw transactions to actionable customer segments.</p>
+
+            <div class="step-list">
+              <div class="step">
+                <span class="step-num">1</span>
+                <div>
+                  <h3>Data Collection</h3>
+                  <p>Gather transaction-level data with three essentials: <strong>Customer ID</strong>, <strong>Order Date</strong>, and <strong>Revenue Amount</strong>. If pre-aggregated, include last transaction date and total spend per customer.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">2</span>
+                <div>
+                  <h3>Build the RFM Table</h3>
+                  <p>Aggregate by Customer ID: count orders (Frequency), find most recent order date, and sum revenue (Monetary). Calculate elapsed days since last order relative to your analysis date for Recency.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">3</span>
+                <div>
+                  <h3>Assign RFM Scores</h3>
+                  <p>Sort each dimension and divide into <strong>quintiles</strong> (5 equal-sized groups). Assign scores 1&ndash;5, where 5 = best. For Recency: lowest elapsed days = 5. For Frequency and Monetary: highest values = 5.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">4</span>
+                <div>
+                  <h3>Create Segments</h3>
+                  <p>Combine R, F, M scores into a three-digit code (e.g., 555 = best customer, 111 = least engaged). Group codes into meaningful segments with descriptive labels.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 4 · Segmentation strategies -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">04</span>
+            <p class="eyebrow">Strategy</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Segmentation Strategies</h2>
+            <p class="topic-lead">125 possible RFM cells (5&times;5&times;5) are too many to act on. Here&rsquo;s how to reduce them.</p>
+
+            <div class="card-row">
+              <div class="info-card">
+                <h3>25-Segment Matrix</h3>
+                <p>Use only R and F scores as axes, with M as an aggregation metric (mean monetary per cell). Reduces 125 cells to a manageable 5&times;5 grid. Each cell answers: <em>&ldquo;How recent and how frequent, with what average spend?&rdquo;</em></p>
+              </div>
+              <div class="info-card">
+                <h3>11-Segment Strategy</h3>
+                <p>A popular industry approach that maps RFM scores into named personas: Champions, Loyal Customers, Potential Loyalists, At Risk, Can&rsquo;t Lose Them, Hibernating, Lost, and more. Each gets a tailored engagement strategy.</p>
+              </div>
+            </div>
+
+            <div class="callout">
+              <strong>Key questions the matrix answers:</strong> Who are your best customers? Who&rsquo;s about to churn? Who can be converted into more profitable customers? Who must you retain at all costs?
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 5 · Advanced Concepts -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">05</span>
+            <p class="eyebrow">Advanced</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Beyond Basic RFM</h2>
+            <p class="topic-lead">Hurdle rates, RFM variations, and combining RFM with clustering.</p>
+
+            <div class="info-card info-card--wide">
+              <h3>Hurdle Rate Analysis</h3>
+              <p>Set thresholds for each R, F, M dimension (e.g., purchased within 90 days, 3+ purchases, $500+ spent) and track the percentage of customers clearing each hurdle over time.</p>
+              <ul class="benefit-list">
+                <li><strong>Rates rising?</strong> &mdash; Business is healthy; customers respond positively</li>
+                <li><strong>Rates falling?</strong> &mdash; High-value customers are defecting; future value is declining</li>
+                <li><strong>One hurdle drops?</strong> &mdash; Pinpoints exactly which behaviour needs attention</li>
+              </ul>
+            </div>
+
+            <div class="card-row">
+              <div class="info-card">
+                <h3>RFD &mdash; Duration</h3>
+                <p>Replaces Monetary with <strong>Duration</strong> for viewership/readership businesses (e.g., Netflix). Measures session length instead of spending.</p>
+              </div>
+              <div class="info-card">
+                <h3>RFE &mdash; Engagement</h3>
+                <p>Replaces Monetary with <strong>Engagement</strong> — pages per visit, interactions, or similar metrics. Ideal for platforms like TikTok or content sites.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 6 · Strengths & Weaknesses -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">06</span>
+            <p class="eyebrow">Evaluation</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Strengths &amp; Limitations</h2>
+
+            <div class="card-row">
+              <div class="info-card info-card--green">
+                <h3>Strengths</h3>
+                <ul class="benefit-list">
+                  <li>Simple to understand and implement</li>
+                  <li>Provides directly actionable segments</li>
+                  <li>Customisable thresholds per industry</li>
+                  <li>Identifies high-value customers immediately</li>
+                  <li>Flexible segmentation granularity</li>
+                </ul>
+              </div>
+              <div class="info-card info-card--amber">
+                <h3>Limitations</h3>
+                <ul class="benefit-list">
+                  <li>Ignores demographics and preferences</li>
+                  <li>Static snapshot &mdash; doesn&rsquo;t track changes over time</li>
+                  <li>Focuses only on monetary transactions</li>
+                  <li>Assumes R, F, M are independent (often not true)</li>
+                  <li>Threshold selection is subjective</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /panel-rfm -->
+
+
+  <!-- ================================================================
+       CLUSTER TAB
+       ================================================================ -->
+  <div class="tab-panel tab-panel--hidden" id="panel-cluster">
+
+    <!-- 1 · Introduction to Clustering -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">01</span>
+            <p class="eyebrow">Foundation</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Introduction to Clustering</h2>
+            <p class="topic-lead">An unsupervised learning method that discovers natural patterns in data and groups them into meaningful clusters.</p>
+
+            <div class="card-row">
+              <div class="info-card">
+                <h3>What is Clustering?</h3>
+                <p>Clustering reduces complex datasets into smaller, homogeneous groups. Observations within a cluster are <strong>similar</strong> to each other but <strong>dissimilar</strong> to observations in other clusters. No predefined categories &mdash; the algorithm discovers the structure.</p>
+              </div>
+              <div class="info-card">
+                <h3>Clustering vs Classification</h3>
+                <p><strong>Classification</strong> assigns data to known categories (supervised). <strong>Clustering</strong> discovers unknown categories (unsupervised). Classification needs labelled training data; clustering works with unlabelled data.</p>
+              </div>
+            </div>
+
+            <div class="callout">
+              <strong>The clustering goal:</strong> Minimise intra-cluster distance (members are similar) while maximising inter-cluster distance (groups are distinct).
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 2 · Distance Measures -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">02</span>
+            <p class="eyebrow">Mathematics</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Similarity &amp; Distance Measures</h2>
+            <p class="topic-lead">Clustering algorithms need a way to quantify how &ldquo;close&rdquo; or &ldquo;far&rdquo; data points are.</p>
+
+            <div class="info-card info-card--wide">
+              <h3>Euclidean Distance</h3>
+              <p>The default distance measure for K-Means. Calculates the straight-line distance between two points in multi-dimensional space. Example: Australia&ndash;Italy distance = 5.39 (similar), Australia&ndash;Somalia = 144.40 (very different).</p>
+            </div>
+
+            <div class="card-row">
+              <div class="info-card">
+                <h3>Standardise First</h3>
+                <p>Variables on different scales (e.g., income in thousands vs. age in decades) will distort distance calculations. Always <strong>standardise</strong> your data before clustering so each variable contributes equally.</p>
+              </div>
+              <div class="info-card">
+                <h3>Non-Numerical Data</h3>
+                <p><strong>Ordinal data</strong> (e.g., Poor → Excellent) uses index values. <strong>Nominal data</strong> (e.g., Lawyer, Doctor) uses exact match: same = 0, different = 1.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 3 · Hierarchical Clustering -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">03</span>
+            <p class="eyebrow">Method 1</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Hierarchical Clustering</h2>
+            <p class="topic-lead">Builds a tree of clusters by progressively merging (or splitting) groups.</p>
+
+            <div class="card-row">
+              <div class="info-card">
+                <h3>Agglomerative (Bottom-Up)</h3>
+                <p>Start with each point as its own cluster. At each step, merge the closest pair. Repeat until a single cluster remains. The most common variant. Results displayed as a <strong>dendrogram</strong>.</p>
+              </div>
+              <div class="info-card">
+                <h3>Divisive (Top-Down)</h3>
+                <p>Start with one all-inclusive cluster. Recursively split using a flat algorithm (e.g., K-Means with k=2) until only singletons remain.</p>
+              </div>
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>Inter-Cluster Distance Methods</h3>
+              <ul class="benefit-list">
+                <li><strong>Single Linkage</strong> &mdash; Distance between the closest points of two clusters</li>
+                <li><strong>Complete Linkage</strong> &mdash; Distance between the farthest points</li>
+                <li><strong>Average Linkage</strong> &mdash; Average distance of all point pairs</li>
+                <li><strong>Ward&rsquo;s Method</strong> &mdash; Minimises total within-cluster variance on merge</li>
+                <li><strong>Centroid</strong> &mdash; Distance between cluster centres</li>
+              </ul>
+            </div>
+
+            <div class="callout callout--warn">
+              <strong>Limitations:</strong> Merges cannot be undone; computationally heavy for large datasets; hard to decide where to &ldquo;cut&rdquo; the dendrogram; a single pass may yield suboptimal results.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 4 · K-Means Clustering -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">04</span>
+            <p class="eyebrow">Method 2</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">K-Means Clustering</h2>
+            <p class="topic-lead">The most widely used clustering algorithm &mdash; simple, fast, and surprisingly effective.</p>
+
+            <div class="step-list">
+              <div class="step">
+                <span class="step-num">1</span>
+                <div>
+                  <h3>Choose K &amp; Initialise</h3>
+                  <p>Specify the number of clusters K. Randomly select K data points as initial centroids (seed points).</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">2</span>
+                <div>
+                  <h3>Assign Points</h3>
+                  <p>Calculate the distance from every data point to each centroid. Assign each point to its nearest centroid, forming K clusters.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">3</span>
+                <div>
+                  <h3>Recompute Centroids</h3>
+                  <p>For each cluster, calculate the new centroid (mean position of all assigned points).</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">4</span>
+                <div>
+                  <h3>Repeat Until Stable</h3>
+                  <p>Iterate steps 2&ndash;3 until no points change clusters, centroids stabilise, or a maximum iteration count is reached.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout">
+              <strong>Initial centroids matter.</strong> Different starting points can produce different results. Use <strong>K-Means++</strong> (Arthur &amp; Vassilvitskii, 2007) to spread initial centroids far apart, or run multiple initialisations (<code>nstart = 25</code>) and pick the best.
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>K-Means Variations</h3>
+              <ul class="benefit-list">
+                <li><strong>K-Medoids</strong> &mdash; Uses actual data points (medoids) as cluster centres instead of means; more robust to outliers</li>
+                <li><strong>K-Median</strong> &mdash; Computes median in each dimension using Manhattan distance</li>
+                <li><strong>K-Modes</strong> &mdash; For categorical data; clusters based on matching categories</li>
+                <li><strong>K-Prototype</strong> &mdash; Combines K-Modes and K-Means for mixed numerical/categorical data</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 5 · Evaluating Clusters -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">05</span>
+            <p class="eyebrow">Validation</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Evaluating Cluster Quality</h2>
+            <p class="topic-lead">How do you know your clusters are good? Two complementary approaches: technical metrics and business profiling.</p>
+
+            <div class="info-card info-card--wide" style="margin-bottom:var(--sp-5)">
+              <h3>Technical Validation</h3>
+              <div class="card-row" style="margin-top:var(--sp-4)">
+                <div>
+                  <h4 style="font-family:var(--sans);font-size:14px;font-weight:600;margin-bottom:var(--sp-2)">Elbow Method (WSS)</h4>
+                  <p>Run K-Means for k=2&hellip;10 and plot Within-cluster Sum of Squares. Look for the &ldquo;elbow&rdquo; where adding more clusters gives diminishing returns.</p>
+                </div>
+                <div>
+                  <h4 style="font-family:var(--sans);font-size:14px;font-weight:600;margin-bottom:var(--sp-2)">Silhouette Coefficient</h4>
+                  <p>Measures both cohesion (intra-cluster) and separation (inter-cluster). Ranges from &minus;1 (worst) to +1 (best). Score &gt; 0.3 is generally acceptable.</p>
+                </div>
+              </div>
+              <ul class="benefit-list" style="margin-top:var(--sp-4)">
+                <li><strong>Cluster sizes</strong> &mdash; One dominant cluster may need further splitting; very small clusters may be outliers</li>
+                <li><strong>Boxplots</strong> &mdash; Show variable distributions per cluster; look for significant differences across variables</li>
+              </ul>
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>Business Validation &mdash; Cluster Profiling</h3>
+              <p>Technical metrics alone aren&rsquo;t enough. Work with domain experts to answer four questions:</p>
+              <ul class="benefit-list">
+                <li><strong>Distinguishing characteristics?</strong> &mdash; Look for extreme highs and lows in each cluster</li>
+                <li><strong>Explainable?</strong> &mdash; Can each cluster be described in business terms?</li>
+                <li><strong>Labelable?</strong> &mdash; Can you intuitively assign names? (e.g., &ldquo;Advanced&rdquo;, &ldquo;Moderate&rdquo;, &ldquo;Developing&rdquo;)</li>
+                <li><strong>Actionable?</strong> &mdash; Can each cluster drive a specific marketing, sales, or service action?</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 6 · Strengths & Weaknesses -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">06</span>
+            <p class="eyebrow">Evaluation</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Strengths &amp; Limitations</h2>
+
+            <div class="card-row">
+              <div class="info-card info-card--green">
+                <h3>Strengths</h3>
+                <ul class="benefit-list">
+                  <li>Enables personalised marketing per segment</li>
+                  <li>Data-driven &mdash; removes subjective bias</li>
+                  <li>Improves customer satisfaction</li>
+                  <li>Optimises resource allocation</li>
+                  <li>Generates deep behavioural insights</li>
+                </ul>
+              </div>
+              <div class="info-card info-card--amber">
+                <h3>Limitations</h3>
+                <ul class="benefit-list">
+                  <li>Assumes homogeneity within clusters</li>
+                  <li>Choosing optimal K is non-trivial</li>
+                  <li>Interpretation can be subjective</li>
+                  <li>Real customers may span multiple segments</li>
+                  <li>Sensitive to outliers and noise</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>Applications Across Industries</h3>
+              <ul class="benefit-list">
+                <li><strong>Sales &amp; Marketing</strong> &mdash; Discover customer groups and develop targeted campaigns</li>
+                <li><strong>Fraud Detection</strong> &mdash; Identify uncharacteristic transaction behaviour</li>
+                <li><strong>Healthcare</strong> &mdash; Group patients by risk profile for predictive care</li>
+                <li><strong>Insurance</strong> &mdash; Identify policyholder groups with high claim costs</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /panel-cluster -->
+
+  <!-- ── CTA ─────────────────────────────────────────────────── -->
+  <section class="section--sm not-sure" style="background:var(--surface);border-top:1px solid var(--border);">
+    <div class="wrap not-sure__inner">
+      <div>
+        <h2>Interested in this module?</h2>
+        <p>Part of the NUS-ISS Customer Analytics programme. Get in touch for details.</p>
+      </div>
+      <a href="/contact" class="btn btn--primary">Get In Touch</a>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  /* ── Page header ─────────────────────────────────────── */
+  .page-header {
+    padding: var(--sp-10) 0 var(--sp-7);
+    background: var(--surface);
+  }
+  .back-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    display: inline-block;
+    margin-bottom: var(--sp-4);
+    transition: color var(--ease);
+  }
+  .back-link:hover { color: var(--accent-dark); }
+  .page-header__h1 {
+    font-size: clamp(36px, 4.5vw, 58px);
+    margin-top: var(--sp-3);
+    letter-spacing: -.02em;
+  }
+  .page-header__sub {
+    font-size: 18px;
+    color: var(--text-2);
+    margin-top: var(--sp-4);
+    max-width: 64ch;
+  }
+  .page-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-5);
+  }
+  .meta-chip {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 6px 14px;
+    border-radius: 100px;
+    letter-spacing: .02em;
+  }
+
+  /* ── Tab bar ─────────────────────────────────────────── */
+  .tab-bar {
+    position: sticky;
+    top: 68px;
+    z-index: 100;
+    background: rgba(250,250,248,.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-bar__inner {
+    display: flex;
+    gap: var(--sp-1);
+  }
+  .tab-btn {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-3);
+    background: none;
+    border: none;
+    padding: 16px 24px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all var(--ease);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+  .tab-btn:hover { color: var(--text-2); }
+  .tab-btn--active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-btn__icon { font-size: 16px; }
+
+  /* ── Tab panels ──────────────────────────────────────── */
+  .tab-panel--hidden { display: none; }
+
+  /* ── Topic grid ──────────────────────────────────────── */
+  .topic-grid {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: var(--sp-8);
+    align-items: start;
+  }
+  .topic-meta {
+    position: sticky;
+    top: calc(68px + 52px + var(--sp-5));
+  }
+  .topic-num {
+    font-family: var(--serif);
+    font-size: 42px;
+    color: var(--border);
+    line-height: 1;
+    display: block;
+    margin-bottom: var(--sp-2);
+  }
+  .topic-h2 {
+    font-size: clamp(26px, 3vw, 36px);
+    letter-spacing: -.01em;
+    margin-bottom: var(--sp-3);
+  }
+  .topic-lead {
+    font-size: 16px;
+    color: var(--text-2);
+    line-height: 1.8;
+    margin-bottom: var(--sp-6);
+    max-width: 60ch;
+  }
+  .topic-body {
+    padding-bottom: var(--sp-4);
+  }
+
+  /* ── Cards ───────────────────────────────────────────── */
+  .card-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-5);
+  }
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--sp-5);
+  }
+  .info-card h3 {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: var(--sp-3);
+  }
+  .info-card h4 {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .info-card p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .info-card--wide { grid-column: 1 / -1; }
+  .info-card--green { border-left: 3px solid #16a34a; }
+  .info-card--amber { border-left: 3px solid #d97706; }
+
+  .benefit-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .benefit-list li {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.6;
+    padding-left: 20px;
+    position: relative;
+  }
+  .benefit-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .benefit-list li strong { color: var(--text); }
+
+  /* ── Callout ─────────────────────────────────────────── */
+  .callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    padding: var(--sp-4) var(--sp-5);
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.7;
+    margin-bottom: var(--sp-5);
+  }
+  .callout strong { color: var(--text); }
+  .callout--warn {
+    background: #fef3c7;
+    border-left-color: #d97706;
+  }
+
+  /* ── RFM trio ────────────────────────────────────────── */
+  .rfm-trio {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-5);
+  }
+  .rfm-dim {
+    text-align: center;
+    padding: var(--sp-6) var(--sp-4);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .rfm-letter {
+    font-family: var(--serif);
+    font-size: 48px;
+    line-height: 1;
+    display: block;
+    margin-bottom: var(--sp-3);
+  }
+  .rfm-dim h3 {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: var(--sp-2);
+  }
+  .rfm-dim p {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .rfm-dim--r .rfm-letter { color: #2563eb; }
+  .rfm-dim--f .rfm-letter { color: #16a34a; }
+  .rfm-dim--m .rfm-letter { color: #d97706; }
+
+  /* ── Steps ───────────────────────────────────────────── */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+    margin-bottom: var(--sp-5);
+  }
+  .step {
+    display: flex;
+    gap: var(--sp-5);
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-family: var(--serif);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .step h3 {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: var(--sp-2);
+  }
+  .step p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .step code {
+    font-size: 13px;
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── Not sure CTA ────────────────────────────────────── */
+  .not-sure__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--sp-6);
+  }
+  .not-sure h2 { font-size: 28px; }
+  .not-sure p  { font-size: 16px; color: var(--text-2); margin-top: var(--sp-2); }
+
+  /* ── Responsive ──────────────────────────────────────── */
+  @media (max-width: 800px) {
+    .topic-grid { grid-template-columns: 1fr; gap: var(--sp-4); }
+    .topic-meta { position: static; display: flex; gap: var(--sp-3); align-items: center; }
+    .topic-num  { font-size: 28px; margin-bottom: 0; }
+    .card-row   { grid-template-columns: 1fr; }
+    .rfm-trio   { grid-template-columns: 1fr; }
+    .not-sure__inner { flex-direction: column; text-align: center; align-items: flex-start; }
+    .tab-btn { padding: 14px 16px; font-size: 13px; }
+  }
+</style>
+
+<script>
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+
+      tabs.forEach(t => t.classList.remove('tab-btn--active'));
+      btn.classList.add('tab-btn--active');
+
+      panels.forEach(p => {
+        p.classList.toggle('tab-panel--hidden', p.id !== `panel-${target}`);
+      });
+    });
+  });
+</script>

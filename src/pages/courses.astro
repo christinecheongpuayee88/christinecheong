@@ -3,6 +3,22 @@ import Base from '../layouts/Base.astro';
 
 const courses = [
   {
+    id: 'customer-analytics',
+    eyebrow: 'NUS-ISS · Customer Analytics',
+    title: 'Customer Segmentation',
+    audience: 'Graduate students and working professionals who want to understand and apply customer segmentation techniques — from RFM scoring to cluster analysis — using real-world datasets.',
+    description: 'A hands-on module covering two complementary segmentation approaches: RFM Analysis for behaviour-based customer scoring, and Cluster Analysis for unsupervised data-driven grouping. Includes workshops with R and Python.',
+    topics: [
+      'Market vs. customer segmentation',
+      'RFM scoring workflow and segment strategies',
+      'Hierarchical and K-Means clustering',
+      'Evaluating cluster quality (WSS, Silhouette)',
+      'Business profiling and persona development',
+    ],
+    format: 'Day 3 module · Lecture + Workshop · R & Python',
+    link: '/courses/customer-analytics',
+  },
+  {
     id: 'ds-foundations',
     eyebrow: 'University Programme',
     title: 'Data Science Foundations',
@@ -104,9 +120,15 @@ const courses = [
                 </ul>
               </div>
 
-              <a href="/contact" class="btn btn--primary course__cta">
-                Get In Touch About This Course
-              </a>
+              {course.link ? (
+                <a href={course.link} class="btn btn--primary course__cta">
+                  View Course Details
+                </a>
+              ) : (
+                <a href="/contact" class="btn btn--primary course__cta">
+                  Get In Touch About This Course
+                </a>
+              )}
             </div>
           </article>
         ))}
