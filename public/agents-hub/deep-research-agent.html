@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Research Agent — NUS-ISS Living Lab</title>
+  <meta name="description" content="Deploy an autonomous virtual research team to transform a single question into a comprehensive, multi-perspective intelligence report in minutes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#FFFFFF;--surface:#F2F2F2;--navy:#111827;--navy-mid:#1F3A5F;
+      --blue:#1E88C7;--blue-light:#E8F4FB;--text:#111827;--text-muted:#4B5563;
+      --border:#DADADA;--red:#C0392B;--red-light:#FDEDEC;--purple:#4A6F8A;--purple-light:#EEF2F6;
+      --amber:#B7791F;--amber-light:#FEFCBF;
+      --sp-xl:112px;--font-display:'Fraunces',Georgia,serif;--font-body:'Plus Jakarta Sans',system-ui,sans-serif;
+      --font-mono:'JetBrains Mono','Consolas',monospace;
+      --ease-spring:cubic-bezier(0.16,1,0.3,1);--ease-out:cubic-bezier(0.25,0.46,0.45,0.94);--nav-h:72px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:500;line-height:1.65;overflow-x:hidden;}
+    img{display:block;max-width:100%;}a{color:inherit;text-decoration:none;}
+    h1,h2,h3,h4,.label{text-wrap:balance;}p{text-wrap:pretty;}
+
+    .nav{position:fixed;inset:0 0 auto;z-index:200;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:rgba(255,255,255,0.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--border);}
+    .nav-brand{display:flex;flex-direction:column;gap:1px;}
+    .nav-brand-sup{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);}
+    .nav-brand-name{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--navy);letter-spacing:-0.01em;}
+    .nav-links{display:flex;align-items:center;gap:36px;list-style:none;}
+    .nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);transition:color 0.25s;}
+    .nav-links a:hover{color:var(--navy);}
+    .nav-cta{font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:10px 24px;border-radius:6px;background:var(--blue);color:#fff!important;transition:background 0.25s,transform 0.25s,box-shadow 0.25s;}
+    .nav-cta:hover{background:#1670A6;transform:translateY(-1px);box-shadow:0 6px 20px rgba(30,136,199,0.38);}
+    .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}
+    .hamburger span{display:block;width:24px;height:1.5px;background:var(--text);border-radius:2px;}
+
+    .hero{position:relative;padding:calc(var(--nav-h)+80px) 56px 80px;background:var(--bg);overflow:hidden;border-bottom:1px solid var(--border);}
+    .hero-inner{max-width:1280px;margin:0 auto;position:relative;z-index:2;display:grid;grid-template-columns:1.2fr 1fr;gap:80px;align-items:center;}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--blue);margin-bottom:24px;}
+    .hero-eyebrow::before{content:'';width:28px;height:2px;background:var(--blue);}
+    .hero-badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:5px 12px;border-radius:4px;background:var(--blue-light);color:var(--blue);margin-bottom:20px;}
+    .hero-h1{font-family:var(--font-display);font-size:clamp(36px,5vw,64px);font-weight:700;line-height:1.02;letter-spacing:-0.025em;color:var(--navy);margin-bottom:22px;}
+    .hero-h1 em{font-style:italic;font-weight:400;color:var(--navy-mid);}
+    .hero-h1 mark{background:none;color:var(--blue);}
+    .hero-sub{font-size:16px;font-weight:500;color:var(--text-muted);line-height:1.75;max-width:520px;margin-bottom:32px;}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:14px;}
+
+    .hero-visual{display:flex;flex-direction:column;gap:16px;}
+    .flow-preview{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;}
+    .flow-preview-label{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--blue);}
+    .flow-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--blue);}
+    .flow-preview-item{font-size:13px;font-weight:500;color:var(--text-muted);line-height:1.6;padding:8px 0;border-bottom:1px solid var(--border);}
+    .flow-preview-item:last-child{border-bottom:none;}
+    .flow-preview-item strong{font-weight:600;color:var(--text);}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:0.04em;border-radius:6px;border:none;cursor:pointer;transition:background 0.25s,transform 0.25s,box-shadow 0.25s;}
+    .btn-blue{padding:16px 36px;background:var(--blue);color:#fff;}
+    .btn-blue:hover{background:#1670A6;transform:translateY(-2px);box-shadow:0 12px 32px rgba(30,136,199,0.35);}
+    .btn-outline{padding:16px 36px;background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+    .btn-outline:hover{background:var(--surface);border-color:var(--navy);}
+    .btn-arrow::after{content:'\2192';font-size:15px;}
+
+    .section{padding:var(--sp-xl) 56px;}.section-inner{max-width:1280px;margin:0 auto;}
+    .label{font-size:11px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--blue);margin-bottom:16px;}
+    .section-h2{font-family:var(--font-display);font-size:clamp(28px,3.5vw,46px);font-weight:700;line-height:1.1;letter-spacing:-0.02em;color:var(--text);margin-bottom:18px;}
+    .section-h2 em{font-style:italic;font-weight:400;color:var(--navy-mid);}
+    .section-lead{font-size:16px;font-weight:500;color:var(--text-muted);line-height:1.78;max-width:560px;}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.8s var(--ease-spring),transform 0.8s var(--ease-spring);}
+    .reveal.in{opacity:1;transform:translateY(0);}
+    .d1{transition-delay:.10s;}.d2{transition-delay:.20s;}.d3{transition-delay:.30s;}.d4{transition-delay:.42s;}
+
+    .how{background:var(--surface);border-bottom:1px solid var(--border);}
+    .how-header{text-align:center;margin-bottom:64px;}
+    .how-header .section-lead{margin:0 auto;text-align:center;}
+    .flow-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+    .flow-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:36px 28px;text-align:center;transition:transform 0.35s var(--ease-spring),box-shadow 0.35s;}
+    .flow-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.08);}
+    .flow-num{font-family:var(--font-display);font-size:48px;font-weight:700;color:var(--blue-light);margin-bottom:16px;line-height:1;}
+    .flow-card-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;}
+    .flow-card-desc{font-size:13px;font-weight:500;color:var(--text-muted);line-height:1.72;}
+
+    .use-cases{background:var(--bg);}
+    .use-cases-header{margin-bottom:52px;}
+    .uc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+    .uc-card{background:var(--surface);padding:44px 36px;transition:transform 0.35s var(--ease-spring),box-shadow 0.35s;}
+    .uc-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.08);z-index:1;}
+    .uc-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;background:var(--blue-light);}
+    .uc-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.2;}
+    .uc-desc{font-size:13px;font-weight:500;color:var(--text-muted);line-height:1.72;}
+
+    .agent-interface{background:var(--bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .agent-ui-header{text-align:center;margin-bottom:48px;}
+    .agent-ui-header .section-lead{margin:0 auto;text-align:center;}
+    .agent-workspace{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .workspace-toolbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:var(--bg);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px;}
+    .toolbar-left{display:flex;align-items:center;gap:12px;}
+    .toolbar-dot{width:10px;height:10px;border-radius:50%;}
+    .toolbar-dot--red{background:#EF4444;}.toolbar-dot--yellow{background:#F59E0B;}.toolbar-dot--green{background:#10B981;}
+    .toolbar-title{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--text-muted);margin-left:8px;}
+    .toolbar-right{display:flex;align-items:center;gap:12px;}
+    .api-key-group{display:flex;align-items:center;gap:8px;}
+    .api-key-label{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.06em;}
+    .api-key-input{font-family:var(--font-mono);font-size:12px;padding:8px 14px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:260px;outline:none;transition:border-color 0.25s;}
+    .api-key-input:focus{border-color:var(--blue);}
+    .api-key-input::placeholder{color:var(--text-muted);opacity:0.5;}
+    .workspace-body{display:grid;grid-template-columns:1fr 1fr;min-height:520px;}
+    .input-pane{padding:24px;border-right:1px solid var(--border);display:flex;flex-direction:column;}
+    .pane-label{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+    .pane-label-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+    .data-input{flex:1;font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--text);line-height:1.7;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:20px;resize:none;outline:none;transition:border-color 0.25s;}
+    .data-input:focus{border-color:var(--blue);}
+    .data-input::placeholder{color:var(--text-muted);opacity:0.5;}
+    .input-footer{display:flex;align-items:center;justify-content:space-between;margin-top:16px;}
+    .char-count{font-size:11px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono);}
+    .analyze-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;background:var(--navy);color:#fff;font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:0.04em;border:none;border-radius:8px;cursor:pointer;transition:background 0.25s,transform 0.25s,box-shadow 0.25s;}
+    .analyze-btn:hover:not(:disabled){background:#000;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+    .analyze-btn:disabled{opacity:0.5;cursor:not-allowed;}
+    .analyze-btn .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;}
+    .analyze-btn.loading .spinner{display:block;}.analyze-btn.loading .btn-text{display:none;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .output-pane{padding:24px;display:flex;flex-direction:column;overflow-y:auto;max-height:700px;}
+    .output-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;}
+    .output-empty-icon{font-size:48px;margin-bottom:18px;opacity:0.3;}
+    .output-empty-title{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--text-muted);margin-bottom:8px;}
+    .output-empty-desc{font-size:13px;font-weight:500;color:var(--text-muted);opacity:0.7;}
+    .agent-progress{display:none;flex-direction:column;gap:8px;margin-bottom:24px;}
+    .agent-progress.active{display:flex;}
+    .progress-step{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:6px;background:var(--bg);border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text-muted);transition:all 0.3s;}
+    .progress-step.active{border-color:var(--blue);color:var(--blue);background:var(--blue-light);}
+    .progress-step.done{border-color:var(--blue);color:var(--blue);background:var(--blue-light);}
+    .progress-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background 0.3s;}
+    .progress-step.active .progress-dot{background:var(--blue);animation:pulse 1.2s ease-in-out infinite;}
+    .progress-step.done .progress-dot{background:var(--blue);}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.7);}}
+    .results-container{display:none;flex-direction:column;gap:20px;}
+    .results-container.active{display:flex;}
+    .result-section{background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .result-header{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border);}
+    .result-header-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .result-header-title{font-size:13px;font-weight:600;letter-spacing:0.06em;}
+    .result-body{padding:16px 20px;}
+    .result-item{padding:12px 0;border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--text-muted);line-height:1.65;}
+    .result-item:last-child{border-bottom:none;}
+    .result-item strong{font-weight:700;color:var(--text);}
+    .result-item-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+    .error-box{display:none;background:var(--red-light);border:1px solid rgba(192,57,43,0.2);border-radius:8px;padding:16px 20px;margin-bottom:16px;}
+    .error-box.active{display:block;}
+    .error-title{font-size:13px;font-weight:600;color:var(--red);margin-bottom:4px;}
+    .error-detail{font-size:12px;font-weight:500;color:var(--red);opacity:0.8;}
+
+    .footer{background:var(--navy);color:#fff;padding:60px 56px 36px;}
+    .footer-inner{max-width:1280px;margin:0 auto;}
+    .footer-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:24px;}
+    .footer-brand{font-family:var(--font-display);font-size:18px;font-weight:700;}
+    .footer-brand-sup{font-size:10px;font-weight:500;color:var(--blue);letter-spacing:0.12em;text-transform:uppercase;}
+    .footer-links{display:flex;gap:28px;list-style:none;}
+    .footer-links a{font-size:13px;font-weight:500;color:rgba(255,255,255,0.48);transition:color 0.25s;}
+    .footer-links a:hover{color:#fff;}
+    .footer-bottom{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.24);}
+
+    .mobile-drawer{position:fixed;inset:0 0 0 auto;width:min(320px,88vw);background:var(--navy);z-index:300;display:flex;flex-direction:column;padding:32px 36px 48px;transform:translateX(100%);transition:transform 0.42s var(--ease-spring);overflow-y:auto;}
+    .mobile-drawer.open{transform:translateX(0);}
+    .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:299;opacity:0;pointer-events:none;transition:opacity 0.35s var(--ease-out);backdrop-filter:blur(4px);}
+    .drawer-overlay.open{opacity:1;pointer-events:all;}
+    .drawer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:52px;}
+    .drawer-logo{font-family:var(--font-display);font-size:17px;font-weight:700;color:#fff;}
+    .drawer-close{background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;padding:4px;transition:color 0.3s;}
+    .drawer-close:hover{color:#fff;}
+    .drawer-links{list-style:none;display:flex;flex-direction:column;}
+    .drawer-links a{display:block;font-family:var(--font-display);font-size:24px;font-weight:700;color:rgba(255,255,255,0.65);padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.07);transition:color 0.25s,padding-left 0.25s;}
+    .drawer-links a:hover{color:#fff;padding-left:6px;}
+
+    @media(max-width:1100px){.section,.hero,.footer{padding-left:36px;padding-right:36px;}.nav{padding:0 36px;}.hero-inner{gap:48px;}.flow-grid{gap:16px;}}
+    @media(max-width:900px){.hero-inner{grid-template-columns:1fr;gap:48px;}.hero-visual{order:-1;}.uc-grid,.flow-grid{grid-template-columns:1fr;}.workspace-body{grid-template-columns:1fr;}.input-pane{border-right:none;border-bottom:1px solid var(--border);}.workspace-toolbar{flex-direction:column;align-items:flex-start;}.api-key-input{width:100%;}.footer-top{flex-direction:column;gap:24px;align-items:flex-start;}}
+    @media(max-width:680px){:root{--sp-xl:72px;}.section,.hero,.footer{padding-left:22px;padding-right:22px;}.nav{padding:0 22px;}.nav-links,.nav-cta{display:none;}.hamburger{display:flex;}.footer-links{flex-direction:column;gap:10px;}.footer-bottom{flex-direction:column;gap:12px;text-align:center;}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;transition-delay:0ms!important;}.reveal{opacity:1!important;transform:none!important;}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="./" class="nav-brand"><span class="nav-brand-sup">NUS-ISS Living Lab</span><span class="nav-brand-name">Agents Hub</span></a>
+    <ul class="nav-links"><li><a href="./">All Agents</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#use-cases">Use Cases</a></li><li><a href="#agent">Try It</a></li></ul>
+    <a href="#agent" class="nav-cta">Launch&nbsp;Agent</a>
+    <button class="hamburger" aria-label="Open menu" id="hamburger" aria-expanded="false" aria-controls="mobileDrawer"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+  <div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-label="Navigation menu" aria-modal="true">
+    <div class="drawer-header"><span class="drawer-logo">Deep Research</span><button class="drawer-close" id="drawerClose" aria-label="Close menu">&#10005;</button></div>
+    <ul class="drawer-links"><li><a href="./">Agents Hub</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#use-cases">Use Cases</a></li><li><a href="#agent">Try It</a></li></ul>
+  </div>
+
+  <section class="hero" aria-label="Hero">
+    <div class="hero-inner">
+      <div>
+        <p class="hero-eyebrow">NUS-ISS Living Lab</p>
+        <span class="hero-badge">Expert Agent</span>
+        <h1 class="hero-h1">Deep<br><mark>Research</mark>&nbsp;<em>Agent</em></h1>
+        <p class="hero-sub">From blank page to deep knowledge, instantly. Deploy an autonomous virtual research team to transform a single question into a comprehensive, multi-perspective intelligence report in minutes, not weeks.</p>
+        <div class="hero-actions">
+          <a href="#agent" class="btn btn-blue btn-arrow">Launch Agent</a>
+          <a href="#how-it-works" class="btn btn-outline">How It Works</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="flow-preview">
+          <div class="flow-preview-label"><span class="flow-dot"></span>Autonomous Research Flow</div>
+          <div class="flow-preview-item"><strong>1. Strategist</strong> interprets your brief and assigns specialist roles</div>
+          <div class="flow-preview-item"><strong>2. Six Specialists</strong> perform parallel web research from unique angles</div>
+          <div class="flow-preview-item"><strong>3. Compiler</strong> synthesises findings into an executive intelligence report</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section how" id="how-it-works" aria-labelledby="how-h">
+    <div class="section-inner">
+      <div class="how-header">
+        <p class="label reveal">Under the Hood</p>
+        <h2 class="section-h2 reveal d1" id="how-h">Continuous <em>autonomous operation</em></h2>
+        <p class="section-lead reveal d2">This isn't a chatbot conversation &mdash; it's a chain reaction. A Strategist designs the plan, six Specialists execute in parallel, and a Compiler delivers the final report.</p>
+      </div>
+      <div class="flow-grid reveal d3">
+        <div class="flow-card">
+          <div class="flow-num">01</div>
+          <h3 class="flow-card-title">Strategist</h3>
+          <p class="flow-card-desc">Interprets your brief, identifies the most productive research angles, and assigns six specialist roles &mdash; each with a unique direction to follow.</p>
+        </div>
+        <div class="flow-card">
+          <div class="flow-num">02</div>
+          <h3 class="flow-card-title">Six Specialists</h3>
+          <p class="flow-card-desc">Each specialist performs independent web research, analyses sources, and authors a formally structured report from their assigned perspective.</p>
+        </div>
+        <div class="flow-card">
+          <div class="flow-num">03</div>
+          <h3 class="flow-card-title">Compiler</h3>
+          <p class="flow-card-desc">Aggregates all specialist findings into a single executive summary, focusing on the most critical and strategically relevant insights.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section use-cases" id="use-cases" aria-labelledby="uc-h">
+    <div class="section-inner">
+      <div class="use-cases-header">
+        <p class="label reveal">When to Use</p>
+        <h2 class="section-h2 reveal d1" id="uc-h">Get up to speed, <em>quickly</em></h2>
+      </div>
+      <div class="uc-grid">
+        <article class="uc-card reveal"><div class="uc-icon">&#127758;</div><h3 class="uc-title">Market Landscape Analysis</h3><p class="uc-desc">Quickly understand a new market or category &mdash; key players, customer segments, emerging trends, and potential risks before making an entry decision.</p></article>
+        <article class="uc-card reveal d1"><div class="uc-icon">&#128269;</div><h3 class="uc-title">Competitor Deep Dive</h3><p class="uc-desc">Go beyond the homepage to build a detailed profile of a competitor's strategy, product portfolio, recent activities, and market perception.</p></article>
+        <article class="uc-card reveal d2"><div class="uc-icon">&#128218;</div><h3 class="uc-title">Rapid Topic Mastery</h3><p class="uc-desc">Get up to speed on a complex subject in minutes to inform thought leadership, white papers, or strategic planning sessions.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section agent-interface" id="agent" aria-labelledby="agent-h">
+    <div class="section-inner">
+      <div class="agent-ui-header">
+        <p class="label reveal">Interactive Agent</p>
+        <h2 class="section-h2 reveal d1" id="agent-h">Try the Deep <em>Research Agent</em></h2>
+        <p class="section-lead reveal d2">Enter your research question. The agent will deploy a virtual research team and return a comprehensive intelligence report.</p>
+      </div>
+      <div class="agent-workspace reveal d3">
+        <div class="workspace-toolbar">
+          <div class="toolbar-left"><span class="toolbar-dot toolbar-dot--red"></span><span class="toolbar-dot toolbar-dot--yellow"></span><span class="toolbar-dot toolbar-dot--green"></span><span class="toolbar-title">deep-research-agent v1.0</span></div>
+          <div class="toolbar-right"></div>
+        </div>
+        <div class="workspace-body">
+          <div class="input-pane">
+            <div class="pane-label"><span class="pane-label-dot"></span>Research Question</div>
+            <textarea class="data-input" id="dataInput" placeholder="Enter your research question or brief...
+
+Examples:
+&#8226; &quot;Map the competitive landscape for AI-powered customer service platforms in Southeast Asia&quot;
+&#8226; &quot;What is the current state of tokenization in supply chain management?&quot;
+&#8226; &quot;Deep dive on Competitor X: strategy, product portfolio, recent moves, and market perception&quot;" spellcheck="false"></textarea>
+            <div class="input-footer">
+              <span class="char-count" id="charCount">0 characters</span>
+              <button class="analyze-btn" id="analyzeBtn" type="button"><span class="btn-text">Deploy Research Team</span><span class="spinner"></span></button>
+            </div>
+          </div>
+          <div class="output-pane" id="outputPane">
+            <div class="output-empty" id="outputEmpty"><div class="output-empty-icon">&#128218;</div><div class="output-empty-title">Awaiting Brief</div><div class="output-empty-desc">Enter a research question to deploy the team</div></div>
+            <div class="error-box" id="errorBox"><div class="error-title" id="errorTitle">Error</div><div class="error-detail" id="errorDetail"></div></div>
+            <div class="agent-progress" id="agentProgress">
+              <div class="progress-step" id="step-1"><span class="progress-dot"></span>Strategist &mdash; designing research plan</div>
+              <div class="progress-step" id="step-2"><span class="progress-dot"></span>Specialists &mdash; executing parallel research</div>
+              <div class="progress-step" id="step-3"><span class="progress-dot"></span>Compiler &mdash; synthesising intelligence report</div>
+            </div>
+            <div class="results-container" id="resultsContainer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="footer-inner">
+    <div class="footer-top"><div><div class="footer-brand-sup">NUS-ISS</div><div class="footer-brand">Living Lab &mdash; Deep Research Agent</div></div>
+    <ul class="footer-links"><li><a href="./">Agents Hub</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#agent">Launch Agent</a></li></ul></div>
+    <div class="footer-bottom"><span>&copy; 2025 National University of Singapore.</span><span>Built by NUS-ISS Living Lab</span></div>
+  </div></footer>
+
+  <script>
+    const revealObserver=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');revealObserver.unobserve(e.target);}});},{threshold:0.08,rootMargin:'0px 0px -32px 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+    document.querySelectorAll('a[href^="#"]').forEach(l=>{l.addEventListener('click',e=>{const id=l.getAttribute('href');if(id==='#')return;const t=document.querySelector(id);if(!t)return;e.preventDefault();window.scrollTo({top:t.offsetTop-document.querySelector('.nav').offsetHeight,behavior:'smooth'});});});
+    (function(){const h=document.getElementById('hamburger'),d=document.getElementById('mobileDrawer'),o=document.getElementById('drawerOverlay'),c=document.getElementById('drawerClose');function op(){d.classList.add('open');o.classList.add('open');h.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';c.focus();}function cl(){d.classList.remove('open');o.classList.remove('open');h.setAttribute('aria-expanded','false');document.body.style.overflow='';h.focus();}h.addEventListener('click',op);c.addEventListener('click',cl);o.addEventListener('click',cl);d.querySelectorAll('a').forEach(a=>a.addEventListener('click',cl));d.addEventListener('keydown',e=>{if(e.key==='Escape')cl();});})();
+
+    const dataInput=document.getElementById('dataInput'),charCount=document.getElementById('charCount');
+    dataInput.addEventListener('input',()=>{const l=dataInput.value.length;charCount.textContent=l.toLocaleString()+' character'+(l!==1?'s':'');});
+
+    const analyzeBtn=document.getElementById('analyzeBtn'),outputEmpty=document.getElementById('outputEmpty'),agentProgress=document.getElementById('agentProgress'),resultsContainer=document.getElementById('resultsContainer'),errorBox=document.getElementById('errorBox'),errorTitle=document.getElementById('errorTitle'),errorDetail=document.getElementById('errorDetail');
+    function setStep(id,s){const el=document.getElementById(id);el.classList.remove('active','done');if(s)el.classList.add(s);}
+    function showError(t,d){errorBox.classList.add('active');errorTitle.textContent=t;errorDetail.textContent=d;}
+    function hideError(){errorBox.classList.remove('active');}
+    function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+    const SYSTEM_PROMPT=`You are the Deep Research Agent — an autonomous virtual research team that transforms a single question into a comprehensive, multi-perspective intelligence report.
+
+You operate as three roles in sequence:
+
+## 1. STRATEGIST
+Interpret the user's research question. Identify the 6 most productive research angles to investigate. Each angle should explore a distinct dimension of the topic.
+
+## 2. SIX SPECIALISTS
+For each of the 6 angles, act as a specialist researcher:
+- Gather key facts, data points, players, trends, and evidence
+- Identify what is well-established vs. emerging vs. uncertain
+- Note sources and confidence level
+- Author a structured finding for each angle
+
+## 3. COMPILER
+Synthesise all specialist findings into a cohesive executive intelligence report:
+- Extract the most critical and strategically relevant insights
+- Identify patterns, contradictions, and gaps across angles
+- Provide actionable implications and recommended next steps
+
+## OUTPUT FORMAT
+Respond in valid JSON:
+{
+  "research_question": "The interpreted research question",
+  "angles": ["Angle 1 name", "Angle 2 name", ...],
+  "executive_summary": "3-5 sentence overview of key findings",
+  "findings": [
+    {
+      "angle": "Angle name",
+      "key_insight": "One-sentence headline finding",
+      "detail": "2-4 sentence detailed finding with evidence",
+      "confidence": "high|medium|low",
+      "sources_note": "Type of sources this would draw from"
+    }
+  ],
+  "patterns_and_gaps": ["Cross-cutting pattern or gap 1", "Pattern 2"],
+  "strategic_implications": ["Implication 1", "Implication 2"],
+  "recommended_next_steps": ["Next step 1", "Next step 2"],
+  "caveats": "Limitations, what needs primary research, confidence assessment"
+}
+
+Rules:
+- Return ONLY valid JSON. No markdown outside the JSON.
+- Generate exactly 6 findings, one per research angle.
+- Be specific and commercially useful — avoid generic observations.
+- Distinguish between established facts, emerging signals, and speculation.
+- Note what would require primary research to verify.
+- Do not fabricate specific statistics, company financials, or source citations.`;
+
+    async function callClaude(systemPrompt,userMessage){
+      const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:systemPrompt,message:userMessage})});
+      const data=await res.json();
+      if(!res.ok) throw new Error(data.error||'API request failed');
+      return data.content[0].text;
+    }
+
+    function renderResults(p){
+      resultsContainer.innerHTML='';
+      if(p.executive_summary){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--blue)"></span><span class="result-header-title" style="color:var(--blue)">EXECUTIVE SUMMARY</span></div><div class="result-body"><div class="result-item" style="color:var(--text);">'+escapeHtml(p.executive_summary)+'</div></div>';resultsContainer.appendChild(s);}
+      if(p.findings&&p.findings.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--navy)"></span><span class="result-header-title" style="color:var(--navy)">SPECIALIST FINDINGS</span><span style="margin-left:auto;font-size:11px;font-weight:600;color:var(--text-muted);font-family:var(--font-mono);">'+p.findings.length+' angles</span></div><div class="result-body">'+p.findings.map(f=>'<div class="result-item"><div class="result-item-title">'+escapeHtml(f.angle)+'</div><div style="font-weight:600;color:var(--blue);margin-bottom:4px;">'+escapeHtml(f.key_insight)+'</div><div>'+escapeHtml(f.detail)+'</div><div style="margin-top:6px;font-size:11px;color:var(--text-muted);">Confidence: '+escapeHtml(f.confidence||'')+'</div></div>').join('')+'</div>';resultsContainer.appendChild(s);}
+      if(p.patterns_and_gaps&&p.patterns_and_gaps.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--amber)"></span><span class="result-header-title" style="color:var(--amber)">PATTERNS &amp; GAPS</span></div><div class="result-body">'+p.patterns_and_gaps.map(i=>'<div class="result-item">'+escapeHtml(i)+'</div>').join('')+'</div>';resultsContainer.appendChild(s);}
+      if(p.strategic_implications&&p.strategic_implications.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--navy)"></span><span class="result-header-title" style="color:var(--navy)">STRATEGIC IMPLICATIONS</span></div><div class="result-body">'+p.strategic_implications.map(i=>'<div class="result-item" style="color:var(--text);">'+escapeHtml(i)+'</div>').join('')+'</div>';resultsContainer.appendChild(s);}
+      if(p.recommended_next_steps&&p.recommended_next_steps.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--blue)"></span><span class="result-header-title" style="color:var(--blue)">RECOMMENDED NEXT STEPS</span></div><div class="result-body">'+p.recommended_next_steps.map(i=>'<div class="result-item" style="color:var(--text);font-weight:600;">'+escapeHtml(i)+'</div>').join('')+'</div>';resultsContainer.appendChild(s);}
+      if(p.caveats){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--text-muted)"></span><span class="result-header-title" style="color:var(--text-muted)">CAVEATS</span></div><div class="result-body"><div class="result-item">'+escapeHtml(p.caveats)+'</div></div>';resultsContainer.appendChild(s);}
+      resultsContainer.classList.add('active');
+    }
+
+    analyzeBtn.addEventListener('click',async()=>{
+      const inputText=dataInput.value.trim();hideError();
+      if(!inputText||inputText.length<20){showError('Input Too Short','Please provide a research question of at least 20 characters.');return;}
+      outputEmpty.style.display='none';resultsContainer.classList.remove('active');resultsContainer.innerHTML='';
+      agentProgress.classList.add('active');analyzeBtn.classList.add('loading');analyzeBtn.disabled=true;
+      setStep('step-1','active');setStep('step-2','');setStep('step-3','');
+      try{
+        const t1=setTimeout(()=>{setStep('step-1','done');setStep('step-2','active');},3000);
+        const t2=setTimeout(()=>{setStep('step-2','done');setStep('step-3','active');},8000);
+        const result=await callClaude(SYSTEM_PROMPT,inputText);
+        clearTimeout(t1);clearTimeout(t2);setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
+        let parsed;try{const m=result.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error('No JSON');}catch(e){throw new Error('Failed to parse agent response.');}
+        await new Promise(r=>setTimeout(r,400));agentProgress.classList.remove('active');renderResults(parsed);
+      }catch(err){agentProgress.classList.remove('active');outputEmpty.style.display='none';showError('Research Failed',err.message);}
+      finally{analyzeBtn.classList.remove('loading');analyzeBtn.disabled=false;}
+    });
+  </script>
+</body>
+</html>

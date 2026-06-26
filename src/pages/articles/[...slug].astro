@@ -33,13 +33,13 @@ function formatDate(d: Date) {
 
   <hr class="hr" />
 
-  <article class="section">
+  <article class="section" id="articleBody">
     <div class="wrap--prose article-body">
       <Content />
     </div>
   </article>
 
-  <div class="article-footer">
+  <div class="article-footer" id="articleFooter">
     <div class="wrap--prose">
       <a href="/articles" class="btn btn--ghost">&larr; Back to Articles</a>
       <a href="/contact" class="btn btn--primary">Get In Touch</a>
@@ -49,6 +49,7 @@ function formatDate(d: Date) {
 </Base>
 
 <style>
+  /* ── Article header ── */
   .article-header {
     padding: var(--sp-10) 0 var(--sp-8);
     background: var(--surface);

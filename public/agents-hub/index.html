@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agents Hub — NUS-ISS Living Lab</title>
+  <meta name="description" content="A curated collection of AI-powered agents built by NUS-ISS Living Lab — each designed to solve a specific strategic challenge.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F2F2F2;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
+      --blue:         #1E88C7;
+      --blue-light:   #E8F4FB;
+      --orange:       #1E88C7;
+      --orange-light: #E8F4FB;
+      --teal:         #1E88C7;
+      --teal-light:   #E8F4FB;
+      --purple:       #4A6F8A;
+      --purple-light: #EEF2F6;
+      --text:         #111827;
+      --text-muted:   #4B5563;
+      --border:       #DADADA;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+      --nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 500;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    img  { display: block; max-width: 100%; }
+    a    { color: inherit; text-decoration: none; }
+    h1, h2, h3, h4, .label { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* ── NAVIGATION ─────────────────────────────── */
+    .nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 200;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 56px;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+
+    .nav-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .nav-brand-sup {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--orange);
+    }
+    .nav-brand-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--navy);
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--navy); }
+
+    .nav-cta {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      border-radius: 6px;
+      background: var(--blue);
+      color: #fff !important;
+      transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .nav-cta:hover {
+      background: #1670A6;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(30,136,199,0.38);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: var(--text);
+      border-radius: 2px;
+    }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero {
+      position: relative;
+      padding: calc(var(--nav-h) + 72px) 56px 72px;
+      background: var(--bg);
+      overflow: hidden;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-geo { display: none; }
+
+    .hero-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 24px;
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      width: 28px;
+      height: 2px;
+      background: var(--blue);
+    }
+
+    .hero-h1 {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: -0.025em;
+      color: var(--navy);
+      margin-bottom: 20px;
+    }
+    .hero-h1 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--navy-mid);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-muted);
+      line-height: 1.78;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .hero-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 32px;
+      padding: 10px 22px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .hero-count-num {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--blue);
+    }
+
+    /* ── AGENTS GRID ─────────────────────────────── */
+    .agents-section {
+      padding: 80px 56px 112px;
+    }
+    .agents-section-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .agents-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+
+    .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+
+    .section-h2 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.5vw, 42px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .section-h2 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--navy-mid);
+    }
+
+    .section-lead {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 420px;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 8px 18px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .filter-btn:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+    .filter-btn.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
+    }
+
+    /* ── AGENT CARDS ─────────────────────────────── */
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .agent-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 32px 36px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.4s var(--ease-spring), box-shadow 0.4s var(--ease-spring), border-color 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .agent-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,30,76,0.12);
+      border-color: transparent;
+    }
+
+    .agent-card-stripe {
+      position: absolute;
+      top: 0;
+      left: 24px;
+      right: 24px;
+      height: 4px;
+      border-radius: 0 0 4px 4px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .agent-card:hover .agent-card-stripe { opacity: 1; }
+
+    .agent-card--orange .agent-card-stripe { background: var(--navy); }
+    .agent-card--blue .agent-card-stripe { background: var(--blue); }
+    .agent-card--teal .agent-card-stripe { background: var(--blue); }
+    .agent-card--purple .agent-card-stripe { background: var(--navy-mid); }
+
+    .agent-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 24px;
+      transition: transform 0.4s var(--ease-spring);
+    }
+    .agent-card:hover .agent-icon { transform: scale(1.08); }
+
+    .agent-card--orange .agent-icon { background: #E8EEF4; }
+    .agent-card--blue .agent-icon   { background: var(--blue-light); }
+    .agent-card--teal .agent-icon   { background: var(--blue-light); }
+    .agent-card--purple .agent-icon { background: var(--purple-light); }
+
+    .agent-card-badges {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .agent-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .badge-level {
+      background: var(--navy);
+      color: #fff;
+    }
+    .badge-category {
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .agent-card-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.18;
+      margin-bottom: 10px;
+    }
+
+    .agent-card-desc {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      line-height: 1.72;
+      margin-bottom: 24px;
+      flex: 1;
+    }
+
+    .agent-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .agent-card-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .agent-tag {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    .agent-card-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: background 0.25s, color 0.25s, transform 0.25s;
+    }
+    .agent-card:hover .agent-card-arrow {
+      background: var(--navy);
+      color: #fff;
+      transform: translateX(3px);
+    }
+
+    /* ── COMING SOON CARD ────────────────────────── */
+    .agent-card--soon {
+      border-style: dashed;
+      cursor: default;
+      background: var(--bg);
+    }
+    .agent-card--soon:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: var(--border);
+    }
+
+    .agent-icon--soon {
+      background: var(--bg) !important;
+      border: 2px dashed var(--border);
+      color: var(--text-muted);
+      font-size: 28px;
+    }
+    .agent-card--soon:hover .agent-icon { transform: none; }
+
+    .agent-card--soon .agent-card-title {
+      color: var(--text-muted);
+    }
+    .agent-card--soon .agent-card-desc {
+      opacity: 0.7;
+    }
+    .agent-card--soon .agent-card-arrow {
+      display: none;
+    }
+
+    .soon-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--border);
+      color: var(--text-muted);
+    }
+
+    /* ── SCROLL REVEAL ───────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.8s var(--ease-spring), transform 0.8s var(--ease-spring);
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .d1 { transition-delay: 0.08s; }
+    .d2 { transition-delay: 0.16s; }
+    .d3 { transition-delay: 0.24s; }
+    .d4 { transition-delay: 0.32s; }
+    .d5 { transition-delay: 0.40s; }
+
+    /* ── CTA BANNER ──────────────────────────────── */
+    .cta-banner {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 72px 56px;
+    }
+    .cta-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .cta-text h3 {
+      font-family: var(--font-display);
+      font-size: clamp(22px, 2.5vw, 32px);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .cta-text h3 em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--text-muted);
+    }
+    .cta-text p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .btn-orange {
+      padding: 16px 36px;
+      background: var(--blue);
+      color: #fff;
+    }
+    .btn-orange:hover {
+      background: #1670A6;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(30,136,199,0.35);
+    }
+    .btn-arrow::after {
+      content: '\2192';
+      font-size: 15px;
+    }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    .footer {
+      background: var(--navy);
+      color: #fff;
+      padding: 60px 56px 36px;
+    }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      margin-bottom: 24px;
+    }
+
+    .footer-brand {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .footer-brand-sup {
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--orange);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.48);
+      transition: color 0.25s;
+    }
+    .footer-links a:hover { color: #fff; }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(255,255,255,0.24);
+    }
+
+    /* ── MOBILE DRAWER ───────────────────────────── */
+    .mobile-drawer {
+      position: fixed;
+      inset: 0 0 0 auto;
+      width: min(320px, 88vw);
+      background: var(--navy);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 36px 48px;
+      transform: translateX(100%);
+      transition: transform 0.42s var(--ease-spring);
+      overflow-y: auto;
+    }
+    .mobile-drawer.open { transform: translateX(0); }
+
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 15, 40, 0.6);
+      z-index: 299;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s var(--ease-out);
+      backdrop-filter: blur(4px);
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 52px;
+    }
+    .drawer-logo {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .drawer-close {
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.5);
+      font-size: 20px; line-height: 1; padding: 4px;
+      transition: color 0.3s;
+    }
+    .drawer-close:hover { color: #fff; }
+
+    .drawer-links { list-style: none; display: flex; flex-direction: column; }
+    .drawer-links a {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.65);
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      transition: color 0.25s, padding-left 0.25s;
+    }
+    .drawer-links a:hover { color: #fff; padding-left: 6px; }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 1100px) {
+      .hero, .agents-section, .cta-banner, .footer { padding-left: 36px; padding-right: 36px; }
+      .nav { padding: 0 36px; }
+    }
+
+    @media (max-width: 900px) {
+      .agents-grid { grid-template-columns: repeat(2, 1fr); }
+      .agents-header { flex-direction: column; align-items: flex-start; }
+      .cta-inner { flex-direction: column; text-align: center; }
+      .footer-top { flex-direction: column; gap: 24px; align-items: flex-start; }
+    }
+
+    @media (max-width: 680px) {
+      .hero, .agents-section, .cta-banner, .footer { padding-left: 22px; padding-right: 22px; }
+      .nav { padding: 0 22px; }
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .agents-grid { grid-template-columns: 1fr; }
+      .footer-links { flex-direction: column; gap: 10px; }
+      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+      }
+      .reveal { opacity: 1 !important; transform: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAVIGATION ──────────────────────────────── -->
+  <nav class="nav">
+    <a href="living-lab.html" class="nav-brand">
+      <span class="nav-brand-sup">NUS-ISS</span>
+      <span class="nav-brand-name">Living Lab</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="living-lab.html">Home</a></li>
+      <li><a href="#agents">Agents</a></li>
+      <li><a href="living-lab.html#projects">Projects</a></li>
+      <li><a href="living-lab.html#contact">Contact</a></li>
+    </ul>
+    <a href="living-lab.html#apply" class="nav-cta">Partner&nbsp;With&nbsp;Us</a>
+    <button class="hamburger" aria-label="Open menu" id="hamburger" aria-expanded="false" aria-controls="mobileDrawer">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+  <div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-label="Navigation menu" aria-modal="true">
+    <div class="drawer-header">
+      <span class="drawer-logo">Agents Hub</span>
+      <button class="drawer-close" id="drawerClose" aria-label="Close menu">&#10005;</button>
+    </div>
+    <ul class="drawer-links">
+      <li><a href="living-lab.html">Living Lab Home</a></li>
+      <li><a href="#agents">All Agents</a></li>
+      <li><a href="living-lab.html#projects">Projects</a></li>
+      <li><a href="living-lab.html#contact">Contact</a></li>
+    </ul>
+  </div>
+
+
+  <!-- ── HERO ────────────────────────────────────── -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-geo" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <p class="hero-eyebrow">NUS-ISS Living Lab</p>
+      <h1 class="hero-h1">Agents <em>Hub</em></h1>
+      <p class="hero-sub">
+        A curated collection of AI-powered agents — each designed to solve a specific strategic challenge. Built by NUS-ISS Living Lab to augment human thinking, not replace it.
+      </p>
+      <div class="hero-count">
+        <span class="hero-count-num" id="agentCount">1</span>
+        <span>agent live &middot; more coming soon</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── AGENTS GRID ─────────────────────────────── -->
+  <section class="agents-section" id="agents" aria-labelledby="agents-h">
+    <div class="agents-section-inner">
+
+      <div class="agents-header">
+        <div>
+          <p class="label reveal">Browse Agents</p>
+          <h2 class="section-h2 reveal d1" id="agents-h">Purpose-built <em>AI agents</em></h2>
+        </div>
+        <div class="filter-bar reveal d2">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="strategy">Strategy</button>
+          <button class="filter-btn" data-filter="research">Research</button>
+          <button class="filter-btn" data-filter="creative">Creative</button>
+          <button class="filter-btn" data-filter="data">Data</button>
+        </div>
+      </div>
+
+      <div class="agents-grid">
+
+        <!-- ═══ STRATEGIC SIGNALS AGENT ═══ -->
+        <a href="strategic-signals-agent.html" class="agent-card agent-card--orange reveal" data-category="strategy research">
+          <div class="agent-card-stripe"></div>
+          <div class="agent-icon">&#9889;</div>
+          <div class="agent-card-badges">
+            <span class="agent-badge badge-level">Expert</span>
+            <span class="agent-badge badge-category">Strategy</span>
+          </div>
+          <h3 class="agent-card-title">Strategic Signals Agent</h3>
+          <p class="agent-card-desc">
+            Separates the Important from the Interesting. Interrogates your data through 10 distinct analytical personas to surface critical signals and creative outliers.
+          </p>
+          <div class="agent-card-footer">
+            <div class="agent-card-tags">
+              <span class="agent-tag">Multi-agent</span>
+              <span class="agent-tag">Analysis</span>
+              <span class="agent-tag">Reports</span>
+            </div>
+            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
+          </div>
+        </a>
+
+        <!-- ═══ CONSUMER PERSONA AGENT ═══ -->
+        <a href="persona-agent.html" class="agent-card agent-card--teal reveal d1" data-category="research creative strategy">
+          <div class="agent-card-stripe"></div>
+          <div class="agent-icon">&#128100;</div>
+          <div class="agent-card-badges">
+            <span class="agent-badge badge-level">Insight</span>
+            <span class="agent-badge badge-category">Research</span>
+          </div>
+          <h3 class="agent-card-title">Consumer Persona Agent</h3>
+          <p class="agent-card-desc">
+            Simulate realistic consumer reactions, synthesise trends, and pressure-test concepts through AI-powered persona modelling across five distinct modes.
+          </p>
+          <div class="agent-card-footer">
+            <div class="agent-card-tags">
+              <span class="agent-tag">Personas</span>
+              <span class="agent-tag">Concepts</span>
+              <span class="agent-tag">Trends</span>
+            </div>
+            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
+          </div>
+        </a>
+
+        <!-- ═══ DEEP RESEARCH AGENT ═══ -->
+        <a href="deep-research-agent.html" class="agent-card agent-card--blue reveal d2" data-category="research strategy">
+          <div class="agent-card-stripe"></div>
+          <div class="agent-icon">&#128218;</div>
+          <div class="agent-card-badges">
+            <span class="agent-badge badge-level">Expert</span>
+            <span class="agent-badge badge-category">Research</span>
+          </div>
+          <h3 class="agent-card-title">Deep Research Agent</h3>
+          <p class="agent-card-desc">
+            Deploy an autonomous virtual research team to transform a single question into a comprehensive, multi-perspective intelligence report in minutes.
+          </p>
+          <div class="agent-card-footer">
+            <div class="agent-card-tags">
+              <span class="agent-tag">Autonomous</span>
+              <span class="agent-tag">Multi-agent</span>
+              <span class="agent-tag">Reports</span>
+            </div>
+            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
+          </div>
+        </a>
+
+        <!-- ═══ COMING SOON — PLACEHOLDER 3 ═══ -->
+        <div class="agent-card agent-card--soon agent-card--purple reveal d3" data-category="data">
+          <div class="agent-card-stripe"></div>
+          <div class="agent-icon agent-icon--soon">&#128202;</div>
+          <div class="agent-card-badges">
+            <span class="agent-badge soon-badge">Coming Soon</span>
+          </div>
+          <h3 class="agent-card-title">Trend Radar</h3>
+          <p class="agent-card-desc">
+            Monitors and classifies emerging trends from social listening, news, and market data — separating signal from noise in real time.
+          </p>
+          <div class="agent-card-footer">
+            <div class="agent-card-tags">
+              <span class="agent-tag">Trends</span>
+              <span class="agent-tag">Real-time</span>
+            </div>
+            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
+          </div>
+        </div>
+
+        <!-- ═══ COMING SOON — PLACEHOLDER 4 ═══ -->
+        <div class="agent-card agent-card--soon agent-card--orange reveal d4" data-category="strategy">
+          <div class="agent-card-stripe"></div>
+          <div class="agent-icon agent-icon--soon">&#127919;</div>
+          <div class="agent-card-badges">
+            <span class="agent-badge soon-badge">Coming Soon</span>
+          </div>
+          <h3 class="agent-card-title">Competitive Intelligence Agent</h3>
+          <p class="agent-card-desc">
+            Analyses competitor positioning, messaging, and market moves to generate actionable intelligence maps and strategic counter-plays.
+          </p>
+          <div class="agent-card-footer">
+            <div class="agent-card-tags">
+              <span class="agent-tag">Competitive</span>
+              <span class="agent-tag">Intel</span>
+            </div>
+            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
+          </div>
+        </div>
+
+        <!-- ═══ COMING SOON — PLACEHOLDER 5 ═══ -->
+        <div class="agent-card agent-card--soon agent-card--blue reveal d5" data-category="creative research">
+          <div class="agent-card-stripe"></div>
+          <div class="agent-icon agent-icon--soon">&#9997;&#65039;</div>
+          <div class="agent-card-badges">
+            <span class="agent-badge soon-badge">Coming Soon</span>
+          </div>
+          <h3 class="agent-card-title">Narrative Architect</h3>
+          <p class="agent-card-desc">
+            Transforms raw data and insights into compelling strategic narratives, presentations, and stakeholder stories with structured argumentation.
+          </p>
+          <div class="agent-card-footer">
+            <div class="agent-card-tags">
+              <span class="agent-tag">Storytelling</span>
+              <span class="agent-tag">Decks</span>
+            </div>
+            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── CTA BANNER ──────────────────────────────── -->
+  <section class="cta-banner reveal">
+    <div class="cta-inner">
+      <div class="cta-text">
+        <h3>Have an agent idea? <em>Let's build it.</em></h3>
+        <p>We collaborate with enterprises to design custom AI agents for specific strategic challenges.</p>
+      </div>
+      <a href="living-lab.html#apply" class="btn btn-orange btn-arrow">Partner With Us</a>
+    </div>
+  </section>
+
+
+  <!-- ── FOOTER ──────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-sup">NUS-ISS</div>
+          <div class="footer-brand">Living Lab &mdash; Agents Hub</div>
+        </div>
+        <ul class="footer-links">
+          <li><a href="living-lab.html">Living Lab Home</a></li>
+          <li><a href="#agents">All Agents</a></li>
+          <li><a href="living-lab.html#apply">Partner With Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2025 National University of Singapore. All rights reserved.</span>
+        <span>Built by NUS-ISS Living Lab</span>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ── JAVASCRIPT ──────────────────────────────── -->
+  <script>
+    /* ── SCROLL REVEAL ───────────────────────────── */
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          revealObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    /* ── SMOOTH ANCHOR SCROLL ────────────────────── */
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const id = link.getAttribute('href');
+        if (id === '#') return;
+        const target = document.querySelector(id);
+        if (!target) return;
+        e.preventDefault();
+        const navH = document.querySelector('.nav').offsetHeight;
+        window.scrollTo({ top: target.offsetTop - navH, behavior: 'smooth' });
+      });
+    });
+
+    /* ── FILTER BAR ──────────────────────────────── */
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const agentCards = document.querySelectorAll('.agent-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter;
+        agentCards.forEach(card => {
+          if (filter === 'all') {
+            card.style.display = '';
+          } else {
+            const cats = (card.dataset.category || '').split(' ');
+            card.style.display = cats.includes(filter) ? '' : 'none';
+          }
+        });
+      });
+    });
+
+    /* ── LIVE AGENT COUNT ────────────────────────── */
+    const liveCount = document.querySelectorAll('.agent-card:not(.agent-card--soon)').length;
+    const countEl = document.getElementById('agentCount');
+    if (countEl) countEl.textContent = liveCount;
+
+    /* ── MOBILE DRAWER ───────────────────────────── */
+    (function initDrawer() {
+      const hamburger = document.getElementById('hamburger');
+      const drawer    = document.getElementById('mobileDrawer');
+      const overlay   = document.getElementById('drawerOverlay');
+      const closeBtn  = document.getElementById('drawerClose');
+
+      function openDrawer() {
+        drawer.classList.add('open');
+        overlay.classList.add('open');
+        hamburger.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+        closeBtn.focus();
+      }
+      function closeDrawer() {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        hamburger.focus();
+      }
+
+      hamburger.addEventListener('click', openDrawer);
+      closeBtn.addEventListener('click', closeDrawer);
+      overlay.addEventListener('click', closeDrawer);
+      drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
+      drawer.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+    })();
+  </script>
+</body>
+</html>
