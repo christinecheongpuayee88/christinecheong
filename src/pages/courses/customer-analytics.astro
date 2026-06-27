@@ -808,6 +808,49 @@ import Base from '../../layouts/Base.astro';
   }
   .sub-panel--hidden { display: none; }
 
+  /* ── Sub-panel navigation (Next / Back) ──────────────── */
+  .sub-nav {
+    margin-top: var(--sp-7);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--border);
+  }
+  .sub-nav__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sub-nav-btn {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    background: none;
+    border: 1.5px solid var(--border);
+    padding: 12px 24px;
+    border-radius: var(--r);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all var(--ease);
+  }
+  .sub-nav-btn:hover {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    transform: translateY(-1px);
+  }
+  .sub-nav-btn--next {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .sub-nav-btn--next:hover {
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+    box-shadow: 0 4px 16px rgba(45,91,227,.25);
+  }
+  .sub-nav-arrow { font-size: 16px; }
+
   /* ── Topic grid ──────────────────────────────────────── */
   .topic-grid {
     display: grid;
@@ -1055,31 +1098,57 @@ import Base from '../../layouts/Base.astro';
   tabs.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.tab;
-
       tabs.forEach(t => t.classList.remove('tab-btn--active'));
       btn.classList.add('tab-btn--active');
-
       panels.forEach(p => {
         p.classList.toggle('tab-panel--hidden', p.id !== `panel-${target}`);
       });
-
       const activePanel = document.getElementById(`panel-${target}`);
       const firstSubTab = activePanel.querySelector('.sub-tab');
       if (firstSubTab) firstSubTab.click();
     });
   });
 
+  function activateSubTab(btn) {
+    const target = btn.dataset.sub;
+    const bar = btn.closest('.sub-tab-bar') || btn.closest('.tab-panel').querySelector('.sub-tab-bar');
+    const panel = bar.closest('.tab-panel');
+    bar.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('sub-tab--active'));
+    btn.classList.add('sub-tab--active');
+    panel.querySelectorAll('.sub-panel').forEach(sp => {
+      sp.classList.toggle('sub-panel--hidden', sp.id !== target);
+    });
+    const tabBar = document.getElementById('tab-bar');
+    if (tabBar) tabBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   document.querySelectorAll('.sub-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.sub;
-      const bar = btn.closest('.sub-tab-bar');
-      const panel = bar.closest('.tab-panel');
+    btn.addEventListener('click', () => activateSubTab(btn));
+  });
 
-      bar.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('sub-tab--active'));
-      btn.classList.add('sub-tab--active');
+  document.querySelectorAll('.tab-panel').forEach(panel => {
+    const subTabs = Array.from(panel.querySelectorAll('.sub-tab'));
+    const subPanels = Array.from(panel.querySelectorAll('.sub-panel'));
 
-      panel.querySelectorAll('.sub-panel').forEach(sp => {
-        sp.classList.toggle('sub-panel--hidden', sp.id !== target);
+    subPanels.forEach((sp, i) => {
+      const nav = document.createElement('div');
+      nav.className = 'sub-nav';
+      nav.innerHTML = '<div class="wrap"><div class="sub-nav__inner">'
+        + (i > 0
+          ? `<button class="sub-nav-btn sub-nav-btn--back" data-dir="-1"><span class="sub-nav-arrow">←</span> ${subTabs[i - 1].textContent.trim()}</button>`
+          : '<span></span>')
+        + (i < subPanels.length - 1
+          ? `<button class="sub-nav-btn sub-nav-btn--next" data-dir="1">${subTabs[i + 1].textContent.trim()} <span class="sub-nav-arrow">→</span></button>`
+          : '<span></span>')
+        + '</div></div>';
+      sp.appendChild(nav);
+
+      nav.querySelectorAll('.sub-nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const dir = parseInt(btn.dataset.dir);
+          const nextTab = subTabs[i + dir];
+          if (nextTab) activateSubTab(nextTab);
+        });
       });
     });
   });
