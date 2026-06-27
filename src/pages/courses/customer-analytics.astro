@@ -808,48 +808,7 @@ import Base from '../../layouts/Base.astro';
   }
   .sub-panel--hidden { display: none; }
 
-  /* ── Sub-panel navigation (Next / Back) ──────────────── */
-  .sub-nav {
-    margin-top: var(--sp-7);
-    padding-top: var(--sp-5);
-    border-top: 1px solid var(--border);
-  }
-  .sub-nav__inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .sub-nav-btn {
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--accent);
-    background: none;
-    border: 1.5px solid var(--border);
-    padding: 12px 24px;
-    border-radius: var(--r);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all var(--ease);
-  }
-  .sub-nav-btn:hover {
-    border-color: var(--accent);
-    background: var(--accent-light);
-    transform: translateY(-1px);
-  }
-  .sub-nav-btn--next {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
-  .sub-nav-btn--next:hover {
-    background: var(--accent-dark);
-    border-color: var(--accent-dark);
-    box-shadow: 0 4px 16px rgba(45,91,227,.25);
-  }
-  .sub-nav-arrow { font-size: 16px; }
+  /* Sub-nav styles moved to global block below (JS-injected elements) */
 
   /* ── Topic grid ──────────────────────────────────────── */
   .topic-grid {
@@ -1091,6 +1050,64 @@ import Base from '../../layouts/Base.astro';
   }
 </style>
 
+<style is:global>
+  .sub-nav {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .sub-nav .wrap {
+    width: 100%;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 var(--sp-5);
+  }
+  .sub-nav__inner {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+  }
+  .sub-nav__inner:has(.sub-nav-btn--back) {
+    justify-content: space-between;
+  }
+  .sub-nav-btn {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-2);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    padding: 14px 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+  }
+  .sub-nav-btn:hover {
+    border-color: var(--text-3);
+    background: var(--surface-alt);
+  }
+  .sub-nav-btn--next {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    padding: 14px 32px;
+    font-size: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(45,91,227,.18);
+  }
+  .sub-nav-btn--next:hover {
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(45,91,227,.30);
+  }
+  .sub-nav-arrow { font-size: 18px; }
+</style>
+
 <script>
   const tabs = document.querySelectorAll('.tab-btn');
   const panels = document.querySelectorAll('.tab-panel');
@@ -1135,11 +1152,11 @@ import Base from '../../layouts/Base.astro';
       nav.className = 'sub-nav';
       nav.innerHTML = '<div class="wrap"><div class="sub-nav__inner">'
         + (i > 0
-          ? `<button class="sub-nav-btn sub-nav-btn--back" data-dir="-1"><span class="sub-nav-arrow">←</span> ${subTabs[i - 1].textContent.trim()}</button>`
-          : '<span></span>')
+          ? `<button class="sub-nav-btn sub-nav-btn--back" data-dir="-1"><span class="sub-nav-arrow">←</span> Back: ${subTabs[i - 1].textContent.trim()}</button>`
+          : '')
         + (i < subPanels.length - 1
-          ? `<button class="sub-nav-btn sub-nav-btn--next" data-dir="1">${subTabs[i + 1].textContent.trim()} <span class="sub-nav-arrow">→</span></button>`
-          : '<span></span>')
+          ? `<button class="sub-nav-btn sub-nav-btn--next" data-dir="1">Next: ${subTabs[i + 1].textContent.trim()} <span class="sub-nav-arrow">→</span></button>`
+          : '')
         + '</div></div>';
       sp.appendChild(nav);
 
