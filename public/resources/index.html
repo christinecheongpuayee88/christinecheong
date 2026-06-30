@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agents Hub — Data Science.</title>
+  <meta name="description" content="Purpose-built AI agents for data science work — each designed to solve a specific analytical challenge.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #ffffff;
+      --surface:  #f6f6f5;
+      --border:   #e8e8e6;
+      --text:     #181816;
+      --muted:    #6b6b67;
+      --subtle:   #9b9b96;
+      --tag-bg:   #efefed;
+      --radius:   3px;
+      --nav-h:    56px;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* ── NAV ──────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      height: var(--nav-h);
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .nav-brand {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--text); font-weight: 500; }
+
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--bg);
+      background: var(--text);
+      padding: 8px 18px;
+      border-radius: 100px;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    .nav-cta:hover { opacity: 0.72; }
+
+    /* ── HERO ─────────────────────────────────── */
+    .hero {
+      padding: 72px 40px 64px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      margin-bottom: 18px;
+    }
+
+    .hero-h1 {
+      font-size: clamp(34px, 4.5vw, 52px);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+      color: var(--text);
+      max-width: 640px;
+      margin-bottom: 18px;
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--muted);
+      max-width: 500px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .hero-stat {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .hero-stat-num {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .hero-stat-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    /* ── FILTER BAR ───────────────────────────── */
+    .filter-wrap {
+      position: sticky;
+      top: var(--nav-h);
+      z-index: 100;
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .filter-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filter-inner::-webkit-scrollbar { display: none; }
+
+    .filter-btn {
+      flex-shrink: 0;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 14px 20px 12px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .filter-btn:hover { color: var(--text); }
+    .filter-btn.active {
+      color: var(--text);
+      font-weight: 500;
+      border-bottom-color: var(--text);
+    }
+
+    /* ── GRID ─────────────────────────────────── */
+    .grid-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--border);
+      background: var(--border);
+      gap: 1px;
+    }
+
+    /* ── AGENT CARD ───────────────────────────── */
+    .agent-card {
+      background: var(--bg);
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: background 0.18s;
+    }
+
+    a.agent-card { cursor: pointer; }
+    a.agent-card:hover { background: var(--surface); }
+
+    .agent-card.hidden { display: none; }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .card-category {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--subtle);
+      background: var(--tag-bg);
+      padding: 3px 9px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.022em;
+      line-height: 1.28;
+      color: var(--text);
+    }
+
+    .card-desc {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.68;
+      flex: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--subtle);
+      background: var(--tag-bg);
+      padding: 3px 7px;
+      border-radius: 2px;
+      letter-spacing: 0.01em;
+    }
+
+    .card-arrow {
+      font-size: 14px;
+      color: var(--subtle);
+      flex-shrink: 0;
+      transition: transform 0.18s, color 0.18s;
+    }
+    a.agent-card:hover .card-arrow {
+      transform: translateX(4px);
+      color: var(--text);
+    }
+
+    /* ── COMING SOON ──────────────────────────── */
+    .agent-card.soon {
+      background: var(--surface);
+    }
+
+    .card-soon-badge {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      border: 1px dashed var(--border);
+      padding: 3px 9px;
+      border-radius: 100px;
+    }
+
+    .agent-card.soon .card-title,
+    .agent-card.soon .card-desc {
+      opacity: 0.45;
+    }
+
+    /* ── CTA ──────────────────────────────────── */
+    .cta-section {
+      border-top: 1px solid var(--border);
+      padding: 72px 40px;
+    }
+
+    .cta-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 48px;
+    }
+
+    .cta-copy h2 {
+      font-size: clamp(22px, 2.8vw, 34px);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.18;
+      margin-bottom: 10px;
+    }
+
+    .cta-copy p {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 380px;
+      line-height: 1.7;
+    }
+
+    .btn {
+      display: inline-block;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--bg);
+      background: var(--text);
+      padding: 12px 28px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+      text-decoration: none;
+    }
+    .btn:hover { opacity: 0.72; }
+
+    /* ── FOOTER ───────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 40px 32px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+      padding-bottom: 24px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .footer-brand {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .footer-tagline {
+      font-size: 12px;
+      color: var(--muted);
+      max-width: 280px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--subtle);
+    }
+
+    /* ── RESPONSIVE ───────────────────────────── */
+    @media (max-width: 960px) {
+      .agent-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 680px) {
+      .nav-links { display: none; }
+      .hero { padding: 48px 24px 40px; }
+      .filter-inner { padding: 0 24px; }
+      .grid-section { padding: 32px 24px 56px; }
+      .agent-grid { grid-template-columns: 1fr; }
+      .cta-section { padding: 56px 24px; }
+      .cta-inner { flex-direction: column; align-items: flex-start; gap: 24px; }
+      footer { padding: 32px 24px; }
+      .nav-inner { padding: 0 24px; }
+      .footer-row { flex-direction: column; gap: 20px; }
+    }
+
+    /* ── REVEAL ANIMATION ─────────────────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+      }
+      .reveal.in {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .reveal.d1 { transition-delay: 0.07s; }
+      .reveal.d2 { transition-delay: 0.14s; }
+      .reveal.d3 { transition-delay: 0.21s; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="https://christinecheong.com" class="nav-brand">Christine Cheong</a>
+    <ul class="nav-links">
+      <li><a href="https://christinecheong.com/about">About</a></li>
+      <li><a href="https://christinecheong.com/articles">Articles</a></li>
+      <li><a href="https://christinecheong.com/courses">Courses</a></li>
+      <li><a href="https://christinecheong.com/living-lab.html">Living Lab</a></li>
+      <li><a href="/resources/" class="active">Resources</a></li>
+    </ul>
+    <a href="https://christinecheong.com/contact" class="nav-cta">Get In Touch</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-label">Agents Hub</p>
+    <h1 class="hero-h1">Purpose-built agents for&nbsp;data science&nbsp;work.</h1>
+    <p class="hero-sub">Each agent is designed to solve a specific analytical challenge — from raw survey data to strategic decisions, without the manual overhead.</p>
+    <div class="hero-stat">
+      <span class="hero-stat-num" id="liveCount">11</span>
+      <span>agents live</span>
+      <span class="hero-stat-dot"></span>
+      <span>more coming soon</span>
+    </div>
+  </div>
+</section>
+
+<!-- FILTERS -->
+<div class="filter-wrap">
+  <div class="filter-inner">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="strategy">Strategy &amp; Intelligence</button>
+    <button class="filter-btn" data-filter="consumer">Consumer &amp; Insight</button>
+    <button class="filter-btn" data-filter="product">Product &amp; Innovation</button>
+    <button class="filter-btn" data-filter="process">Process &amp; Operations</button>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="grid-section">
+  <div class="agent-grid" id="agentGrid">
+
+    <!-- 1. Strategic Signals Agent -->
+    <a class="agent-card reveal" data-category="strategy" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">⚡</span>
+        <span class="card-category">Strategy &amp; Intelligence</span>
+      </div>
+      <div class="card-title">Strategic Signals Agent</div>
+      <p class="card-desc">Separates the Important from the Interesting. Interrogates your data through 10&nbsp;distinct analytical personas to surface critical signals and creative outliers.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Multi-agent</span>
+          <span class="tag">Analysis</span>
+          <span class="tag">Reports</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 2. Consumer Persona Agent -->
+    <a class="agent-card reveal d1" data-category="consumer" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">👤</span>
+        <span class="card-category">Consumer &amp; Insight</span>
+      </div>
+      <div class="card-title">Consumer Persona Agent</div>
+      <p class="card-desc">Simulate realistic consumer reactions, synthesise trends, and pressure-test concepts through AI-powered persona modelling across five distinct modes.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Personas</span>
+          <span class="tag">Concepts</span>
+          <span class="tag">Trends</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 3. Deep Research Agent -->
+    <a class="agent-card reveal d2" data-category="strategy" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">📚</span>
+        <span class="card-category">Strategy &amp; Intelligence</span>
+      </div>
+      <div class="card-title">Deep Research Agent</div>
+      <p class="card-desc">Deploy an autonomous virtual research team to transform a single question into a comprehensive, multi-perspective intelligence report in minutes.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Autonomous</span>
+          <span class="tag">Multi-agent</span>
+          <span class="tag">Reports</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 4. Data Insight Agent -->
+    <a class="agent-card reveal" data-category="consumer" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">📊</span>
+        <span class="card-category">Consumer &amp; Insight</span>
+      </div>
+      <div class="card-title">Data Insight Agent</div>
+      <p class="card-desc">Turn raw data into decisions. Analyse KPIs, surveys, dashboards, and business signals to produce prioritised, evidence-backed insights with explicit observations and recommendations.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">KPI Analysis</span>
+          <span class="tag">Segmentation</span>
+          <span class="tag">Root Cause</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 5. Lead Generation Agent -->
+    <a class="agent-card reveal d1" data-category="consumer" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">🔍</span>
+        <span class="card-category">Consumer &amp; Insight</span>
+      </div>
+      <div class="card-title">Lead Generation Agent</div>
+      <p class="card-desc">From blank page to personalised outreach in one run. Define your ICP, find 10&nbsp;high-intent prospects, and generate founder-level emails for each.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">ICP</span>
+          <span class="tag">Prospecting</span>
+          <span class="tag">Outreach</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 6. Product Discovery Agent -->
+    <a class="agent-card reveal d2" data-category="product" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">🔎</span>
+        <span class="card-category">Product &amp; Innovation</span>
+      </div>
+      <div class="card-title">Product Discovery Agent</div>
+      <p class="card-desc">Find the right problem before shaping the solution. Frame user needs, map assumptions, plan research, prioritise opportunities, and define MVP scope.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Problem Framing</span>
+          <span class="tag">MVP Scope</span>
+          <span class="tag">Assumptions</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 7. Problem Hunter Agent -->
+    <a class="agent-card reveal" data-category="strategy" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">🔎</span>
+        <span class="card-category">Strategy &amp; Intelligence</span>
+      </div>
+      <div class="card-title">Problem Hunter Agent</div>
+      <p class="card-desc">Read between the lines. Interrogates your brief through five specialist agents to surface competing hypotheses, bedrock truths, and the elephant in the room.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Brief Analysis</span>
+          <span class="tag">Hypotheses</span>
+          <span class="tag">Root Cause</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 8. Report Summary Agent -->
+    <a class="agent-card reveal d1" data-category="process" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">📋</span>
+        <span class="card-category">Process &amp; Operations</span>
+      </div>
+      <div class="card-title">Report Summary Agent</div>
+      <p class="card-desc">Compress raw information without flattening it. Turn meeting notes, status updates, and research into structured reports with decisions, actions, risks, and next steps.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Executive Brief</span>
+          <span class="tag">Action Items</span>
+          <span class="tag">Decision Log</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 9. Research Briefing Agent -->
+    <a class="agent-card reveal d2" data-category="strategy" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">📄</span>
+        <span class="card-category">Strategy &amp; Intelligence</span>
+      </div>
+      <div class="card-title">Research Briefing Agent</div>
+      <p class="card-desc">Gather enough evidence to support a decision. Research markets, competitors, companies, and trends — findings separated by confidence level, sources cited, implications drawn.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Market Brief</span>
+          <span class="tag">Competitor Scan</span>
+          <span class="tag">Decision Memo</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 10. Imperial AI Advisory Council -->
+    <a class="agent-card reveal" data-category="strategy" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">⚖️</span>
+        <span class="card-category">Strategy &amp; Intelligence</span>
+      </div>
+      <div class="card-title">Imperial AI Advisory Council</div>
+      <p class="card-desc">Five advisors. One verdict. No blind spots. Pressure-test any real decision through five independent thinking lenses, structured cross-examination, and a Chairman's final verdict.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Multi-Agent</span>
+          <span class="tag">Cross-Examination</span>
+          <span class="tag">Chairman's Verdict</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 11. Survey Analyser Agent -->
+    <a class="agent-card reveal d1" data-category="process" href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">
+      <div class="card-head">
+        <span class="card-icon">📊</span>
+        <span class="card-category">Process &amp; Operations</span>
+      </div>
+      <div class="card-title">Survey Analyser Agent</div>
+      <p class="card-desc">Turn raw survey responses into structured audience intelligence. Get per-question analysis, theme extraction, audience profiling, and actionable recommendations.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Survey Analysis</span>
+          <span class="tag">Audience Insights</span>
+          <span class="tag">Theme Extraction</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 12. Narrative Architect — Coming Soon -->
+    <div class="agent-card soon reveal d2" data-category="product">
+      <div class="card-head">
+        <span class="card-icon">✍️</span>
+        <span class="card-soon-badge">Coming Soon</span>
+      </div>
+      <div class="card-title">Narrative Architect</div>
+      <p class="card-desc">Transforms raw data and insights into compelling strategic narratives, presentations, and stakeholder stories with structured argumentation.</p>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Storytelling</span>
+          <span class="tag">Decks</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="cta-copy">
+      <h2>Have an agent idea?<br>Let's build it.</h2>
+      <p>We collaborate with enterprises to design custom AI agents for specific data science and strategic challenges.</p>
+    </div>
+    <a href="mailto:christinecheong88@gmail.com" class="btn">Partner With Us</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-row">
+      <div>
+        <div class="footer-brand">Data Science.</div>
+        <p class="footer-tagline">A field guide to turning data into decisions you can trust.</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="https://christinecheong.com/about">About</a></li>
+        <li><a href="https://christinecheong.com/articles">Articles</a></li>
+        <li><a href="https://christinecheong.com/courses">Courses</a></li>
+        <li><a href="https://christinecheong.com/living-lab.html">Living Lab</a></li>
+        <li><a href="/resources/">Resources</a></li>
+        <li><a href="https://christinecheong.com/contact">Get In Touch</a></li>
+      </ul>
+    </div>
+    <p class="footer-copy">© 2026 Data Science. Concept design.</p>
+  </div>
+</footer>
+
+<script>
+  /* Filter */
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.agent-card');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      cards.forEach(c => {
+        c.classList.toggle('hidden', f !== 'all' && c.dataset.category !== f);
+      });
+    });
+  });
+
+  /* Live count */
+  const liveCards = document.querySelectorAll('.agent-card:not(.soon)').length;
+  document.getElementById('liveCount').textContent = liveCards;
+
+  /* Scroll reveal */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.06, rootMargin: '0px 0px -20px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
