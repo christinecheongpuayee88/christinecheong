@@ -278,16 +278,6 @@ Examples:
 &#8226; &quot;What is the current state of tokenization in supply chain management?&quot;
 &#8226; &quot;Deep dive on Competitor X: strategy, product portfolio, recent moves, and market perception&quot;" spellcheck="false"></textarea>
 
-            <!-- URL references -->
-            <div style="margin-top:12px;">
-              <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;">🔗 Reference URLs <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — fetched and included as source material)</span></div>
-              <div style="display:flex;gap:8px;margin-bottom:8px;">
-                <input id="urlInput" type="url" placeholder="https://..." style="flex:1;padding:8px 12px;font-family:var(--font-body);font-size:12px;border:1.5px solid var(--border);border-radius:6px;outline:none;background:#fff;color:var(--text);" onkeydown="if(event.key==='Enter'){addUrl();}" />
-                <button onclick="addUrl()" style="padding:8px 14px;font-family:var(--font-body);font-size:12px;font-weight:600;background:var(--blue);color:#fff;border:none;border-radius:6px;cursor:pointer;">Add</button>
-              </div>
-              <div id="urlList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-            </div>
-
             <!-- Internal documents upload -->
             <div style="margin-top:12px;">
               <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;">📁 Internal Documents <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — upload files to include in research)</span></div>
@@ -333,38 +323,6 @@ Examples:
 
     const dataInput=document.getElementById('dataInput'),charCount=document.getElementById('charCount');
     dataInput.addEventListener('input',()=>{const l=dataInput.value.length;charCount.textContent=l.toLocaleString()+' character'+(l!==1?'s':'');});
-
-    // ── URL references ──
-    const addedUrls = new Set([
-      'https://christinecheong.com',
-      'https://christinecheong.com/courses/'
-    ]);
-
-    function renderUrlList() {
-      const container = document.getElementById('urlList');
-      container.innerHTML = Array.from(addedUrls).map(url => `
-        <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--blue-light);border:1px solid #BFDBFE;border-radius:100px;font-size:11px;font-weight:500;color:var(--blue);">
-          🔗 ${escapeHtml(url)}
-          <span onclick="removeUrl('${url}')" style="cursor:pointer;font-weight:700;margin-left:2px;">×</span>
-        </div>`).join('');
-    }
-
-    function addUrl() {
-      const input = document.getElementById('urlInput');
-      const url = input.value.trim();
-      if (!url) return;
-      try { new URL(url); } catch { return; }
-      addedUrls.add(url);
-      input.value = '';
-      renderUrlList();
-    }
-
-    function removeUrl(url) {
-      addedUrls.delete(url);
-      renderUrlList();
-    }
-
-    renderUrlList();
 
     // ── Internal documents ──
     const uploadedDocs = {};
@@ -494,7 +452,13 @@ Rules:
       try{
         const t1=setTimeout(()=>{setStep('step-1','done');setStep('step-2','active');},3000);
         const t2=setTimeout(()=>{setStep('step-2','done');setStep('step-3','active');},8000);
-        const result=await callClaude(SYSTEM_PROMPT,buildMessageWithDocs(inputText),Array.from(addedUrls));
+        const siteUrls = [
+          'https://christinecheong.com',
+          'https://christinecheong.com/courses/',
+          'https://christinecheong.com/living-lab.html',
+          'https://christinecheong.com/agents-hub/'
+        ];
+        const result=await callClaude(SYSTEM_PROMPT,buildMessageWithDocs(inputText),siteUrls);
         clearTimeout(t1);clearTimeout(t2);setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
         let parsed;try{const m=result.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error('No JSON');}catch(e){throw new Error('Failed to parse agent response.');}
         await new Promise(r=>setTimeout(r,400));agentProgress.classList.remove('active');renderResults(parsed);
