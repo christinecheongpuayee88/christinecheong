@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey Analyser Agent — NUS-ISS Living Lab</title>
+  <meta name="description" content="Turn raw survey responses into structured audience intelligence. Analyse Google Forms, training surveys, and feedback forms — per-question breakdowns, theme extraction, audience profiling, and actionable recommendations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F2F2F2;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
+      --blue:         #1E88C7;
+      --blue-light:   #E8F4FB;
+      --amber:        #B45309;
+      --amber-light:  #FEF3C7;
+      --text:         #111827;
+      --text-muted:   #4B5563;
+      --border:       #DADADA;
+      --green:        #059669;
+      --green-light:  #D1FAE5;
+      --red:          #C0392B;
+      --red-light:    #FDEDEC;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+      --teal:         #0F766E;
+      --teal-light:   #CCFBF1;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
+      --ease-spring:  cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 500; line-height: 1.65; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    h1,h2,h3,h4 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* ── NAV ─────────────────────────────────────── */
+    .nav { position:fixed; inset:0 0 auto; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 56px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
+    .nav-brand { display:flex; flex-direction:column; gap:1px; }
+    .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); }
+    .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
+    .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
+    .nav-links a:hover { color:var(--navy); }
+    .nav-back { font-size:12px; font-weight:600; letter-spacing:0.06em; padding:10px 20px; border-radius:6px; border:1.5px solid var(--border); color:var(--navy); transition:all 0.25s; }
+    .nav-back:hover { border-color:var(--navy); background:var(--navy); color:#fff; }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero { position:relative; padding:calc(var(--nav-h) + 80px) 56px 80px; background:var(--bg); border-bottom:1px solid var(--border); }
+    .hero-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.2fr 1fr; gap:80px; align-items:center; }
+    .hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--blue); margin-bottom:20px; }
+    .hero-eyebrow::before { content:''; width:28px; height:2px; background:var(--blue); }
+    .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--blue-light); color:var(--blue); margin-bottom:20px; }
+    .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,60px); font-weight:700; line-height:1.04; letter-spacing:-0.025em; color:var(--navy); margin-bottom:20px; }
+    .hero-h1 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+    .hero-sub { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
+    .hero-pills { display:flex; flex-wrap:wrap; gap:8px; }
+    .hero-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); }
+
+    /* ── WORKFLOW ─────────────────────────────────── */
+    .workflow { display:flex; flex-direction:column; gap:0; }
+    .wf-step { display:flex; align-items:flex-start; gap:14px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); }
+    .wf-step:first-child { border-radius:10px 10px 0 0; }
+    .wf-step:last-child  { border-radius:0 0 10px 10px; }
+    .wf-step:not(:first-child) { border-top:none; }
+    .wf-num { width:24px; height:24px; border-radius:6px; background:var(--blue); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .wf-name { font-size:12px; font-weight:700; color:var(--navy); }
+    .wf-desc { font-size:11px; font-weight:400; color:var(--text-muted); margin-top:2px; line-height:1.4; }
+
+    /* ── WORKSPACE ───────────────────────────────── */
+    .workspace { max-width:1280px; margin:0 auto; padding:72px 56px 112px; }
+    .workspace-label { font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--blue); margin-bottom:12px; }
+    .workspace-h2 { font-family:var(--font-display); font-size:clamp(26px,3vw,38px); font-weight:700; line-height:1.1; letter-spacing:-0.02em; color:var(--navy); margin-bottom:40px; }
+    .workspace-h2 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+
+    /* ── INPUT ───────────────────────────────────── */
+    .input-panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:28px; }
+    .input-context { margin-bottom:24px; padding:14px 18px; background:var(--blue-light); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; }
+    .input-context p { font-size:13px; font-weight:500; color:#1A3A5C; line-height:1.55; }
+    .input-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+    .input-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+    .input-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+    .input-field {
+      padding:12px 14px; font-family:var(--font-body); font-size:13px; font-weight:400;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; outline:none; transition:border-color 0.25s; width:100%;
+    }
+    .input-field:focus { border-color:var(--blue); }
+    .input-field::placeholder { color:#9CA3AF; }
+    select.input-field { cursor:pointer; }
+    .input-textarea {
+      width:100%; padding:14px 16px;
+      font-family:var(--font-mono); font-size:12px; font-weight:400; line-height:1.7;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; resize:vertical; outline:none; transition:border-color 0.25s;
+    }
+    .input-textarea:focus { border-color:var(--blue); }
+    .input-textarea::placeholder { color:#9CA3AF; font-family:var(--font-body); font-size:13px; }
+    .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:20px; flex-wrap:wrap; gap:12px; }
+    .run-btn {
+      display:inline-flex; align-items:center; gap:10px;
+      font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em;
+      padding:14px 32px; border-radius:8px; border:none; cursor:pointer;
+      background:var(--blue); color:#fff;
+      transition:background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .run-btn:hover:not(:disabled) { background:#1565A0; transform:translateY(-2px); box-shadow:0 8px 24px rgba(30,136,199,0.3); }
+    .run-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    /* ── LOADING ─────────────────────────────────── */
+    .loading-state { display:none; padding:48px 32px; text-align:center; }
+    .loading-state.show { display:block; }
+    .loading-dots { display:inline-flex; gap:6px; margin-bottom:16px; }
+    .loading-dots span { width:8px; height:8px; border-radius:50%; background:var(--blue); opacity:0.3; animation:pulse 1.4s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay:0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
+    .loading-label { font-size:13px; font-weight:500; color:var(--text-muted); margin-bottom:20px; }
+    .loading-phases { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .loading-phase { font-size:11px; font-weight:500; padding:5px 14px; border-radius:100px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); opacity:0.4; transition:opacity 0.4s; }
+    .loading-phase.active { opacity:1; border-color:var(--blue); color:var(--blue); }
+
+    /* ── OUTPUT ──────────────────────────────────── */
+    .output-panel { display:none; }
+    .output-panel.show { display:block; }
+    .output-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px; }
+    .output-tag { font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--blue); color:#fff; }
+    .action-btn { font-size:12px; font-weight:500; padding:8px 16px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .action-btn:hover { border-color:var(--navy); color:var(--navy); }
+
+    /* ── STAT GRID ───────────────────────────────── */
+    .stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
+    .stat-num { font-family:var(--font-display); font-size:36px; font-weight:700; color:var(--navy); line-height:1; margin-bottom:6px; }
+    .stat-label { font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); }
+
+    /* ── SECTION BLOCKS ──────────────────────────── */
+    .section-block { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px 26px; margin-bottom:20px; }
+    .section-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); margin-bottom:16px; }
+
+    /* takeaway */
+    .takeaway-box { padding:18px 22px; background:var(--navy); border-radius:10px; margin-bottom:20px; }
+    .takeaway-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:10px; }
+    .takeaway-text { font-size:15px; font-weight:400; color:#fff; line-height:1.7; font-family:var(--font-display); font-style:italic; }
+
+    /* respondent table */
+    .resp-table { width:100%; border-collapse:collapse; font-size:12px; }
+    .resp-table th { text-align:left; font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); padding:8px 12px; border-bottom:1px solid var(--border); }
+    .resp-table td { padding:10px 12px; border-bottom:1px solid var(--border); color:var(--navy); vertical-align:top; }
+    .resp-table tr:last-child td { border-bottom:none; }
+    .resp-table tr:nth-child(even) td { background:rgba(0,0,0,0.02); }
+
+    /* question analysis card */
+    .q-card { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:18px 20px; margin-bottom:12px; }
+    .q-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .q-title { font-size:13px; font-weight:600; color:var(--navy); line-height:1.45; flex:1; }
+    .q-rating { font-size:12px; font-weight:700; padding:3px 10px; border-radius:100px; background:var(--blue-light); color:var(--blue); white-space:nowrap; }
+    .q-responses { display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
+    .q-resp-item { font-size:12px; color:var(--text-muted); padding:6px 10px; background:var(--surface); border-radius:6px; line-height:1.5; border-left:2px solid var(--border); }
+    .q-themes { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .q-theme-tag { font-size:10px; font-weight:600; padding:3px 10px; border-radius:100px; background:var(--blue-light); color:var(--blue); }
+
+    /* insight cards */
+    .insight-card { padding:12px 16px; background:var(--bg); border:1px solid var(--border); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; margin-bottom:8px; font-size:13px; color:var(--navy); line-height:1.6; }
+
+    /* recommendation cards */
+    .rec-card { display:flex; gap:14px; align-items:flex-start; padding:14px 16px; background:var(--bg); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; }
+    .rec-num { width:28px; height:28px; border-radius:8px; background:var(--blue); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .rec-text { font-size:13px; color:var(--navy); line-height:1.55; flex:1; }
+    .rec-rationale { font-size:11px; color:var(--text-muted); margin-top:3px; }
+
+    /* profile box */
+    .profile-box { padding:18px 22px; background:var(--blue-light); border:1px solid rgba(30,136,199,0.15); border-radius:10px; font-size:13px; color:#1A3A5C; line-height:1.75; margin-bottom:20px; }
+
+    /* rating bar */
+    .rating-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+    .rating-label { font-size:11px; font-weight:600; color:var(--text-muted); width:16px; text-align:right; flex-shrink:0; }
+    .rating-bar-bg { flex:1; background:var(--border); border-radius:100px; height:8px; }
+    .rating-bar-fill { height:8px; border-radius:100px; background:var(--blue); transition:width 0.6s var(--ease-spring); }
+    .rating-count { font-size:11px; font-weight:500; color:var(--text-muted); width:40px; flex-shrink:0; }
+
+    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    .footer { background:var(--navy); color:#fff; padding:48px 56px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+    .footer-brand { font-family:var(--font-display); font-size:16px; font-weight:700; }
+    .footer-sub { font-size:12px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .footer-links { display:flex; gap:24px; list-style:none; }
+    .footer-links a { font-size:12px; color:rgba(255,255,255,0.4); transition:color 0.25s; }
+    .footer-links a:hover { color:#fff; }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width:1100px) { .hero,.workspace,.footer { padding-left:36px; padding-right:36px; } .nav { padding:0 36px; } }
+    @media (max-width:900px) { .hero-inner { grid-template-columns:1fr; gap:40px; } .stat-grid { grid-template-columns:1fr 1fr; } .input-row { grid-template-columns:1fr; } }
+    @media (max-width:680px) { .hero,.workspace,.footer { padding-left:22px; padding-right:22px; } .nav { padding:0 22px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ────────────────────────────────────── -->
+  <nav class="nav">
+    <a href="/agents-hub/" class="nav-brand">
+      <span class="nav-brand-sup">NUS-ISS</span>
+      <span class="nav-brand-name">Agents Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/agents-hub/">All Agents</a></li>
+      <li><a href="/living-lab.html">Living Lab</a></li>
+    </ul>
+    <a href="/agents-hub/" class="nav-back">← All Agents</a>
+  </nav>
+
+  <!-- ── HERO ────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="hero-eyebrow">Process &amp; Operations</p>
+        <div class="hero-badge">Expert · 6-Step Workflow</div>
+        <h1 class="hero-h1">Survey Analyser <em>Agent</em></h1>
+        <p class="hero-sub">Turn raw survey responses into structured audience intelligence. Paste responses from any form — training surveys, feedback forms, needs assessments — and get per-question analysis, theme extraction, audience profiling, and concrete recommendations.</p>
+        <div class="hero-pills">
+          <span class="hero-pill">Training Needs</span>
+          <span class="hero-pill">Audience Profiling</span>
+          <span class="hero-pill">Theme Extraction</span>
+          <span class="hero-pill">Feedback Analysis</span>
+          <span class="hero-pill">Course Design</span>
+          <span class="hero-pill">Insights Report</span>
+        </div>
+      </div>
+      <div>
+        <div class="workflow">
+          <div class="wf-step">
+            <div class="wf-num">1</div>
+            <div><div class="wf-name">Respondent Mapping</div><div class="wf-desc">Identify who filled the survey — roles, organisations, backgrounds</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">2</div>
+            <div><div class="wf-name">Question-by-Question Analysis</div><div class="wf-desc">Summarise every question: ratings with distributions, verbatim open answers</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">3</div>
+            <div><div class="wf-name">Theme Extraction</div><div class="wf-desc">Surface recurring patterns and themes across open-ended responses</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">4</div>
+            <div><div class="wf-name">Audience Profiling</div><div class="wf-desc">Synthesise experience level, sector mix, and motivation patterns</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">5</div>
+            <div><div class="wf-name">Insight Generation</div><div class="wf-desc">Derive actionable insights from patterns — what the data actually means</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">6</div>
+            <div><div class="wf-name">Recommendations</div><div class="wf-desc">Translate findings into specific next steps for course design or action</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WORKSPACE ───────────────────────────────── -->
+  <main class="workspace">
+    <p class="workspace-label">Analysis Workspace</p>
+    <h2 class="workspace-h2">Paste survey responses, get <em>audience intelligence</em></h2>
+
+    <div class="input-panel">
+      <div class="input-context">
+        <p>Paste the raw text from any survey — copy directly from Google Forms Summary view, export from a spreadsheet, or paste individual responses. Include question labels if possible. The agent will parse respondents, analyse every question, extract themes, profile the audience, and deliver recommendations.</p>
+      </div>
+
+      <div class="input-row">
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Survey / Form title</label>
+          <input class="input-field" id="surveyTitle" placeholder="e.g. Course Survey Form — Predictive Analytics" />
+        </div>
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Survey purpose</label>
+          <select class="input-field" id="surveyPurpose">
+            <option value="training_needs">Training Needs Assessment</option>
+            <option value="course_feedback">Course / Post-Training Feedback</option>
+            <option value="audience_profiling">Audience Profiling</option>
+            <option value="event_feedback">Event or Workshop Feedback</option>
+            <option value="product_feedback">Product / Service Feedback</option>
+            <option value="research">Research / Academic Survey</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-top:16px">
+        <label class="input-label">Paste survey responses</label>
+        <textarea class="input-textarea" id="surveyData" rows="16" placeholder="Paste all survey responses here. You can copy the Summary text from Google Forms, or paste rows from a spreadsheet.
+
+Example format:
+Name: 6 responses
+jia min / Gao Shuxin / Brandon / Ted Chan / Lim Wei Li / Plato Lum
+
+Job Role: 6 responses
+hr exec / Senior Estate Manager / Data Analyst / Associate Faculty / Estate Management / Data Scientist
+
+Organisation/Industry: 6 responses
+mindef / Public Housing / HDB / PSA / Education / HDB / MINDEF
+
+How would you rate your current experience level with predictive analytics?
+Rating 1: 2 (33.3%) / Rating 2: 2 (33.3%) / Rating 3: 2 (33.3%)
+
+What do you hope to learn?
+- applications of predictive analytics
+- Modeling techniques and how they can be applied
+- How predictive model can predict trends and forecasting
+
+What business problem would you most like to solve?
+- Forecasting the HDB resale market
+- Demand and Supply trends
+- Volume forecasting"></textarea>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Additional context (optional)</label>
+        <input class="input-field" id="context" placeholder="e.g. 3-day predictive analytics course for Singapore public sector professionals. Use findings for course design." />
+      </div>
+
+      <div class="input-footer">
+        <span style="font-size:12px;color:var(--text-muted)">6-step workflow — respondent mapping, per-question analysis, theme extraction, audience profiling, insights, recommendations</span>
+        <button class="run-btn" id="runBtn" disabled>
+          <span>📊</span>
+          <span>Analyse Survey</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <p class="loading-label">Analysing survey responses…</p>
+      <div class="loading-phases">
+        <span class="loading-phase" id="ph1">Mapping respondents</span>
+        <span class="loading-phase" id="ph2">Analysing questions</span>
+        <span class="loading-phase" id="ph3">Extracting themes</span>
+        <span class="loading-phase" id="ph4">Profiling audience</span>
+        <span class="loading-phase" id="ph5">Generating insights</span>
+        <span class="loading-phase" id="ph6">Building recommendations</span>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="output-panel" id="outputPanel">
+      <div class="output-header">
+        <span class="output-tag" id="outputTag">Survey Analysis</span>
+        <div style="display:flex;gap:10px">
+          <button class="action-btn" id="copyBtn">Copy Report</button>
+          <button class="action-btn" id="resetBtn">New Analysis</button>
+        </div>
+      </div>
+      <div id="outputContent"></div>
+    </div>
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Survey Analyser Agent</div>
+        <div class="footer-sub">NUS-ISS Living Lab · Agents Hub</div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/agents-hub/">All Agents</a></li>
+        <li><a href="/living-lab.html">Living Lab</a></li>
+        <li><a href="/living-lab.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const SYSTEM = `You are a Survey Analyser Agent. Your job is to transform raw survey response data into structured audience intelligence.
+
+CRITICAL RULES:
+- Preserve every verbatim response — never paraphrase or silently drop answers.
+- Extract themes from open-ended answers based on what's actually written, not what you'd expect.
+- For rating questions, calculate average and show distribution across all scale points.
+- Recommendations must be specific and directly traceable to the data — never generic advice.
+- Output valid JSON only — no prose before or after.
+
+Output format:
+{
+  "survey_title": "...",
+  "survey_purpose": "...",
+  "respondent_count": 0,
+  "summary": "2-3 sentence plain-language summary of the entire survey",
+  "audience_profile": "3-4 sentences describing who responded — sectors, roles, experience level, dominant motivations",
+  "respondents": [
+    { "name": "...", "role": "...", "organisation": "..." }
+  ],
+  "question_analyses": [
+    {
+      "question": "Full question text",
+      "type": "short_answer | rating | open_ended",
+      "responses": ["verbatim response 1", "verbatim response 2"],
+      "rating_avg": null,
+      "rating_distribution": { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 },
+      "themes": ["theme 1", "theme 2"]
+    }
+  ],
+  "key_themes": [
+    { "theme": "Theme name", "description": "What this theme means and which responses support it", "count": 0 }
+  ],
+  "insights": [
+    "Specific, data-backed insight — what the data reveals, not just what it shows"
+  ],
+  "recommendations": [
+    {
+      "recommendation": "Specific action to take",
+      "rationale": "Which data point(s) justify this"
+    }
+  ],
+  "gaps": [
+    "Missing information, inconsistency, or question that wasn't answered clearly"
+  ]
+}`;
+
+    const titleEl   = document.getElementById('surveyTitle');
+    const dataEl    = document.getElementById('surveyData');
+    const purposeEl = document.getElementById('surveyPurpose');
+    const contextEl = document.getElementById('context');
+    const runBtn    = document.getElementById('runBtn');
+
+    function checkReady() {
+      runBtn.disabled = titleEl.value.trim().length < 2 || dataEl.value.trim().length < 30;
+    }
+    [titleEl, dataEl, contextEl].forEach(el => el.addEventListener('input', checkReady));
+
+    let currentOutput = null;
+    let phaseInterval;
+
+    runBtn.addEventListener('click', async () => {
+      const message = [
+        `Survey Title: ${titleEl.value.trim()}`,
+        `Survey Purpose: ${purposeEl.value}`,
+        `Raw Survey Responses:\n${dataEl.value.trim()}`,
+        contextEl.value.trim() ? `Additional Context: ${contextEl.value.trim()}` : ''
+      ].filter(Boolean).join('\n\n');
+
+      showLoading();
+      try {
+        const text = await callClaude(SYSTEM, message);
+        const data = parseJSON(text);
+        currentOutput = data;
+        renderOutput(data);
+      } catch(err) {
+        showError(err.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    async function callClaude(system, message) {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system, message, max_tokens: 6000 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API request failed');
+      return data.content[0].text;
+    }
+
+    function parseJSON(text) {
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON found in response');
+      return JSON.parse(match[0]);
+    }
+
+    function showLoading() {
+      document.getElementById('loadingState').classList.add('show');
+      document.getElementById('outputPanel').classList.remove('show');
+      runBtn.disabled = true;
+      const phases = document.querySelectorAll('.loading-phase');
+      let i = 0; phases[0].classList.add('active');
+      phaseInterval = setInterval(() => {
+        phases.forEach(p => p.classList.remove('active'));
+        i = (i + 1) % phases.length;
+        phases[i].classList.add('active');
+      }, 2200);
+    }
+
+    function hideLoading() {
+      clearInterval(phaseInterval);
+      document.getElementById('loadingState').classList.remove('show');
+      checkReady();
+    }
+
+    function renderOutput(d) {
+      const respondents = d.respondents || [];
+      const questions   = d.question_analyses || [];
+      const themes      = d.key_themes || [];
+      const insights    = d.insights || [];
+      const recs        = d.recommendations || [];
+      const gaps        = d.gaps || [];
+
+      // Summary takeaway
+      const summaryHTML = d.summary ? `
+        <div class="takeaway-box">
+          <div class="takeaway-label">Summary</div>
+          <div class="takeaway-text">${esc(d.summary)}</div>
+        </div>` : '';
+
+      // Stats
+      const statsHTML = `
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-num">${d.respondent_count || respondents.length}</div><div class="stat-label">Respondents</div></div>
+          <div class="stat-card"><div class="stat-num">${questions.length}</div><div class="stat-label">Questions</div></div>
+          <div class="stat-card"><div class="stat-num">${themes.length}</div><div class="stat-label">Key Themes</div></div>
+          <div class="stat-card"><div class="stat-num">${recs.length}</div><div class="stat-label">Recommendations</div></div>
+        </div>`;
+
+      // Audience profile
+      const profileHTML = d.audience_profile ? `
+        <div class="profile-box">
+          <div class="section-label" style="color:var(--blue);margin-bottom:8px">Audience Profile</div>
+          ${esc(d.audience_profile)}
+        </div>` : '';
+
+      // Respondents table
+      const respHTML = respondents.length ? `
+        <div class="section-block">
+          <div class="section-label">Respondents</div>
+          <table class="resp-table">
+            <thead><tr><th>#</th><th>Name</th><th>Role</th><th>Organisation</th></tr></thead>
+            <tbody>
+              ${respondents.map((r,i) => `<tr>
+                <td style="color:var(--text-muted);font-size:11px">${i+1}</td>
+                <td><strong>${esc(r.name||'—')}</strong></td>
+                <td>${esc(r.role||'—')}</td>
+                <td>${esc(r.organisation||'—')}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>` : '';
+
+      // Questions
+      const questHTML = questions.length ? `
+        <div class="section-block">
+          <div class="section-label">Question-by-Question Analysis</div>
+          ${questions.map(q => {
+            const isRating = q.type === 'rating' && q.rating_avg != null;
+            const dist = q.rating_distribution || {};
+            const maxCount = Math.max(1, ...Object.values(dist).map(Number));
+            const ratingHTML = isRating ? `
+              <div style="margin:12px 0 10px">
+                <div style="font-size:12px;font-weight:600;color:var(--blue);margin-bottom:8px">Avg ${Number(q.rating_avg).toFixed(1)} / 5</div>
+                ${[1,2,3,4,5].map(n => {
+                  const cnt = Number(dist[n]||0);
+                  const pct = maxCount > 0 ? Math.round((cnt/maxCount)*100) : 0;
+                  return `<div class="rating-row">
+                    <span class="rating-label">${n}</span>
+                    <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:${pct}%"></div></div>
+                    <span class="rating-count">${cnt} resp.</span>
+                  </div>`;
+                }).join('')}
+              </div>` : '';
+
+            return `<div class="q-card">
+              <div class="q-header">
+                <div class="q-title">${esc(q.question)}</div>
+                ${isRating ? `<span class="q-rating">Avg ${Number(q.rating_avg).toFixed(1)}</span>` : ''}
+              </div>
+              ${ratingHTML}
+              ${(q.responses||[]).length && q.type !== 'rating' ? `
+                <div class="q-responses">
+                  ${q.responses.map(r => `<div class="q-resp-item">${esc(r)}</div>`).join('')}
+                </div>` : ''}
+              ${(q.themes||[]).length ? `
+                <div class="q-themes">
+                  ${q.themes.map(t => `<span class="q-theme-tag">${esc(t)}</span>`).join('')}
+                </div>` : ''}
+            </div>`;
+          }).join('')}
+        </div>` : '';
+
+      // Key themes
+      const themesHTML = themes.length ? `
+        <div class="section-block">
+          <div class="section-label">Key Themes Across Responses</div>
+          ${themes.map(t => `
+            <div class="insight-card" style="border-color:var(--purple)">
+              <strong>${esc(t.theme)}</strong>${t.count ? ` <span style="font-size:11px;color:var(--text-muted)">(${t.count} responses)</span>` : ''}<br>
+              <span style="font-weight:400;font-size:12px;color:var(--text-muted)">${esc(t.description)}</span>
+            </div>`).join('')}
+        </div>` : '';
+
+      // Insights
+      const insightsHTML = insights.length ? `
+        <div class="section-block">
+          <div class="section-label">Insights</div>
+          ${insights.map(ins => `<div class="insight-card">${esc(ins)}</div>`).join('')}
+        </div>` : '';
+
+      // Recommendations
+      const recsHTML = recs.length ? `
+        <div class="section-block">
+          <div class="section-label">Recommendations</div>
+          ${recs.map((r,i) => `
+            <div class="rec-card">
+              <div class="rec-num">${i+1}</div>
+              <div>
+                <div class="rec-text">${esc(r.recommendation)}</div>
+                ${r.rationale ? `<div class="rec-rationale">Why: ${esc(r.rationale)}</div>` : ''}
+              </div>
+            </div>`).join('')}
+        </div>` : '';
+
+      // Gaps
+      const gapsHTML = gaps.length ? `
+        <div class="section-block">
+          <div class="section-label">Data Gaps &amp; Limitations</div>
+          ${gaps.map(g => `<div style="padding:10px 14px;background:var(--amber-light);border-left:3px solid #FCD34D;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:12px;color:#78350F;line-height:1.55">⚑ ${esc(g)}</div>`).join('')}
+        </div>` : '';
+
+      document.getElementById('outputContent').innerHTML =
+        summaryHTML + statsHTML + profileHTML + respHTML + questHTML + themesHTML + insightsHTML + recsHTML + gapsHTML;
+
+      document.getElementById('outputTag').textContent =
+        `${esc(d.survey_title||'Survey')} · ${d.respondent_count||respondents.length} respondents · ${recs.length} recommendations`;
+      document.getElementById('outputPanel').classList.add('show');
+      document.getElementById('outputPanel').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function showError(msg) {
+      document.getElementById('outputContent').innerHTML = `<div class="error-box">Error: ${esc(msg)}</div>`;
+      document.getElementById('outputPanel').classList.add('show');
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      if (!currentOutput) return;
+      const d = currentOutput;
+      const lines = [];
+      lines.push(`SURVEY ANALYSIS: ${d.survey_title||''}`);
+      lines.push(`${d.respondent_count||0} respondents | ${d.survey_purpose||''}\n`);
+      if (d.summary) lines.push(`SUMMARY\n${d.summary}\n`);
+      if (d.audience_profile) lines.push(`AUDIENCE PROFILE\n${d.audience_profile}\n`);
+      if ((d.respondents||[]).length) {
+        lines.push('RESPONDENTS');
+        d.respondents.forEach((r,i) => lines.push(`${i+1}. ${r.name||'—'} | ${r.role||'—'} | ${r.organisation||'—'}`));
+        lines.push('');
+      }
+      if ((d.key_themes||[]).length) {
+        lines.push('KEY THEMES');
+        d.key_themes.forEach(t => lines.push(`• ${t.theme}: ${t.description}`));
+        lines.push('');
+      }
+      if ((d.insights||[]).length) {
+        lines.push('INSIGHTS');
+        d.insights.forEach(ins => lines.push(`• ${ins}`));
+        lines.push('');
+      }
+      if ((d.recommendations||[]).length) {
+        lines.push('RECOMMENDATIONS');
+        d.recommendations.forEach((r,i) => lines.push(`${i+1}. ${r.recommendation}${r.rationale?' ('+r.rationale+')':''}`));
+      }
+      navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy Report', 2000);
+      });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('outputPanel').classList.remove('show');
+      currentOutput = null;
+      titleEl.value = ''; dataEl.value = ''; contextEl.value = '';
+      checkReady();
+      window.scrollTo({ top:0, behavior:'smooth' });
+    });
+  </script>
+</body>
+</html>
