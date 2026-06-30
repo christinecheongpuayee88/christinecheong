@@ -7,7 +7,7 @@ export async function onRequestPost(context) {
   };
 
   try {
-    const apiKey = context.env.ANTHROPIC_API_KEY;
+    const apiKey = context.env.OPENAI_API_KEY;
     if (!apiKey) {
       return new Response(JSON.stringify({ error: "API key not configured" }), {
         status: 500,
@@ -25,18 +25,20 @@ export async function onRequestPost(context) {
       });
     }
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const messages = [];
+    if (system) messages.push({ role: "system", content: system });
+    messages.push({ role: "user", content: message });
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: model || "claude-sonnet-4-20250514",
+        model: model || "gpt-4o",
         max_tokens: max_tokens || 4096,
-        system: system || "",
-        messages: [{ role: "user", content: message }],
+        messages,
       }),
     });
 
@@ -44,12 +46,17 @@ export async function onRequestPost(context) {
 
     if (!response.ok) {
       return new Response(
-        JSON.stringify({ error: data.error?.message || "Anthropic API error" }),
+        JSON.stringify({ error: data.error?.message || "OpenAI API error" }),
         { status: response.status, headers: corsHeaders }
       );
     }
 
-    return new Response(JSON.stringify(data), {
+    // Normalise to Anthropic-style response so all agent pages work unchanged
+    const normalised = {
+      content: [{ type: "text", text: data.choices[0].message.content }],
+    };
+
+    return new Response(JSON.stringify(normalised), {
       status: 200,
       headers: corsHeaders,
     });
