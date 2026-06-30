@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Summary Agent — NUS-ISS Living Lab</title>
+  <meta name="description" content="Compress raw information into decision-ready reports. Produce executive summaries, meeting notes, status updates, client recaps, and board briefs — structured, scannable, nothing lost.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F2F2F2;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
+      --blue:         #1E88C7;
+      --blue-light:   #E8F4FB;
+      --amber:        #B45309;
+      --amber-light:  #FEF3C7;
+      --text:         #111827;
+      --text-muted:   #4B5563;
+      --border:       #DADADA;
+      --green:        #059669;
+      --green-light:  #D1FAE5;
+      --red:          #C0392B;
+      --red-light:    #FDEDEC;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+      --teal:         #0F766E;
+      --teal-light:   #CCFBF1;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
+      --ease-spring:  cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 500; line-height: 1.65; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    h1,h2,h3,h4 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* ── NAV ─────────────────────────────────────── */
+    .nav { position:fixed; inset:0 0 auto; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 56px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
+    .nav-brand { display:flex; flex-direction:column; gap:1px; }
+    .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); }
+    .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
+    .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
+    .nav-links a:hover { color:var(--navy); }
+    .nav-back { font-size:12px; font-weight:600; letter-spacing:0.06em; padding:10px 20px; border-radius:6px; border:1.5px solid var(--border); color:var(--navy); transition:all 0.25s; }
+    .nav-back:hover { border-color:var(--navy); background:var(--navy); color:#fff; }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero { position:relative; padding:calc(var(--nav-h) + 80px) 56px 80px; background:var(--bg); border-bottom:1px solid var(--border); }
+    .hero-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.2fr 1fr; gap:80px; align-items:center; }
+    .hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--teal); margin-bottom:20px; }
+    .hero-eyebrow::before { content:''; width:28px; height:2px; background:var(--teal); }
+    .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--teal-light); color:var(--teal); margin-bottom:20px; }
+    .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,60px); font-weight:700; line-height:1.04; letter-spacing:-0.025em; color:var(--navy); margin-bottom:20px; }
+    .hero-h1 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+    .hero-sub { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
+    .hero-pills { display:flex; flex-wrap:wrap; gap:8px; }
+    .hero-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); }
+
+    /* ── WORKFLOW ─────────────────────────────────── */
+    .workflow { display:flex; flex-direction:column; gap:0; }
+    .wf-step { display:flex; align-items:flex-start; gap:14px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); }
+    .wf-step:first-child { border-radius:10px 10px 0 0; }
+    .wf-step:last-child  { border-radius:0 0 10px 10px; }
+    .wf-step:not(:first-child) { border-top:none; }
+    .wf-num { width:24px; height:24px; border-radius:6px; background:var(--teal); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .wf-name { font-size:12px; font-weight:700; color:var(--navy); }
+    .wf-desc { font-size:11px; font-weight:400; color:var(--text-muted); margin-top:2px; line-height:1.4; }
+
+    /* ── WORKSPACE ───────────────────────────────── */
+    .workspace { max-width:1280px; margin:0 auto; padding:72px 56px 112px; }
+    .workspace-label { font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--teal); margin-bottom:12px; }
+    .workspace-h2 { font-family:var(--font-display); font-size:clamp(26px,3vw,38px); font-weight:700; line-height:1.1; letter-spacing:-0.02em; color:var(--navy); margin-bottom:40px; }
+    .workspace-h2 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+
+    /* ── INPUT ───────────────────────────────────── */
+    .input-panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:28px; }
+    .input-context { margin-bottom:24px; padding:14px 18px; background:var(--teal-light); border-left:3px solid var(--teal); border-radius:0 8px 8px 0; }
+    .input-context p { font-size:13px; font-weight:500; color:#134E4A; line-height:1.55; }
+
+    .input-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+    .input-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+    .input-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+    .input-field {
+      padding:12px 14px; font-family:var(--font-body); font-size:13px; font-weight:400;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; outline:none; transition:border-color 0.25s; width:100%;
+    }
+    .input-field:focus { border-color:var(--teal); }
+    .input-field::placeholder { color:#9CA3AF; }
+    select.input-field { cursor:pointer; }
+    .input-textarea {
+      width:100%; padding:14px 16px;
+      font-family:var(--font-body); font-size:13px; font-weight:400; line-height:1.7;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; resize:vertical; outline:none; transition:border-color 0.25s;
+    }
+    .input-textarea:focus { border-color:var(--teal); }
+    .input-textarea::placeholder { color:#9CA3AF; }
+
+    .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:20px; flex-wrap:wrap; gap:12px; }
+    .run-btn {
+      display:inline-flex; align-items:center; gap:10px;
+      font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em;
+      padding:14px 32px; border-radius:8px; border:none; cursor:pointer;
+      background:var(--teal); color:#fff;
+      transition:background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .run-btn:hover:not(:disabled) { background:#0F5252; transform:translateY(-2px); box-shadow:0 8px 24px rgba(15,118,110,0.3); }
+    .run-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    /* ── LOADING ─────────────────────────────────── */
+    .loading-state { display:none; padding:48px 32px; text-align:center; }
+    .loading-state.show { display:block; }
+    .loading-dots { display:inline-flex; gap:6px; margin-bottom:16px; }
+    .loading-dots span { width:8px; height:8px; border-radius:50%; background:var(--teal); opacity:0.3; animation:pulse 1.4s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay:0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
+    .loading-label { font-size:13px; font-weight:500; color:var(--text-muted); margin-bottom:20px; }
+    .loading-phases { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .loading-phase { font-size:11px; font-weight:500; padding:5px 14px; border-radius:100px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); opacity:0.4; transition:opacity 0.4s; }
+    .loading-phase.active { opacity:1; border-color:var(--teal); color:var(--teal); }
+
+    /* ── OUTPUT ──────────────────────────────────── */
+    .output-panel { display:none; }
+    .output-panel.show { display:block; }
+    .output-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px; }
+    .output-tag { font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--teal); color:#fff; }
+    .action-btn { font-size:12px; font-weight:500; padding:8px 16px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .action-btn:hover { border-color:var(--navy); color:var(--navy); }
+
+    /* ── STAT GRID ───────────────────────────────── */
+    .stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
+    .stat-num { font-family:var(--font-display); font-size:36px; font-weight:700; color:var(--navy); line-height:1; margin-bottom:6px; }
+    .stat-label { font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); }
+
+    /* ── SECTION BLOCKS ──────────────────────────── */
+    .section-block { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px 26px; margin-bottom:20px; }
+    .section-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--teal); margin-bottom:16px; }
+
+    /* key takeaway */
+    .takeaway-box { padding:18px 22px; background:var(--navy); border-radius:10px; margin-bottom:20px; }
+    .takeaway-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:10px; }
+    .takeaway-text { font-size:15px; font-weight:400; color:#fff; line-height:1.7; font-family:var(--font-display); font-style:italic; }
+
+    /* item lists */
+    .item-list { display:flex; flex-direction:column; gap:8px; }
+    .item-row { display:flex; gap:12px; align-items:flex-start; padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:8px; }
+    .item-icon { font-size:14px; flex-shrink:0; margin-top:1px; }
+    .item-text { font-size:13px; color:var(--navy); line-height:1.55; flex:1; }
+    .item-meta { font-size:11px; color:var(--text-muted); margin-top:3px; }
+
+    /* decisions */
+    .decision-card { padding:12px 16px; background:var(--bg); border:1px solid var(--border); border-left:3px solid var(--teal); border-radius:0 8px 8px 0; margin-bottom:8px; }
+    .decision-text { font-size:13px; font-weight:600; color:var(--navy); line-height:1.5; }
+    .decision-rationale { font-size:12px; color:var(--text-muted); margin-top:4px; line-height:1.5; }
+
+    /* action items */
+    .action-card { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:start; padding:12px 16px; background:var(--bg); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; }
+    .action-text { font-size:13px; font-weight:600; color:var(--navy); line-height:1.45; }
+    .action-owner { font-size:11px; color:var(--text-muted); margin-top:3px; }
+    .action-deadline { font-size:11px; font-weight:600; padding:3px 8px; border-radius:4px; background:var(--amber-light); color:var(--amber); white-space:nowrap; }
+
+    /* risks */
+    .risk-card { padding:10px 14px; background:var(--red-light); border-left:3px solid #FCA5A5; border-radius:0 8px 8px 0; margin-bottom:8px; font-size:12px; color:#7F1D1D; line-height:1.55; }
+
+    /* questions */
+    .question-card { padding:10px 14px; background:var(--amber-light); border-left:3px solid #FCD34D; border-radius:0 8px 8px 0; margin-bottom:8px; font-size:12px; color:#78350F; line-height:1.55; }
+
+    /* changes */
+    .change-row { display:flex; gap:12px; align-items:flex-start; padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; }
+    .change-tag { font-size:10px; font-weight:700; padding:3px 8px; border-radius:4px; flex-shrink:0; margin-top:1px; }
+    .change-tag.up   { background:var(--green-light); color:var(--green); }
+    .change-tag.down { background:var(--red-light); color:var(--red); }
+    .change-tag.same { background:var(--surface); color:var(--text-muted); border:1px solid var(--border); }
+    .change-text { font-size:12px; color:var(--navy); line-height:1.55; }
+
+    /* next steps */
+    .next-step { display:flex; gap:12px; align-items:flex-start; padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; }
+    .next-num { width:22px; height:22px; border-radius:50%; background:var(--teal); color:#fff; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .next-text { font-size:13px; color:var(--text); line-height:1.55; }
+
+    /* gaps */
+    .gap-box { padding:14px 18px; background:var(--purple-light); border-left:3px solid var(--purple); border-radius:0 8px 8px 0; font-size:12px; color:var(--purple); line-height:1.6; margin-bottom:8px; }
+
+    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    .footer { background:var(--navy); color:#fff; padding:48px 56px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+    .footer-brand { font-family:var(--font-display); font-size:16px; font-weight:700; }
+    .footer-sub { font-size:12px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .footer-links { display:flex; gap:24px; list-style:none; }
+    .footer-links a { font-size:12px; color:rgba(255,255,255,0.4); transition:color 0.25s; }
+    .footer-links a:hover { color:#fff; }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width:1100px) { .hero,.workspace,.footer { padding-left:36px; padding-right:36px; } .nav { padding:0 36px; } }
+    @media (max-width:900px) { .hero-inner { grid-template-columns:1fr; gap:40px; } .stat-grid { grid-template-columns:1fr 1fr; } .input-row { grid-template-columns:1fr; } }
+    @media (max-width:680px) { .hero,.workspace,.footer { padding-left:22px; padding-right:22px; } .nav { padding:0 22px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ────────────────────────────────────── -->
+  <nav class="nav">
+    <a href="/agents-hub/" class="nav-brand">
+      <span class="nav-brand-sup">NUS-ISS</span>
+      <span class="nav-brand-name">Agents Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/agents-hub/">All Agents</a></li>
+      <li><a href="/living-lab.html">Living Lab</a></li>
+    </ul>
+    <a href="/agents-hub/" class="nav-back">← All Agents</a>
+  </nav>
+
+  <!-- ── HERO ────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="hero-eyebrow">Process &amp; Operations</p>
+        <div class="hero-badge">Expert · 7-Step Workflow</div>
+        <h1 class="hero-h1">Report Summary <em>Agent</em></h1>
+        <p class="hero-sub">Compress raw information without flattening it. Paste any source material — meeting notes, status updates, research, briefs — and get a structured, decision-ready document that preserves the evidence, risks, and actions.</p>
+        <div class="hero-pills">
+          <span class="hero-pill">Executive Summary</span>
+          <span class="hero-pill">Meeting Notes</span>
+          <span class="hero-pill">Status Report</span>
+          <span class="hero-pill">Client Recap</span>
+          <span class="hero-pill">Board Update</span>
+          <span class="hero-pill">Decision Log</span>
+          <span class="hero-pill">Research Synthesis</span>
+        </div>
+      </div>
+      <div>
+        <div class="workflow">
+          <div class="wf-step">
+            <div class="wf-num">1</div>
+            <div><div class="wf-name">Audience &amp; Purpose</div><div class="wf-desc">Executive update, team recap, client note, board summary, or personal brief</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">2</div>
+            <div><div class="wf-name">Material Triage</div><div class="wf-desc">Separate facts, decisions, open questions, risks, and actions</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">3</div>
+            <div><div class="wf-name">Lead with Importance</div><div class="wf-desc">Most critical takeaway first — not chronological order</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">4</div>
+            <div><div class="wf-name">Right-size Context</div><div class="wf-desc">Only enough for the audience to grasp significance</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">5</div>
+            <div><div class="wf-name">Action Item Sharpening</div><div class="wf-desc">Owner · action · deadline · dependency — when possible</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">6</div>
+            <div><div class="wf-name">Delta Highlighting</div><div class="wf-desc">Changes from previous status if the report is recurring</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">7</div>
+            <div><div class="wf-name">Close with Clarity</div><div class="wf-desc">Next steps, unresolved issues, and decisions needed</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WORKSPACE ───────────────────────────────── -->
+  <main class="workspace">
+    <p class="workspace-label">Summary Workspace</p>
+    <h2 class="workspace-h2">Paste your material, get a <em>structured report</em></h2>
+
+    <div class="input-panel">
+      <div class="input-context">
+        <p>Paste any raw material: meeting transcripts, notes, status updates, research findings, emails, briefing documents, progress reports. The agent will triage it, extract decisions and actions, and produce a clean structured document tailored to your audience.</p>
+      </div>
+
+      <div class="input-row">
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Audience &amp; purpose</label>
+          <input class="input-field" id="audience" placeholder="e.g. Executive team weekly update, Client project recap" />
+        </div>
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Deliverable type</label>
+          <select class="input-field" id="deliverable">
+            <option value="executive_summary">Executive Summary</option>
+            <option value="meeting_notes">Meeting Notes</option>
+            <option value="status_report">Weekly Status Report</option>
+            <option value="client_recap">Client Recap</option>
+            <option value="board_update">Board Update</option>
+            <option value="research_synthesis">Research Synthesis</option>
+            <option value="decision_log">Decision Log</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-top:16px">
+        <label class="input-label">Source material</label>
+        <textarea class="input-textarea" id="sourceInput" rows="14" placeholder="Paste your raw material here — meeting notes, transcripts, status updates, research findings, emails, project briefs, progress reports, stakeholder updates…
+
+Example:
+Call with client 9 June. Project running 2 weeks behind schedule due to delayed asset delivery from their side. Dev team completed API integration ahead of schedule. Budget is on track at 68% spend with 40% of project remaining. Next milestone is UAT starting 23 June — client confirmed testing team availability. Outstanding: legal sign-off on data agreement still needed before go-live (deadline 30 June). Risk: if legal takes longer than 1 week, go-live moves to July. Action: Sarah to chase legal by EOD Friday. Client happy with design direction after last week's review. Next call scheduled 16 June."></textarea>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Additional context (optional)</label>
+        <input class="input-field" id="context" placeholder="e.g. Recurring weekly update — last week we flagged the asset delay risk. Audience has no technical background." />
+      </div>
+
+      <div class="input-footer">
+        <span style="font-size:12px;color:var(--text-muted)">Agent follows a 7-step workflow — facts separated from decisions, actions sharpened with owners and deadlines</span>
+        <button class="run-btn" id="runBtn" disabled>
+          <span>📋</span>
+          <span>Generate Report</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <p class="loading-label">Structuring your report…</p>
+      <div class="loading-phases">
+        <span class="loading-phase" id="ph1">Triaging material</span>
+        <span class="loading-phase" id="ph2">Extracting decisions</span>
+        <span class="loading-phase" id="ph3">Sharpening actions</span>
+        <span class="loading-phase" id="ph4">Flagging risks</span>
+        <span class="loading-phase" id="ph5">Identifying gaps</span>
+        <span class="loading-phase" id="ph6">Structuring output</span>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="output-panel" id="outputPanel">
+      <div class="output-header">
+        <span class="output-tag" id="outputTag">Report</span>
+        <div style="display:flex;gap:10px">
+          <button class="action-btn" id="copyBtn">Copy Report</button>
+          <button class="action-btn" id="resetBtn">New Report</button>
+        </div>
+      </div>
+      <div id="outputContent"></div>
+    </div>
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Report Summary Agent</div>
+        <div class="footer-sub">NUS-ISS Living Lab · Agents Hub</div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/agents-hub/">All Agents</a></li>
+        <li><a href="/living-lab.html">Living Lab</a></li>
+        <li><a href="/living-lab.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const SYSTEM = `You are a Report Summary Agent. Your job is to compress raw information into structured, decision-ready documents without flattening them.
+
+CRITICAL RULES:
+- Preserve decisions, evidence, risks, and required actions — never strip these out in pursuit of brevity.
+- Lead with importance, not chronology.
+- Actions must have owner, action, and deadline when inferable.
+- If source material is incomplete or contradictory, flag it explicitly in "gaps".
+- Separate facts from interpretations — never blend them.
+- Output valid JSON only — no prose before or after.
+
+Output format:
+{
+  "report_title": "...",
+  "audience": "...",
+  "deliverable_type": "...",
+  "period": "... or 'not specified'",
+  "key_takeaway": "Single most important sentence the audience needs to know",
+  "facts": [
+    "Objective fact from the source material"
+  ],
+  "decisions": [
+    {
+      "decision": "What was decided",
+      "rationale": "Why — if stated"
+    }
+  ],
+  "action_items": [
+    {
+      "action": "Specific task",
+      "owner": "... or 'not specified'",
+      "deadline": "... or 'not specified'",
+      "dependency": "... or null"
+    }
+  ],
+  "risks": [
+    "Specific risk with consequence if known"
+  ],
+  "open_questions": [
+    "Unresolved question or issue requiring a decision"
+  ],
+  "changes_from_last": [
+    {
+      "direction": "up | down | same",
+      "item": "What changed and by how much"
+    }
+  ],
+  "next_steps": [
+    "Concrete next step"
+  ],
+  "gaps": [
+    "Missing information, contradiction, or incompleteness in the source material"
+  ],
+  "summary": "2-3 sentence plain-language summary of the full report"
+}`;
+
+    const audienceEl   = document.getElementById('audience');
+    const sourceEl     = document.getElementById('sourceInput');
+    const deliverableEl = document.getElementById('deliverable');
+    const contextEl    = document.getElementById('context');
+    const runBtn       = document.getElementById('runBtn');
+
+    function checkReady() {
+      runBtn.disabled = audienceEl.value.trim().length < 3 || sourceEl.value.trim().length < 20;
+    }
+    [audienceEl, sourceEl, contextEl].forEach(el => el.addEventListener('input', checkReady));
+
+    let currentOutput = null;
+    let phaseInterval;
+
+    runBtn.addEventListener('click', async () => {
+      const message = [
+        `Audience & Purpose: ${audienceEl.value.trim()}`,
+        `Deliverable Type: ${deliverableEl.value}`,
+        `Source Material:\n${sourceEl.value.trim()}`,
+        contextEl.value.trim() ? `Additional Context: ${contextEl.value.trim()}` : ''
+      ].filter(Boolean).join('\n\n');
+
+      showLoading();
+      try {
+        const text = await callClaude(SYSTEM, message);
+        const data = parseJSON(text);
+        currentOutput = data;
+        renderOutput(data);
+      } catch(err) {
+        showError(err.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    async function callClaude(system, message) {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system, message, max_tokens: 5000 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API request failed');
+      return data.content[0].text;
+    }
+
+    function parseJSON(text) {
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON found in response');
+      return JSON.parse(match[0]);
+    }
+
+    function showLoading() {
+      document.getElementById('loadingState').classList.add('show');
+      document.getElementById('outputPanel').classList.remove('show');
+      runBtn.disabled = true;
+      const phases = document.querySelectorAll('.loading-phase');
+      let i = 0; phases[0].classList.add('active');
+      phaseInterval = setInterval(() => {
+        phases.forEach(p => p.classList.remove('active'));
+        i = (i + 1) % phases.length;
+        phases[i].classList.add('active');
+      }, 2000);
+    }
+
+    function hideLoading() {
+      clearInterval(phaseInterval);
+      document.getElementById('loadingState').classList.remove('show');
+      checkReady();
+    }
+
+    function renderOutput(d) {
+      const actions   = d.action_items || [];
+      const decisions = d.decisions || [];
+      const facts     = d.facts || [];
+      const risks     = d.risks || [];
+      const questions = d.open_questions || [];
+      const changes   = d.changes_from_last || [];
+      const nextSteps = d.next_steps || [];
+      const gaps      = d.gaps || [];
+
+      // Takeaway
+      const takeawayHTML = d.key_takeaway ? `
+        <div class="takeaway-box">
+          <div class="takeaway-label">Key Takeaway</div>
+          <div class="takeaway-text">${esc(d.key_takeaway)}</div>
+        </div>` : '';
+
+      // Stats
+      const statsHTML = `
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-num">${decisions.length}</div><div class="stat-label">Decisions</div></div>
+          <div class="stat-card"><div class="stat-num">${actions.length}</div><div class="stat-label">Action Items</div></div>
+          <div class="stat-card"><div class="stat-num">${risks.length}</div><div class="stat-label">Risks</div></div>
+          <div class="stat-card"><div class="stat-num">${questions.length}</div><div class="stat-label">Open Questions</div></div>
+        </div>`;
+
+      // Summary
+      const summaryHTML = d.summary ? `
+        <div class="section-block" style="border-left:4px solid var(--teal);background:var(--teal-light);border-radius:0 12px 12px 0">
+          <div class="section-label">Summary</div>
+          <p style="font-size:14px;color:#134E4A;line-height:1.75;font-weight:400">${esc(d.summary)}</p>
+        </div>` : '';
+
+      // Facts
+      const factsHTML = facts.length ? `
+        <div class="section-block">
+          <div class="section-label">Facts &amp; Status</div>
+          <div class="item-list">
+            ${facts.map(f => `<div class="item-row"><span class="item-icon">·</span><span class="item-text">${esc(f)}</span></div>`).join('')}
+          </div>
+        </div>` : '';
+
+      // Decisions
+      const decisionsHTML = decisions.length ? `
+        <div class="section-block">
+          <div class="section-label">Decisions Made</div>
+          ${decisions.map(d => `
+            <div class="decision-card">
+              <div class="decision-text">✓ ${esc(d.decision)}</div>
+              ${d.rationale ? `<div class="decision-rationale">Rationale: ${esc(d.rationale)}</div>` : ''}
+            </div>`).join('')}
+        </div>` : '';
+
+      // Action items
+      const actionsHTML = actions.length ? `
+        <div class="section-block">
+          <div class="section-label">Action Items</div>
+          ${actions.map(a => `
+            <div class="action-card">
+              <div>
+                <div class="action-text">${esc(a.action)}</div>
+                <div class="action-owner">Owner: ${esc(a.owner || 'Not specified')}${a.dependency ? ` · Depends on: ${esc(a.dependency)}` : ''}</div>
+              </div>
+              <div class="action-deadline">${esc(a.deadline || 'No date')}</div>
+            </div>`).join('')}
+        </div>` : '';
+
+      // Risks
+      const risksHTML = risks.length ? `
+        <div class="section-block">
+          <div class="section-label">Risks</div>
+          ${risks.map(r => `<div class="risk-card">⚠ ${esc(r)}</div>`).join('')}
+        </div>` : '';
+
+      // Open questions
+      const questionsHTML = questions.length ? `
+        <div class="section-block">
+          <div class="section-label">Open Questions &amp; Unresolved Issues</div>
+          ${questions.map(q => `<div class="question-card">? ${esc(q)}</div>`).join('')}
+        </div>` : '';
+
+      // Changes from last
+      const changesHTML = changes.length ? `
+        <div class="section-block">
+          <div class="section-label">Changes Since Last Report</div>
+          ${changes.map(c => `
+            <div class="change-row">
+              <span class="change-tag ${c.direction||'same'}">${c.direction==='up'?'↑ Up':c.direction==='down'?'↓ Down':'→ Same'}</span>
+              <span class="change-text">${esc(c.item)}</span>
+            </div>`).join('')}
+        </div>` : '';
+
+      // Next steps
+      const nextHTML = nextSteps.length ? `
+        <div class="section-block">
+          <div class="section-label">Next Steps</div>
+          ${nextSteps.map((s,i) => `
+            <div class="next-step">
+              <div class="next-num">${i+1}</div>
+              <div class="next-text">${esc(s)}</div>
+            </div>`).join('')}
+        </div>` : '';
+
+      // Gaps
+      const gapsHTML = gaps.length ? `
+        <div class="section-block">
+          <div class="section-label">Source Gaps &amp; Contradictions</div>
+          ${gaps.map(g => `<div class="gap-box">⚑ ${esc(g)}</div>`).join('')}
+        </div>` : '';
+
+      document.getElementById('outputContent').innerHTML =
+        takeawayHTML + statsHTML + summaryHTML + factsHTML + decisionsHTML + actionsHTML + risksHTML + questionsHTML + changesHTML + nextHTML + gapsHTML;
+
+      document.getElementById('outputTag').textContent = `${d.deliverable_type ? d.deliverable_type.replace(/_/g,' ') : 'Report'} · ${actions.length} actions · ${risks.length} risks`;
+      document.getElementById('outputPanel').classList.add('show');
+      document.getElementById('outputPanel').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function showError(msg) {
+      document.getElementById('outputContent').innerHTML = `<div class="error-box">Error: ${esc(msg)}</div>`;
+      document.getElementById('outputPanel').classList.add('show');
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      if (!currentOutput) return;
+      const d = currentOutput;
+      const lines = [];
+      lines.push((d.report_title || 'Report').toUpperCase());
+      lines.push(`Audience: ${d.audience || ''} | Type: ${d.deliverable_type || ''}\n`);
+      if (d.key_takeaway) lines.push(`KEY TAKEAWAY\n${d.key_takeaway}\n`);
+      if (d.summary) lines.push(`SUMMARY\n${d.summary}\n`);
+      if ((d.facts||[]).length) lines.push('FACTS & STATUS\n' + d.facts.map(f=>`• ${f}`).join('\n') + '\n');
+      if ((d.decisions||[]).length) lines.push('DECISIONS\n' + d.decisions.map(x=>`✓ ${x.decision}${x.rationale?' — '+x.rationale:''}`).join('\n') + '\n');
+      if ((d.action_items||[]).length) lines.push('ACTION ITEMS\n' + d.action_items.map(a=>`• ${a.action} | Owner: ${a.owner||'TBD'} | Due: ${a.deadline||'TBD'}`).join('\n') + '\n');
+      if ((d.risks||[]).length) lines.push('RISKS\n' + d.risks.map(r=>`⚠ ${r}`).join('\n') + '\n');
+      if ((d.open_questions||[]).length) lines.push('OPEN QUESTIONS\n' + d.open_questions.map(q=>`? ${q}`).join('\n') + '\n');
+      if ((d.next_steps||[]).length) lines.push('NEXT STEPS\n' + d.next_steps.map((s,i)=>`${i+1}. ${s}`).join('\n'));
+      navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy Report', 2000);
+      });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('outputPanel').classList.remove('show');
+      currentOutput = null;
+      audienceEl.value = ''; sourceEl.value = ''; contextEl.value = '';
+      checkReady();
+      window.scrollTo({ top:0, behavior:'smooth' });
+    });
+  </script>
+</body>
+</html>
