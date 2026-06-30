@@ -324,6 +324,12 @@
         <p>Run the Council for decisions that matter — real tradeoffs, strategic ambiguity, financial or reputational risk, or a choice you might regret. Be specific. Include what's at stake and any context that would help the advisors understand your situation.</p>
       </div>
 
+      <!-- API Key input (for testing) -->
+      <div id="apiKeySection" style="margin-bottom:20px;padding:14px 18px;background:#FEF9C3;border:1.5px solid #FDE68A;border-radius:8px;">
+        <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#92400E;display:block;margin-bottom:6px;">🔑 OpenAI API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;">(for testing — not stored)</span></label>
+        <input id="apiKeyInput" type="password" placeholder="Paste your OpenAI API key here (sk-...)" style="width:100%;padding:9px 12px;font-family:var(--font-body);font-size:13px;border:1.5px solid #FDE68A;border-radius:6px;outline:none;background:#fff;color:var(--text);" />
+      </div>
+
       <!-- Advisor definition -->
       <div class="customise-section">
         <div class="customise-section-header">
@@ -526,6 +532,24 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
     });
 
     async function callClaude(system, message) {
+      const apiKey = document.getElementById('apiKeyInput').value.trim();
+
+      if (apiKey) {
+        // Call OpenAI directly from browser using pasted key
+        const messages = [];
+        if (system) messages.push({ role: 'system', content: system });
+        messages.push({ role: 'user', content: message });
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 8192, messages })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || 'OpenAI API error');
+        return data.choices[0].message.content;
+      }
+
+      // Fallback: use Cloudflare Function
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
