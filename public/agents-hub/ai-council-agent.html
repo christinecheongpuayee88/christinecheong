@@ -202,6 +202,25 @@
     .verdict-warning:last-child { margin-bottom:0; }
     .verdict-spoken { font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-top:20px; text-align:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:18px; }
 
+    /* ── ADVISOR CUSTOMISER ─────────────────────── */
+    .customise-toggle { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--bg); border:1.5px solid var(--border); border-radius:8px; cursor:pointer; margin-bottom:16px; transition:border-color 0.2s; user-select:none; }
+    .customise-toggle:hover { border-color:var(--slate); }
+    .customise-toggle-label { font-size:12px; font-weight:600; color:var(--navy); display:flex; align-items:center; gap:8px; }
+    .customise-toggle-label::before { content:'👥'; font-size:14px; }
+    .customise-toggle-hint { font-size:11px; color:var(--text-muted); }
+    .customise-toggle-arrow { font-size:11px; color:var(--text-muted); transition:transform 0.25s; }
+    .customise-toggle.open .customise-toggle-arrow { transform:rotate(180deg); }
+    .customise-panel { display:none; margin-bottom:16px; }
+    .customise-panel.open { display:block; }
+    .customise-row { display:grid; grid-template-columns:auto 1fr 1fr; gap:10px; align-items:center; margin-bottom:8px; }
+    .customise-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .customise-field { padding:9px 12px; font-family:var(--font-body); font-size:12px; font-weight:500; color:var(--text); background:var(--bg); border:1.5px solid var(--border); border-radius:6px; outline:none; width:100%; transition:border-color 0.2s; }
+    .customise-field:focus { border-color:var(--slate); }
+    .customise-field.name-field { font-weight:600; }
+    .customise-reset { font-size:11px; font-weight:500; color:var(--text-muted); background:none; border:none; cursor:pointer; padding:4px 0; text-decoration:underline; text-underline-offset:2px; margin-top:4px; }
+    .customise-reset:hover { color:var(--navy); }
+    @media (max-width:680px) { .customise-row { grid-template-columns:auto 1fr; } .customise-row .customise-field:last-child { grid-column:2; } }
+
     .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
 
     /* ── FOOTER ──────────────────────────────────── */
@@ -304,6 +323,43 @@
         <p>Run the Council for decisions that matter — real tradeoffs, strategic ambiguity, financial or reputational risk, or a choice you might regret. Be specific. Include what's at stake and any context that would help the advisors understand your situation.</p>
       </div>
 
+      <!-- Advisor customiser -->
+      <div class="customise-toggle" id="customiseToggle">
+        <span class="customise-toggle-label">Customise Your Advisors</span>
+        <span style="display:flex;align-items:center;gap:10px">
+          <span class="customise-toggle-hint">Optional — defaults work great</span>
+          <span class="customise-toggle-arrow">▾</span>
+        </span>
+      </div>
+      <div class="customise-panel" id="customisePanel">
+        <div class="customise-row">
+          <div class="customise-dot" style="background:#DC2626"></div>
+          <input class="customise-field name-field" id="adv1name" value="The Well-Intended Skeptic" placeholder="Advisor name" />
+          <input class="customise-field" id="adv1role" value="Finds fatal flaws, real risks, what could go badly wrong" placeholder="Focus / role" />
+        </div>
+        <div class="customise-row">
+          <div class="customise-dot" style="background:#2563EB"></div>
+          <input class="customise-field name-field" id="adv2name" value="The First Principles Architect" placeholder="Advisor name" />
+          <input class="customise-field" id="adv2role" value="Strips to root causes, challenges premises, reframes the problem" placeholder="Focus / role" />
+        </div>
+        <div class="customise-row">
+          <div class="customise-dot" style="background:#059669"></div>
+          <input class="customise-field name-field" id="adv3name" value="The Upside Hunter" placeholder="Advisor name" />
+          <input class="customise-field" id="adv3role" value="Finds hidden leverage, bigger plays, upside being missed" placeholder="Focus / role" />
+        </div>
+        <div class="customise-row">
+          <div class="customise-dot" style="background:#7C3AED"></div>
+          <input class="customise-field name-field" id="adv4name" value="The Unattached Outsider" placeholder="Advisor name" />
+          <input class="customise-field" id="adv4role" value="External lens, what insiders miss, what a stranger sees" placeholder="Focus / role" />
+        </div>
+        <div class="customise-row">
+          <div class="customise-dot" style="background:#D97706"></div>
+          <input class="customise-field name-field" id="adv5name" value="The Operator" placeholder="Advisor name" />
+          <input class="customise-field" id="adv5role" value="Execution focus, what happens Monday, real constraints" placeholder="Focus / role" />
+        </div>
+        <button class="customise-reset" id="resetAdvisors">↺ Reset to defaults</button>
+      </div>
+
       <label class="input-label">The decision or question</label>
       <textarea class="input-textarea" id="question" rows="5" placeholder="Describe the decision you need pressure-tested. Be specific. Include options if you have them, what's at stake, and any context that helps.
 
@@ -368,7 +424,49 @@ Examples:
   </footer>
 
   <script>
-    const SYSTEM = `You are the Imperial AI Advisory Council orchestrator. You run a structured multi-advisor decision session.
+
+    const questionEl = document.getElementById('question');
+    const contextEl  = document.getElementById('context');
+    const runBtn     = document.getElementById('runBtn');
+
+    // ── Customiser toggle ──
+    const customiseToggle = document.getElementById('customiseToggle');
+    const customisePanel  = document.getElementById('customisePanel');
+    customiseToggle.addEventListener('click', () => {
+      customiseToggle.classList.toggle('open');
+      customisePanel.classList.toggle('open');
+    });
+
+    const DEFAULTS = [
+      { name: 'The Well-Intended Skeptic',     role: 'Finds fatal flaws, real risks, what could go badly wrong' },
+      { name: 'The First Principles Architect', role: 'Strips to root causes, challenges premises, reframes the problem' },
+      { name: 'The Upside Hunter',              role: 'Finds hidden leverage, bigger plays, upside being missed' },
+      { name: 'The Unattached Outsider',        role: 'External lens, what insiders miss, what a stranger sees' },
+      { name: 'The Operator',                   role: 'Execution focus, what happens Monday, real constraints' },
+    ];
+    document.getElementById('resetAdvisors').addEventListener('click', () => {
+      DEFAULTS.forEach((d, i) => {
+        document.getElementById(`adv${i+1}name`).value = d.name;
+        document.getElementById(`adv${i+1}role`).value = d.role;
+      });
+    });
+
+    function getAdvisors() {
+      return DEFAULTS.map((_, i) => ({
+        name: document.getElementById(`adv${i+1}name`).value.trim() || DEFAULTS[i].name,
+        role: document.getElementById(`adv${i+1}role`).value.trim() || DEFAULTS[i].role,
+      }));
+    }
+
+    function buildSystem(advisors) {
+      const keys = ['skeptic','architect','hunter','outsider','operator'];
+      const advisorDefs = advisors.map((a, i) => `    "${keys[i]}": {
+      "name": "${a.name}",
+      "response": "Full 200-300 word response from ${a.name}'s lens: ${a.role}",
+      "inversion": "Assume the user followed this advice and it failed 6 months later. 1) Most likely cause of failure. 2) What to avoid. 3) Warning sign to watch for."
+    }`).join(',\n');
+
+      return `You are the Imperial AI Advisory Council orchestrator. You run a structured multi-advisor decision session.
 
 Output valid JSON only — no prose before or after. The JSON must be complete and valid.
 
@@ -376,31 +474,7 @@ Output format:
 {
   "decision_brief": "Clean 2-3 sentence restatement of the decision and what's at stake",
   "advisors": {
-    "skeptic": {
-      "name": "The Well-Intended Skeptic",
-      "response": "Full 200-300 word response — finds fatal flaws, real risks, what could go badly wrong",
-      "inversion": "Assume the user followed this advice and it failed 6 months later. 1) Most likely cause of failure. 2) What to avoid. 3) Warning sign to watch for."
-    },
-    "architect": {
-      "name": "The First Principles Architect",
-      "response": "Full 200-300 word response — strips to root, challenges premises, what problem are we really solving",
-      "inversion": "Same inversion format."
-    },
-    "hunter": {
-      "name": "The Upside Hunter",
-      "response": "Full 200-300 word response — hidden leverage, bigger play, what upside is being missed",
-      "inversion": "Same inversion format."
-    },
-    "outsider": {
-      "name": "The Unattached Outsider",
-      "response": "Full 200-300 word response — external lens, what insiders miss, what a stranger sees",
-      "inversion": "Same inversion format."
-    },
-    "operator": {
-      "name": "The Operator",
-      "response": "Full 200-300 word response — execution focus, what happens Monday, minimum viable action, real constraints",
-      "inversion": "Same inversion format."
-    }
+${advisorDefs}
   },
   "cross_examination": {
     "summary": "One paragraph (150-200 words) describing where advisors agree, where they disagree, and what the productive tensions are. Name the advisors and what they said.",
@@ -415,10 +489,7 @@ Output format:
 }
 
 CRITICAL: Never let all advisors agree. Each must represent their lens fully even if it creates conflict. Be specific to the actual decision described. No generic advice.`;
-
-    const questionEl = document.getElementById('question');
-    const contextEl  = document.getElementById('context');
-    const runBtn     = document.getElementById('runBtn');
+    }
 
     function checkReady() {
       runBtn.disabled = questionEl.value.trim().length < 20;
@@ -429,6 +500,13 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
     let phaseInterval;
 
     runBtn.addEventListener('click', async () => {
+      const advisors = getAdvisors();
+      // Update loading phase labels to match custom names
+      advisors.forEach((a, i) => {
+        const ph = document.getElementById(`ph${i+1}`);
+        if (ph) ph.textContent = a.name.replace(/^The /, '');
+      });
+
       const message = [
         `Decision / Question: ${questionEl.value.trim()}`,
         contextEl.value.trim() ? `Context: ${contextEl.value.trim()}` : ''
@@ -436,7 +514,7 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
 
       showLoading();
       try {
-        const text = await callClaude(SYSTEM, message);
+        const text = await callClaude(buildSystem(advisors), message);
         const data = parseJSON(text);
         currentOutput = data;
         renderOutput(data);
