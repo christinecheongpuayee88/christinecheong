@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Discovery Agent — NUS-ISS Living Lab</title>
+  <meta name="description" content="AI-powered product discovery: frame problems, map assumptions, plan interviews, prioritise opportunities, and define MVP scope before you build.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F2F2F2;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
+      --blue:         #1E88C7;
+      --blue-light:   #E8F4FB;
+      --text:         #111827;
+      --text-muted:   #4B5563;
+      --border:       #DADADA;
+      --green:        #059669;
+      --green-light:  #D1FAE5;
+      --amber:        #B7791F;
+      --amber-light:  #FEF3C7;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+      --red:          #C0392B;
+      --red-light:    #FDEDEC;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
+      --ease-spring:  cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out:     cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 500; line-height: 1.65; overflow-x: hidden; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    h1,h2,h3,h4 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* ── NAV ─────────────────────────────────────── */
+    .nav { position:fixed; inset:0 0 auto; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 56px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
+    .nav-brand { display:flex; flex-direction:column; gap:1px; }
+    .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); }
+    .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
+    .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
+    .nav-links a:hover { color:var(--navy); }
+    .nav-back { font-size:12px; font-weight:600; letter-spacing:0.06em; padding:10px 20px; border-radius:6px; border:1.5px solid var(--border); color:var(--navy); transition:all 0.25s; }
+    .nav-back:hover { border-color:var(--navy); background:var(--navy); color:#fff; }
+    .hamburger { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:4px; }
+    .hamburger span { display:block; width:24px; height:1.5px; background:var(--text); border-radius:2px; }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero { position:relative; padding:calc(var(--nav-h) + 80px) 56px 80px; background:var(--bg); overflow:hidden; border-bottom:1px solid var(--border); }
+    .hero-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.2fr 1fr; gap:80px; align-items:center; }
+    .hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--blue); margin-bottom:20px; }
+    .hero-eyebrow::before { content:''; width:28px; height:2px; background:var(--blue); }
+    .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--blue-light); color:var(--blue); margin-bottom:20px; }
+    .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,60px); font-weight:700; line-height:1.04; letter-spacing:-0.025em; color:var(--navy); margin-bottom:20px; }
+    .hero-h1 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+    .hero-sub { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
+    .hero-pills { display:flex; flex-wrap:wrap; gap:8px; }
+    .hero-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); }
+
+    .hero-visual { display:flex; flex-direction:column; gap:12px; }
+    .workflow-step { display:flex; align-items:flex-start; gap:14px; padding:16px 20px; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
+    .workflow-step-num { width:26px; height:26px; border-radius:50%; background:var(--blue); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .workflow-step-text { font-size:13px; font-weight:500; color:var(--navy); line-height:1.4; }
+    .workflow-step-text span { display:block; font-size:11px; font-weight:400; color:var(--text-muted); margin-top:2px; }
+
+    /* ── AGENT WORKSPACE ─────────────────────────── */
+    .workspace { max-width:1280px; margin:0 auto; padding:72px 56px 112px; }
+
+    .workspace-header { margin-bottom:40px; }
+    .workspace-label { font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--blue); margin-bottom:12px; }
+    .workspace-h2 { font-family:var(--font-display); font-size:clamp(26px,3vw,38px); font-weight:700; line-height:1.1; letter-spacing:-0.02em; color:var(--navy); }
+    .workspace-h2 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+
+    /* ── MODE SELECTOR ───────────────────────────── */
+    .mode-selector { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:36px; }
+    .mode-btn {
+      font-family:var(--font-body); font-size:13px; font-weight:500;
+      padding:10px 20px; border-radius:8px; border:1.5px solid var(--border);
+      background:var(--surface); color:var(--text-muted); cursor:pointer;
+      transition:all 0.25s var(--ease-out); display:flex; align-items:center; gap:8px;
+    }
+    .mode-btn:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-light); }
+    .mode-btn.active { background:var(--navy); border-color:var(--navy); color:#fff; }
+    .mode-btn .mode-icon { font-size:16px; line-height:1; }
+
+    /* ── INPUT PANEL ─────────────────────────────── */
+    .input-panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:28px; }
+    .mode-context { margin-bottom:20px; padding:14px 18px; background:var(--blue-light); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; }
+    .mode-context p { font-size:13px; font-weight:500; color:var(--navy-mid); line-height:1.55; }
+    .mode-context strong { color:var(--blue); }
+
+    .input-label { font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; display:block; }
+    .input-textarea {
+      width:100%; min-height:160px; padding:18px 20px;
+      font-family:var(--font-body); font-size:14px; font-weight:400; line-height:1.7;
+      color:var(--text); background:var(--bg);
+      border:1.5px solid var(--border); border-radius:10px;
+      resize:vertical; outline:none; transition:border-color 0.25s;
+    }
+    .input-textarea:focus { border-color:var(--blue); }
+    .input-textarea::placeholder { color:#9CA3AF; }
+
+    .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:16px; flex-wrap:wrap; gap:12px; }
+    .char-count { font-size:12px; color:var(--text-muted); }
+
+    .run-btn {
+      display:inline-flex; align-items:center; gap:10px;
+      font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em;
+      padding:14px 32px; border-radius:8px; border:none; cursor:pointer;
+      background:var(--blue); color:#fff;
+      transition:background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .run-btn:hover:not(:disabled) { background:#1670A6; transform:translateY(-2px); box-shadow:0 8px 24px rgba(30,136,199,0.35); }
+    .run-btn:disabled { opacity:0.55; cursor:not-allowed; transform:none; box-shadow:none; }
+    .run-btn-icon { font-size:17px; }
+
+    /* ── LOADING ─────────────────────────────────── */
+    .loading-state { display:none; padding:48px 32px; text-align:center; }
+    .loading-state.show { display:block; }
+    .loading-dots { display:inline-flex; gap:6px; margin-bottom:16px; }
+    .loading-dots span { width:8px; height:8px; border-radius:50%; background:var(--blue); opacity:0.3; animation:pulse 1.4s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay:0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
+    .loading-label { font-size:13px; font-weight:500; color:var(--text-muted); }
+    .loading-phases { display:flex; justify-content:center; gap:24px; margin-top:20px; flex-wrap:wrap; }
+    .loading-phase { font-size:11px; font-weight:500; padding:4px 12px; border-radius:100px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); opacity:0.4; transition:opacity 0.4s; }
+    .loading-phase.active { opacity:1; border-color:var(--blue); color:var(--blue); background:var(--blue-light); }
+
+    /* ── OUTPUT ──────────────────────────────────── */
+    .output-panel { display:none; }
+    .output-panel.show { display:block; }
+
+    .output-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px; }
+    .output-mode-tag { font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--blue-light); color:var(--blue); }
+    .output-actions { display:flex; gap:10px; }
+    .action-btn { font-size:12px; font-weight:500; padding:8px 16px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .action-btn:hover { border-color:var(--navy); color:var(--navy); }
+
+    /* ── OUTPUT CARDS ────────────────────────────── */
+    .output-summary { padding:24px 28px; background:var(--navy); color:#fff; border-radius:12px; margin-bottom:24px; }
+    .output-summary-label { font-size:10px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:8px; }
+    .output-summary-text { font-size:15px; font-weight:400; line-height:1.7; color:rgba(255,255,255,0.9); }
+
+    .output-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-bottom:24px; }
+    .output-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px 26px; }
+    .output-card--full { grid-column:1/-1; }
+    .output-card-label { font-size:10px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); margin-bottom:12px; }
+    .output-card-title { font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--navy); margin-bottom:10px; line-height:1.25; }
+    .output-card-body { font-size:13px; font-weight:400; color:var(--text-muted); line-height:1.75; }
+
+    .output-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .output-list li { display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--text); line-height:1.6; }
+    .output-list li::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--blue); flex-shrink:0; margin-top:7px; }
+
+    .assumption-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .assumption-card { padding:16px 18px; border-radius:8px; border:1px solid; }
+    .assumption-card--desirability { background:var(--blue-light); border-color:#93C5FD; }
+    .assumption-card--viability    { background:var(--green-light); border-color:#6EE7B7; }
+    .assumption-card--feasibility  { background:var(--amber-light); border-color:#FCD34D; }
+    .assumption-card--usability    { background:var(--purple-light); border-color:#C4B5FD; }
+    .assumption-card-label { font-size:10px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; margin-bottom:8px; }
+    .assumption-card--desirability .assumption-card-label { color:#1E40AF; }
+    .assumption-card--viability    .assumption-card-label { color:#065F46; }
+    .assumption-card--feasibility  .assumption-card-label { color:#92400E; }
+    .assumption-card--usability    .assumption-card-label { color:#4C1D95; }
+    .assumption-card ul { list-style:none; display:flex; flex-direction:column; gap:5px; }
+    .assumption-card ul li { font-size:12px; color:var(--text); line-height:1.55; padding-left:14px; position:relative; }
+    .assumption-card ul li::before { content:'→'; position:absolute; left:0; color:inherit; opacity:0.5; }
+
+    .priority-row { display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:8px; background:var(--bg); border:1px solid var(--border); margin-bottom:8px; }
+    .priority-rank { width:28px; height:28px; border-radius:50%; background:var(--blue); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .priority-name { font-size:13px; font-weight:600; color:var(--navy); flex:1; }
+    .priority-score { font-size:11px; font-weight:500; color:var(--text-muted); }
+    .priority-bar-wrap { width:80px; height:6px; background:var(--border); border-radius:3px; flex-shrink:0; }
+    .priority-bar { height:100%; border-radius:3px; background:var(--blue); }
+
+    .next-steps-list { display:flex; flex-direction:column; gap:10px; }
+    .next-step { display:flex; gap:14px; align-items:flex-start; padding:14px 16px; background:var(--bg); border:1px solid var(--border); border-radius:8px; }
+    .next-step-num { width:22px; height:22px; border-radius:50%; background:var(--navy); color:#fff; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .next-step-text { font-size:13px; color:var(--text); line-height:1.6; }
+
+    .caveats-box { padding:16px 20px; background:var(--amber-light); border:1px solid #FCD34D; border-radius:8px; margin-top:20px; }
+    .caveats-box-label { font-size:10px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--amber); margin-bottom:8px; }
+    .caveats-box ul { list-style:none; display:flex; flex-direction:column; gap:6px; }
+    .caveats-box ul li { font-size:12px; color:#92400E; line-height:1.55; padding-left:14px; position:relative; }
+    .caveats-box ul li::before { content:'⚠'; position:absolute; left:0; font-size:10px; }
+
+    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    .footer { background:var(--navy); color:#fff; padding:48px 56px 32px; margin-top:auto; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+    .footer-brand { font-family:var(--font-display); font-size:16px; font-weight:700; }
+    .footer-sub { font-size:12px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .footer-links { display:flex; gap:24px; list-style:none; }
+    .footer-links a { font-size:12px; color:rgba(255,255,255,0.4); transition:color 0.25s; }
+    .footer-links a:hover { color:#fff; }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width:1100px) { .hero,.workspace,.footer { padding-left:36px; padding-right:36px; } .nav { padding:0 36px; } }
+    @media (max-width:900px) { .hero-inner { grid-template-columns:1fr; gap:40px; } .output-grid { grid-template-columns:1fr; } .assumption-grid { grid-template-columns:1fr; } }
+    @media (max-width:680px) { .hero,.workspace,.footer { padding-left:22px; padding-right:22px; } .nav { padding:0 22px; } .nav-links { display:none; } .hamburger { display:flex; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ────────────────────────────────────── -->
+  <nav class="nav">
+    <a href="/agents-hub/" class="nav-brand">
+      <span class="nav-brand-sup">NUS-ISS</span>
+      <span class="nav-brand-name">Agents Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/agents-hub/">All Agents</a></li>
+      <li><a href="/living-lab.html">Living Lab</a></li>
+    </ul>
+    <a href="/agents-hub/" class="nav-back">← All Agents</a>
+  </nav>
+
+  <!-- ── HERO ────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="hero-eyebrow">Product &amp; Innovation</p>
+        <div class="hero-badge">5 Discovery Modes</div>
+        <h1 class="hero-h1">Product Discovery <em>Agent</em></h1>
+        <p class="hero-sub">Find the right problem before shaping the solution. Frame user needs, map assumptions, plan research, prioritise opportunities, and define the smallest useful validation step.</p>
+        <div class="hero-pills">
+          <span class="hero-pill">Problem Framing</span>
+          <span class="hero-pill">Assumption Mapping</span>
+          <span class="hero-pill">Interview Planning</span>
+          <span class="hero-pill">Opportunity Prioritisation</span>
+          <span class="hero-pill">MVP Scoping</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="workflow-step">
+          <div class="workflow-step-num">1</div>
+          <div class="workflow-step-text">Clarify context <span>Product area, target users, business goal, constraints</span></div>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-step-num">2</div>
+          <div class="workflow-step-text">Frame the problem <span>Who struggles, in what situation, and why it matters</span></div>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-step-num">3</div>
+          <div class="workflow-step-text">Map assumptions <span>Desirability · Viability · Feasibility · Usability</span></div>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-step-num">4</div>
+          <div class="workflow-step-text">Plan discovery activities <span>Interviews, surveys, prototype tests, data review</span></div>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-step-num">5</div>
+          <div class="workflow-step-text">Prioritise &amp; scope <span>Impact · Confidence · Effort · Strategic fit · Risk</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WORKSPACE ───────────────────────────────── -->
+  <main class="workspace">
+
+    <div class="workspace-header">
+      <p class="workspace-label">Discovery Workspace</p>
+      <h2 class="workspace-h2">Choose your <em>discovery mode</em></h2>
+    </div>
+
+    <!-- Mode Selector -->
+    <div class="mode-selector" id="modeSelector">
+      <button class="mode-btn active" data-mode="problem-framing">
+        <span class="mode-icon">🎯</span> Problem Framing
+      </button>
+      <button class="mode-btn" data-mode="assumption-mapping">
+        <span class="mode-icon">🗺️</span> Assumption Mapping
+      </button>
+      <button class="mode-btn" data-mode="interview-guide">
+        <span class="mode-icon">💬</span> Interview Guide
+      </button>
+      <button class="mode-btn" data-mode="opportunity-map">
+        <span class="mode-icon">📊</span> Opportunity Map
+      </button>
+      <button class="mode-btn" data-mode="mvp-scope">
+        <span class="mode-icon">🚀</span> MVP Scope
+      </button>
+    </div>
+
+    <!-- Input Panel -->
+    <div class="input-panel">
+      <div class="mode-context" id="modeContext">
+        <p><strong>Problem Framing:</strong> Describe your product area, target users, and what you're trying to solve. Include any current evidence, complaints, or observations. The agent will return a structured problem statement with user context, root causes, and success criteria.</p>
+      </div>
+      <label class="input-label" for="userInput">Your input</label>
+      <textarea class="input-textarea" id="userInput" placeholder="Describe your product context, the users involved, what they're struggling with, and any evidence or constraints you already have…" rows="7"></textarea>
+      <div class="input-footer">
+        <span class="char-count" id="charCount">0 characters</span>
+        <button class="run-btn" id="runBtn" disabled>
+          <span class="run-btn-icon">⚡</span>
+          <span id="runBtnLabel">Run Discovery</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <p class="loading-label" id="loadingLabel">Analysing product context…</p>
+      <div class="loading-phases" id="loadingPhases"></div>
+    </div>
+
+    <!-- Output -->
+    <div class="output-panel" id="outputPanel">
+      <div class="output-header">
+        <span class="output-mode-tag" id="outputModeTag">Problem Framing</span>
+        <div class="output-actions">
+          <button class="action-btn" id="copyBtn">Copy Output</button>
+          <button class="action-btn" id="resetBtn">New Analysis</button>
+        </div>
+      </div>
+      <div id="outputContent"></div>
+    </div>
+
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Product Discovery Agent</div>
+        <div class="footer-sub">NUS-ISS Living Lab · Agents Hub</div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/agents-hub/">All Agents</a></li>
+        <li><a href="/living-lab.html">Living Lab</a></li>
+        <li><a href="/living-lab.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    /* ── SYSTEM PROMPT ───────────────────────────── */
+    const SYSTEM_PROMPT = `You are a Product Discovery Agent. Your role is to support product teams in finding the right problem before shaping solutions. You keep user evidence, business goals, constraints, and assumptions clearly visible.
+
+Operating principles:
+- Never treat stakeholder requests as confirmed user needs
+- Distinguish evidence (observed/measured) from assumptions (believed/guessed)
+- Keep recommendations practical and testable
+- Frame everything in user terms, not feature terms
+
+You support five discovery modes. The user will prefix their input with the active mode. Respond only in valid JSON — no prose before or after.
+
+=== MODE: PROBLEM FRAMING ===
+Output format:
+{
+  "mode": "problem-framing",
+  "summary": "One sentence: the core problem and who it affects",
+  "problem_statement": "Structured: [User type] struggles to [do X] when [situation] because [root cause], which means [consequence].",
+  "user_context": { "who": "...", "situation": "...", "frequency": "...", "current_workaround": "..." },
+  "root_causes": ["...", "..."],
+  "success_criteria": ["...", "..."],
+  "evidence_vs_assumption": { "evidence": ["..."], "assumptions": ["..."] },
+  "next_steps": ["...", "..."],
+  "caveats": ["..."]
+}
+
+=== MODE: ASSUMPTION MAPPING ===
+Output format:
+{
+  "mode": "assumption-mapping",
+  "summary": "Brief summary of what's being tested and why",
+  "assumptions": {
+    "desirability": ["Users want this because...", "..."],
+    "viability": ["Business benefits because...", "..."],
+    "feasibility": ["Team can build/operate because...", "..."],
+    "usability": ["Users can understand/adopt because...", "..."]
+  },
+  "riskiest_assumptions": [
+    { "assumption": "...", "why_risky": "...", "test": "..." }
+  ],
+  "next_steps": ["...", "..."],
+  "caveats": ["..."]
+}
+
+=== MODE: INTERVIEW GUIDE ===
+Output format:
+{
+  "mode": "interview-guide",
+  "summary": "What this interview is designed to learn",
+  "target_participant": "...",
+  "session_structure": {
+    "warmup": ["...", "..."],
+    "core_questions": ["...", "..."],
+    "probes": ["...", "..."],
+    "closing": ["...", "..."]
+  },
+  "things_to_observe": ["...", "..."],
+  "things_to_avoid": ["...", "..."],
+  "next_steps": ["...", "..."],
+  "caveats": ["..."]
+}
+
+=== MODE: OPPORTUNITY MAP ===
+Output format:
+{
+  "mode": "opportunity-map",
+  "summary": "Overview of the opportunity landscape",
+  "opportunities": [
+    {
+      "name": "...",
+      "user_need": "...",
+      "impact": 1-10,
+      "confidence": 1-10,
+      "effort": 1-10,
+      "strategic_fit": 1-10,
+      "risk": "low|medium|high",
+      "score": "derived priority score"
+    }
+  ],
+  "top_opportunity": "...",
+  "patterns": ["...", "..."],
+  "next_steps": ["...", "..."],
+  "caveats": ["..."]
+}
+
+=== MODE: MVP SCOPE ===
+Output format:
+{
+  "mode": "mvp-scope",
+  "summary": "What the MVP is, for whom, and what it validates",
+  "mvp_definition": "...",
+  "in_scope": ["...", "..."],
+  "out_of_scope": ["...", "..."],
+  "validation_goal": "...",
+  "success_metric": "...",
+  "smallest_step": "The absolute minimum experiment before the MVP build",
+  "risks": ["...", "..."],
+  "next_steps": ["...", "..."],
+  "caveats": ["..."]
+}`;
+
+    /* ── MODE CONFIG ─────────────────────────────── */
+    const MODES = {
+      'problem-framing': {
+        label: 'Problem Framing',
+        prefix: 'MODE: PROBLEM FRAMING\n\n',
+        context: '<strong>Problem Framing:</strong> Describe your product area, target users, and what you\'re trying to solve. Include any current evidence, complaints, or observations. The agent will return a structured problem statement with user context, root causes, and success criteria.',
+        placeholder: 'Describe your product context, the users involved, what they\'re struggling with, and any evidence or constraints you already have…',
+        loadingLabel: 'Framing the problem in user terms…',
+        phases: ['Parsing context', 'Identifying root causes', 'Writing problem statement', 'Drafting success criteria'],
+        btnLabel: 'Frame the Problem'
+      },
+      'assumption-mapping': {
+        label: 'Assumption Mapping',
+        prefix: 'MODE: ASSUMPTION MAPPING\n\n',
+        context: '<strong>Assumption Mapping:</strong> Describe your product idea or initiative. The agent will categorise your assumptions into Desirability, Viability, Feasibility, and Usability — then identify the riskiest ones and suggest how to test them.',
+        placeholder: 'Describe the product or feature you\'re planning. What do you believe about users, the business, your team\'s ability to build it, and how users will adopt it?',
+        loadingLabel: 'Mapping assumptions by category…',
+        phases: ['Extracting beliefs', 'Categorising assumptions', 'Identifying riskiest', 'Designing tests'],
+        btnLabel: 'Map Assumptions'
+      },
+      'interview-guide': {
+        label: 'Interview Guide',
+        prefix: 'MODE: INTERVIEW GUIDE\n\n',
+        context: '<strong>Interview Guide:</strong> Describe what you want to learn from users — the problem space, the hypotheses you\'re testing, or the decisions your research needs to inform. The agent will generate a structured interview guide.',
+        placeholder: 'What do you need to learn from users? Describe the problem area, who you\'re interviewing, and the key questions you need answered to move forward…',
+        loadingLabel: 'Designing your interview guide…',
+        phases: ['Identifying learning goals', 'Building question flow', 'Adding probes', 'Flagging biases'],
+        btnLabel: 'Generate Interview Guide'
+      },
+      'opportunity-map': {
+        label: 'Opportunity Map',
+        prefix: 'MODE: OPPORTUNITY MAP\n\n',
+        context: '<strong>Opportunity Map:</strong> Describe the user needs, pain points, or jobs-to-be-done you\'ve identified — or paste in research findings. The agent will map and score each opportunity by impact, confidence, effort, strategic fit, and risk.',
+        placeholder: 'List the user needs, pain points, or opportunities you\'ve identified. Include any evidence of their importance, how frequently they occur, and any constraints on what you can build…',
+        loadingLabel: 'Mapping and scoring opportunities…',
+        phases: ['Extracting opportunities', 'Scoring by impact & effort', 'Assessing strategic fit', 'Ranking priorities'],
+        btnLabel: 'Map Opportunities'
+      },
+      'mvp-scope': {
+        label: 'MVP Scope',
+        prefix: 'MODE: MVP SCOPE\n\n',
+        context: '<strong>MVP Scope:</strong> Describe what you want to build, who it\'s for, and what you need to validate. The agent will define the smallest useful scope, identify what to leave out, and recommend the minimum experiment before committing to a full build.',
+        placeholder: 'Describe the product or feature you\'re scoping. What problem does it solve? Who uses it? What needs to be true for this to succeed? What are you most uncertain about?',
+        loadingLabel: 'Defining minimum viable scope…',
+        phases: ['Clarifying validation goal', 'Scoping in/out', 'Defining success metric', 'Finding smallest step'],
+        btnLabel: 'Define MVP Scope'
+      }
+    };
+
+    let currentMode = 'problem-framing';
+    let currentOutput = null;
+
+    /* ── MODE SWITCHING ──────────────────────────── */
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+        const cfg = MODES[currentMode];
+        document.getElementById('modeContext').innerHTML = `<p>${cfg.context}</p>`;
+        document.getElementById('userInput').placeholder = cfg.placeholder;
+        document.getElementById('runBtnLabel').textContent = cfg.btnLabel;
+        hideOutput();
+      });
+    });
+
+    /* ── TEXTAREA ────────────────────────────────── */
+    const textarea = document.getElementById('userInput');
+    const charCount = document.getElementById('charCount');
+    const runBtn = document.getElementById('runBtn');
+
+    textarea.addEventListener('input', () => {
+      const len = textarea.value.length;
+      charCount.textContent = `${len.toLocaleString()} characters`;
+      runBtn.disabled = len < 20;
+    });
+
+    /* ── RUN ─────────────────────────────────────── */
+    runBtn.addEventListener('click', async () => {
+      const input = textarea.value.trim();
+      if (!input) return;
+      const cfg = MODES[currentMode];
+
+      showLoading(cfg);
+      try {
+        const text = await callClaude(SYSTEM_PROMPT, cfg.prefix + input);
+        const data = parseJSON(text);
+        currentOutput = data;
+        renderOutput(data, cfg);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    /* ── API ─────────────────────────────────────── */
+    async function callClaude(system, message) {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system, message, max_tokens: 4096 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API request failed');
+      return data.content[0].text;
+    }
+
+    function parseJSON(text) {
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON found in response');
+      return JSON.parse(match[0]);
+    }
+
+    /* ── LOADING ─────────────────────────────────── */
+    let phaseInterval;
+    function showLoading(cfg) {
+      document.getElementById('loadingState').classList.add('show');
+      document.getElementById('outputPanel').classList.remove('show');
+      document.getElementById('loadingLabel').textContent = cfg.loadingLabel;
+      runBtn.disabled = true;
+
+      const phasesEl = document.getElementById('loadingPhases');
+      phasesEl.innerHTML = cfg.phases.map(p => `<span class="loading-phase">${p}</span>`).join('');
+      const phaseEls = phasesEl.querySelectorAll('.loading-phase');
+      let i = 0;
+      phaseEls[0].classList.add('active');
+      phaseInterval = setInterval(() => {
+        phaseEls.forEach(el => el.classList.remove('active'));
+        i = (i + 1) % phaseEls.length;
+        phaseEls[i].classList.add('active');
+      }, 1800);
+    }
+
+    function hideLoading() {
+      clearInterval(phaseInterval);
+      document.getElementById('loadingState').classList.remove('show');
+      runBtn.disabled = textarea.value.length < 20;
+    }
+
+    /* ── OUTPUT RENDERING ────────────────────────── */
+    function renderOutput(data, cfg) {
+      document.getElementById('outputModeTag').textContent = cfg.label;
+      const el = document.getElementById('outputContent');
+
+      if (data.mode === 'problem-framing')    el.innerHTML = renderProblemFraming(data);
+      else if (data.mode === 'assumption-mapping') el.innerHTML = renderAssumptionMapping(data);
+      else if (data.mode === 'interview-guide')    el.innerHTML = renderInterviewGuide(data);
+      else if (data.mode === 'opportunity-map')    el.innerHTML = renderOpportunityMap(data);
+      else if (data.mode === 'mvp-scope')          el.innerHTML = renderMVPScope(data);
+      else el.innerHTML = `<pre style="font-size:12px;white-space:pre-wrap">${JSON.stringify(data, null, 2)}</pre>`;
+
+      document.getElementById('outputPanel').classList.add('show');
+      document.getElementById('outputPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderProblemFraming(d) {
+      return `
+        <div class="output-summary">
+          <div class="output-summary-label">Executive Summary</div>
+          <div class="output-summary-text">${esc(d.summary)}</div>
+        </div>
+        <div class="output-grid">
+          <div class="output-card output-card--full">
+            <div class="output-card-label">Problem Statement</div>
+            <div class="output-card-body" style="font-size:15px;font-weight:500;color:var(--navy);line-height:1.7">${esc(d.problem_statement)}</div>
+          </div>
+          <div class="output-card">
+            <div class="output-card-label">User Context</div>
+            ${d.user_context ? `
+              <ul class="output-list">
+                ${d.user_context.who ? `<li><strong>Who:</strong> ${esc(d.user_context.who)}</li>` : ''}
+                ${d.user_context.situation ? `<li><strong>Situation:</strong> ${esc(d.user_context.situation)}</li>` : ''}
+                ${d.user_context.frequency ? `<li><strong>Frequency:</strong> ${esc(d.user_context.frequency)}</li>` : ''}
+                ${d.user_context.current_workaround ? `<li><strong>Today:</strong> ${esc(d.user_context.current_workaround)}</li>` : ''}
+              </ul>` : ''}
+          </div>
+          <div class="output-card">
+            <div class="output-card-label">Root Causes</div>
+            <ul class="output-list">${(d.root_causes||[]).map(c=>`<li>${esc(c)}</li>`).join('')}</ul>
+          </div>
+          <div class="output-card">
+            <div class="output-card-label">Success Criteria</div>
+            <ul class="output-list">${(d.success_criteria||[]).map(c=>`<li>${esc(c)}</li>`).join('')}</ul>
+          </div>
+          <div class="output-card">
+            <div class="output-card-label">Evidence vs Assumptions</div>
+            ${d.evidence_vs_assumption ? `
+              <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:6px">Evidence</p>
+              <ul class="output-list" style="margin-bottom:14px">${(d.evidence_vs_assumption.evidence||[]).map(e=>`<li>${esc(e)}</li>`).join('')}</ul>
+              <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);margin-bottom:6px">Assumptions</p>
+              <ul class="output-list">${(d.evidence_vs_assumption.assumptions||[]).map(a=>`<li>${esc(a)}</li>`).join('')}</ul>
+            ` : ''}
+          </div>
+        </div>
+        ${renderNextSteps(d.next_steps)}
+        ${renderCaveats(d.caveats)}`;
+    }
+
+    function renderAssumptionMapping(d) {
+      const a = d.assumptions || {};
+      return `
+        <div class="output-summary">
+          <div class="output-summary-label">Overview</div>
+          <div class="output-summary-text">${esc(d.summary)}</div>
+        </div>
+        <div class="output-card" style="margin-bottom:24px">
+          <div class="output-card-label">Assumption Map</div>
+          <div class="assumption-grid">
+            <div class="assumption-card assumption-card--desirability">
+              <div class="assumption-card-label">Desirability</div>
+              <ul>${(a.desirability||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+            </div>
+            <div class="assumption-card assumption-card--viability">
+              <div class="assumption-card-label">Viability</div>
+              <ul>${(a.viability||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+            </div>
+            <div class="assumption-card assumption-card--feasibility">
+              <div class="assumption-card-label">Feasibility</div>
+              <ul>${(a.feasibility||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+            </div>
+            <div class="assumption-card assumption-card--usability">
+              <div class="assumption-card-label">Usability</div>
+              <ul>${(a.usability||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+            </div>
+          </div>
+        </div>
+        <div class="output-card" style="margin-bottom:24px">
+          <div class="output-card-label">Riskiest Assumptions — Test These First</div>
+          ${(d.riskiest_assumptions||[]).map((r,i)=>`
+            <div style="padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:10px">
+              <div style="display:flex;align-items:flex-start;gap:12px">
+                <div style="width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">${i+1}</div>
+                <div>
+                  <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px">${esc(r.assumption)}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">${esc(r.why_risky)}</div>
+                  <div style="font-size:12px;color:var(--blue)">→ Test: ${esc(r.test)}</div>
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>
+        ${renderNextSteps(d.next_steps)}
+        ${renderCaveats(d.caveats)}`;
+    }
+
+    function renderInterviewGuide(d) {
+      const s = d.session_structure || {};
+      function questions(arr, label) {
+        if (!arr || !arr.length) return '';
+        return `<div style="margin-bottom:18px">
+          <p style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">${label}</p>
+          <ul class="output-list">${arr.map(q=>`<li>${esc(q)}</li>`).join('')}</ul>
+        </div>`;
+      }
+      return `
+        <div class="output-summary">
+          <div class="output-summary-label">Research Goal</div>
+          <div class="output-summary-text">${esc(d.summary)}</div>
+        </div>
+        ${d.target_participant ? `<div class="output-card" style="margin-bottom:20px"><div class="output-card-label">Target Participant</div><div class="output-card-body">${esc(d.target_participant)}</div></div>` : ''}
+        <div class="output-card" style="margin-bottom:20px">
+          <div class="output-card-label">Interview Guide</div>
+          ${questions(s.warmup, 'Warm-up')}
+          ${questions(s.core_questions, 'Core Questions')}
+          ${questions(s.probes, 'Probes & Follow-ups')}
+          ${questions(s.closing, 'Closing')}
+        </div>
+        <div class="output-grid">
+          <div class="output-card">
+            <div class="output-card-label">Things to Observe</div>
+            <ul class="output-list">${(d.things_to_observe||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+          </div>
+          <div class="output-card">
+            <div class="output-card-label">Things to Avoid</div>
+            <ul class="output-list">${(d.things_to_avoid||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+          </div>
+        </div>
+        ${renderNextSteps(d.next_steps)}
+        ${renderCaveats(d.caveats)}`;
+    }
+
+    function renderOpportunityMap(d) {
+      const ops = d.opportunities || [];
+      const maxScore = Math.max(...ops.map(o => ((o.impact||5) + (o.confidence||5) + (10 - (o.effort||5)) + (o.strategic_fit||5)) / 4));
+      return `
+        <div class="output-summary">
+          <div class="output-summary-label">Opportunity Landscape</div>
+          <div class="output-summary-text">${esc(d.summary)}</div>
+        </div>
+        <div class="output-card" style="margin-bottom:24px">
+          <div class="output-card-label">Opportunities — Ranked by Priority</div>
+          ${ops.map((o,i) => {
+            const score = ((o.impact||5) + (o.confidence||5) + (10-(o.effort||5)) + (o.strategic_fit||5)) / 4;
+            const pct = Math.round((score / 10) * 100);
+            const riskColor = o.risk==='low'?'var(--green)':o.risk==='high'?'var(--red)':'var(--amber)';
+            return `<div class="priority-row">
+              <div class="priority-rank">${i+1}</div>
+              <div style="flex:1">
+                <div class="priority-name">${esc(o.name)}</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${esc(o.user_need||'')}</div>
+              </div>
+              <div style="font-size:11px;color:${riskColor};font-weight:600;text-transform:uppercase;letter-spacing:0.1em;width:44px;text-align:center">${o.risk||'—'}</div>
+              <div class="priority-bar-wrap"><div class="priority-bar" style="width:${pct}%"></div></div>
+              <div class="priority-score">${Math.round(score*10)/10}/10</div>
+            </div>`;
+          }).join('')}
+        </div>
+        ${d.top_opportunity ? `<div class="output-card" style="margin-bottom:20px"><div class="output-card-label">Top Opportunity</div><div class="output-card-body" style="font-size:14px;font-weight:500;color:var(--navy)">${esc(d.top_opportunity)}</div></div>` : ''}
+        ${d.patterns && d.patterns.length ? `<div class="output-card" style="margin-bottom:20px"><div class="output-card-label">Patterns &amp; Insights</div><ul class="output-list">${d.patterns.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>` : ''}
+        ${renderNextSteps(d.next_steps)}
+        ${renderCaveats(d.caveats)}`;
+    }
+
+    function renderMVPScope(d) {
+      return `
+        <div class="output-summary">
+          <div class="output-summary-label">MVP Summary</div>
+          <div class="output-summary-text">${esc(d.summary)}</div>
+        </div>
+        ${d.mvp_definition ? `<div class="output-card output-card--full" style="margin-bottom:20px"><div class="output-card-label">MVP Definition</div><div class="output-card-body" style="font-size:14px;font-weight:500;color:var(--navy)">${esc(d.mvp_definition)}</div></div>` : ''}
+        <div class="output-grid">
+          <div class="output-card">
+            <div class="output-card-label" style="color:var(--green)">In Scope ✓</div>
+            <ul class="output-list">${(d.in_scope||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+          </div>
+          <div class="output-card">
+            <div class="output-card-label" style="color:var(--red)">Out of Scope ✗</div>
+            <ul class="output-list">${(d.out_of_scope||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+          </div>
+          <div class="output-card">
+            <div class="output-card-label">Validation Goal</div>
+            <div class="output-card-body">${esc(d.validation_goal||'')}</div>
+          </div>
+          <div class="output-card">
+            <div class="output-card-label">Success Metric</div>
+            <div class="output-card-body">${esc(d.success_metric||'')}</div>
+          </div>
+        </div>
+        ${d.smallest_step ? `
+          <div style="padding:20px 24px;background:var(--blue-light);border:2px solid var(--blue);border-radius:12px;margin-bottom:20px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);margin-bottom:8px">Smallest Useful Step Before Building</div>
+            <div style="font-size:14px;font-weight:500;color:var(--navy)">${esc(d.smallest_step)}</div>
+          </div>` : ''}
+        ${d.risks && d.risks.length ? `<div class="output-card" style="margin-bottom:20px"><div class="output-card-label">Risks</div><ul class="output-list">${d.risks.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>` : ''}
+        ${renderNextSteps(d.next_steps)}
+        ${renderCaveats(d.caveats)}`;
+    }
+
+    function renderNextSteps(steps) {
+      if (!steps || !steps.length) return '';
+      return `<div class="output-card" style="margin-top:20px;margin-bottom:16px">
+        <div class="output-card-label">Recommended Next Steps</div>
+        <div class="next-steps-list">
+          ${steps.map((s,i)=>`<div class="next-step"><div class="next-step-num">${i+1}</div><div class="next-step-text">${esc(s)}</div></div>`).join('')}
+        </div>
+      </div>`;
+    }
+
+    function renderCaveats(caveats) {
+      if (!caveats || !caveats.length) return '';
+      return `<div class="caveats-box">
+        <div class="caveats-box-label">Caveats &amp; Limitations</div>
+        <ul>${caveats.map(c=>`<li>${esc(c)}</li>`).join('')}</ul>
+      </div>`;
+    }
+
+    function showError(msg) {
+      document.getElementById('outputContent').innerHTML = `<div class="error-box">Error: ${esc(msg)}</div>`;
+      document.getElementById('outputPanel').classList.add('show');
+    }
+
+    function hideOutput() {
+      document.getElementById('outputPanel').classList.remove('show');
+      currentOutput = null;
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ── COPY ────────────────────────────────────── */
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      if (!currentOutput) return;
+      navigator.clipboard.writeText(JSON.stringify(currentOutput, null, 2)).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy Output', 2000);
+      });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      hideOutput();
+      textarea.value = '';
+      charCount.textContent = '0 characters';
+      runBtn.disabled = true;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
