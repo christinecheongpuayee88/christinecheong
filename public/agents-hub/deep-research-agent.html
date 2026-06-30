@@ -467,20 +467,7 @@ Rules:
 - Do not fabricate specific statistics, company financials, or source citations.`;
 
     async function callClaude(systemPrompt,userMessage,urls=[]){
-      const _apiKey = localStorage.getItem('openai_api_key') || '';
-      if (_apiKey) {
-        const _msgs = [];
-        if (systemPrompt) _msgs.push({ role: 'system', content: systemPrompt });
-        _msgs.push({ role: 'user', content: userMessage });
-        const _res = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}` },
-          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 6000, messages: _msgs })
-        });
-        const _data = await _res.json();
-        if (!_res.ok) throw new Error(_data.error?.message || 'OpenAI API error');
-        return _data.choices[0].message.content;
-      }
+      // Always go through Cloudflare Function so URL fetching works server-side
       const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:systemPrompt,message:userMessage,urls})});
       const data=await res.json();
       if(!res.ok) throw new Error(data.error||'API request failed');
