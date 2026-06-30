@@ -324,18 +324,6 @@
         <p>Run the Council for decisions that matter — real tradeoffs, strategic ambiguity, financial or reputational risk, or a choice you might regret. Be specific. Include what's at stake and any context that would help the advisors understand your situation.</p>
       </div>
 
-      <!-- API Key input -->
-      <div id="apiKeySection" style="margin-bottom:20px;padding:14px 18px;background:#FEF9C3;border:1.5px solid #FDE68A;border-radius:8px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-          <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#92400E;">🔑 OpenAI API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;">(saved in this browser)</span></label>
-          <span id="apiKeySavedBadge" style="display:none;font-size:11px;font-weight:600;color:#059669;background:#D1FAE5;padding:3px 10px;border-radius:100px;">✓ Key saved</span>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <input id="apiKeyInput" type="password" placeholder="Paste your OpenAI API key (sk-...)" style="flex:1;padding:9px 12px;font-family:var(--font-body);font-size:13px;border:1.5px solid #FDE68A;border-radius:6px;outline:none;background:#fff;color:var(--text);" />
-          <button id="apiKeySaveBtn" onclick="saveApiKey()" style="padding:9px 16px;font-family:var(--font-body);font-size:12px;font-weight:600;background:#92400E;color:#fff;border:none;border-radius:6px;cursor:pointer;">Save</button>
-          <button id="apiKeyClearBtn" onclick="clearApiKey()" style="padding:9px 16px;font-family:var(--font-body);font-size:12px;font-weight:500;background:none;color:#92400E;border:1.5px solid #FDE68A;border-radius:6px;cursor:pointer;">Clear</button>
-        </div>
-      </div>
 
       <!-- Advisor definition -->
       <div class="customise-section">
@@ -428,6 +416,15 @@ Examples:
       <div id="outputContent"></div>
     </div>
   </main>
+
+  <!-- ── API KEY (bottom) ─────────────────────────── -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 56px 48px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <span style="font-size:11px;color:var(--text-muted);">🔑 API Key</span>
+    <input id="apiKeyInput" type="password" placeholder="Paste OpenAI key to enable (sk-...)" style="flex:1;min-width:260px;padding:8px 12px;font-family:var(--font-body);font-size:12px;border:1.5px solid var(--border);border-radius:6px;outline:none;background:var(--surface);color:var(--text);" />
+    <button onclick="saveApiKey()" style="padding:8px 14px;font-family:var(--font-body);font-size:12px;font-weight:600;background:var(--slate);color:#fff;border:none;border-radius:6px;cursor:pointer;">Save</button>
+    <button onclick="clearApiKey()" style="padding:8px 14px;font-family:var(--font-body);font-size:12px;font-weight:500;background:none;color:var(--text-muted);border:1.5px solid var(--border);border-radius:6px;cursor:pointer;">Clear</button>
+    <span id="apiKeySavedBadge" style="display:none;font-size:11px;font-weight:600;color:#059669;">✓ Key saved</span>
+  </div>
 
   <!-- ── FOOTER ──────────────────────────────────── -->
   <footer class="footer">
