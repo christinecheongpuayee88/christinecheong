@@ -324,10 +324,17 @@
         <p>Run the Council for decisions that matter — real tradeoffs, strategic ambiguity, financial or reputational risk, or a choice you might regret. Be specific. Include what's at stake and any context that would help the advisors understand your situation.</p>
       </div>
 
-      <!-- API Key input (for testing) -->
+      <!-- API Key input -->
       <div id="apiKeySection" style="margin-bottom:20px;padding:14px 18px;background:#FEF9C3;border:1.5px solid #FDE68A;border-radius:8px;">
-        <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#92400E;display:block;margin-bottom:6px;">🔑 OpenAI API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;">(for testing — not stored)</span></label>
-        <input id="apiKeyInput" type="password" placeholder="Paste your OpenAI API key here (sk-...)" style="width:100%;padding:9px 12px;font-family:var(--font-body);font-size:13px;border:1.5px solid #FDE68A;border-radius:6px;outline:none;background:#fff;color:var(--text);" />
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#92400E;">🔑 OpenAI API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;">(saved in this browser)</span></label>
+          <span id="apiKeySavedBadge" style="display:none;font-size:11px;font-weight:600;color:#059669;background:#D1FAE5;padding:3px 10px;border-radius:100px;">✓ Key saved</span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input id="apiKeyInput" type="password" placeholder="Paste your OpenAI API key (sk-...)" style="flex:1;padding:9px 12px;font-family:var(--font-body);font-size:13px;border:1.5px solid #FDE68A;border-radius:6px;outline:none;background:#fff;color:var(--text);" />
+          <button id="apiKeySaveBtn" onclick="saveApiKey()" style="padding:9px 16px;font-family:var(--font-body);font-size:12px;font-weight:600;background:#92400E;color:#fff;border:none;border-radius:6px;cursor:pointer;">Save</button>
+          <button id="apiKeyClearBtn" onclick="clearApiKey()" style="padding:9px 16px;font-family:var(--font-body);font-size:12px;font-weight:500;background:none;color:#92400E;border:1.5px solid #FDE68A;border-radius:6px;cursor:pointer;">Clear</button>
+        </div>
       </div>
 
       <!-- Advisor definition -->
@@ -532,7 +539,7 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
     });
 
     async function callClaude(system, message) {
-      const apiKey = document.getElementById('apiKeyInput').value.trim();
+      const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('openai_api_key') || '';
 
       if (apiKey) {
         // Call OpenAI directly from browser using pasted key
@@ -706,6 +713,28 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
         setTimeout(() => btn.textContent = 'Copy Transcript', 2000);
       });
     });
+
+    // ── API Key persistence ──
+    function saveApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      if (!key) return;
+      localStorage.setItem('openai_api_key', key);
+      showSavedBadge();
+    }
+    function clearApiKey() {
+      localStorage.removeItem('openai_api_key');
+      document.getElementById('apiKeyInput').value = '';
+      document.getElementById('apiKeySavedBadge').style.display = 'none';
+    }
+    function showSavedBadge() {
+      document.getElementById('apiKeySavedBadge').style.display = 'inline-block';
+    }
+    // Load saved key on page load
+    const savedKey = localStorage.getItem('openai_api_key');
+    if (savedKey) {
+      document.getElementById('apiKeyInput').value = savedKey;
+      showSavedBadge();
+    }
 
     document.getElementById('resetBtn').addEventListener('click', () => {
       document.getElementById('outputPanel').classList.remove('show');
