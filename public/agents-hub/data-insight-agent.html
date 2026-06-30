@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -482,6 +482,20 @@ Output valid JSON only — no prose before or after:
     });
 
     async function callClaude(system, message) {
+      const _apiKey = localStorage.getItem('openai_api_key') || '';
+      if (_apiKey) {
+        const _msgs = [];
+        if (system || systemPrompt) _msgs.push({ role: 'system', content: system || systemPrompt });
+        _msgs.push({ role: 'user', content: message || userMessage });
+        const _res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}`},
+          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 6000, messages: _msgs })
+        });
+        const _data = await _res.json();
+        if (!_res.ok) throw new Error(_data.error?.message || 'OpenAI API error');
+        return _data.choices[0].message.content;
+      }
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
