@@ -23,6 +23,10 @@
       --teal-light:   #E8F4FB;
       --purple:       #4A6F8A;
       --purple-light: #EEF2F6;
+      --green:        #059669;
+      --green-light:  #D1FAE5;
+      --indigo:       #4338CA;
+      --indigo-light: #EEF2FF;
       --text:         #111827;
       --text-muted:   #4B5563;
       --border:       #DADADA;
@@ -336,6 +340,8 @@
     .agent-card--blue .agent-card-stripe { background: var(--blue); }
     .agent-card--teal .agent-card-stripe { background: var(--blue); }
     .agent-card--purple .agent-card-stripe { background: var(--navy-mid); }
+    .agent-card--green .agent-card-stripe  { background: var(--green); }
+    .agent-card--indigo .agent-card-stripe { background: var(--indigo); }
 
     .agent-icon {
       width: 72px;
@@ -354,6 +360,8 @@
     .agent-card--blue .agent-icon   { background: var(--blue-light); }
     .agent-card--teal .agent-icon   { background: var(--blue-light); }
     .agent-card--purple .agent-icon { background: var(--purple-light); }
+    .agent-card--green .agent-icon  { background: var(--green-light); }
+    .agent-card--indigo .agent-icon { background: var(--indigo-light); }
 
     .agent-card-badges {
       display: flex;
@@ -763,26 +771,27 @@
         </div>
         <div class="filter-bar reveal d2">
           <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="strategy">Strategy &amp; Intelligence</button>
+          <button class="filter-btn" data-filter="strategy">Strategy</button>
+          <button class="filter-btn" data-filter="research">Research</button>
+          <button class="filter-btn" data-filter="creative">Creative</button>
+          <button class="filter-btn" data-filter="data">Data</button>
           <button class="filter-btn" data-filter="consumer">Consumer &amp; Insight</button>
-          <button class="filter-btn" data-filter="product">Product &amp; Innovation</button>
-          <button class="filter-btn" data-filter="process">Process &amp; Operations</button>
         </div>
       </div>
 
       <div class="agents-grid">
 
         <!-- ═══ STRATEGIC SIGNALS AGENT ═══ -->
-        <a href="strategic-signals-agent.html" class="agent-card agent-card--orange reveal" data-category="strategy">
+        <a href="strategic-signals-agent.html" class="agent-card agent-card--orange reveal" data-category="strategy research">
           <div class="agent-card-stripe"></div>
           <div class="agent-icon">&#9889;</div>
           <div class="agent-card-badges">
             <span class="agent-badge badge-level">Expert</span>
-            <span class="agent-badge badge-category">Strategy &amp; Intelligence</span>
+            <span class="agent-badge badge-category">Strategy</span>
           </div>
           <h3 class="agent-card-title">Strategic Signals Agent</h3>
           <p class="agent-card-desc">
-            Find the Important and the Interesting. Interrogates your data to separate critical signals (what you need to know) from creative outliers (what's surprising to know) — handing you the raw materials for breakthrough thinking.
+            Separates the Important from the Interesting. Interrogates your data through 10 distinct analytical personas to surface critical signals and creative outliers.
           </p>
           <div class="agent-card-footer">
             <div class="agent-card-tags">
@@ -795,12 +804,12 @@
         </a>
 
         <!-- ═══ CONSUMER PERSONA AGENT ═══ -->
-        <a href="persona-agent.html" class="agent-card agent-card--teal reveal d1" data-category="consumer strategy">
+        <a href="persona-agent.html" class="agent-card agent-card--teal reveal d1" data-category="research creative strategy">
           <div class="agent-card-stripe"></div>
           <div class="agent-icon">&#128100;</div>
           <div class="agent-card-badges">
             <span class="agent-badge badge-level">Insight</span>
-            <span class="agent-badge badge-category">Consumer &amp; Insight</span>
+            <span class="agent-badge badge-category">Research</span>
           </div>
           <h3 class="agent-card-title">Consumer Persona Agent</h3>
           <p class="agent-card-desc">
@@ -817,16 +826,16 @@
         </a>
 
         <!-- ═══ DEEP RESEARCH AGENT ═══ -->
-        <a href="deep-research-agent.html" class="agent-card agent-card--blue reveal d2" data-category="strategy">
+        <a href="deep-research-agent.html" class="agent-card agent-card--blue reveal d2" data-category="research strategy">
           <div class="agent-card-stripe"></div>
           <div class="agent-icon">&#128218;</div>
           <div class="agent-card-badges">
             <span class="agent-badge badge-level">Expert</span>
-            <span class="agent-badge badge-category">Strategy &amp; Intelligence</span>
+            <span class="agent-badge badge-category">Research</span>
           </div>
           <h3 class="agent-card-title">Deep Research Agent</h3>
           <p class="agent-card-desc">
-            From blank page to deep knowledge, instantly. Deploy an autonomous virtual research team to transform a single question into a comprehensive, multi-perspective intelligence report in minutes, not weeks.
+            Deploy an autonomous virtual research team to transform a single question into a comprehensive, multi-perspective intelligence report in minutes.
           </p>
           <div class="agent-card-footer">
             <div class="agent-card-tags">
@@ -838,52 +847,92 @@
           </div>
         </a>
 
-        <!-- ═══ PRODUCT DISCOVERY AGENT ═══ -->
-        <a href="product-discovery-agent.html" class="agent-card agent-card--purple reveal d3" data-category="product strategy">
+        <!-- ═══ DATA INSIGHT AGENT ═══ -->
+        <a href="data-insight-agent.html" class="agent-card agent-card--indigo reveal d3" data-category="data research strategy">
           <div class="agent-card-stripe"></div>
-          <div class="agent-icon">&#128270;</div>
+          <div class="agent-icon">&#128202;</div>
           <div class="agent-card-badges">
             <span class="agent-badge badge-level">Expert</span>
-            <span class="agent-badge badge-category">Product &amp; Innovation</span>
+            <span class="agent-badge badge-category">Data &amp; Analytics</span>
           </div>
-          <h3 class="agent-card-title">Product Discovery Agent</h3>
+          <h3 class="agent-card-title">Data Insight Agent</h3>
           <p class="agent-card-desc">
-            Find the right problem before shaping the solution. Frame user needs, map assumptions, plan research, prioritise opportunities, and define MVP scope.
+            Turn raw data into decisions. Analyse KPIs, surveys, dashboards, and business signals to produce prioritised, evidence-backed insights with explicit observations, interpretations, and recommendations.
           </p>
           <div class="agent-card-footer">
             <div class="agent-card-tags">
-              <span class="agent-tag">Problem Framing</span>
-              <span class="agent-tag">MVP Scope</span>
-              <span class="agent-tag">Assumptions</span>
-            </div>
-            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
-          </div>
-        </a>
-
-        <!-- ═══ PROBLEM HUNTER AGENT ═══ -->
-        <a href="problem-hunter-agent.html" class="agent-card agent-card--orange reveal d4" data-category="strategy">
-          <div class="agent-card-stripe"></div>
-          <div class="agent-icon">&#128270;</div>
-          <div class="agent-card-badges">
-            <span class="agent-badge badge-level">Expert</span>
-            <span class="agent-badge badge-category">Strategy &amp; Intelligence</span>
-          </div>
-          <h3 class="agent-card-title">Problem Hunter Agent</h3>
-          <p class="agent-card-desc">
-            Read between the lines. Interrogates your brief through five specialist agents to surface competing hypotheses, bedrock truths, and the elephant in the room.
-          </p>
-          <div class="agent-card-footer">
-            <div class="agent-card-tags">
-              <span class="agent-tag">Brief Analysis</span>
-              <span class="agent-tag">Hypotheses</span>
+              <span class="agent-tag">KPI Analysis</span>
+              <span class="agent-tag">Segmentation</span>
               <span class="agent-tag">Root Cause</span>
             </div>
             <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
           </div>
         </a>
 
+        <!-- ═══ LEAD GENERATION AGENT ═══ -->
+        <a href="lead-gen-agent.html" class="agent-card agent-card--green reveal d3" data-category="consumer research strategy">
+          <div class="agent-card-stripe"></div>
+          <div class="agent-icon">&#128269;</div>
+          <div class="agent-card-badges">
+            <span class="agent-badge badge-level">Expert</span>
+            <span class="agent-badge badge-category">Consumer &amp; Insight</span>
+          </div>
+          <h3 class="agent-card-title">Lead Generation Agent</h3>
+          <p class="agent-card-desc">
+            From blank page to personalised outreach in one run. Define your ICP, find 10 high-intent prospects, and generate founder-level emails for each.
+          </p>
+          <div class="agent-card-footer">
+            <div class="agent-card-tags">
+              <span class="agent-tag">ICP</span>
+              <span class="agent-tag">Prospecting</span>
+              <span class="agent-tag">Outreach</span>
+            </div>
+            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
+          </div>
+        </a>
+
+        <!-- ═══ COMING SOON — PLACEHOLDER 3 ═══ -->
+        <div class="agent-card agent-card--soon agent-card--purple reveal d3" data-category="data">
+          <div class="agent-card-stripe"></div>
+          <div class="agent-icon agent-icon--soon">&#128202;</div>
+          <div class="agent-card-badges">
+            <span class="agent-badge soon-badge">Coming Soon</span>
+          </div>
+          <h3 class="agent-card-title">Trend Radar</h3>
+          <p class="agent-card-desc">
+            Monitors and classifies emerging trends from social listening, news, and market data — separating signal from noise in real time.
+          </p>
+          <div class="agent-card-footer">
+            <div class="agent-card-tags">
+              <span class="agent-tag">Trends</span>
+              <span class="agent-tag">Real-time</span>
+            </div>
+            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
+          </div>
+        </div>
+
+        <!-- ═══ COMING SOON — PLACEHOLDER 4 ═══ -->
+        <div class="agent-card agent-card--soon agent-card--orange reveal d4" data-category="strategy">
+          <div class="agent-card-stripe"></div>
+          <div class="agent-icon agent-icon--soon">&#127919;</div>
+          <div class="agent-card-badges">
+            <span class="agent-badge soon-badge">Coming Soon</span>
+          </div>
+          <h3 class="agent-card-title">Competitive Intelligence Agent</h3>
+          <p class="agent-card-desc">
+            Analyses competitor positioning, messaging, and market moves to generate actionable intelligence maps and strategic counter-plays.
+          </p>
+          <div class="agent-card-footer">
+            <div class="agent-card-tags">
+              <span class="agent-tag">Competitive</span>
+              <span class="agent-tag">Intel</span>
+            </div>
+            <div class="agent-card-arrow" aria-hidden="true">&#8594;</div>
+          </div>
+        </div>
+
         <!-- ═══ COMING SOON — PLACEHOLDER 5 ═══ -->
-        <div class="agent-card agent-card--soon agent-card--blue reveal d5" data-category="process">
+        <div class="agent-card agent-card--soon agent-card--blue reveal d5" data-category="creative research">
           <div class="agent-card-stripe"></div>
           <div class="agent-icon agent-icon--soon">&#9997;&#65039;</div>
           <div class="agent-card-badges">
