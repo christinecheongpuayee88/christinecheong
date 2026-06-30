@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Briefing Agent — NUS-ISS Living Lab</title>
+  <meta name="description" content="Research markets, companies, competitors, policies, and trends to produce structured briefings and decision memos — facts separated from interpretation, sources cited.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F2F2F2;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
+      --blue:         #1E88C7;
+      --blue-light:   #E8F4FB;
+      --slate:        #334155;
+      --slate-light:  #F1F5F9;
+      --text:         #111827;
+      --text-muted:   #4B5563;
+      --border:       #DADADA;
+      --green:        #059669;
+      --green-light:  #D1FAE5;
+      --amber:        #B45309;
+      --amber-light:  #FEF3C7;
+      --red:          #C0392B;
+      --red-light:    #FDEDEC;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
+      --ease-spring:  cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 500; line-height: 1.65; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    h1,h2,h3,h4 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* ── NAV ─────────────────────────────────────── */
+    .nav { position:fixed; inset:0 0 auto; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 56px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
+    .nav-brand { display:flex; flex-direction:column; gap:1px; }
+    .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); }
+    .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
+    .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
+    .nav-links a:hover { color:var(--navy); }
+    .nav-back { font-size:12px; font-weight:600; letter-spacing:0.06em; padding:10px 20px; border-radius:6px; border:1.5px solid var(--border); color:var(--navy); transition:all 0.25s; }
+    .nav-back:hover { border-color:var(--navy); background:var(--navy); color:#fff; }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero { position:relative; padding:calc(var(--nav-h) + 80px) 56px 80px; background:var(--bg); border-bottom:1px solid var(--border); }
+    .hero-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.2fr 1fr; gap:80px; align-items:center; }
+    .hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--slate); margin-bottom:20px; }
+    .hero-eyebrow::before { content:''; width:28px; height:2px; background:var(--slate); }
+    .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--slate-light); color:var(--slate); margin-bottom:20px; }
+    .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,60px); font-weight:700; line-height:1.04; letter-spacing:-0.025em; color:var(--navy); margin-bottom:20px; }
+    .hero-h1 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+    .hero-sub { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
+    .hero-pills { display:flex; flex-wrap:wrap; gap:8px; }
+    .hero-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); }
+
+    /* ── WORKFLOW ─────────────────────────────────── */
+    .workflow { display:flex; flex-direction:column; gap:0; }
+    .wf-step { display:flex; align-items:flex-start; gap:14px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); }
+    .wf-step:first-child { border-radius:10px 10px 0 0; }
+    .wf-step:last-child  { border-radius:0 0 10px 10px; }
+    .wf-step:not(:first-child) { border-top:none; }
+    .wf-num { width:24px; height:24px; border-radius:6px; background:var(--slate); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .wf-name { font-size:12px; font-weight:700; color:var(--navy); }
+    .wf-desc { font-size:11px; font-weight:400; color:var(--text-muted); margin-top:2px; line-height:1.4; }
+
+    /* ── WORKSPACE ───────────────────────────────── */
+    .workspace { max-width:1280px; margin:0 auto; padding:72px 56px 112px; }
+    .workspace-label { font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--slate); margin-bottom:12px; }
+    .workspace-h2 { font-family:var(--font-display); font-size:clamp(26px,3vw,38px); font-weight:700; line-height:1.1; letter-spacing:-0.02em; color:var(--navy); margin-bottom:40px; }
+    .workspace-h2 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+
+    /* ── INPUT ───────────────────────────────────── */
+    .input-panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:28px; }
+    .input-context { margin-bottom:24px; padding:14px 18px; background:var(--slate-light); border-left:3px solid var(--slate); border-radius:0 8px 8px 0; }
+    .input-context p { font-size:13px; font-weight:500; color:var(--navy-mid); line-height:1.55; }
+
+    .input-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+    .input-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+    .input-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+    .input-field {
+      padding:12px 14px; font-family:var(--font-body); font-size:13px; font-weight:400;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; outline:none; transition:border-color 0.25s; width:100%;
+    }
+    .input-field:focus { border-color:var(--slate); }
+    .input-field::placeholder { color:#9CA3AF; }
+    select.input-field { cursor:pointer; }
+    .input-textarea {
+      width:100%; padding:14px 16px;
+      font-family:var(--font-body); font-size:13px; font-weight:400; line-height:1.7;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; resize:vertical; outline:none; transition:border-color 0.25s;
+    }
+    .input-textarea:focus { border-color:var(--slate); }
+    .input-textarea::placeholder { color:#9CA3AF; }
+
+    .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:20px; flex-wrap:wrap; gap:12px; }
+    .run-btn {
+      display:inline-flex; align-items:center; gap:10px;
+      font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em;
+      padding:14px 32px; border-radius:8px; border:none; cursor:pointer;
+      background:var(--slate); color:#fff;
+      transition:background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .run-btn:hover:not(:disabled) { background:#1E293B; transform:translateY(-2px); box-shadow:0 8px 24px rgba(51,65,85,0.3); }
+    .run-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    /* ── LOADING ─────────────────────────────────── */
+    .loading-state { display:none; padding:48px 32px; text-align:center; }
+    .loading-state.show { display:block; }
+    .loading-dots { display:inline-flex; gap:6px; margin-bottom:16px; }
+    .loading-dots span { width:8px; height:8px; border-radius:50%; background:var(--slate); opacity:0.3; animation:pulse 1.4s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay:0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
+    .loading-label { font-size:13px; font-weight:500; color:var(--text-muted); margin-bottom:20px; }
+    .loading-phases { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .loading-phase { font-size:11px; font-weight:500; padding:5px 14px; border-radius:100px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); opacity:0.4; transition:opacity 0.4s; }
+    .loading-phase.active { opacity:1; border-color:var(--slate); color:var(--slate); }
+
+    /* ── OUTPUT ──────────────────────────────────── */
+    .output-panel { display:none; }
+    .output-panel.show { display:block; }
+    .output-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px; }
+    .output-tag { font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--slate); color:#fff; }
+    .action-btn { font-size:12px; font-weight:500; padding:8px 16px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .action-btn:hover { border-color:var(--navy); color:var(--navy); }
+
+    /* ── STAT GRID ───────────────────────────────── */
+    .stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
+    .stat-num { font-family:var(--font-display); font-size:36px; font-weight:700; color:var(--navy); line-height:1; margin-bottom:6px; }
+    .stat-label { font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); }
+
+    /* ── SECTION BLOCKS ──────────────────────────── */
+    .section-block { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px 26px; margin-bottom:20px; }
+    .section-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--slate); margin-bottom:16px; }
+
+    /* verdict box */
+    .verdict-box { padding:18px 22px; background:var(--navy); border-radius:10px; margin-bottom:20px; }
+    .verdict-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:10px; }
+    .verdict-text { font-size:15px; font-weight:400; color:#fff; line-height:1.7; font-family:var(--font-display); font-style:italic; }
+
+    /* findings */
+    .finding-card { background:var(--bg); border:1px solid var(--border); border-radius:10px; margin-bottom:12px; overflow:hidden; }
+    .finding-header { display:flex; align-items:flex-start; gap:14px; padding:14px 18px; cursor:pointer; }
+    .finding-num { width:26px; height:26px; border-radius:6px; background:var(--slate); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .finding-title-wrap { flex:1; }
+    .finding-title { font-size:13px; font-weight:600; color:var(--navy); line-height:1.4; }
+    .confidence-badge { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:3px 9px; border-radius:4px; flex-shrink:0; }
+    .conf-verified   { background:var(--green-light); color:var(--green); }
+    .conf-likely     { background:var(--amber-light); color:var(--amber); }
+    .conf-uncertain  { background:var(--red-light); color:var(--red); }
+    .finding-body { padding:0 18px 16px; display:none; }
+    .finding-body.open { display:block; }
+    .fb-row { margin-top:10px; }
+    .fb-label { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+    .fb-fact   { padding:8px 12px; background:var(--surface); border-radius:6px; font-size:12px; color:var(--navy); line-height:1.6; }
+    .fb-interp { padding:8px 12px; background:var(--slate-light); border-left:3px solid var(--slate); border-radius:0 6px 6px 0; font-size:12px; color:var(--slate); line-height:1.6; }
+    .fb-source { font-size:11px; color:var(--text-muted); font-style:italic; margin-top:6px; }
+    .fb-implication { padding:8px 12px; background:var(--green-light); border-left:3px solid #6EE7B7; border-radius:0 6px 6px 0; font-size:12px; color:#065F46; line-height:1.6; }
+
+    /* landscape / competitors */
+    .landscape-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .landscape-card { padding:12px 14px; background:var(--bg); border:1px solid var(--border); border-radius:8px; }
+    .landscape-name { font-size:12px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+    .landscape-desc { font-size:11px; color:var(--text-muted); line-height:1.5; }
+
+    /* known / uncertain / implications */
+    .known-item { display:flex; gap:10px; align-items:flex-start; padding:9px 13px; background:var(--bg); border:1px solid var(--border); border-radius:7px; margin-bottom:7px; font-size:12px; color:var(--navy); line-height:1.55; }
+    .uncertain-item { padding:9px 13px; background:var(--amber-light); border-left:3px solid #FCD34D; border-radius:0 7px 7px 0; margin-bottom:7px; font-size:12px; color:#78350F; line-height:1.55; }
+    .implication-item { display:flex; gap:10px; align-items:flex-start; padding:9px 13px; background:var(--purple-light); border-radius:7px; margin-bottom:7px; font-size:12px; color:var(--purple); line-height:1.55; }
+
+    /* follow-up */
+    .followup-box { padding:14px 18px; background:var(--slate-light); border-left:3px solid var(--slate); border-radius:0 8px 8px 0; font-size:13px; color:var(--slate); line-height:1.65; margin-bottom:8px; }
+
+    /* confidence caveat */
+    .caveat-box { padding:12px 16px; background:var(--red-light); border-radius:8px; font-size:12px; color:var(--red); line-height:1.55; margin-bottom:8px; }
+
+    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    .footer { background:var(--navy); color:#fff; padding:48px 56px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+    .footer-brand { font-family:var(--font-display); font-size:16px; font-weight:700; }
+    .footer-sub { font-size:12px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .footer-links { display:flex; gap:24px; list-style:none; }
+    .footer-links a { font-size:12px; color:rgba(255,255,255,0.4); transition:color 0.25s; }
+    .footer-links a:hover { color:#fff; }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width:1100px) { .hero,.workspace,.footer { padding-left:36px; padding-right:36px; } .nav { padding:0 36px; } }
+    @media (max-width:900px) { .hero-inner { grid-template-columns:1fr; gap:40px; } .stat-grid { grid-template-columns:1fr 1fr; } .input-row { grid-template-columns:1fr; } .landscape-grid { grid-template-columns:1fr; } }
+    @media (max-width:680px) { .hero,.workspace,.footer { padding-left:22px; padding-right:22px; } .nav { padding:0 22px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ────────────────────────────────────── -->
+  <nav class="nav">
+    <a href="/agents-hub/" class="nav-brand">
+      <span class="nav-brand-sup">NUS-ISS</span>
+      <span class="nav-brand-name">Agents Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/agents-hub/">All Agents</a></li>
+      <li><a href="/living-lab.html">Living Lab</a></li>
+    </ul>
+    <a href="/agents-hub/" class="nav-back">← All Agents</a>
+  </nav>
+
+  <!-- ── HERO ────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="hero-eyebrow">Strategy &amp; Intelligence</p>
+        <div class="hero-badge">Expert · 7-Step Workflow</div>
+        <h1 class="hero-h1">Research Briefing <em>Agent</em></h1>
+        <p class="hero-sub">Gather enough evidence to support a decision. Describe your topic and the agent produces a structured briefing — verified facts separated from interpretation, sources cited, strategic implications drawn, and follow-up research identified.</p>
+        <div class="hero-pills">
+          <span class="hero-pill">Market Brief</span>
+          <span class="hero-pill">Competitor Scan</span>
+          <span class="hero-pill">Company Backgrounder</span>
+          <span class="hero-pill">Policy Brief</span>
+          <span class="hero-pill">Trend Analysis</span>
+          <span class="hero-pill">Fact Check</span>
+          <span class="hero-pill">Decision Memo</span>
+        </div>
+      </div>
+      <div>
+        <div class="workflow">
+          <div class="wf-step">
+            <div class="wf-num">1</div>
+            <div><div class="wf-name">Clarify the Question</div><div class="wf-desc">Audience, geography, time horizon, and decision to support</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">2</div>
+            <div><div class="wf-name">Identify Source Types</div><div class="wf-desc">Primary sources, official docs, filings, news, academic, reviews</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">3</div>
+            <div><div class="wf-name">Collect Facts First</div><div class="wf-desc">Then synthesise patterns and implications — not the other way round</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">4</div>
+            <div><div class="wf-name">Multi-Source Comparison</div><div class="wf-desc">For contested, commercial, legal, or high-stakes topics</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">5</div>
+            <div><div class="wf-name">Known · Uncertain · Implications · Action</div><div class="wf-desc">Four explicit layers — never conflated</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">6</div>
+            <div><div class="wf-name">Date Time-Sensitive Claims</div><div class="wf-desc">Clearly marked with currency of information</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">7</div>
+            <div><div class="wf-name">Follow-Up Recommendation</div><div class="wf-desc">Only when it would materially change the decision</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WORKSPACE ───────────────────────────────── -->
+  <main class="workspace">
+    <p class="workspace-label">Research Workspace</p>
+    <h2 class="workspace-h2">Describe your topic, get a <em>decision brief</em></h2>
+
+    <div class="input-panel">
+      <div class="input-context">
+        <p>Describe the topic you need researched. The agent will produce a structured briefing — findings separated by confidence level, strategic implications drawn, sources noted, and uncertainties flagged explicitly. Include what decision this research should support for a sharper output.</p>
+      </div>
+
+      <div class="input-row">
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Research question or topic</label>
+          <input class="input-field" id="question" placeholder="e.g. What is the competitive landscape for AI-powered legal tools in Southeast Asia?" />
+        </div>
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Deliverable type</label>
+          <select class="input-field" id="deliverable">
+            <option value="market_brief">Market Brief</option>
+            <option value="competitor_scan">Competitor Scan</option>
+            <option value="company_backgrounder">Company Backgrounder</option>
+            <option value="policy_brief">Policy / Regulatory Brief</option>
+            <option value="trend_analysis">Trend Analysis</option>
+            <option value="fact_check">Source-Backed Fact Check</option>
+            <option value="decision_memo">Decision Memo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-row" style="margin-top:16px">
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Geography / market</label>
+          <input class="input-field" id="geography" placeholder="e.g. Singapore, Southeast Asia, Global" />
+        </div>
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Decision this supports</label>
+          <input class="input-field" id="decision" placeholder="e.g. Whether to enter this market in Q3 2025" />
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-top:16px">
+        <label class="input-label">Background context or additional notes (optional)</label>
+        <textarea class="input-textarea" id="context" rows="4" placeholder="Add anything the agent should know: existing knowledge, constraints, audience seniority, specific companies or people to focus on, what you already know and don't need covered…"></textarea>
+      </div>
+
+      <div class="input-footer">
+        <span style="font-size:12px;color:var(--text-muted)">Facts separated from interpretation — confidence levels and source notes on every finding</span>
+        <button class="run-btn" id="runBtn" disabled>
+          <span>🔍</span>
+          <span>Research &amp; Brief</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <p class="loading-label">Researching and structuring your briefing…</p>
+      <div class="loading-phases">
+        <span class="loading-phase" id="ph1">Clarifying scope</span>
+        <span class="loading-phase" id="ph2">Gathering facts</span>
+        <span class="loading-phase" id="ph3">Comparing sources</span>
+        <span class="loading-phase" id="ph4">Separating known from uncertain</span>
+        <span class="loading-phase" id="ph5">Drawing implications</span>
+        <span class="loading-phase" id="ph6">Structuring brief</span>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="output-panel" id="outputPanel">
+      <div class="output-header">
+        <span class="output-tag" id="outputTag">Research Brief</span>
+        <div style="display:flex;gap:10px">
+          <button class="action-btn" id="copyBtn">Copy Brief</button>
+          <button class="action-btn" id="resetBtn">New Research</button>
+        </div>
+      </div>
+      <div id="outputContent"></div>
+    </div>
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Research Briefing Agent</div>
+        <div class="footer-sub">NUS-ISS Living Lab · Agents Hub</div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/agents-hub/">All Agents</a></li>
+        <li><a href="/living-lab.html">Living Lab</a></li>
+        <li><a href="/living-lab.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const SYSTEM = `You are a Research Briefing Agent. Your job is to gather evidence and produce structured, decision-ready briefings.
+
+CRITICAL RULES:
+- Separate facts from interpretation — never blend them.
+- State confidence level for every finding: "verified", "likely", or "uncertain".
+- Include source notes for important claims (e.g. "per Reuters, Jan 2025" or "as of Q1 2025 based on company filings").
+- Do NOT overstate confidence. If you are uncertain, say so explicitly.
+- Distinguish what is known, what is uncertain, what it means, and what to do next.
+- Include dates for time-sensitive claims.
+- Recommend follow-up research only when it would materially change the decision.
+- Output valid JSON only — no prose before or after.
+
+Output format:
+{
+  "brief_title": "...",
+  "research_question": "...",
+  "deliverable_type": "...",
+  "geography": "...",
+  "decision_supported": "...",
+  "verdict": "One-sentence bottom line: what the evidence says and what it means for the decision",
+  "confidence_overall": "high | medium | low",
+  "findings": [
+    {
+      "title": "Finding headline",
+      "fact": "What the evidence directly shows — numbers, dates, sources",
+      "interpretation": "Most defensible explanation or significance",
+      "implication": "What this means for the decision or strategy",
+      "confidence": "verified | likely | uncertain",
+      "source_note": "Source type and recency, e.g. 'per company website, 2024' or 'inferred from market reports'"
+    }
+  ],
+  "landscape": [
+    {
+      "name": "Company, player, or entity name",
+      "description": "Brief description of their position, offering, or relevance"
+    }
+  ],
+  "what_is_known": [
+    "Established fact with high confidence"
+  ],
+  "what_is_uncertain": [
+    "Specific uncertainty — what is not known and why it matters"
+  ],
+  "strategic_implications": [
+    "Concrete implication for the decision or strategy"
+  ],
+  "caveats": [
+    "Limitation of this research — e.g. rapidly changing situation, limited public data"
+  ],
+  "follow_up_research": [
+    {
+      "question": "Specific follow-up research question",
+      "why": "Why this would materially change the decision"
+    }
+  ],
+  "summary": "2-3 sentence plain-language summary of the most important findings and their significance for the stated decision"
+}`;
+
+    const questionEl   = document.getElementById('question');
+    const deliverableEl = document.getElementById('deliverable');
+    const geographyEl  = document.getElementById('geography');
+    const decisionEl   = document.getElementById('decision');
+    const contextEl    = document.getElementById('context');
+    const runBtn       = document.getElementById('runBtn');
+
+    function checkReady() {
+      runBtn.disabled = questionEl.value.trim().length < 10;
+    }
+    [questionEl, geographyEl, decisionEl, contextEl].forEach(el => el.addEventListener('input', checkReady));
+
+    let currentOutput = null;
+    let phaseInterval;
+
+    runBtn.addEventListener('click', async () => {
+      const message = [
+        `Research Question: ${questionEl.value.trim()}`,
+        `Deliverable Type: ${deliverableEl.value}`,
+        geographyEl.value.trim() ? `Geography / Market: ${geographyEl.value.trim()}` : '',
+        decisionEl.value.trim() ? `Decision This Supports: ${decisionEl.value.trim()}` : '',
+        contextEl.value.trim() ? `Background Context: ${contextEl.value.trim()}` : ''
+      ].filter(Boolean).join('\n\n');
+
+      showLoading();
+      try {
+        const text = await callClaude(SYSTEM, message);
+        const data = parseJSON(text);
+        currentOutput = data;
+        renderOutput(data);
+      } catch(err) {
+        showError(err.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    async function callClaude(system, message) {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system, message, max_tokens: 6000 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API request failed');
+      return data.content[0].text;
+    }
+
+    function parseJSON(text) {
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON found in response');
+      return JSON.parse(match[0]);
+    }
+
+    function showLoading() {
+      document.getElementById('loadingState').classList.add('show');
+      document.getElementById('outputPanel').classList.remove('show');
+      runBtn.disabled = true;
+      const phases = document.querySelectorAll('.loading-phase');
+      let i = 0; phases[0].classList.add('active');
+      phaseInterval = setInterval(() => {
+        phases.forEach(p => p.classList.remove('active'));
+        i = (i + 1) % phases.length;
+        phases[i].classList.add('active');
+      }, 2200);
+    }
+
+    function hideLoading() {
+      clearInterval(phaseInterval);
+      document.getElementById('loadingState').classList.remove('show');
+      checkReady();
+    }
+
+    function renderOutput(d) {
+      const findings   = d.findings || [];
+      const landscape  = d.landscape || [];
+      const known      = d.what_is_known || [];
+      const uncertain  = d.what_is_uncertain || [];
+      const impl       = d.strategic_implications || [];
+      const caveats    = d.caveats || [];
+      const followup   = d.follow_up_research || [];
+
+      // Verdict
+      const verdictHTML = d.verdict ? `
+        <div class="verdict-box">
+          <div class="verdict-label">Bottom Line</div>
+          <div class="verdict-text">${esc(d.verdict)}</div>
+        </div>` : '';
+
+      // Stats
+      const statsHTML = `
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-num">${findings.length}</div><div class="stat-label">Findings</div></div>
+          <div class="stat-card"><div class="stat-num">${findings.filter(f=>f.confidence==='verified').length}</div><div class="stat-label">Verified</div></div>
+          <div class="stat-card"><div class="stat-num">${uncertain.length}</div><div class="stat-label">Uncertainties</div></div>
+          <div class="stat-card"><div class="stat-num" style="font-size:20px;line-height:1.3">${esc(d.confidence_overall||'—')}</div><div class="stat-label">Overall Confidence</div></div>
+        </div>`;
+
+      // Summary
+      const summaryHTML = d.summary ? `
+        <div class="section-block" style="border-left:4px solid var(--slate);background:var(--slate-light);border-radius:0 12px 12px 0">
+          <div class="section-label">Summary</div>
+          <p style="font-size:14px;color:var(--navy-mid);line-height:1.75;font-weight:400">${esc(d.summary)}</p>
+        </div>` : '';
+
+      // Findings
+      const findingsHTML = findings.length ? `
+        <div class="section-block">
+          <div class="section-label">Findings</div>
+          ${findings.map((f,i) => `
+            <div class="finding-card">
+              <div class="finding-header" onclick="toggleFinding(this)">
+                <div class="finding-num">${i+1}</div>
+                <div class="finding-title-wrap"><div class="finding-title">${esc(f.title)}</div></div>
+                <span class="confidence-badge conf-${(f.confidence||'uncertain').replace(' ','-')}">${esc(f.confidence||'uncertain')}</span>
+              </div>
+              <div class="finding-body">
+                <div class="fb-row"><div class="fb-label">Fact</div><div class="fb-fact">${esc(f.fact)}</div>${f.source_note?`<div class="fb-source">Source: ${esc(f.source_note)}</div>`:''}</div>
+                <div class="fb-row"><div class="fb-label">Interpretation</div><div class="fb-interp">${esc(f.interpretation)}</div></div>
+                <div class="fb-row"><div class="fb-label">Implication</div><div class="fb-implication">→ ${esc(f.implication)}</div></div>
+              </div>
+            </div>`).join('')}
+        </div>` : '';
+
+      // Landscape
+      const landscapeHTML = landscape.length ? `
+        <div class="section-block">
+          <div class="section-label">Landscape</div>
+          <div class="landscape-grid">
+            ${landscape.map(l=>`
+              <div class="landscape-card">
+                <div class="landscape-name">${esc(l.name)}</div>
+                <div class="landscape-desc">${esc(l.description)}</div>
+              </div>`).join('')}
+          </div>
+        </div>` : '';
+
+      // Known / uncertain / implications
+      const knownHTML = (known.length || uncertain.length || impl.length) ? `
+        <div class="section-block">
+          ${known.length ? `<div class="section-label">What Is Known</div>${known.map(k=>`<div class="known-item"><span>✓</span><span>${esc(k)}</span></div>`).join('')}` : ''}
+          ${uncertain.length ? `<div class="section-label" style="margin-top:${known.length?'20px':'0'}">What Is Uncertain</div>${uncertain.map(u=>`<div class="uncertain-item">? ${esc(u)}</div>`).join('')}` : ''}
+          ${impl.length ? `<div class="section-label" style="margin-top:${(known.length||uncertain.length)?'20px':'0'}">Strategic Implications</div>${impl.map(i=>`<div class="implication-item"><span>→</span><span>${esc(i)}</span></div>`).join('')}` : ''}
+        </div>` : '';
+
+      // Caveats
+      const caveatsHTML = caveats.length ? `
+        <div class="section-block">
+          <div class="section-label">Research Caveats</div>
+          ${caveats.map(c=>`<div class="caveat-box">⚠ ${esc(c)}</div>`).join('')}
+        </div>` : '';
+
+      // Follow-up
+      const followupHTML = followup.length ? `
+        <div class="section-block">
+          <div class="section-label">Recommended Follow-Up Research</div>
+          ${followup.map(f=>`
+            <div class="followup-box">
+              <strong>${esc(f.question)}</strong><br>
+              <span style="font-size:12px;opacity:0.8">Why: ${esc(f.why)}</span>
+            </div>`).join('')}
+        </div>` : '';
+
+      document.getElementById('outputContent').innerHTML =
+        verdictHTML + statsHTML + summaryHTML + findingsHTML + landscapeHTML + knownHTML + caveatsHTML + followupHTML;
+
+      document.getElementById('outputTag').textContent = `${findings.length} Findings · ${d.confidence_overall||''} confidence`;
+      document.getElementById('outputPanel').classList.add('show');
+      document.getElementById('outputPanel').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function toggleFinding(header) {
+      const body = header.nextElementSibling;
+      body.classList.toggle('open');
+    }
+
+    function showError(msg) {
+      document.getElementById('outputContent').innerHTML = `<div class="error-box">Error: ${esc(msg)}</div>`;
+      document.getElementById('outputPanel').classList.add('show');
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      if (!currentOutput) return;
+      const d = currentOutput;
+      const lines = [];
+      lines.push((d.brief_title || 'Research Brief').toUpperCase());
+      lines.push(`Question: ${d.research_question||''} | Type: ${d.deliverable_type||''} | Geography: ${d.geography||''}\n`);
+      if (d.verdict) lines.push(`BOTTOM LINE\n${d.verdict}\n`);
+      if (d.summary) lines.push(`SUMMARY\n${d.summary}\n`);
+      if ((d.findings||[]).length) {
+        lines.push('FINDINGS');
+        d.findings.forEach((f,i) => {
+          lines.push(`${i+1}. ${f.title} [${f.confidence}]`);
+          lines.push(`   Fact: ${f.fact}`);
+          lines.push(`   Interpretation: ${f.interpretation}`);
+          lines.push(`   Implication: ${f.implication}`);
+          if (f.source_note) lines.push(`   Source: ${f.source_note}`);
+        });
+        lines.push('');
+      }
+      if ((d.what_is_known||[]).length) lines.push('WHAT IS KNOWN\n' + d.what_is_known.map(k=>`✓ ${k}`).join('\n') + '\n');
+      if ((d.what_is_uncertain||[]).length) lines.push('WHAT IS UNCERTAIN\n' + d.what_is_uncertain.map(u=>`? ${u}`).join('\n') + '\n');
+      if ((d.strategic_implications||[]).length) lines.push('STRATEGIC IMPLICATIONS\n' + d.strategic_implications.map(i=>`→ ${i}`).join('\n') + '\n');
+      if ((d.follow_up_research||[]).length) lines.push('FOLLOW-UP RESEARCH\n' + d.follow_up_research.map(f=>`• ${f.question} — ${f.why}`).join('\n'));
+      navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy Brief', 2000);
+      });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('outputPanel').classList.remove('show');
+      currentOutput = null;
+      questionEl.value = ''; geographyEl.value = ''; decisionEl.value = ''; contextEl.value = '';
+      checkReady();
+      window.scrollTo({ top:0, behavior:'smooth' });
+    });
+  </script>
+</body>
+</html>
