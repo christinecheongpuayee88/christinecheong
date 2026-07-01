@@ -810,7 +810,8 @@ Rules:
         const t1=setTimeout(()=>{setStep('step-1','done');setStep('step-2','active');},2500);
         const t2=setTimeout(()=>{setStep('step-2','done');setStep('step-3','active');},5000);
         const modeInstruction=MODE_INSTRUCTIONS[currentMode]||MODE_INSTRUCTIONS.persona;
-        const result=await callClaude(SYSTEM_PROMPT,modeInstruction+'\n\n---\n\nUser input:\n'+inputText);
+        const imageNote=_uploadedImages.length?'\n\nImages are attached — treat them as the primary source material. Analyze their visual content (text, data, charts, slides, screenshots) and base your response on what you see in the images. Still return ONLY valid JSON in the required format.':'';
+        const result=await callClaude(SYSTEM_PROMPT,modeInstruction+imageNote+'\n\n---\n\nUser input:\n'+inputText);
         clearTimeout(t1);clearTimeout(t2);
         setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
         let parsed;
