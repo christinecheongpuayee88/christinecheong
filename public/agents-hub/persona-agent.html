@@ -619,7 +619,7 @@ When evaluating concepts, consider: first impression, clarity, relevance, distin
 - If the user provides real data, prioritize grounded analysis over speculation.
 
 ## Output Format
-Return ONLY valid JSON — no markdown, no code fences, no extra text. Use EXACTLY the structure for the requested mode:
+CRITICAL: Return ONLY a raw valid JSON object — absolutely no markdown, no code fences (no ```), no explanation text before or after. Your entire response must start with { and end with }. This applies even when analyzing images or visual content. If you include any text outside the JSON object, the response will fail.
 
 ### PERSONA mode (Talk to Consumers):
 {
@@ -815,8 +815,17 @@ Rules:
         clearTimeout(t1);clearTimeout(t2);
         setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
         let parsed;
-        try{const m=result.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error('No JSON');}
-        catch(e){throw new Error('Failed to parse agent response.');}
+        try {
+          // Try 1: whole response is JSON
+          try { parsed = JSON.parse(result.trim()); } catch(_) {
+            // Try 2: strip markdown code fences
+            const fence = result.match(/```(?:json)?\s*([\s\S]*?)```/);
+            if (fence) { try { parsed = JSON.parse(fence[1].trim()); } catch(_){} }
+            // Try 3: extract outermost JSON object
+            if (!parsed) { const m = result.match(/\{[\s\S]*\}/); if (m) parsed = JSON.parse(m[0]); }
+            if (!parsed) throw new Error('No JSON found');
+          }
+        } catch(e) { throw new Error('Failed to parse agent response: ' + e.message); }
         await new Promise(r=>setTimeout(r,400));
         agentProgress.classList.remove('active');renderResults(parsed);
       }catch(err){agentProgress.classList.remove('active');outputEmpty.style.display='none';showError('Analysis Failed',err.message);}
