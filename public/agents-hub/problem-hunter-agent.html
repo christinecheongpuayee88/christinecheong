@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Problem Hunter Agent — NUS-ISS Living Lab</title>
+  <meta name="description" content="Read between the lines. Interrogates your brief through five specialist agents to surface competing hypotheses, bedrock truths, and the elephant in the room.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F2F2F2;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
+      --blue:         #1E88C7;
+      --blue-light:   #E8F4FB;
+      --slate:        #334155;
+      --slate-light:  #F1F5F9;
+      --text:         #111827;
+      --text-muted:   #4B5563;
+      --border:       #DADADA;
+      --green:        #059669;
+      --green-light:  #D1FAE5;
+      --amber:        #B45309;
+      --amber-light:  #FEF3C7;
+      --red:          #C0392B;
+      --red-light:    #FDEDEC;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
+      --ease-spring:  cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 500; line-height: 1.65; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    h1,h2,h3,h4 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* ── NAV ─────────────────────────────────────── */
+    .nav { position:fixed; inset:0 0 auto; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 56px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
+    .nav-brand { display:flex; flex-direction:column; gap:1px; }
+    .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); }
+    .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
+    .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
+    .nav-links a:hover { color:var(--navy); }
+    .nav-back { font-size:12px; font-weight:600; letter-spacing:0.06em; padding:10px 20px; border-radius:6px; border:1.5px solid var(--border); color:var(--navy); transition:all 0.25s; }
+    .nav-back:hover { border-color:var(--navy); background:var(--navy); color:#fff; }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero { position:relative; padding:calc(var(--nav-h) + 80px) 56px 80px; background:var(--bg); border-bottom:1px solid var(--border); }
+    .hero-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.2fr 1fr; gap:80px; align-items:center; }
+    .hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--slate); margin-bottom:20px; }
+    .hero-eyebrow::before { content:''; width:28px; height:2px; background:var(--slate); }
+    .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--slate-light); color:var(--slate); margin-bottom:20px; }
+    .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,60px); font-weight:700; line-height:1.04; letter-spacing:-0.025em; color:var(--navy); margin-bottom:20px; }
+    .hero-h1 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+    .hero-sub { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
+    .hero-pills { display:flex; flex-wrap:wrap; gap:8px; }
+    .hero-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); }
+
+    /* ── WORKFLOW ─────────────────────────────────── */
+    .workflow { display:flex; flex-direction:column; gap:0; }
+    .wf-step { display:flex; align-items:flex-start; gap:14px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); }
+    .wf-step:first-child { border-radius:10px 10px 0 0; }
+    .wf-step:last-child  { border-radius:0 0 10px 10px; }
+    .wf-step:not(:first-child) { border-top:none; }
+    .wf-num { width:24px; height:24px; border-radius:6px; background:var(--slate); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .wf-name { font-size:12px; font-weight:700; color:var(--navy); }
+    .wf-desc { font-size:11px; font-weight:400; color:var(--text-muted); margin-top:2px; line-height:1.4; }
+
+    /* ── WORKSPACE ───────────────────────────────── */
+    .workspace { max-width:1280px; margin:0 auto; padding:72px 56px 112px; }
+    .workspace-label { font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--slate); margin-bottom:12px; }
+    .workspace-h2 { font-family:var(--font-display); font-size:clamp(26px,3vw,38px); font-weight:700; line-height:1.1; letter-spacing:-0.02em; color:var(--navy); margin-bottom:40px; }
+    .workspace-h2 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+
+    /* ── INPUT ───────────────────────────────────── */
+    .input-panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:28px; }
+    .input-context { margin-bottom:24px; padding:14px 18px; background:var(--slate-light); border-left:3px solid var(--slate); border-radius:0 8px 8px 0; }
+    .input-context p { font-size:13px; font-weight:500; color:var(--navy-mid); line-height:1.55; }
+
+    .input-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+    .input-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+    .input-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+    .input-field {
+      padding:12px 14px; font-family:var(--font-body); font-size:13px; font-weight:400;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; outline:none; transition:border-color 0.25s; width:100%;
+    }
+    .input-field:focus { border-color:var(--slate); }
+    .input-field::placeholder { color:#9CA3AF; }
+    select.input-field { cursor:pointer; }
+    .input-textarea {
+      width:100%; padding:14px 16px;
+      font-family:var(--font-body); font-size:13px; font-weight:400; line-height:1.7;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; resize:vertical; outline:none; transition:border-color 0.25s;
+    }
+    .input-textarea:focus { border-color:var(--slate); }
+    .input-textarea::placeholder { color:#9CA3AF; }
+
+    .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:20px; flex-wrap:wrap; gap:12px; }
+    .run-btn {
+      display:inline-flex; align-items:center; gap:10px;
+      font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em;
+      padding:14px 32px; border-radius:8px; border:none; cursor:pointer;
+      background:var(--slate); color:#fff;
+      transition:background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .run-btn:hover:not(:disabled) { background:#1E293B; transform:translateY(-2px); box-shadow:0 8px 24px rgba(51,65,85,0.3); }
+    .run-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    /* ── LOADING ─────────────────────────────────── */
+    .loading-state { display:none; padding:48px 32px; text-align:center; }
+    .loading-state.show { display:block; }
+    .loading-dots { display:inline-flex; gap:6px; margin-bottom:16px; }
+    .loading-dots span { width:8px; height:8px; border-radius:50%; background:var(--slate); opacity:0.3; animation:pulse 1.4s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay:0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
+    .loading-label { font-size:13px; font-weight:500; color:var(--text-muted); margin-bottom:20px; }
+    .loading-phases { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .loading-phase { font-size:11px; font-weight:500; padding:5px 14px; border-radius:100px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); opacity:0.4; transition:opacity 0.4s; }
+    .loading-phase.active { opacity:1; border-color:var(--slate); color:var(--slate); }
+
+    /* ── OUTPUT ──────────────────────────────────── */
+    .output-panel { display:none; }
+    .output-panel.show { display:block; }
+    .output-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px; }
+    .output-tag { font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--slate); color:#fff; }
+    .action-btn { font-size:12px; font-weight:500; padding:8px 16px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .action-btn:hover { border-color:var(--navy); color:var(--navy); }
+
+    /* ── STAT GRID ───────────────────────────────── */
+    .stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
+    .stat-num { font-family:var(--font-display); font-size:36px; font-weight:700; color:var(--navy); line-height:1; margin-bottom:6px; }
+    .stat-label { font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); }
+
+    /* ── SECTION BLOCKS ──────────────────────────── */
+    .section-block { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px 26px; margin-bottom:20px; }
+    .section-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--slate); margin-bottom:16px; }
+
+    /* verdict / real problem box */
+    .verdict-box { padding:18px 22px; background:var(--navy); border-radius:10px; margin-bottom:20px; }
+    .verdict-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:10px; }
+    .verdict-text { font-size:15px; font-weight:400; color:#fff; line-height:1.7; font-family:var(--font-display); font-style:italic; }
+
+    /* hypothesis cards */
+    .hypothesis-card { background:var(--bg); border:1px solid var(--border); border-radius:10px; margin-bottom:12px; overflow:hidden; }
+    .hypothesis-header { display:flex; align-items:flex-start; gap:14px; padding:14px 18px; cursor:pointer; }
+    .hypothesis-num { width:26px; height:26px; border-radius:6px; background:var(--slate); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .hypothesis-title { font-size:13px; font-weight:600; color:var(--navy); line-height:1.4; flex:1; }
+    .strength-badge { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:3px 9px; border-radius:4px; flex-shrink:0; }
+    .strength-strong   { background:var(--green-light); color:var(--green); }
+    .strength-moderate { background:var(--amber-light); color:var(--amber); }
+    .strength-weak     { background:var(--red-light); color:var(--red); }
+    .hypothesis-body { padding:0 18px 16px; display:none; }
+    .hypothesis-body.open { display:block; }
+    .hb-row { margin-top:10px; }
+    .hb-label { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+    .hb-evidence  { padding:8px 12px; background:var(--surface); border-radius:6px; font-size:12px; color:var(--navy); line-height:1.6; }
+    .hb-challenge { padding:8px 12px; background:var(--amber-light); border-left:3px solid #FCD34D; border-radius:0 6px 6px 0; font-size:12px; color:#78350F; line-height:1.6; }
+    .hb-implication { padding:8px 12px; background:var(--green-light); border-left:3px solid #6EE7B7; border-radius:0 6px 6px 0; font-size:12px; color:#065F46; line-height:1.6; }
+
+    /* bedrock truths */
+    .bedrock-item { display:flex; gap:10px; align-items:flex-start; padding:9px 13px; background:var(--bg); border:1px solid var(--border); border-radius:7px; margin-bottom:7px; font-size:12px; color:var(--navy); line-height:1.55; }
+    .bedrock-icon { font-size:14px; flex-shrink:0; margin-top:1px; }
+
+    /* elephant / blind spots */
+    .elephant-box { padding:16px 20px; background:#1E1B4B; border-radius:10px; margin-bottom:12px; }
+    .elephant-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:8px; }
+    .elephant-text { font-size:14px; font-weight:400; color:#E0E7FF; line-height:1.7; }
+
+    /* reframe */
+    .reframe-box { padding:14px 18px; background:var(--slate-light); border-left:3px solid var(--slate); border-radius:0 8px 8px 0; font-size:13px; color:var(--slate); line-height:1.65; font-style:italic; margin-bottom:8px; }
+
+    /* stated vs real */
+    .stated-box  { padding:12px 16px; background:var(--red-light); border-left:3px solid #F87171; border-radius:0 8px 8px 0; font-size:13px; color:var(--red); line-height:1.6; margin-bottom:10px; }
+    .real-box    { padding:12px 16px; background:var(--green-light); border-left:3px solid #34D399; border-radius:0 8px 8px 0; font-size:13px; color:#065F46; line-height:1.6; }
+
+    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    .footer { background:var(--navy); color:#fff; padding:48px 56px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+    .footer-brand { font-family:var(--font-display); font-size:16px; font-weight:700; }
+    .footer-sub { font-size:12px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .footer-links { display:flex; gap:24px; list-style:none; }
+    .footer-links a { font-size:12px; color:rgba(255,255,255,0.4); transition:color 0.25s; }
+    .footer-links a:hover { color:#fff; }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width:1100px) { .hero,.workspace,.footer { padding-left:36px; padding-right:36px; } .nav { padding:0 36px; } }
+    @media (max-width:900px) { .hero-inner { grid-template-columns:1fr; gap:40px; } .stat-grid { grid-template-columns:1fr 1fr; } .input-row { grid-template-columns:1fr; } }
+    @media (max-width:680px) { .hero,.workspace,.footer { padding-left:22px; padding-right:22px; } .nav { padding:0 22px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ────────────────────────────────────── -->
+  <nav class="nav">
+    <a href="/agents-hub/" class="nav-brand">
+      <span class="nav-brand-sup">NUS-ISS</span>
+      <span class="nav-brand-name">Agents Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/agents-hub/">All Agents</a></li>
+      <li><a href="/living-lab.html">Living Lab</a></li>
+    </ul>
+    <a href="/agents-hub/" class="nav-back">← All Agents</a>
+  </nav>
+
+  <!-- ── HERO ────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="hero-eyebrow">Strategy &amp; Intelligence</p>
+        <div class="hero-badge">Expert · 5-Agent Workflow</div>
+        <h1 class="hero-h1">Problem Hunter <em>Agent</em></h1>
+        <p class="hero-sub">Read between the lines. Paste your brief or challenge and five specialist agents interrogate it from different angles — surfacing the real problem, competing hypotheses, bedrock truths, and the elephant in the room.</p>
+        <div class="hero-pills">
+          <span class="hero-pill">Brief Analysis</span>
+          <span class="hero-pill">Hypotheses</span>
+          <span class="hero-pill">Root Cause</span>
+          <span class="hero-pill">Problem Reframe</span>
+          <span class="hero-pill">Blind Spots</span>
+          <span class="hero-pill">Strategic Diagnosis</span>
+        </div>
+      </div>
+      <div>
+        <div class="workflow">
+          <div class="wf-step">
+            <div class="wf-num">1</div>
+            <div><div class="wf-name">Literalist</div><div class="wf-desc">States exactly what the brief says — the explicit, declared problem</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">2</div>
+            <div><div class="wf-name">Archaeologist</div><div class="wf-desc">Digs beneath the surface to uncover what is hidden, assumed, or unsaid</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">3</div>
+            <div><div class="wf-name">Devil's Advocate</div><div class="wf-desc">Challenges every premise — generates competing hypotheses with equal rigour</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">4</div>
+            <div><div class="wf-name">Bedrock Finder</div><div class="wf-desc">Strips away assumptions to identify what is undeniably, non-negotiably true</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">5</div>
+            <div><div class="wf-name">Elephant Spotter</div><div class="wf-desc">Names the uncomfortable truth everyone is avoiding — the real blocker</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WORKSPACE ───────────────────────────────── -->
+  <main class="workspace">
+    <p class="workspace-label">Problem Diagnosis Workspace</p>
+    <h2 class="workspace-h2">Paste your brief, get the <em>real problem</em></h2>
+
+    <div class="input-panel">
+      <div class="input-context">
+        <p>Paste any brief, challenge statement, strategy question, or problem description. The agent does not take your framing at face value — it interrogates it. Include as much context as you have: background, constraints, what you've already tried, what outcome you're hoping for.</p>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Brief or problem statement</label>
+        <textarea class="input-textarea" id="brief" rows="6" placeholder="e.g. We're losing market share in our core segment despite having the best product. Our NPS scores are strong and customer retention is high, but new customer acquisition has flatlined. We need a campaign strategy that re-ignites growth."></textarea>
+      </div>
+
+      <div class="input-row">
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Industry / context</label>
+          <input class="input-field" id="industry" placeholder="e.g. B2B SaaS, Consumer FMCG, Healthcare" />
+        </div>
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Stakes / decision at risk</label>
+          <input class="input-field" id="stakes" placeholder="e.g. Budget allocation, product roadmap, market entry" />
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-top:16px">
+        <label class="input-label">What have you already tried or ruled out? (optional)</label>
+        <textarea class="input-textarea" id="context" rows="3" placeholder="Any background, constraints, prior attempts, or known facts the agent should take into account…"></textarea>
+      </div>
+
+      <div class="input-footer">
+        <span style="font-size:12px;color:var(--text-muted)">Five specialist agents interrogate your brief simultaneously — no assumption is safe</span>
+        <button class="run-btn" id="runBtn" disabled>
+          <span>🔎</span>
+          <span>Hunt the Problem</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <p class="loading-label">Five agents interrogating your brief…</p>
+      <div class="loading-phases">
+        <span class="loading-phase" id="ph1">Literalist reading brief</span>
+        <span class="loading-phase" id="ph2">Archaeologist digging deeper</span>
+        <span class="loading-phase" id="ph3">Devil's Advocate challenging</span>
+        <span class="loading-phase" id="ph4">Bedrock Finder stripping assumptions</span>
+        <span class="loading-phase" id="ph5">Elephant Spotter naming the truth</span>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="output-panel" id="outputPanel">
+      <div class="output-header">
+        <span class="output-tag">Problem Diagnosis</span>
+        <div style="display:flex;gap:10px">
+          <button class="action-btn" id="copyBtn">Copy Analysis</button>
+          <button class="action-btn" id="resetBtn">New Brief</button>
+        </div>
+      </div>
+      <div id="outputContent"></div>
+    </div>
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Problem Hunter Agent</div>
+        <div class="footer-sub">NUS-ISS Living Lab · Agents Hub</div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/agents-hub/">All Agents</a></li>
+        <li><a href="/living-lab.html">Living Lab</a></li>
+        <li><a href="/living-lab.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const SYSTEM = `You are the Problem Hunter Agent — a multi-perspective diagnostic system. You deploy five specialist analytical personas to interrogate any brief or problem statement and surface what is really going on beneath what has been stated.
+
+Your five specialist agents:
+1. LITERALIST — States exactly what the brief declares, nothing more. No interpretation. What is the explicit problem as written?
+2. ARCHAEOLOGIST — Digs beneath the surface. What assumptions are buried in the framing? What is the brief NOT saying? What is the hidden problem underneath?
+3. DEVIL'S ADVOCATE — Challenges every premise. Generates competing hypotheses. What if the stated cause is wrong? What are 3–4 alternative explanations with equal or greater plausibility?
+4. BEDROCK FINDER — Strips away assumptions and opinions to identify what is undeniably, non-negotiably true about this situation. What can no one reasonably dispute?
+5. ELEPHANT SPOTTER — Names the uncomfortable truth. What is everyone in the room avoiding? What is the real blocker that has not been named?
+
+CRITICAL RULES:
+- Do NOT take the brief at face value. Interrogate it.
+- Competing hypotheses must be genuinely competing — not variations of the same idea.
+- The "real problem" must be meaningfully different from the stated problem.
+- The elephant in the room must be uncomfortable and specific — not vague.
+- Bedrock truths must be genuinely undeniable — not opinions dressed as facts.
+- Output valid JSON only — no prose before or after.
+
+Output format:
+{
+  "stated_problem": "The problem exactly as written in the brief — verbatim or close paraphrase",
+  "real_problem": "The actual underlying problem the brief is circling — may be fundamentally different from what was stated",
+  "problem_reframe": "A single sharp question that reframes the challenge at the correct level of abstraction",
+  "hypotheses": [
+    {
+      "title": "Hypothesis headline",
+      "description": "What this hypothesis proposes as the real cause or dynamic",
+      "evidence_for": "Evidence from the brief that supports this hypothesis",
+      "evidence_against": "What would challenge or falsify this hypothesis",
+      "strength": "strong | moderate | weak",
+      "implication": "If true, this means... / This would change the approach by..."
+    }
+  ],
+  "bedrock_truths": [
+    "An undeniable truth about this situation — not an opinion, not an assumption"
+  ],
+  "elephants": [
+    {
+      "what": "The uncomfortable truth being avoided",
+      "why_avoided": "Why this is not being said directly"
+    }
+  ],
+  "blind_spots": [
+    "Something the brief is not considering that could change the diagnosis"
+  ],
+  "next_question": "The single most important question to answer next — the one that would most change the diagnosis or decision",
+  "summary": "2–3 sentence plain-language diagnosis: what is actually going on, and what the organisation should address first"
+}`;
+
+    const briefEl    = document.getElementById('brief');
+    const industryEl = document.getElementById('industry');
+    const stakesEl   = document.getElementById('stakes');
+    const contextEl  = document.getElementById('context');
+    const runBtn     = document.getElementById('runBtn');
+
+    function checkReady() {
+      runBtn.disabled = briefEl.value.trim().length < 20;
+    }
+    [briefEl, industryEl, stakesEl, contextEl].forEach(el => el.addEventListener('input', checkReady));
+
+    let currentOutput = null;
+    let phaseInterval;
+
+    runBtn.addEventListener('click', async () => {
+      const message = [
+        `Brief / Problem Statement:\n${briefEl.value.trim()}`,
+        industryEl.value.trim() ? `Industry / Context: ${industryEl.value.trim()}` : '',
+        stakesEl.value.trim()   ? `Stakes / Decision at Risk: ${stakesEl.value.trim()}` : '',
+        contextEl.value.trim()  ? `Background / What Has Been Tried:\n${contextEl.value.trim()}` : ''
+      ].filter(Boolean).join('\n\n');
+
+      showLoading();
+      try {
+        const text = await callClaude(SYSTEM, message);
+        const data = parseJSON(text);
+        currentOutput = data;
+        renderOutput(data);
+      } catch(err) {
+        showError(err.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    async function callClaude(system, message) {
+      const _apiKey = localStorage.getItem('openai_api_key') || '';
+      if (_apiKey) {
+        const _msgs = [{ role: 'system', content: system }, { role: 'user', content: message }];
+        const _res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}` },
+          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 6000, messages: _msgs })
+        });
+        const _data = await _res.json();
+        if (!_res.ok) throw new Error(_data.error?.message || 'OpenAI API error');
+        return _data.choices[0].message.content;
+      }
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system, message, max_tokens: 6000 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API request failed');
+      return data.content[0].text;
+    }
+
+    function parseJSON(text) {
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON found in response');
+      return JSON.parse(match[0]);
+    }
+
+    function showLoading() {
+      document.getElementById('loadingState').classList.add('show');
+      document.getElementById('outputPanel').classList.remove('show');
+      runBtn.disabled = true;
+      const phases = document.querySelectorAll('.loading-phase');
+      let i = 0; phases[0].classList.add('active');
+      phaseInterval = setInterval(() => {
+        phases.forEach(p => p.classList.remove('active'));
+        i = (i + 1) % phases.length;
+        phases[i].classList.add('active');
+      }, 2000);
+    }
+
+    function hideLoading() {
+      clearInterval(phaseInterval);
+      document.getElementById('loadingState').classList.remove('show');
+      checkReady();
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function toggleHypothesis(el) {
+      const body = el.nextElementSibling;
+      body.classList.toggle('open');
+    }
+
+    function renderOutput(d) {
+      const hypotheses  = d.hypotheses  || [];
+      const bedrock     = d.bedrock_truths || [];
+      const elephants   = d.elephants   || [];
+      const blindSpots  = d.blind_spots || [];
+
+      // Stats
+      const statsHTML = `
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-num">${hypotheses.length}</div><div class="stat-label">Hypotheses</div></div>
+          <div class="stat-card"><div class="stat-num">${bedrock.length}</div><div class="stat-label">Bedrock Truths</div></div>
+          <div class="stat-card"><div class="stat-num">${elephants.length}</div><div class="stat-label">Elephants</div></div>
+          <div class="stat-card"><div class="stat-num">${blindSpots.length}</div><div class="stat-label">Blind Spots</div></div>
+        </div>`;
+
+      // Stated vs real
+      const statedRealHTML = `
+        <div class="section-block">
+          <div class="section-label">Stated Problem vs. Real Problem</div>
+          <div class="hb-label" style="margin-bottom:6px">As stated</div>
+          <div class="stated-box">${esc(d.stated_problem)}</div>
+          <div class="hb-label" style="margin-bottom:6px;margin-top:14px">The real problem</div>
+          <div class="real-box">${esc(d.real_problem)}</div>
+        </div>`;
+
+      // Reframe
+      const reframeHTML = d.problem_reframe ? `
+        <div class="verdict-box">
+          <div class="verdict-label">Reframed Question</div>
+          <div class="verdict-text">${esc(d.problem_reframe)}</div>
+        </div>` : '';
+
+      // Hypotheses
+      const hypothesesHTML = hypotheses.length ? `
+        <div class="section-block">
+          <div class="section-label">Competing Hypotheses</div>
+          ${hypotheses.map((h,i) => `
+            <div class="hypothesis-card">
+              <div class="hypothesis-header" onclick="toggleHypothesis(this)">
+                <div class="hypothesis-num">${i+1}</div>
+                <div class="hypothesis-title">${esc(h.title)}</div>
+                <span class="strength-badge strength-${(h.strength||'moderate')}">${esc(h.strength||'moderate')}</span>
+              </div>
+              <div class="hypothesis-body">
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">${esc(h.description)}</p>
+                <div class="hb-row"><div class="hb-label">Evidence for</div><div class="hb-evidence">${esc(h.evidence_for)}</div></div>
+                <div class="hb-row"><div class="hb-label">Evidence against</div><div class="hb-challenge">${esc(h.evidence_against)}</div></div>
+                <div class="hb-row"><div class="hb-label">If true, this means</div><div class="hb-implication">→ ${esc(h.implication)}</div></div>
+              </div>
+            </div>`).join('')}
+        </div>` : '';
+
+      // Bedrock truths
+      const bedrockHTML = bedrock.length ? `
+        <div class="section-block">
+          <div class="section-label">Bedrock Truths</div>
+          ${bedrock.map(t => `<div class="bedrock-item"><span class="bedrock-icon">⬛</span><span>${esc(t)}</span></div>`).join('')}
+        </div>` : '';
+
+      // Elephants
+      const elephantsHTML = elephants.length ? `
+        <div class="section-block">
+          <div class="section-label">Elephant in the Room</div>
+          ${elephants.map(e => `
+            <div class="elephant-box">
+              <div class="elephant-label">What is not being said</div>
+              <div class="elephant-text">${esc(e.what)}</div>
+              ${e.why_avoided ? `<div class="elephant-label" style="margin-top:10px">Why it's being avoided</div><div class="elephant-text" style="font-size:13px;opacity:0.75">${esc(e.why_avoided)}</div>` : ''}
+            </div>`).join('')}
+        </div>` : '';
+
+      // Blind spots
+      const blindHTML = blindSpots.length ? `
+        <div class="section-block">
+          <div class="section-label">Blind Spots</div>
+          ${blindSpots.map(b => `<div class="bedrock-item"><span class="bedrock-icon" style="font-size:12px">◻</span><span>${esc(b)}</span></div>`).join('')}
+        </div>` : '';
+
+      // Next question
+      const nextHTML = d.next_question ? `
+        <div class="reframe-box">"${esc(d.next_question)}"</div>` : '';
+
+      // Summary
+      const summaryHTML = d.summary ? `
+        <div class="section-block" style="border-left:4px solid var(--slate);background:var(--slate-light);border-radius:0 12px 12px 0">
+          <div class="section-label">Diagnosis Summary</div>
+          <p style="font-size:14px;color:var(--navy-mid);line-height:1.75;font-weight:400">${esc(d.summary)}</p>
+        </div>` : '';
+
+      document.getElementById('outputContent').innerHTML =
+        statsHTML + statedRealHTML + reframeHTML + hypothesesHTML + bedrockHTML + elephantsHTML + blindHTML +
+        (d.next_question ? `<div class="section-block"><div class="section-label">Most Important Next Question</div>${nextHTML}</div>` : '') +
+        summaryHTML;
+
+      document.getElementById('outputPanel').classList.add('show');
+    }
+
+    function showError(msg) {
+      document.getElementById('outputContent').innerHTML = `<div class="error-box">⚠ ${esc(msg)}</div>`;
+      document.getElementById('outputPanel').classList.add('show');
+    }
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      if (!currentOutput) return;
+      navigator.clipboard.writeText(JSON.stringify(currentOutput, null, 2));
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('outputPanel').classList.remove('show');
+      briefEl.value = '';
+      industryEl.value = '';
+      stakesEl.value = '';
+      contextEl.value = '';
+      checkReady();
+    });
+  </script>
+</body>
+</html>
