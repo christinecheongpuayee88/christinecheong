@@ -682,10 +682,11 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
         const messages = [];
         if (system) messages.push({ role: 'system', content: system });
         messages.push({ role: 'user', content: _buildUserContent(message) });
+        const hasImages = _uploadedImages.length > 0;
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 8192, messages })
+          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 8192, messages, ...(hasImages ? {} : { response_format: { type: 'json_object' } }) })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error?.message || 'OpenAI API error');
@@ -704,9 +705,22 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
     }
 
     function parseJSON(text) {
-      const match = text.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error('No JSON found in response');
-      return JSON.parse(match[0]);
+      // Strip markdown code fences if present
+      const stripped = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+      const match = stripped.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON found in response. The model returned: ' + text.slice(0, 200));
+      try {
+        return JSON.parse(match[0]);
+      } catch(e) {
+        // Try to extract just the outermost object more carefully
+        let depth = 0, start = -1, end = -1;
+        for (let i = 0; i < stripped.length; i++) {
+          if (stripped[i] === '{') { if (depth++ === 0) start = i; }
+          else if (stripped[i] === '}') { if (--depth === 0) { end = i; break; } }
+        }
+        if (start !== -1 && end !== -1) return JSON.parse(stripped.slice(start, end + 1));
+        throw new Error('Could not parse JSON response: ' + e.message);
+      }
     }
 
     function showLoading() {
