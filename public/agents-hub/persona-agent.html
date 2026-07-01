@@ -395,11 +395,11 @@
           <div class="input-pane">
             <div class="pane-label"><span class="pane-label-dot"></span>Input</div>
             <div class="mode-selector" id="modeSelector">
-              <button class="mode-btn active" data-mode="persona">Talk to Consumer</button>
-              <button class="mode-btn" data-mode="trend">Trend Analysis</button>
-              <button class="mode-btn" data-mode="concept">Concept Test</button>
-              <button class="mode-btn" data-mode="panel">Panel Compare</button>
-              <button class="mode-btn" data-mode="research">Research Design</button>
+              <button type="button" class="mode-btn active" data-mode="persona">Talk to Consumer</button>
+              <button type="button" class="mode-btn" data-mode="trend">Trend Analysis</button>
+              <button type="button" class="mode-btn" data-mode="concept">Concept Test</button>
+              <button type="button" class="mode-btn" data-mode="panel">Panel Compare</button>
+              <button type="button" class="mode-btn" data-mode="research">Research Design</button>
             </div>
             <textarea class="data-input" id="dataInput" placeholder="Describe your target audience, market, and what you want to explore...
 
@@ -584,31 +584,66 @@ Rules:
       return data.content[0].text;
     }
 
+    function itemText(i){return typeof i==='object'&&i!==null?(i.label||i.title||i.point||i.theme||i.step||Object.values(i).filter(v=>typeof v==='string').join(' — ')||JSON.stringify(i)):String(i||'');}
+
     function renderResults(parsed){
       resultsContainer.innerHTML='';
+      const modeColors={persona:'var(--teal)',trend:'var(--blue)',concept:'var(--orange)',panel:'var(--purple)',research:'var(--amber)'};
+      const accent=modeColors[parsed.mode||currentMode]||'var(--teal)';
+
       if(parsed.summary){
         const s=document.createElement('div');s.className='result-section';
-        s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--teal)"></span><span class="result-header-title" style="color:var(--teal)">SUMMARY</span></div><div class="result-body"><div class="result-item" style="color:var(--text);font-weight:400;">'+escapeHtml(parsed.summary)+'</div></div>';
+        s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:'+accent+'"></span><span class="result-header-title" style="color:'+accent+'">SUMMARY</span></div><div class="result-body"><div class="result-item" style="color:var(--text);font-weight:400;">'+escapeHtml(parsed.summary)+'</div></div>';
         resultsContainer.appendChild(s);
       }
-      if(parsed.sections&&parsed.sections.length){
-        parsed.sections.forEach(sec=>{
+
+      const sections=parsed.sections&&parsed.sections.length?parsed.sections:[];
+
+      // Fallback: if no sections, try to surface any array/string fields at top level
+      if(!sections.length){
+        const skip=new Set(['mode','summary','confidence','caveats','sections']);
+        Object.entries(parsed).forEach(([key,val])=>{
+          if(skip.has(key))return;
           const s=document.createElement('div');s.className='result-section';
           let bodyHtml='';
-          if(sec.type==='persona'){
-            bodyHtml='<div class="result-item"><div class="result-item-title">'+escapeHtml(sec.persona_name||sec.title)+'</div><div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-style:italic;">'+escapeHtml(sec.persona_summary||'')+'</div><div style="font-size:13px;color:var(--text);line-height:1.7;">'+escapeHtml(sec.reaction||sec.content||'')+'</div></div>';
-          } else if(sec.type==='list'&&sec.items){
-            bodyHtml=sec.items.map(i=>'<div class="result-item">'+escapeHtml(i)+'</div>').join('');
-          } else if(sec.type==='comparison'&&sec.items){
-            bodyHtml=sec.items.map(i=>'<div class="result-item"><strong>'+escapeHtml(typeof i==='object'?i.label||'':'')+'</strong> '+escapeHtml(typeof i==='object'?i.value||'':i)+'</div>').join('');
-          } else {
-            bodyHtml='<div class="result-item">'+escapeHtml(sec.content||JSON.stringify(sec))+'</div>';
+          if(Array.isArray(val)){
+            bodyHtml=val.map(i=>'<div class="result-item">'+escapeHtml(itemText(i))+'</div>').join('');
+          } else if(typeof val==='string'){
+            bodyHtml='<div class="result-item">'+escapeHtml(val)+'</div>';
+          } else if(typeof val==='object'&&val!==null){
+            bodyHtml=Object.entries(val).map(([k,v])=>'<div class="result-item"><strong>'+escapeHtml(k)+':</strong> '+escapeHtml(String(v))+'</div>').join('');
           }
-          const color = sec.type==='persona'?'var(--teal)':sec.type==='list'?'var(--blue)':'var(--orange)';
-          s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:'+color+'"></span><span class="result-header-title" style="color:'+color+'">'+escapeHtml((sec.title||'').toUpperCase())+'</span></div><div class="result-body">'+bodyHtml+'</div>';
-          resultsContainer.appendChild(s);
+          if(bodyHtml){
+            s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:'+accent+'"></span><span class="result-header-title" style="color:'+accent+'">'+escapeHtml(key.replace(/_/g,' ').toUpperCase())+'</span></div><div class="result-body">'+bodyHtml+'</div>';
+            resultsContainer.appendChild(s);
+          }
         });
       }
+
+      sections.forEach(sec=>{
+        const s=document.createElement('div');s.className='result-section';
+        let bodyHtml='';
+        if(sec.type==='persona'){
+          bodyHtml='<div class="result-item"><div class="result-item-title">'+escapeHtml(sec.persona_name||sec.title||'')+'</div><div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-style:italic;">'+escapeHtml(sec.persona_summary||'')+'</div><div style="font-size:13px;color:var(--text);line-height:1.7;">'+escapeHtml(sec.reaction||sec.content||'')+'</div></div>';
+        } else if((sec.type==='list'||sec.type==='comparison')&&sec.items&&sec.items.length){
+          bodyHtml=sec.items.map(i=>{
+            if(typeof i==='object'&&i!==null){
+              const label=i.label||i.title||i.point||i.theme||i.name||'';
+              const value=i.value||i.detail||i.description||i.content||i.finding||'';
+              return '<div class="result-item">'+(label?'<strong>'+escapeHtml(label)+'</strong> ':'')+escapeHtml(value||itemText(i))+'</div>';
+            }
+            return '<div class="result-item">'+escapeHtml(String(i))+'</div>';
+          }).join('');
+        } else {
+          const text=sec.content||sec.text||sec.body||sec.reaction||'';
+          bodyHtml='<div class="result-item">'+escapeHtml(text||itemText(sec))+'</div>';
+        }
+        if(!bodyHtml||bodyHtml==='<div class="result-item"></div>')return;
+        const color=sec.type==='persona'?'var(--teal)':sec.type==='list'?'var(--blue)':sec.type==='comparison'?'var(--orange)':accent;
+        s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:'+color+'"></span><span class="result-header-title" style="color:'+color+'">'+escapeHtml((sec.title||'').toUpperCase())+'</span></div><div class="result-body">'+bodyHtml+'</div>';
+        resultsContainer.appendChild(s);
+      });
+
       if(parsed.caveats){
         const s=document.createElement('div');s.className='result-section';
         s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--amber)"></span><span class="result-header-title" style="color:var(--amber)">CAVEATS &amp; CONFIDENCE: '+escapeHtml((parsed.confidence||'').toUpperCase())+'</span></div><div class="result-body"><div class="result-item">'+escapeHtml(parsed.caveats)+'</div></div>';
