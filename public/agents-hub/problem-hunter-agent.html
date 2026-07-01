@@ -379,15 +379,20 @@ ATTACHED DOCUMENTS (treat as primary source material — cite by filename):
 ===';}
     function _buildUserContent(text){const fullText=_buildDocContext(text);if(!_uploadedImages.length)return fullText;const parts=[{type:'text',text:fullText}];_uploadedImages.forEach(img=>parts.push({type:'image_url',image_url:{url:img.dataUrl}}));return parts;}
     function _handlePaste(e){
+      // Don't intercept pastes into text inputs — let the textarea handle it normally
+      if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
       const items=Array.from(e.clipboardData?.items||[]);
       const imgItem=items.find(i=>i.type.startsWith('image/'));
       if(imgItem){e.preventDefault();const f=imgItem.getAsFile();if(f)_handleFiles([f]);}
     }
+    // Global handler (skips text inputs above); also attach directly to drop zone
     document.addEventListener('paste',_handlePaste);
-    document.addEventListener('DOMContentLoaded',()=>{
-      const dz=document.getElementById('_dropZone');
-      if(dz){dz.addEventListener('paste',_handlePaste);dz.addEventListener('focus',()=>dz.style.outline='2px solid var(--blue,#1E88C7)');dz.addEventListener('blur',()=>dz.style.outline='');}
-    });
+    const _dz=document.getElementById('_dropZone');
+    if(_dz){
+      _dz.addEventListener('paste',_handlePaste);
+      _dz.addEventListener('focus',()=>_dz.style.outline='2px solid var(--blue,#1E88C7)');
+      _dz.addEventListener('blur',()=>_dz.style.outline='');
+    }
 
     const SYSTEM = `You are the Problem Hunter Agent — a multi-perspective diagnostic system. You deploy five specialist analytical personas to interrogate any brief or problem statement and surface what is really going on beneath what has been stated.
 
