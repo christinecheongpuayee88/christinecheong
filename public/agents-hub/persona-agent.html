@@ -1,497 +1,255 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Consumer Persona Agent — NUS-ISS Living Lab</title>
-  <meta name="description" content="AI-powered consumer persona simulation, trend analysis, and concept testing — model realistic consumer reactions to pressure-test your ideas.">
+  <meta name="description" content="AI-powered consumer persona simulation, trend analysis, and concept testing.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
   <style>
     :root {
-      --bg:           #FFFFFF;
-      --surface:      #F2F2F2;
-      --navy:         #111827;
-      --navy-mid:     #1F3A5F;
-      --blue:         #1E88C7;
-      --blue-light:   #E8F4FB;
-      --orange:       #1E88C7;
-      --orange-light: #E8F4FB;
-      --teal:         #1E88C7;
-      --teal-light:   #E8F4FB;
-      --text:         #111827;
-      --text-muted:   #4B5563;
-      --border:       #DADADA;
-      --red:          #C0392B;
-      --red-light:    #FDEDEC;
-      --purple:       #4A6F8A;
-      --purple-light: #EEF2F6;
-      --amber:        #B7791F;
-      --amber-light:  #FEFCBF;
-      --green:        #1E88C7;
-      --green-light:  #E8F4FB;
-
-      --sp-xl: 112px;
+      --bg: #FFFFFF;
+      --surface: #F7F7F8;
+      --surface2: #EFEFEF;
+      --blue: #1E88C7;
+      --blue-light: #E8F4FB;
+      --navy: #111827;
+      --text: #111827;
+      --text-muted: #6B7280;
+      --border: #E5E7EB;
+      --red: #C0392B;
+      --red-light: #FDEDEC;
+      --amber: #B7791F;
+      --amber-light: #FEFCBF;
+      --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
       --font-display: 'Fraunces', Georgia, serif;
-      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
-      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
-      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-out:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      --nav-h: 72px;
+      --font-mono: 'JetBrains Mono', monospace;
+      --nav-h: 60px;
+      --ease: cubic-bezier(0.16,1,0.3,1);
     }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--bg); color:var(--text); font-family:var(--font-body); font-weight:500; line-height:1.65; }
+    a { color:inherit; text-decoration:none; }
 
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 500; line-height: 1.65; overflow-x: hidden; }
-    img { display: block; max-width: 100%; }
-    a { color: inherit; text-decoration: none; }
-    h1,h2,h3,h4,.label { text-wrap: balance; }
-    p { text-wrap: pretty; }
+    /* ── NAV ── */
+    .nav { position:sticky; top:0; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 32px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+    .nav-brand { display:flex; align-items:center; gap:10px; }
+    .nav-brand-sup { font-size:10px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--blue); }
+    .nav-brand-name { font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--navy); }
+    .nav-back { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:var(--text-muted); border:1px solid var(--border); border-radius:6px; padding:7px 14px; transition:all 0.2s; }
+    .nav-back:hover { color:var(--navy); border-color:var(--navy); }
 
-    /* ── NAV ─────────────────────────────────────── */
-    .nav { position:fixed; inset:0 0 auto; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 56px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
-    .nav-brand { display:flex; flex-direction:column; gap:1px; }
-    .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
-    .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
-    .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
-    .nav-links a:hover { color:var(--navy); }
-    .nav-cta { font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; padding:10px 24px; border-radius:6px; background:var(--blue); color:#fff !important; transition:background 0.25s, transform 0.25s, box-shadow 0.25s; }
-    .nav-cta:hover { background:#1670A6; transform:translateY(-1px); box-shadow:0 6px 20px rgba(30,136,199,0.38); }
-    .hamburger { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:4px; }
-    .hamburger span { display:block; width:24px; height:1.5px; background:var(--text); border-radius:2px; }
+    /* ── MAIN LAYOUT ── */
+    .main { min-height:calc(100vh - var(--nav-h)); display:flex; flex-direction:column; align-items:center; padding:60px 24px 120px; }
 
-    /* ── HERO ────────────────────────────────────── */
-    .hero { position:relative; padding:calc(var(--nav-h) + 80px) 56px 80px; background:var(--bg); overflow:hidden; border-bottom:1px solid var(--border); }
-    .hero-geo { display:none; }
-    .hero-inner { max-width:1280px; margin:0 auto; position:relative; z-index:2; display:grid; grid-template-columns:1.2fr 1fr; gap:80px; align-items:center; }
-    .hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); margin-bottom:24px; }
-    .hero-eyebrow::before { content:''; width:28px; height:2px; background:var(--orange); }
-    .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--blue-light); color:var(--blue); margin-bottom:20px; }
-    .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,64px); font-weight:700; line-height:1.02; letter-spacing:-0.025em; color:var(--navy); margin-bottom:22px; }
-    .hero-h1 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
-    .hero-h1 mark { background:none; color:var(--blue); }
-    .hero-sub { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:520px; margin-bottom:32px; }
-    .hero-actions { display:flex; flex-wrap:wrap; gap:14px; }
+    /* ── AGENT HEADER ── */
+    .agent-header { display:flex; flex-direction:column; align-items:center; text-align:center; margin-bottom:40px; }
+    .agent-avatar { width:72px; height:72px; border-radius:20px; background:linear-gradient(135deg,#E8F4FB 0%,#BAE0F5 100%); display:flex; align-items:center; justify-content:center; font-size:36px; margin-bottom:16px; box-shadow:0 4px 16px rgba(30,136,199,0.15); }
+    .agent-name { font-family:var(--font-display); font-size:28px; font-weight:700; color:var(--navy); letter-spacing:-0.02em; margin-bottom:6px; }
+    .agent-badge { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:500; color:var(--text-muted); background:var(--surface); border:1px solid var(--border); border-radius:100px; padding:3px 10px; margin-bottom:10px; }
+    .agent-badge svg { width:11px; height:11px; }
+    .agent-desc { font-size:15px; font-weight:300; color:var(--text-muted); max-width:420px; line-height:1.6; }
 
-    .hero-visual { display:flex; flex-direction:column; gap:16px; }
-    .mode-preview { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 24px; }
-    .mode-preview-label { font-size:10px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-    .mode-preview--persona .mode-preview-label { color:var(--teal); }
-    .mode-preview--trend .mode-preview-label { color:#60A5FA; }
-    .mode-preview--concept .mode-preview-label { color:var(--orange); }
-    .mode-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-    .mode-preview-item { font-size:13px; font-weight:300; color:var(--text-muted); line-height:1.6; padding:8px 0; border-bottom:1px solid var(--border); }
-    .mode-preview-item:last-child { border-bottom:none; }
-    .mode-preview-item strong { font-weight:500; color:var(--text); }
+    /* ── CHAT INPUT ── */
+    .chat-wrap { width:100%; max-width:680px; margin-bottom:28px; }
+    .chat-input-row { display:flex; align-items:center; gap:8px; background:var(--bg); border:1.5px solid var(--border); border-radius:100px; padding:10px 12px 10px 20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:border-color 0.2s, box-shadow 0.2s; }
+    .chat-input-row:focus-within { border-color:var(--blue); box-shadow:0 2px 20px rgba(30,136,199,0.12); }
+    .chat-add-btn { background:none; border:none; cursor:pointer; color:var(--text-muted); display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; transition:background 0.2s; flex-shrink:0; }
+    .chat-add-btn:hover { background:var(--surface); color:var(--navy); }
+    .chat-input { flex:1; font-family:var(--font-body); font-size:15px; font-weight:400; color:var(--text); border:none; outline:none; background:transparent; }
+    .chat-input::placeholder { color:var(--text-muted); font-weight:300; }
+    .chat-mic-btn { background:none; border:none; cursor:pointer; color:var(--text-muted); display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; flex-shrink:0; transition:background 0.2s; }
+    .chat-mic-btn:hover { background:var(--surface); }
+    .chat-send-btn { width:34px; height:34px; border-radius:50%; background:var(--navy); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.2s, transform 0.2s; }
+    .chat-send-btn:hover { background:var(--blue); transform:scale(1.05); }
+    .chat-send-btn:disabled { background:var(--border); cursor:not-allowed; transform:none; }
+    .chat-send-btn svg { width:16px; height:16px; fill:#fff; }
 
-    /* ── BUTTONS ─────────────────────────────────── */
-    .btn { display:inline-flex; align-items:center; gap:8px; font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em; border-radius:6px; border:none; cursor:pointer; transition:background 0.25s, transform 0.25s, box-shadow 0.25s; }
-    .btn-teal { padding:16px 36px; background:var(--blue); color:#fff; }
-    .btn-teal:hover { background:#1670A6; transform:translateY(-2px); box-shadow:0 12px 32px rgba(30,136,199,0.35); }
-    .btn-outline-white { padding:16px 36px; background:transparent; color:var(--navy); border:1.5px solid var(--border); }
-    .btn-outline-white:hover { background:var(--surface); border-color:var(--navy); }
-    .btn-arrow::after { content:'\2192'; font-size:15px; }
+    /* ── ATTACHMENT ZONE (inside chat) ── */
+    .attach-area { width:100%; max-width:680px; margin-bottom:8px; }
+    .drop-zone { border:1.5px dashed var(--border); border-radius:12px; padding:10px 16px; text-align:center; cursor:pointer; transition:border-color 0.2s, background 0.2s; background:var(--surface); }
+    .drop-zone:hover { border-color:var(--blue); background:var(--blue-light); }
+    .drop-zone-text { font-size:12px; color:var(--text-muted); }
+    .drop-zone-text b { color:var(--blue); font-weight:600; }
+    .attach-chips { margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; }
 
-    /* ── SECTIONS ────────────────────────────────── */
-    .section { padding:var(--sp-xl) 56px; }
-    .section-inner { max-width:1280px; margin:0 auto; }
-    .label { font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); margin-bottom:16px; }
-    .section-h2 { font-family:var(--font-display); font-size:clamp(28px,3.5vw,46px); font-weight:700; line-height:1.1; letter-spacing:-0.02em; color:var(--text); margin-bottom:18px; }
-    .section-h2 em { font-style:italic; font-weight:300; color:var(--text-muted); }
-    .section-lead { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.78; max-width:560px; }
-    .reveal { opacity:0; transform:translateY(28px); transition:opacity 0.8s var(--ease-spring), transform 0.8s var(--ease-spring); }
-    .reveal.in { opacity:1; transform:translateY(0); }
-    .d1 { transition-delay:0.10s; } .d2 { transition-delay:0.20s; } .d3 { transition-delay:0.30s; } .d4 { transition-delay:0.42s; }
+    /* ── MODE PILLS ── */
+    .mode-pills { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-bottom:32px; max-width:680px; }
+    .mode-pill { font-family:var(--font-body); font-size:12px; font-weight:500; padding:6px 14px; border-radius:100px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .mode-pill:hover { border-color:var(--blue); color:var(--blue); }
+    .mode-pill.active { background:var(--blue); border-color:var(--blue); color:#fff; }
 
-    /* ── MODES GRID ──────────────────────────────── */
-    .modes { background:var(--surface); border-bottom:1px solid var(--border); }
-    .modes-header { text-align:center; margin-bottom:64px; }
-    .modes-header .section-lead { margin:0 auto; text-align:center; }
-    .modes-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; }
-    .mode-card { background:var(--bg); padding:44px 32px; position:relative; overflow:hidden; transition:transform 0.35s var(--ease-spring), box-shadow 0.35s; }
-    .mode-card:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(0,30,76,0.1); z-index:1; }
-    .mode-card-stripe { position:absolute; top:0; left:0; right:0; height:4px; }
-    .mode-card--persona .mode-card-stripe { background:var(--teal); }
-    .mode-card--trend .mode-card-stripe { background:var(--blue); }
-    .mode-card--concept .mode-card-stripe { background:var(--orange); }
-    .mode-card--panel .mode-card-stripe { background:var(--purple); }
-    .mode-card--research .mode-card-stripe { background:var(--amber); }
-    .mode-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:20px; }
-    .mode-card--persona .mode-icon { background:var(--teal-light); }
-    .mode-card--trend .mode-icon { background:var(--blue-light); }
-    .mode-card--concept .mode-icon { background:var(--orange-light); }
-    .mode-card--panel .mode-icon { background:var(--purple-light); }
-    .mode-card--research .mode-icon { background:var(--amber-light); }
-    .mode-title { font-family:var(--font-display); font-size:20px; font-weight:700; color:var(--text); margin-bottom:10px; line-height:1.2; }
-    .mode-desc { font-size:13px; font-weight:300; color:var(--text-muted); line-height:1.72; margin-bottom:18px; }
-    .mode-outputs { list-style:none; display:flex; flex-direction:column; gap:6px; }
-    .mode-outputs li { font-size:12px; font-weight:400; color:var(--text-muted); display:flex; align-items:center; gap:8px; }
-    .mode-outputs li::before { content:''; width:5px; height:5px; border-radius:50%; flex-shrink:0; }
-    .mode-card--persona .mode-outputs li::before { background:var(--teal); }
-    .mode-card--trend .mode-outputs li::before { background:var(--blue); }
-    .mode-card--concept .mode-outputs li::before { background:var(--orange); }
-    .mode-card--panel .mode-outputs li::before { background:var(--purple); }
-    .mode-card--research .mode-outputs li::before { background:var(--amber); }
+    /* ── STARTER CARDS ── */
+    .starter-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; max-width:680px; }
+    .starter-card { background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:border-color 0.2s, box-shadow 0.2s, transform 0.15s; }
+    .starter-card:hover { border-color:var(--blue); box-shadow:0 4px 16px rgba(30,136,199,0.1); transform:translateY(-1px); }
+    .starter-card-icon { font-size:22px; margin-bottom:8px; }
+    .starter-card-title { font-size:13px; font-weight:600; color:var(--navy); margin-bottom:3px; }
+    .starter-card-desc { font-size:11px; font-weight:300; color:var(--text-muted); line-height:1.5; }
 
-    /* ── AGENT INTERFACE ─────────────────────────── */
-    .agent-interface { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-    .agent-ui-header { text-align:center; margin-bottom:48px; }
-    .agent-ui-header .section-lead { margin:0 auto; text-align:center; }
+    /* ── RESULTS AREA ── */
+    .results-area { width:100%; max-width:680px; margin-top:32px; display:none; flex-direction:column; gap:0; }
+    .results-area.active { display:flex; }
 
-    .agent-workspace { background:var(--bg); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-    .workspace-toolbar { display:flex; align-items:center; justify-content:space-between; padding:16px 24px; background:var(--surface); border-bottom:1px solid var(--border); flex-wrap:wrap; gap:12px; }
-    .toolbar-left { display:flex; align-items:center; gap:12px; }
-    .toolbar-dot { width:10px; height:10px; border-radius:50%; }
-    .toolbar-dot--red { background:#EF4444; } .toolbar-dot--yellow { background:#F59E0B; } .toolbar-dot--green { background:#10B981; }
-    .toolbar-title { font-family:var(--font-mono); font-size:12px; font-weight:500; color:var(--text-muted); margin-left:8px; }
-    .toolbar-right { display:flex; align-items:center; gap:12px; }
-    .api-key-group { display:flex; align-items:center; gap:8px; }
-    .api-key-label { font-size:11px; font-weight:500; color:var(--text-muted); letter-spacing:0.06em; }
-    .api-key-input { font-family:var(--font-mono); font-size:12px; padding:8px 14px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); width:260px; outline:none; transition:border-color 0.25s; }
-    .api-key-input:focus { border-color:var(--blue); }
-    .api-key-input::placeholder { color:var(--text-muted); opacity:0.5; }
+    /* User bubble */
+    .msg-user { display:flex; justify-content:flex-end; margin-bottom:20px; }
+    .msg-user-bubble { background:var(--navy); color:#fff; font-size:14px; font-weight:400; line-height:1.6; padding:12px 18px; border-radius:18px 18px 4px 18px; max-width:80%; }
 
-    .workspace-body { display:grid; grid-template-columns:1fr 1fr; min-height:520px; }
-    .input-pane { padding:24px; border-right:1px solid var(--border); display:flex; flex-direction:column; }
-    .pane-label { font-size:10px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-    .pane-label-dot { width:6px; height:6px; border-radius:50%; background:var(--teal); }
+    /* Agent bubble */
+    .msg-agent { display:flex; align-items:flex-start; gap:10px; margin-bottom:20px; }
+    .msg-agent-avatar { width:32px; height:32px; border-radius:10px; background:linear-gradient(135deg,#E8F4FB,#BAE0F5); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+    .msg-agent-body { flex:1; }
 
-    .mode-selector { display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
-    .mode-btn { font-family:var(--font-body); font-size:11px; font-weight:600; padding:7px 14px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; transition:all 0.25s; letter-spacing:0.02em; }
-    .mode-btn:hover { border-color:var(--teal); color:var(--teal); }
-    .mode-btn.active { background:var(--teal); border-color:var(--teal); color:#fff; }
-
-    .data-input { flex:1; font-family:var(--font-body); font-size:14px; font-weight:300; color:var(--text); line-height:1.7; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:20px; resize:none; outline:none; transition:border-color 0.25s; }
-    .data-input:focus { border-color:var(--teal); }
-    .data-input::placeholder { color:var(--text-muted); opacity:0.5; }
-
-    .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:16px; }
-    .char-count { font-size:11px; font-weight:400; color:var(--text-muted); font-family:var(--font-mono); }
-    .analyze-btn { display:inline-flex; align-items:center; gap:10px; padding:14px 32px; background:var(--navy); color:#fff; font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em; border:none; border-radius:8px; cursor:pointer; transition:background 0.25s, transform 0.25s, box-shadow 0.25s; }
-    .analyze-btn:hover:not(:disabled) { background:#111827; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,30,76,0.3); }
-    .analyze-btn:disabled { opacity:0.5; cursor:not-allowed; }
-    .analyze-btn .spinner { display:none; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
-    .analyze-btn.loading .spinner { display:block; }
-    .analyze-btn.loading .btn-text { display:none; }
+    /* Progress */
+    .progress-wrap { display:flex; flex-direction:column; gap:6px; }
+    .progress-step { display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:500; color:var(--text-muted); }
+    .progress-dot { width:7px; height:7px; border-radius:50%; background:var(--border); flex-shrink:0; }
+    .progress-step.active .progress-dot { background:var(--blue); animation:pulse 1.2s ease-in-out infinite; }
+    .progress-step.done .progress-dot { background:var(--blue); }
+    .progress-step.active { color:var(--blue); }
+    .progress-step.done { color:var(--blue); }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.7);} }
     @keyframes spin { to { transform:rotate(360deg); } }
 
-    /* ── OUTPUT ───────────────────────────────────── */
-    .output-pane { padding:24px; display:flex; flex-direction:column; overflow-y:auto; max-height:700px; }
-    .output-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; }
-    .output-empty-icon { font-size:48px; margin-bottom:18px; opacity:0.3; }
-    .output-empty-title { font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--text-muted); margin-bottom:8px; }
-    .output-empty-desc { font-size:13px; font-weight:300; color:var(--text-muted); opacity:0.7; }
-
-    .agent-progress { display:none; flex-direction:column; gap:8px; margin-bottom:24px; }
-    .agent-progress.active { display:flex; }
-    .progress-step { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:6px; background:var(--surface); border:1px solid var(--border); font-size:12px; font-weight:500; color:var(--text-muted); transition:all 0.3s; }
-    .progress-step.active { border-color:var(--teal); color:var(--teal); background:var(--teal-light); }
-    .progress-step.done { border-color:var(--teal); color:var(--teal); background:var(--teal-light); }
-    .progress-dot { width:8px; height:8px; border-radius:50%; background:var(--border); flex-shrink:0; transition:background 0.3s; }
-    .progress-step.active .progress-dot { background:var(--teal); animation:pulse 1.2s ease-in-out infinite; }
-    .progress-step.done .progress-dot { background:var(--teal); }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.7);} }
-
-    .results-container { display:none; flex-direction:column; gap:20px; }
-    .results-container.active { display:flex; }
-    .result-section { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-    .result-header { display:flex; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid var(--border); }
-    .result-header-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-    .result-header-title { font-size:13px; font-weight:600; letter-spacing:0.06em; }
-    .result-body { padding:16px 20px; }
-    .result-item { padding:12px 0; border-bottom:1px solid var(--border); font-size:13px; font-weight:300; color:var(--text-muted); line-height:1.65; }
+    /* Result cards */
+    .result-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:10px; }
+    .result-card-header { display:flex; align-items:center; gap:8px; padding:11px 16px; border-bottom:1px solid var(--border); }
+    .result-card-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .result-card-label { font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; }
+    .result-card-body { padding:14px 16px; }
+    .result-item { font-size:13px; font-weight:300; color:var(--text-muted); line-height:1.65; padding:7px 0; border-bottom:1px solid var(--border); }
     .result-item:last-child { border-bottom:none; }
     .result-item strong { font-weight:600; color:var(--text); }
     .result-item-title { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
 
-    .error-box { display:none; background:var(--red-light); border:1px solid rgba(192,57,43,0.2); border-radius:8px; padding:16px 20px; margin-bottom:16px; }
-    .error-box.active { display:block; }
-    .error-title { font-size:13px; font-weight:600; color:var(--red); margin-bottom:4px; }
+    /* Error */
+    .error-card { background:var(--red-light); border:1px solid rgba(192,57,43,0.2); border-radius:12px; padding:14px 16px; }
+    .error-title { font-size:13px; font-weight:600; color:var(--red); margin-bottom:3px; }
     .error-detail { font-size:12px; font-weight:300; color:var(--red); opacity:0.8; }
 
-    /* ── FOOTER ──────────────────────────────────── */
-    .footer { background:#111827; color:#fff; padding:60px 56px 36px; }
-    .footer-inner { max-width:1280px; margin:0 auto; }
-    .footer-top { display:flex; align-items:center; justify-content:space-between; padding-bottom:32px; border-bottom:1px solid rgba(255,255,255,0.07); margin-bottom:24px; }
-    .footer-brand { font-family:var(--font-display); font-size:18px; font-weight:700; }
-    .footer-brand-sup { font-size:10px; font-weight:400; color:var(--orange); letter-spacing:0.12em; text-transform:uppercase; }
-    .footer-links { display:flex; gap:28px; list-style:none; }
-    .footer-links a { font-size:13px; font-weight:300; color:rgba(255,255,255,0.48); transition:color 0.25s; }
-    .footer-links a:hover { color:#fff; }
-    .footer-bottom { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:rgba(255,255,255,0.24); }
+    /* ── FOOTER ── */
+    .footer-note { position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); border-top:1px solid var(--border); padding:10px 24px; text-align:center; font-size:11px; color:var(--text-muted); z-index:100; }
 
-    /* ── MOBILE DRAWER ───────────────────────────── */
-    .mobile-drawer { position:fixed; inset:0 0 0 auto; width:min(320px,88vw); background:var(--navy); z-index:300; display:flex; flex-direction:column; padding:32px 36px 48px; transform:translateX(100%); transition:transform 0.42s var(--ease-spring); overflow-y:auto; }
-    .mobile-drawer.open { transform:translateX(0); }
-    .drawer-overlay { position:fixed; inset:0; background:rgba(0,15,40,0.6); z-index:299; opacity:0; pointer-events:none; transition:opacity 0.35s var(--ease-out); backdrop-filter:blur(4px); }
-    .drawer-overlay.open { opacity:1; pointer-events:all; }
-    .drawer-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:52px; }
-    .drawer-logo { font-family:var(--font-display); font-size:17px; font-weight:700; color:#fff; }
-    .drawer-close { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.5); font-size:20px; line-height:1; padding:4px; transition:color 0.3s; }
-    .drawer-close:hover { color:#fff; }
-    .drawer-links { list-style:none; display:flex; flex-direction:column; }
-    .drawer-links a { display:block; font-family:var(--font-display); font-size:24px; font-weight:700; color:rgba(255,255,255,0.65); padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.07); transition:color 0.25s, padding-left 0.25s; }
-    .drawer-links a:hover { color:#fff; padding-left:6px; }
-
-    /* ── RESPONSIVE ──────────────────────────────── */
-    @media(max-width:1100px) { .section,.hero,.footer { padding-left:36px; padding-right:36px; } .nav { padding:0 36px; } .hero-inner { gap:48px; } }
-    @media(max-width:900px) { .hero-inner { grid-template-columns:1fr; gap:48px; } .hero-visual { order:-1; } .modes-grid { grid-template-columns:1fr; } .workspace-body { grid-template-columns:1fr; } .input-pane { border-right:none; border-bottom:1px solid var(--border); } .workspace-toolbar { flex-direction:column; align-items:flex-start; } .api-key-input { width:100%; } .footer-top { flex-direction:column; gap:24px; align-items:flex-start; } }
-    @media(max-width:680px) { :root{--sp-xl:72px;} .section,.hero,.footer{padding-left:22px;padding-right:22px;} .nav{padding:0 22px;} .nav-links,.nav-cta{display:none;} .hamburger{display:flex;} .footer-links{flex-direction:column;gap:10px;} .footer-bottom{flex-direction:column;gap:12px;text-align:center;} }
-    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; transition-delay:0ms!important; } .reveal{opacity:1!important;transform:none!important;} }
+    @media(max-width:680px) {
+      .starter-grid { grid-template-columns:1fr 1fr; }
+      .main { padding:40px 16px 100px; }
+      .agent-name { font-size:22px; }
+    }
+    @media(max-width:440px) {
+      .starter-grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
 
   <nav class="nav">
-    <a href="./" class="nav-brand">
-      <span class="nav-brand-sup">NUS-ISS Living Lab</span>
-      <span class="nav-brand-name">Agents Hub</span>
+    <div class="nav-brand">
+      <div>
+        <div class="nav-brand-sup">NUS-ISS Living Lab</div>
+        <div class="nav-brand-name">Agents Hub</div>
+      </div>
+    </div>
+    <a href="./" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8.5 3L5 7l3.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      All Agents
     </a>
-    <ul class="nav-links">
-      <li><a href="./">All Agents</a></li>
-      <li><a href="#modes">Modes</a></li>
-      <li><a href="#agent">Try It</a></li>
-    </ul>
-    <a href="#agent" class="nav-cta">Launch&nbsp;Agent</a>
-    <button class="hamburger" aria-label="Open menu" id="hamburger" aria-expanded="false" aria-controls="mobileDrawer"><span></span><span></span><span></span></button>
   </nav>
 
-  <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
-  <div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-label="Navigation menu" aria-modal="true">
-    <div class="drawer-header">
-      <span class="drawer-logo">Persona Agent</span>
-      <button class="drawer-close" id="drawerClose" aria-label="Close menu">&#10005;</button>
-    </div>
-    <ul class="drawer-links">
-      <li><a href="./">Agents Hub</a></li>
-      <li><a href="#modes">Modes</a></li>
-      <li><a href="#agent">Try It</a></li>
-    </ul>
-  </div>
+  <main class="main">
 
-  <!-- ── HERO ────────────────────────────────────── -->
-  <section class="hero" aria-label="Hero">
-    <div class="hero-geo" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <div>
-        <p class="hero-eyebrow">NUS-ISS Living Lab</p>
-        <span class="hero-badge">Insight Agent</span>
-        <h1 class="hero-h1">Consumer<br><mark>Persona</mark>&nbsp;<em>Agent</em></h1>
-        <p class="hero-sub">Simulate realistic consumer reactions, synthesise trend insights, and pressure-test concepts through AI-powered persona modelling. Directional guidance for sharper strategy.</p>
-        <div class="hero-actions">
-          <a href="#agent" class="btn btn-teal btn-arrow">Launch Agent</a>
-          <a href="#modes" class="btn btn-outline-white">See Modes</a>
-        </div>
-      </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="mode-preview mode-preview--persona">
-          <div class="mode-preview-label"><span class="mode-dot" style="background:var(--teal)"></span>Persona Simulation</div>
-          <div class="mode-preview-item"><strong>Sarah, 34, working mum</strong> &mdash; "I love the idea but I'd need to see it works before switching from what I know"</div>
-        </div>
-        <div class="mode-preview mode-preview--trend">
-          <div class="mode-preview-label"><span class="mode-dot" style="background:#60A5FA"></span>Trend Synthesis</div>
-          <div class="mode-preview-item"><strong>Convenience paradox:</strong> consumers want simplicity but distrust anything that feels too automated</div>
-        </div>
-        <div class="mode-preview mode-preview--concept">
-          <div class="mode-preview-label"><span class="mode-dot" style="background:var(--orange)"></span>Concept Test</div>
-          <div class="mode-preview-item"><strong>Appeal: 7/10</strong> &mdash; strong on relevance, weak on distinctiveness vs. existing alternatives</div>
-        </div>
-      </div>
+    <!-- Header -->
+    <div class="agent-header">
+      <div class="agent-avatar">👤</div>
+      <h1 class="agent-name">Persona Agent</h1>
+      <span class="agent-badge">
+        <svg viewBox="0 0 12 12" fill="none"><path d="M6 1a5 5 0 100 10A5 5 0 006 1zm0 4.5a.5.5 0 110-1 .5.5 0 010 1zM5.5 5.5h1V8.5h-1V5.5z" fill="currentColor"/></svg>
+        NUS-ISS Living Lab
+      </span>
+      <p class="agent-desc">Simulate consumer personas, analyse trends, and test product concepts through AI-powered insight.</p>
     </div>
-  </section>
 
-  <!-- ── MODES ───────────────────────────────────── -->
-  <section class="section modes" id="modes" aria-labelledby="modes-h">
-    <div class="section-inner">
-      <div class="modes-header">
-        <p class="label reveal">Five Modes</p>
-        <h2 class="section-h2 reveal d1" id="modes-h">One agent, <em>five ways to use it</em></h2>
-        <p class="section-lead reveal d2">Each mode is tuned for a different stage of the insight and innovation process &mdash; from early trend scanning to concept validation.</p>
+    <!-- Mode pills -->
+    <div class="mode-pills" id="modePills">
+      <button type="button" class="mode-pill active" data-mode="persona">Talk to Consumer</button>
+      <button type="button" class="mode-pill" data-mode="trend">Trend Analysis</button>
+      <button type="button" class="mode-pill" data-mode="concept">Concept Test</button>
+      <button type="button" class="mode-pill" data-mode="panel">Panel Compare</button>
+      <button type="button" class="mode-pill" data-mode="research">Research Design</button>
+    </div>
+
+    <!-- Attachment zone -->
+    <div class="attach-area" id="attachArea">
+      <div class="drop-zone" id="_dropZone" tabindex="0"
+        onclick="document.getElementById('_fileInput').click()"
+        onkeydown="if(event.key==='Enter')document.getElementById('_fileInput').click()"
+        ondragover="event.preventDefault();this.style.borderColor='var(--blue)'"
+        ondragleave="this.style.borderColor='var(--border)'"
+        ondrop="_handleDrop(event)">
+        <span class="drop-zone-text">📎 <b>Click to browse</b> · drag &amp; drop · or <strong>Ctrl+V</strong> to paste a screenshot</span>
       </div>
-      <div class="modes-grid">
-        <article class="mode-card mode-card--persona reveal">
-          <div class="mode-card-stripe"></div>
-          <div class="mode-icon">&#128100;</div>
-          <h3 class="mode-title">Talk to Consumers</h3>
-          <p class="mode-desc">Interact with simulated personas that match your target audience. Each stays internally consistent in attitudes, motivations, and constraints.</p>
-          <ul class="mode-outputs">
-            <li>Natural persona responses</li>
-            <li>Emotional &amp; practical drivers</li>
-            <li>Says vs. likely does</li>
-          </ul>
-        </article>
-        <article class="mode-card mode-card--trend reveal d1">
-          <div class="mode-card-stripe"></div>
-          <div class="mode-icon">&#128200;</div>
-          <h3 class="mode-title">Trend Analysis</h3>
-          <p class="mode-desc">Synthesise research inputs into actionable trend digests &mdash; themes, drivers, consumer implications, brand opportunities, and risks.</p>
-          <ul class="mode-outputs">
-            <li>Key trend themes</li>
-            <li>Consumer &amp; brand implications</li>
-            <li>Recommended next moves</li>
-          </ul>
-        </article>
-        <article class="mode-card mode-card--concept reveal d2">
-          <div class="mode-card-stripe"></div>
-          <div class="mode-icon">&#128161;</div>
-          <h3 class="mode-title">Concept Testing</h3>
-          <p class="mode-desc">Evaluate a concept, proposition, or campaign through persona lenses &mdash; appeal, clarity, distinctiveness, barriers, and improvement opportunities.</p>
-          <ul class="mode-outputs">
-            <li>Structured evaluation</li>
-            <li>Likely verbatim reactions</li>
-            <li>Improvement opportunities</li>
-          </ul>
-        </article>
-        <article class="mode-card mode-card--panel reveal d3">
-          <div class="mode-card-stripe"></div>
-          <div class="mode-icon">&#128101;</div>
-          <h3 class="mode-title">Panel Comparison</h3>
-          <p class="mode-desc">See how multiple distinct personas respond to the same stimulus &mdash; find common patterns, sharp differences, and best-fit audiences.</p>
-          <ul class="mode-outputs">
-            <li>Persona-by-persona reactions</li>
-            <li>Strongest &amp; weakest fit</li>
-            <li>Segment-specific actions</li>
-          </ul>
-        </article>
-        <article class="mode-card mode-card--research reveal d4">
-          <div class="mode-card-stripe"></div>
-          <div class="mode-icon">&#128203;</div>
-          <h3 class="mode-title">Research Design</h3>
-          <p class="mode-desc">Generate interview guides, survey questions, screening logic, and learning agendas to validate ideas with real consumers.</p>
-          <ul class="mode-outputs">
-            <li>Discussion guides</li>
-            <li>Survey frameworks</li>
-            <li>Test plan structure</li>
-          </ul>
-        </article>
+      <input id="_fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf,image/*" style="display:none" onchange="_handleFiles(this.files)" />
+      <div class="attach-chips" id="_attachList"></div>
+    </div>
+
+    <!-- Chat input -->
+    <div class="chat-wrap">
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatInput" type="text" placeholder="Ask Persona Agent" autocomplete="off" spellcheck="false" />
+        <button class="chat-mic-btn" type="button" aria-label="Voice input">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="6" height="8" rx="3" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 7.5A5.5 5.5 0 008 13a5.5 5.5 0 005.5-5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="8" y1="13" x2="8" y2="15.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+        <button class="chat-send-btn" id="sendBtn" type="button" disabled aria-label="Send">
+          <svg viewBox="0 0 16 16"><path d="M14 8L2 2l2 6-2 6 12-6z"/></svg>
+        </button>
       </div>
     </div>
-  </section>
 
-  <!-- ── AGENT INTERFACE ─────────────────────────── -->
-  <section class="section agent-interface" id="agent" aria-labelledby="agent-h">
-    <div class="section-inner">
-      <div class="agent-ui-header">
-        <p class="label reveal">Interactive Agent</p>
-        <h2 class="section-h2 reveal d1" id="agent-h">Try the Consumer <em>Persona Agent</em></h2>
-        <p class="section-lead reveal d2">Select a mode, describe your audience and objective, then let the agent generate insight you can act on.</p>
+    <!-- Starter cards -->
+    <div class="starter-grid" id="starterGrid">
+      <div class="starter-card" data-prompt="What would a teenage consumer think about a new beauty skincare brand with clean ingredients and influencer partnerships?" data-mode="persona">
+        <div class="starter-card-icon">🧑</div>
+        <div class="starter-card-title">Teens</div>
+        <div class="starter-card-desc">Younger consumers and students.</div>
       </div>
-
-      <div class="agent-workspace reveal d3">
-        <div class="workspace-toolbar">
-          <div class="toolbar-left">
-            <span class="toolbar-dot toolbar-dot--red"></span>
-            <span class="toolbar-dot toolbar-dot--yellow"></span>
-            <span class="toolbar-dot toolbar-dot--green"></span>
-            <span class="toolbar-title">persona-agent v1.0</span>
-          </div>
-          <div class="toolbar-right"></div>
-        </div>
-
-        <div class="workspace-body">
-          <div class="input-pane">
-            <div class="pane-label"><span class="pane-label-dot"></span>Input</div>
-            <div class="mode-selector" id="modeSelector">
-              <button type="button" class="mode-btn active" data-mode="persona">Talk to Consumer</button>
-              <button type="button" class="mode-btn" data-mode="trend">Trend Analysis</button>
-              <button type="button" class="mode-btn" data-mode="concept">Concept Test</button>
-              <button type="button" class="mode-btn" data-mode="panel">Panel Compare</button>
-              <button type="button" class="mode-btn" data-mode="research">Research Design</button>
-            </div>
-            <textarea class="data-input" id="dataInput" placeholder="Describe your target audience, market, and what you want to explore...
-
-Example: &quot;I'm launching a plant-based protein snack aimed at busy professionals aged 25-40 in Singapore. The proposition is convenience + clean label. How would this audience react?&quot;" spellcheck="false"></textarea>
-      
-      <!-- ── Attachments ── -->
-      <div style="margin-top:10px;">
-        <div id="_dropZone" style="border:1.5px dashed var(--border);border-radius:8px;padding:10px 16px;cursor:pointer;transition:border-color 0.2s;background:var(--surface,#F2F2F2);" tabindex="0" onclick="document.getElementById('_fileInput').click()" onkeydown="if(event.key==='Enter')document.getElementById('_fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue,#1E88C7)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="_handleDrop(event)">
-          <span style="font-size:12px;color:var(--text-muted,#6B7280);">📎 <span style="color:var(--blue,#1E88C7);font-weight:600;">Click to browse</span> · drag &amp; drop · or <strong>click here then Ctrl+V</strong> to paste an image</span>
-          <span style="font-size:11px;color:var(--text-muted,#6B7280);display:block;margin-top:2px;">.txt .csv .pdf .md .json or any image</span>
-        </div>
-        <input id="_fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf,image/*" style="display:none" onchange="_handleFiles(this.files)" />
-        <div id="_attachList" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;"></div>
+      <div class="starter-card" data-prompt="How would a young working adult in Singapore react to a premium wellness subscription service priced at $80/month?" data-mode="persona">
+        <div class="starter-card-icon">💼</div>
+        <div class="starter-card-title">Young Adults</div>
+        <div class="starter-card-desc">Early-career and young working adults.</div>
       </div>
-      <div class="input-footer">
-              <span class="char-count" id="charCount">0 characters</span>
-              <button class="analyze-btn" id="analyzeBtn" type="button">
-                <span class="btn-text">Run Agent</span>
-                <span class="spinner"></span>
-              </button>
-            </div>
-          </div>
-
-          <div class="output-pane" id="outputPane">
-            <div class="output-empty" id="outputEmpty">
-              <div class="output-empty-icon">&#128100;</div>
-              <div class="output-empty-title">Awaiting Input</div>
-              <div class="output-empty-desc">Select a mode and describe your scenario</div>
-            </div>
-            <div class="error-box" id="errorBox">
-              <div class="error-title" id="errorTitle">Error</div>
-              <div class="error-detail" id="errorDetail"></div>
-            </div>
-            <div class="agent-progress" id="agentProgress">
-              <div class="progress-step" id="step-1"><span class="progress-dot"></span>Building persona models</div>
-              <div class="progress-step" id="step-2"><span class="progress-dot"></span>Running simulation &amp; analysis</div>
-              <div class="progress-step" id="step-3"><span class="progress-dot"></span>Synthesising insights</div>
-            </div>
-            <div class="results-container" id="resultsContainer"></div>
-          </div>
-        </div>
+      <div class="starter-card" data-prompt="What does a middle-aged adult with family responsibilities look for when choosing a health or beauty product?" data-mode="persona">
+        <div class="starter-card-icon">❤️</div>
+        <div class="starter-card-title">Middle-Aged Adults</div>
+        <div class="starter-card-desc">Established adults with practical needs.</div>
+      </div>
+      <div class="starter-card" data-prompt="How do older consumers aged 60+ approach new digital shopping experiences and loyalty programmes?" data-mode="persona">
+        <div class="starter-card-icon">🧑‍🦳</div>
+        <div class="starter-card-title">Older Consumers</div>
+        <div class="starter-card-desc">Older adults with distinct priorities.</div>
+      </div>
+      <div class="starter-card" data-prompt="Compare how teens, young adults, middle-aged adults, and older consumers each react to a new eco-friendly beauty product range." data-mode="panel">
+        <div class="starter-card-icon">🔬</div>
+        <div class="starter-card-title">Test 4 age groups</div>
+        <div class="starter-card-desc">Compare reactions across generations.</div>
+      </div>
+      <div class="starter-card" data-prompt="Contrast how younger consumers (under 35) versus older consumers (over 50) perceive a premium anti-ageing skincare concept." data-mode="panel">
+        <div class="starter-card-icon">📊</div>
+        <div class="starter-card-title">Compare age groups</div>
+        <div class="starter-card-desc">Contrast younger and older audiences.</div>
       </div>
     </div>
-  </section>
 
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-top">
-        <div>
-          <div class="footer-brand-sup">NUS-ISS</div>
-          <div class="footer-brand">Living Lab &mdash; Consumer Persona Agent</div>
-        </div>
-        <ul class="footer-links">
-          <li><a href="./">Agents Hub</a></li>
-          <li><a href="#modes">Modes</a></li>
-          <li><a href="#agent">Launch Agent</a></li>
-        </ul>
-      </div>
-      <div class="footer-bottom">
-        <span>&copy; 2025 National University of Singapore. All rights reserved.</span>
-        <span>Built by NUS-ISS Living Lab</span>
-      </div>
-    </div>
-  </footer>
+    <!-- Results thread -->
+    <div class="results-area" id="resultsArea"></div>
+
+  </main>
+
+  <div class="footer-note">NUS-ISS Living Lab &mdash; Consumer Persona Agent &nbsp;·&nbsp; Outputs are modelled directional guidance, not primary research.</div>
 
   <script>
-    const revealObserver = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObserver.unobserve(e.target); } });
-    }, { threshold:0.08, rootMargin:'0px 0px -32px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-      link.addEventListener('click', e => {
-        const id = link.getAttribute('href'); if (id === '#') return;
-        const target = document.querySelector(id); if (!target) return;
-        e.preventDefault();
-        window.scrollTo({ top: target.offsetTop - document.querySelector('.nav').offsetHeight, behavior:'smooth' });
-      });
-    });
-
-    (function initDrawer() {
-      const h=document.getElementById('hamburger'),d=document.getElementById('mobileDrawer'),o=document.getElementById('drawerOverlay'),c=document.getElementById('drawerClose');
-      function open(){d.classList.add('open');o.classList.add('open');h.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';c.focus();}
-      function close(){d.classList.remove('open');o.classList.remove('open');h.setAttribute('aria-expanded','false');document.body.style.overflow='';h.focus();}
-      h.addEventListener('click',open);c.addEventListener('click',close);o.addEventListener('click',close);
-      d.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
-      d.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
-    })();
-
-    const dataInput=document.getElementById('dataInput'), charCount=document.getElementById('charCount');
-
-    // ── Attachments (files + images) ──────────────────────────────
+    // ── Attachments ──────────────────────────────────────────────
     const _uploadedDocs = {};
     const _uploadedImages = [];
 
@@ -522,7 +280,7 @@ Example: &quot;I'm launching a plant-based protein snack aimed at busy professio
       const docItems = Object.keys(_uploadedDocs).map((n, i) => ({ n, icon: '📄', key: 'doc_' + i }));
       const imgItems = _uploadedImages.map((img, i) => ({ n: img.name, icon: '🖼️', key: 'img_' + i }));
       c.innerHTML = [...docItems, ...imgItems].map(a =>
-        `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:var(--blue-light,#E8F4FB);border:1px solid #BFDBFE;border-radius:100px;font-size:11px;font-weight:500;color:var(--blue,#1E88C7);">${a.icon} ${a.n.replace(/</g,'&lt;')} <span onclick="_removeAttachment('${a.key}','${a.n.replace(/'/g,'\\\'')}')" style="cursor:pointer;margin-left:2px;font-weight:700;">×</span></span>`
+        `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:var(--blue-light,#E8F4FB);border:1px solid #BFDBFE;border-radius:100px;font-size:11px;font-weight:500;color:var(--blue,#1E88C7);">${a.icon} ${a.n.replace(/</g,'&lt;')} <span onclick="_removeAttachment('${a.key}','${a.n.replace(/'/g,"\\'")}')" style="cursor:pointer;margin-left:2px;font-weight:700;">×</span></span>`
       ).join('');
     }
 
@@ -553,35 +311,45 @@ Example: &quot;I'm launching a plant-based protein snack aimed at busy professio
       });
     });
     // ─────────────────────────────────────────────────────────────
-    dataInput.addEventListener('input',()=>{const l=dataInput.value.length;charCount.textContent=l.toLocaleString()+' character'+(l!==1?'s':'');});
 
-
-    // Mode selector
-    let currentMode='persona';
-    const modeBtns=document.querySelectorAll('.mode-btn');
-    const placeholders = {
-      persona: 'Describe your target consumer and what you want to ask them...\n\nExample: "I\'m targeting health-conscious millennials in Singapore for a new kombucha brand. What would they think about a subscription model with weekly home delivery?"',
-      trend: 'Paste trend data, research notes, or market observations to synthesise...\n\nExample: Paste a trend report, interview findings, or market observations and ask for key themes, implications, and opportunities.',
-      concept: 'Describe the concept you want to test and the target audience...\n\nExample: "Concept: A meal-kit service that uses AI to personalise recipes based on dietary needs and fridge contents. Target: dual-income couples, 28-42, urban Singapore."',
-      panel: 'Describe the stimulus and the audience segments you want to compare...\n\nExample: "Compare reactions to a premium organic baby food line across: first-time parents under 30, experienced parents 35-45, and grandparents who buy for grandchildren."',
-      research: 'Describe what you want to validate and with whom...\n\nExample: "I need a discussion guide for 1-hour interviews with Gen Z consumers about their relationship with fast fashion and sustainability claims."'
-    };
-    modeBtns.forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        modeBtns.forEach(b=>b.classList.remove('active'));
+    // ── Mode selector ──────────────────────────────────────────
+    let currentMode = 'persona';
+    document.querySelectorAll('.mode-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        currentMode=btn.dataset.mode;
-        dataInput.placeholder=placeholders[currentMode]||placeholders.persona;
+        currentMode = btn.dataset.mode;
       });
     });
 
-    const analyzeBtn=document.getElementById('analyzeBtn'),outputEmpty=document.getElementById('outputEmpty'),agentProgress=document.getElementById('agentProgress'),resultsContainer=document.getElementById('resultsContainer'),errorBox=document.getElementById('errorBox'),errorTitle=document.getElementById('errorTitle'),errorDetail=document.getElementById('errorDetail');
+    // ── Send button enable/disable ─────────────────────────────
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    chatInput.addEventListener('input', () => {
+      sendBtn.disabled = chatInput.value.trim().length === 0;
+    });
+    chatInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey && !sendBtn.disabled) { e.preventDefault(); runAgent(chatInput.value.trim()); }
+    });
+    sendBtn.addEventListener('click', () => { if (!sendBtn.disabled) runAgent(chatInput.value.trim()); });
 
-    function setStep(id,state){const el=document.getElementById(id);el.classList.remove('active','done');if(state)el.classList.add(state);}
-    function showError(t,d){errorBox.classList.add('active');errorTitle.textContent=t;errorDetail.textContent=d;}
-    function hideError(){errorBox.classList.remove('active');}
-    function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+    // ── Starter cards ──────────────────────────────────────────
+    document.querySelectorAll('.starter-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const prompt = card.dataset.prompt;
+        const mode = card.dataset.mode;
+        if (mode) {
+          document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
+          const pill = document.querySelector(`.mode-pill[data-mode="${mode}"]`);
+          if (pill) { pill.classList.add('active'); currentMode = mode; }
+        }
+        chatInput.value = prompt;
+        sendBtn.disabled = false;
+        runAgent(prompt);
+      });
+    });
 
+    // ── System prompts ─────────────────────────────────────────
     const MODE_INSTRUCTIONS = {
       persona: 'The user wants PERSONA SIMULATION mode. Generate or adopt a realistic consumer persona matching their description. Respond AS the persona in natural language, then provide analysis of motivations, drivers, barriers, and likely behavior.',
       trend: 'The user wants TREND ANALYSIS mode. Synthesize the provided inputs into actionable trend insights with: key themes, what is driving each trend, consumer implications, brand/product implications, opportunities & risks, and recommended next moves.',
@@ -596,6 +364,8 @@ Your job is to help users explore market shifts, model likely consumer reactions
 
 Treat outputs as modeled directional guidance unless the user provides real research data to analyze.
 
+If the user provides images (slides, screenshots, case material, data), analyze their visual content and use it as the primary input for your response.
+
 ## Persona Modeling Rules
 - Build personas around plausible consumer attributes: life stage, identity, motivations, category behaviors, attitudes, routines, aspirations, and constraints.
 - Include emotional, social, and practical drivers, not just demographics.
@@ -603,234 +373,158 @@ Treat outputs as modeled directional guidance unless the user provides real rese
 - Distinguish between what the persona says and what they are likely to do.
 - Model realistic tradeoffs rather than universally positive or negative reactions.
 
-## Trend Analysis Rules
-- Treat trend inputs as signals to interpret, not facts to exaggerate.
-- Distinguish between observed patterns, inferred implications, and speculative opportunities.
-- Focus on what is changing, why it matters, who it affects, and what action it suggests.
-- Do not fabricate external reports, benchmarks, or citations.
-
-## Concept Testing Criteria
-When evaluating concepts, consider: first impression, clarity, relevance, distinctiveness, trust, perceived value, emotional resonance, practical fit, barriers, likely intent, and improvement opportunities.
-
-## Evidence and Confidence
-- Be explicit that simulated responses are modeled outputs, not substitutes for primary research.
-- Do not present simulated verbatims as real consumer quotes — label them as modeled.
-- When confidence is limited, explain what is missing or uncertain.
-- If the user provides real data, prioritize grounded analysis over speculation.
-
 ## Output Format
-CRITICAL: Return ONLY a raw valid JSON object — absolutely no markdown, no code fences (no ```), no explanation text before or after. Your entire response must start with { and end with }. This applies even when analyzing images or visual content. If you include any text outside the JSON object, the response will fail.
+CRITICAL: Return ONLY a raw valid JSON object — absolutely no markdown, no code fences, no explanation text before or after. Your entire response must start with { and end with }. This applies even when analyzing images or visual content.
 
-### PERSONA mode (Talk to Consumers):
-{
-  "mode": "persona",
-  "summary": "1-2 sentence overview",
-  "sections": [
-    { "title": "Persona Profile", "type": "persona", "persona_name": "First name, age, life stage", "persona_summary": "2-sentence description of who they are", "reaction": "Their natural spoken reaction to the topic — 3-5 sentences in their voice" },
-    { "title": "What Drives Them", "type": "list", "items": ["Driver 1", "Driver 2", "Driver 3"] },
-    { "title": "What Holds Them Back", "type": "list", "items": ["Barrier 1", "Barrier 2"] },
-    { "title": "Says vs. Does", "type": "list", "items": ["Says: X — Does: Y", "Says: A — Does: B"] }
-  ],
-  "confidence": "medium",
-  "caveats": "This is a modeled persona, not a real consumer. Validate with primary research."
-}
+Use EXACTLY this structure for the requested mode:
 
-### TREND mode (Trend Analysis):
-{
-  "mode": "trend",
-  "summary": "1-2 sentence synthesis",
-  "sections": [
-    { "title": "Key Themes", "type": "list", "items": ["Theme 1: explanation", "Theme 2: explanation"] },
-    { "title": "What Is Driving This", "type": "list", "items": ["Driver 1", "Driver 2"] },
-    { "title": "Consumer Implications", "type": "list", "items": ["Implication 1", "Implication 2"] },
-    { "title": "Brand & Product Opportunities", "type": "list", "items": ["Opportunity 1", "Opportunity 2"] },
-    { "title": "Risks to Watch", "type": "list", "items": ["Risk 1", "Risk 2"] },
-    { "title": "Recommended Next Moves", "type": "list", "items": ["Action 1", "Action 2"] }
-  ],
-  "confidence": "medium",
-  "caveats": "Based on modeled synthesis. Validate with primary data sources."
-}
+### PERSONA mode:
+{"mode":"persona","summary":"1-2 sentence overview","sections":[{"title":"Persona Profile","type":"persona","persona_name":"First name, age, life stage","persona_summary":"2-sentence description","reaction":"Their natural spoken reaction — 3-5 sentences in their voice"},{"title":"What Drives Them","type":"list","items":["Driver 1","Driver 2","Driver 3"]},{"title":"What Holds Them Back","type":"list","items":["Barrier 1","Barrier 2"]},{"title":"Says vs. Does","type":"list","items":["Says: X — Does: Y"]}],"confidence":"medium","caveats":"Modelled persona — validate with primary research."}
 
-### CONCEPT mode (Concept Testing):
-{
-  "mode": "concept",
-  "summary": "1-2 sentence verdict",
-  "sections": [
-    { "title": "First Impression", "type": "list", "items": ["Observation 1", "Observation 2"] },
-    { "title": "Appeal & Relevance", "type": "list", "items": ["Strength 1", "Strength 2"] },
-    { "title": "Clarity & Distinctiveness", "type": "list", "items": ["Observation 1", "Observation 2"] },
-    { "title": "Barriers & Risks", "type": "list", "items": ["Barrier 1", "Barrier 2"] },
-    { "title": "Improvement Opportunities", "type": "list", "items": ["Suggestion 1", "Suggestion 2"] },
-    { "title": "Likely Consumer Intent", "type": "list", "items": ["Would/would not buy because...", "Most likely segment: ..."] }
-  ],
-  "confidence": "medium",
-  "caveats": "Modeled evaluation — not a substitute for real concept testing with target consumers."
-}
+### TREND mode:
+{"mode":"trend","summary":"1-2 sentence synthesis","sections":[{"title":"Key Themes","type":"list","items":["Theme 1","Theme 2"]},{"title":"What Is Driving This","type":"list","items":["Driver 1"]},{"title":"Consumer Implications","type":"list","items":["Implication 1"]},{"title":"Brand & Product Opportunities","type":"list","items":["Opportunity 1"]},{"title":"Risks to Watch","type":"list","items":["Risk 1"]},{"title":"Recommended Next Moves","type":"list","items":["Action 1"]}],"confidence":"medium","caveats":"Modelled synthesis."}
 
-### PANEL mode (Panel Comparison):
-{
-  "mode": "panel",
-  "summary": "1-2 sentence overview of what the panel reveals",
-  "sections": [
-    { "title": "Persona 1 Name & Profile", "type": "persona", "persona_name": "Name, age, description", "persona_summary": "2-sentence profile", "reaction": "Their reaction to the stimulus — 3-4 sentences" },
-    { "title": "Persona 2 Name & Profile", "type": "persona", "persona_name": "Name, age, description", "persona_summary": "2-sentence profile", "reaction": "Their reaction — 3-4 sentences" },
-    { "title": "Persona 3 Name & Profile", "type": "persona", "persona_name": "Name, age, description", "persona_summary": "2-sentence profile", "reaction": "Their reaction — 3-4 sentences" },
-    { "title": "Common Patterns", "type": "list", "items": ["Pattern 1", "Pattern 2"] },
-    { "title": "Sharp Differences", "type": "list", "items": ["Difference 1", "Difference 2"] },
-    { "title": "Best-Fit Audience", "type": "list", "items": ["Primary target: explanation", "Secondary target: explanation"] }
-  ],
-  "confidence": "medium",
-  "caveats": "Modeled panel — validate differences with real segmentation research."
-}
+### CONCEPT mode:
+{"mode":"concept","summary":"1-2 sentence verdict","sections":[{"title":"First Impression","type":"list","items":["Observation 1"]},{"title":"Appeal & Relevance","type":"list","items":["Strength 1"]},{"title":"Barriers & Risks","type":"list","items":["Barrier 1"]},{"title":"Improvement Opportunities","type":"list","items":["Suggestion 1"]},{"title":"Likely Consumer Intent","type":"list","items":["Intent 1"]}],"confidence":"medium","caveats":"Modelled evaluation."}
 
-### RESEARCH mode (Research Design):
-{
-  "mode": "research",
-  "summary": "1-2 sentence description of the research instrument",
-  "sections": [
-    { "title": "Research Objectives", "type": "list", "items": ["Objective 1", "Objective 2"] },
-    { "title": "Screening Criteria", "type": "list", "items": ["Criterion 1", "Criterion 2"] },
-    { "title": "Discussion Guide / Survey Questions", "type": "list", "items": ["Q1: Question text", "Q2: Question text", "Q3: Question text"] },
-    { "title": "Probing Questions", "type": "list", "items": ["Probe 1", "Probe 2"] },
-    { "title": "Learning Agenda", "type": "list", "items": ["What to learn 1", "What to learn 2"] }
-  ],
-  "confidence": "high",
-  "caveats": "Adapt questions to your specific context and participant profile."
-}
+### PANEL mode:
+{"mode":"panel","summary":"1-2 sentence overview","sections":[{"title":"Persona 1","type":"persona","persona_name":"Name, age","persona_summary":"2-sentence profile","reaction":"Reaction 3-4 sentences"},{"title":"Persona 2","type":"persona","persona_name":"Name, age","persona_summary":"Profile","reaction":"Reaction"},{"title":"Persona 3","type":"persona","persona_name":"Name, age","persona_summary":"Profile","reaction":"Reaction"},{"title":"Common Patterns","type":"list","items":["Pattern 1"]},{"title":"Sharp Differences","type":"list","items":["Difference 1"]},{"title":"Best-Fit Audience","type":"list","items":["Target 1"]}],"confidence":"medium","caveats":"Modelled panel."}
 
-Rules:
-- Return ONLY valid JSON matching the exact structure above for the requested mode.
-- All items in arrays must be plain strings — never objects.
-- Be specific, insightful, and commercially useful.
-- Avoid generic marketing jargon.`;
+### RESEARCH mode:
+{"mode":"research","summary":"Description","sections":[{"title":"Research Objectives","type":"list","items":["Objective 1"]},{"title":"Screening Criteria","type":"list","items":["Criterion 1"]},{"title":"Discussion Guide","type":"list","items":["Q1: Question"]},{"title":"Learning Agenda","type":"list","items":["Learn 1"]}],"confidence":"high","caveats":"Adapt to your context."}`;
 
-    async function callClaude(systemPrompt, userMessage) {
+    // ── API call ───────────────────────────────────────────────
+    async function callAgent(systemPrompt, userMessage) {
       const _apiKey = localStorage.getItem('openai_api_key') || '';
       if (_apiKey) {
-        const _res = await fetch('https://api.openai.com/v1/chat/completions', {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}` },
-          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 6000, messages: [
+          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 6000, temperature: 0.3, messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: _buildUserContent(userMessage) }
           ]})
         });
-        const _data = await _res.json();
-        if (!_res.ok) throw new Error(_data.error?.message || 'OpenAI API error');
-        return _data.choices[0].message.content;
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || 'OpenAI API error');
+        return data.choices[0].message.content;
       }
       const res = await fetch('/api/chat', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({system:systemPrompt,message:_buildUserContent(userMessage)})
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system: systemPrompt, message: _buildUserContent(userMessage) })
       });
-      const data=await res.json();
-      if(!res.ok) throw new Error(data.error||'API request failed');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API request failed');
       return data.content[0].text;
     }
 
-    function itemText(i){return typeof i==='object'&&i!==null?(i.label||i.title||i.point||i.theme||i.step||Object.values(i).filter(v=>typeof v==='string').join(' — ')||JSON.stringify(i)):String(i||'');}
-
-    function renderResults(parsed){
-      resultsContainer.innerHTML='';
-      const modeColors={persona:'var(--teal)',trend:'var(--blue)',concept:'var(--orange)',panel:'var(--purple)',research:'var(--amber)'};
-      const accent=modeColors[parsed.mode||currentMode]||'var(--teal)';
-
-      if(parsed.summary){
-        const s=document.createElement('div');s.className='result-section';
-        s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:'+accent+'"></span><span class="result-header-title" style="color:'+accent+'">SUMMARY</span></div><div class="result-body"><div class="result-item" style="color:var(--text);font-weight:400;">'+escapeHtml(parsed.summary)+'</div></div>';
-        resultsContainer.appendChild(s);
-      }
-
-      const sections=parsed.sections&&parsed.sections.length?parsed.sections:[];
-
-      // Fallback: if no sections, try to surface any array/string fields at top level
-      if(!sections.length){
-        const skip=new Set(['mode','summary','confidence','caveats','sections']);
-        Object.entries(parsed).forEach(([key,val])=>{
-          if(skip.has(key))return;
-          const s=document.createElement('div');s.className='result-section';
-          let bodyHtml='';
-          if(Array.isArray(val)){
-            bodyHtml=val.map(i=>'<div class="result-item">'+escapeHtml(itemText(i))+'</div>').join('');
-          } else if(typeof val==='string'){
-            bodyHtml='<div class="result-item">'+escapeHtml(val)+'</div>';
-          } else if(typeof val==='object'&&val!==null){
-            bodyHtml=Object.entries(val).map(([k,v])=>'<div class="result-item"><strong>'+escapeHtml(k)+':</strong> '+escapeHtml(String(v))+'</div>').join('');
-          }
-          if(bodyHtml){
-            s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:'+accent+'"></span><span class="result-header-title" style="color:'+accent+'">'+escapeHtml(key.replace(/_/g,' ').toUpperCase())+'</span></div><div class="result-body">'+bodyHtml+'</div>';
-            resultsContainer.appendChild(s);
-          }
-        });
-      }
-
-      sections.forEach(sec=>{
-        const s=document.createElement('div');s.className='result-section';
-        let bodyHtml='';
-        if(sec.type==='persona'){
-          bodyHtml='<div class="result-item"><div class="result-item-title">'+escapeHtml(sec.persona_name||sec.title||'')+'</div><div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-style:italic;">'+escapeHtml(sec.persona_summary||'')+'</div><div style="font-size:13px;color:var(--text);line-height:1.7;">'+escapeHtml(sec.reaction||sec.content||'')+'</div></div>';
-        } else if((sec.type==='list'||sec.type==='comparison')&&sec.items&&sec.items.length){
-          bodyHtml=sec.items.map(i=>{
-            if(typeof i==='object'&&i!==null){
-              const label=i.label||i.title||i.point||i.theme||i.name||'';
-              const value=i.value||i.detail||i.description||i.content||i.finding||'';
-              return '<div class="result-item">'+(label?'<strong>'+escapeHtml(label)+'</strong> ':'')+escapeHtml(value||itemText(i))+'</div>';
-            }
-            return '<div class="result-item">'+escapeHtml(String(i))+'</div>';
-          }).join('');
-        } else {
-          const text=sec.content||sec.text||sec.body||sec.reaction||'';
-          bodyHtml='<div class="result-item">'+escapeHtml(text||itemText(sec))+'</div>';
-        }
-        if(!bodyHtml||bodyHtml==='<div class="result-item"></div>')return;
-        const color=sec.type==='persona'?'var(--teal)':sec.type==='list'?'var(--blue)':sec.type==='comparison'?'var(--orange)':accent;
-        s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:'+color+'"></span><span class="result-header-title" style="color:'+color+'">'+escapeHtml((sec.title||'').toUpperCase())+'</span></div><div class="result-body">'+bodyHtml+'</div>';
-        resultsContainer.appendChild(s);
-      });
-
-      if(parsed.caveats){
-        const s=document.createElement('div');s.className='result-section';
-        s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--amber)"></span><span class="result-header-title" style="color:var(--amber)">CAVEATS &amp; CONFIDENCE: '+escapeHtml((parsed.confidence||'').toUpperCase())+'</span></div><div class="result-body"><div class="result-item">'+escapeHtml(parsed.caveats)+'</div></div>';
-        resultsContainer.appendChild(s);
-      }
-      resultsContainer.classList.add('active');
+    function parseResult(raw) {
+      try { return JSON.parse(raw.trim()); } catch(_) {}
+      const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (fence) { try { return JSON.parse(fence[1].trim()); } catch(_) {} }
+      const m = raw.match(/\{[\s\S]*\}/);
+      if (m) { try { return JSON.parse(m[0]); } catch(_) {} }
+      throw new Error('Could not parse response. Please try again.');
     }
 
-    analyzeBtn.addEventListener('click',async()=>{
-      const inputText=dataInput.value.trim();
-      hideError();
-      if(!inputText||inputText.length<30){showError('Input Too Short','Please provide at least 30 characters describing your scenario.');return;}
+    function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-      outputEmpty.style.display='none';resultsContainer.classList.remove('active');resultsContainer.innerHTML='';
-      agentProgress.classList.add('active');analyzeBtn.classList.add('loading');analyzeBtn.disabled=true;
-      setStep('step-1','active');setStep('step-2','');setStep('step-3','');
+    function renderResultCards(parsed) {
+      const modeColors = { persona:'#1E88C7', trend:'#3B82F6', concept:'#F59E0B', panel:'#4A6F8A', research:'#B7791F' };
+      const accent = modeColors[parsed.mode || currentMode] || '#1E88C7';
+      let html = '';
 
-      try{
-        const t1=setTimeout(()=>{setStep('step-1','done');setStep('step-2','active');},2500);
-        const t2=setTimeout(()=>{setStep('step-2','done');setStep('step-3','active');},5000);
-        const modeInstruction=MODE_INSTRUCTIONS[currentMode]||MODE_INSTRUCTIONS.persona;
-        const imageNote=_uploadedImages.length?'\n\nImages are attached — treat them as the primary source material. Analyze their visual content (text, data, charts, slides, screenshots) and base your response on what you see in the images. Still return ONLY valid JSON in the required format.':'';
-        const result=await callClaude(SYSTEM_PROMPT,modeInstruction+imageNote+'\n\n---\n\nUser input:\n'+inputText);
-        clearTimeout(t1);clearTimeout(t2);
-        setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
-        let parsed;
-        try {
-          // Try 1: whole response is JSON
-          try { parsed = JSON.parse(result.trim()); } catch(_) {
-            // Try 2: strip markdown code fences
-            const fence = result.match(/```(?:json)?\s*([\s\S]*?)```/);
-            if (fence) { try { parsed = JSON.parse(fence[1].trim()); } catch(_){} }
-            // Try 3: extract outermost JSON object
-            if (!parsed) { const m = result.match(/\{[\s\S]*\}/); if (m) parsed = JSON.parse(m[0]); }
-            if (!parsed) throw new Error('No JSON found');
-          }
-        } catch(e) { throw new Error('Failed to parse agent response: ' + e.message); }
-        await new Promise(r=>setTimeout(r,400));
-        agentProgress.classList.remove('active');renderResults(parsed);
-      }catch(err){agentProgress.classList.remove('active');outputEmpty.style.display='none';showError('Analysis Failed',err.message);}
-      finally{analyzeBtn.classList.remove('loading');analyzeBtn.disabled=false;}
-    });
+      if (parsed.summary) {
+        html += `<div class="result-card"><div class="result-card-header"><span class="result-card-dot" style="background:${accent}"></span><span class="result-card-label" style="color:${accent}">Summary</span></div><div class="result-card-body"><div class="result-item" style="color:var(--text);font-weight:400;">${escHtml(parsed.summary)}</div></div></div>`;
+      }
+
+      (parsed.sections || []).forEach(sec => {
+        let body = '';
+        if (sec.type === 'persona') {
+          body = `<div class="result-item"><div class="result-item-title">${escHtml(sec.persona_name || sec.title || '')}</div><div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-style:italic;">${escHtml(sec.persona_summary || '')}</div><div style="font-size:13px;color:var(--text);line-height:1.7;">${escHtml(sec.reaction || '')}</div></div>`;
+        } else if (sec.items && sec.items.length) {
+          body = sec.items.map(i => `<div class="result-item">${escHtml(typeof i === 'string' ? i : JSON.stringify(i))}</div>`).join('');
+        }
+        if (!body) return;
+        const color = sec.type === 'persona' ? '#1E88C7' : sec.type === 'list' ? '#3B82F6' : accent;
+        html += `<div class="result-card"><div class="result-card-header"><span class="result-card-dot" style="background:${color}"></span><span class="result-card-label" style="color:${color}">${escHtml((sec.title || '').toUpperCase())}</span></div><div class="result-card-body">${body}</div></div>`;
+      });
+
+      if (parsed.caveats) {
+        html += `<div class="result-card"><div class="result-card-header"><span class="result-card-dot" style="background:#B7791F"></span><span class="result-card-label" style="color:#B7791F">CAVEATS · ${escHtml((parsed.confidence || '').toUpperCase())}</span></div><div class="result-card-body"><div class="result-item">${escHtml(parsed.caveats)}</div></div></div>`;
+      }
+      return html;
+    }
+
+    // ── Run agent ──────────────────────────────────────────────
+    async function runAgent(inputText) {
+      if (!inputText || inputText.trim().length < 5) return;
+
+      // Hide starters
+      document.getElementById('starterGrid').style.display = 'none';
+
+      const area = document.getElementById('resultsArea');
+      area.classList.add('active');
+
+      // User bubble
+      const hasImages = _uploadedImages.length > 0;
+      const imgNote = hasImages ? ` <span style="font-size:11px;opacity:0.6;">(+ ${_uploadedImages.length} image${_uploadedImages.length > 1 ? 's' : ''})</span>` : '';
+      area.innerHTML += `<div class="msg-user"><div class="msg-user-bubble">${escHtml(inputText)}${imgNote}</div></div>`;
+
+      // Agent progress bubble
+      const agentMsgId = 'agent-msg-' + Date.now();
+      area.innerHTML += `<div class="msg-agent" id="${agentMsgId}">
+        <div class="msg-agent-avatar">👤</div>
+        <div class="msg-agent-body">
+          <div class="progress-wrap">
+            <div class="progress-step active" id="ps1-${agentMsgId}"><span class="progress-dot"></span>Building persona models…</div>
+            <div class="progress-step" id="ps2-${agentMsgId}"><span class="progress-dot"></span>Running simulation &amp; analysis…</div>
+            <div class="progress-step" id="ps3-${agentMsgId}"><span class="progress-dot"></span>Synthesising insights…</div>
+          </div>
+        </div>
+      </div>`;
+      area.scrollTop = area.scrollHeight;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+      // Clear input
+      chatInput.value = '';
+      sendBtn.disabled = true;
+
+      function setPS(id, state) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove('active','done');
+        if (state) el.classList.add(state);
+      }
+
+      try {
+        const t1 = setTimeout(() => { setPS('ps1-'+agentMsgId,'done'); setPS('ps2-'+agentMsgId,'active'); }, 2500);
+        const t2 = setTimeout(() => { setPS('ps2-'+agentMsgId,'done'); setPS('ps3-'+agentMsgId,'active'); }, 5000);
+
+        const imageNote = hasImages ? '\n\nImages are attached — treat them as primary source material. Analyze their visual content (text, data, charts, slides, screenshots) and base your response on what you see. Still return ONLY valid JSON.' : '';
+        const modeInstruction = MODE_INSTRUCTIONS[currentMode] || MODE_INSTRUCTIONS.persona;
+        const result = await callAgent(SYSTEM_PROMPT, modeInstruction + imageNote + '\n\n---\n\nUser input:\n' + inputText);
+
+        clearTimeout(t1); clearTimeout(t2);
+        setPS('ps1-'+agentMsgId,'done'); setPS('ps2-'+agentMsgId,'done'); setPS('ps3-'+agentMsgId,'done');
+
+        await new Promise(r => setTimeout(r, 300));
+
+        const parsed = parseResult(result);
+        const msgEl = document.getElementById(agentMsgId);
+        if (msgEl) {
+          msgEl.querySelector('.msg-agent-body').innerHTML = renderResultCards(parsed);
+        }
+      } catch(err) {
+        const msgEl = document.getElementById(agentMsgId);
+        if (msgEl) {
+          msgEl.querySelector('.msg-agent-body').innerHTML = `<div class="error-card"><div class="error-title">Analysis Failed</div><div class="error-detail">${escHtml(err.message)}</div></div>`;
+        }
+      }
+
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
   </script>
 </body>
 </html>
