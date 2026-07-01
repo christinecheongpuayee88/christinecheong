@@ -325,8 +325,8 @@ Call with client 9 June. Project running 2 weeks behind schedule due to delayed 
       </div>
 
       <div style="margin-top:10px;">
-        <div id="_dropZone" style="border:1.5px dashed var(--border);border-radius:8px;padding:10px 16px;cursor:pointer;transition:border-color 0.2s;background:var(--surface);" onclick="document.getElementById('_fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue,#1E88C7)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="_handleDrop(event)">
-          <span style="font-size:12px;color:var(--text-muted);">📎 Attach files or paste/drop images — <span style="color:var(--blue,#1E88C7);font-weight:600;">click to browse</span></span>
+        <div id="_dropZone" tabindex="0" style="" onclick="document.getElementById('_fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue,#1E88C7)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="_handleDrop(event)">
+          <span style="font-size:12px;color:var(--text-muted);">📎 <span style="color:var(--blue,#1E88C7);font-weight:600;">Click to browse</span> · drag &amp; drop · or <strong>click here then Ctrl+V</strong> to paste an image</span>
           <span style="font-size:11px;color:var(--text-muted);margin-left:8px;">.txt .csv .pdf .md .json or any image</span>
         </div>
         <input id="_fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf,image/*" style="display:none" onchange="_handleFiles(this.files)" />
@@ -531,10 +531,16 @@ Output format:
       return parts;
     }
 
-    document.addEventListener('paste', e => {
-      Array.from(e.clipboardData?.items || []).forEach(item => {
-        if (item.type.startsWith('image/')) { const f = item.getAsFile(); if (f) _handleFiles([f]); }
-      });
+    function _handlePaste(e){
+      const items=Array.from(e.clipboardData?.items||[]);
+      const imgItem=items.find(i=>i.type.startsWith('image/'));
+      if(imgItem){e.preventDefault();const f=imgItem.getAsFile();if(f)_handleFiles([f]);}
+    }
+    document.addEventListener('paste',_handlePaste);
+    document.addEventListener('DOMContentLoaded',()=>{
+      const dz=document.getElementById('_dropZone');
+      if(dz){dz.addEventListener('paste',_handlePaste);dz.addEventListener('focus',()=>dz.style.outline='2px solid var(--blue,#1E88C7)');dz.addEventListener('blur',()=>dz.style.outline='');}
+    });
     });
     // ─────────────────────────────────────────────────────────────
 

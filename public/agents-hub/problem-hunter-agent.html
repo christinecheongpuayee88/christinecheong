@@ -300,9 +300,9 @@
       
       <!-- ── Attachments ── -->
       <div style="margin-top:10px;">
-        <div id="_dropZone" style="border:1.5px dashed var(--border);border-radius:8px;padding:10px 16px;cursor:pointer;transition:border-color 0.2s;background:var(--surface,#F2F2F2);" onclick="document.getElementById('_fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue,#1E88C7)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="_handleDrop(event)">
-          <span style="font-size:12px;color:var(--text-muted,#6B7280);">📎 Attach files or paste / drop images — <span style="color:var(--blue,#1E88C7);font-weight:600;">click to browse</span></span>
-          <span style="font-size:11px;color:var(--text-muted,#6B7280);margin-left:8px;">.txt .csv .pdf .md .json or any image</span>
+        <div id="_dropZone" style="border:1.5px dashed var(--border);border-radius:8px;padding:10px 16px;cursor:pointer;transition:border-color 0.2s;background:var(--surface,#F2F2F2);" tabindex="0" onclick="document.getElementById('_fileInput').click()" onkeydown="if(event.key==='Enter')document.getElementById('_fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue,#1E88C7)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="_handleDrop(event)">
+          <span style="font-size:12px;color:var(--text-muted,#6B7280);">📎 <span style="color:var(--blue,#1E88C7);font-weight:600;">Click to browse</span> · drag &amp; drop · or <strong>click here then Ctrl+V</strong> to paste an image</span>
+          <span style="font-size:11px;color:var(--text-muted,#6B7280);display:block;margin-top:2px;">.txt .csv .pdf .md .json or any image</span>
         </div>
         <input id="_fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf,image/*" style="display:none" onchange="_handleFiles(this.files)" />
         <div id="_attachList" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;"></div>
@@ -378,7 +378,16 @@ ATTACHED DOCUMENTS:
 ')+'
 ===';}
     function _buildUserContent(text){const fullText=_buildDocContext(text);if(!_uploadedImages.length)return fullText;const parts=[{type:'text',text:fullText}];_uploadedImages.forEach(img=>parts.push({type:'image_url',image_url:{url:img.dataUrl}}));return parts;}
-    document.addEventListener('paste',e=>{Array.from(e.clipboardData?.items||[]).forEach(item=>{if(item.type.startsWith('image/')){const f=item.getAsFile();if(f)_handleFiles([f]);}});});
+    function _handlePaste(e){
+      const items=Array.from(e.clipboardData?.items||[]);
+      const imgItem=items.find(i=>i.type.startsWith('image/'));
+      if(imgItem){e.preventDefault();const f=imgItem.getAsFile();if(f)_handleFiles([f]);}
+    }
+    document.addEventListener('paste',_handlePaste);
+    document.addEventListener('DOMContentLoaded',()=>{
+      const dz=document.getElementById('_dropZone');
+      if(dz){dz.addEventListener('paste',_handlePaste);dz.addEventListener('focus',()=>dz.style.outline='2px solid var(--blue,#1E88C7)');dz.addEventListener('blur',()=>dz.style.outline='');}
+    });
 
     const SYSTEM = `You are the Problem Hunter Agent — a multi-perspective diagnostic system. You deploy five specialist analytical personas to interrogate any brief or problem statement and surface what is really going on beneath what has been stated.
 
