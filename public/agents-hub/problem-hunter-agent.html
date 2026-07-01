@@ -369,7 +369,7 @@
     function _buildDocContext(base){const docs=Object.entries(_uploadedDocs);if(!docs.length)return base;return base+'
 
 ===
-ATTACHED DOCUMENTS:
+ATTACHED DOCUMENTS (treat as primary source material — cite by filename):
 
 '+docs.map(([n,c])=>('--- '+n+' ---
 '+c.slice(0,8000)+'
