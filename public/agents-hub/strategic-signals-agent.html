@@ -1640,8 +1640,8 @@ Tip: The more detailed your input, the richer the analysis."
       const _apiKey = localStorage.getItem('openai_api_key') || '';
       if (_apiKey) {
         const _msgs = [];
-        if (system) _msgs.push({ role: 'system', content: system });
-        _msgs.push({ role: 'user', content: _buildUserContent(message) });
+        if (systemPrompt) _msgs.push({ role: 'system', content: systemPrompt });
+        _msgs.push({ role: 'user', content: _buildUserContent(userMessage) });
         const _res = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}`},
@@ -1654,7 +1654,7 @@ Tip: The more detailed your input, the richer the analysis."
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: systemPrompt, message: userMessage })
+        body: JSON.stringify({ system: systemPrompt, message: _buildDocContext(userMessage) })
       });
 
       const data = await res.json();

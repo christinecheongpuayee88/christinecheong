@@ -616,7 +616,7 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
         // Call OpenAI directly from browser using pasted key
         const messages = [];
         if (system) messages.push({ role: 'system', content: system });
-        messages.push({ role: 'user', content: message });
+        messages.push({ role: 'user', content: _buildUserContent(message) });
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -631,7 +631,7 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system, message, max_tokens: 8192 })
+        body: JSON.stringify({ system, message: _buildDocContext(message), max_tokens: 8192 })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'API request failed');

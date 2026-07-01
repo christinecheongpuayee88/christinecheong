@@ -642,7 +642,7 @@ Output format:
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system, message, max_tokens: 4096 })
+        body: JSON.stringify({ system, message: _buildDocContext(message), max_tokens: 4096 })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'API request failed');

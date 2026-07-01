@@ -466,7 +466,7 @@ Output format:
     async function callClaude(system, message) {
       const _apiKey = localStorage.getItem('openai_api_key') || '';
       if (_apiKey) {
-        const _msgs = [{ role: 'system', content: system }, { role: 'user', content: message }];
+        const _msgs = [{ role: 'system', content: system }, { role: 'user', content: _buildUserContent(message) }];
         const _res = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}` },
@@ -479,7 +479,7 @@ Output format:
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system, message, max_tokens: 6000 })
+        body: JSON.stringify({ system, message: _buildDocContext(message), max_tokens: 6000 })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'API request failed');
