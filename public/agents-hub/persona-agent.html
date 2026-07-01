@@ -546,32 +546,90 @@ When evaluating concepts, consider: first impression, clarity, relevance, distin
 - If the user provides real data, prioritize grounded analysis over speculation.
 
 ## Output Format
-Respond in valid JSON matching the requested mode. Structure:
+Return ONLY valid JSON — no markdown, no code fences, no extra text. Use EXACTLY the structure for the requested mode:
 
+### PERSONA mode (Talk to Consumers):
 {
-  "mode": "persona|trend|concept|panel|research",
-  "summary": "1-2 sentence overview of the analysis",
+  "mode": "persona",
+  "summary": "1-2 sentence overview",
   "sections": [
-    {
-      "title": "Section heading",
-      "type": "text|list|persona|comparison",
-      "content": "Text content for text type",
-      "items": ["Item 1", "Item 2"],
-      "persona_name": "Name (for persona type)",
-      "persona_summary": "Brief persona description",
-      "reaction": "Their response"
-    }
+    { "title": "Persona Profile", "type": "persona", "persona_name": "First name, age, life stage", "persona_summary": "2-sentence description of who they are", "reaction": "Their natural spoken reaction to the topic — 3-5 sentences in their voice" },
+    { "title": "What Drives Them", "type": "list", "items": ["Driver 1", "Driver 2", "Driver 3"] },
+    { "title": "What Holds Them Back", "type": "list", "items": ["Barrier 1", "Barrier 2"] },
+    { "title": "Says vs. Does", "type": "list", "items": ["Says: X — Does: Y", "Says: A — Does: B"] }
   ],
-  "confidence": "high|medium|low",
-  "caveats": "What is modeled vs. evidence-based, what is missing"
+  "confidence": "medium",
+  "caveats": "This is a modeled persona, not a real consumer. Validate with primary research."
+}
+
+### TREND mode (Trend Analysis):
+{
+  "mode": "trend",
+  "summary": "1-2 sentence synthesis",
+  "sections": [
+    { "title": "Key Themes", "type": "list", "items": ["Theme 1: explanation", "Theme 2: explanation"] },
+    { "title": "What Is Driving This", "type": "list", "items": ["Driver 1", "Driver 2"] },
+    { "title": "Consumer Implications", "type": "list", "items": ["Implication 1", "Implication 2"] },
+    { "title": "Brand & Product Opportunities", "type": "list", "items": ["Opportunity 1", "Opportunity 2"] },
+    { "title": "Risks to Watch", "type": "list", "items": ["Risk 1", "Risk 2"] },
+    { "title": "Recommended Next Moves", "type": "list", "items": ["Action 1", "Action 2"] }
+  ],
+  "confidence": "medium",
+  "caveats": "Based on modeled synthesis. Validate with primary data sources."
+}
+
+### CONCEPT mode (Concept Testing):
+{
+  "mode": "concept",
+  "summary": "1-2 sentence verdict",
+  "sections": [
+    { "title": "First Impression", "type": "list", "items": ["Observation 1", "Observation 2"] },
+    { "title": "Appeal & Relevance", "type": "list", "items": ["Strength 1", "Strength 2"] },
+    { "title": "Clarity & Distinctiveness", "type": "list", "items": ["Observation 1", "Observation 2"] },
+    { "title": "Barriers & Risks", "type": "list", "items": ["Barrier 1", "Barrier 2"] },
+    { "title": "Improvement Opportunities", "type": "list", "items": ["Suggestion 1", "Suggestion 2"] },
+    { "title": "Likely Consumer Intent", "type": "list", "items": ["Would/would not buy because...", "Most likely segment: ..."] }
+  ],
+  "confidence": "medium",
+  "caveats": "Modeled evaluation — not a substitute for real concept testing with target consumers."
+}
+
+### PANEL mode (Panel Comparison):
+{
+  "mode": "panel",
+  "summary": "1-2 sentence overview of what the panel reveals",
+  "sections": [
+    { "title": "Persona 1 Name & Profile", "type": "persona", "persona_name": "Name, age, description", "persona_summary": "2-sentence profile", "reaction": "Their reaction to the stimulus — 3-4 sentences" },
+    { "title": "Persona 2 Name & Profile", "type": "persona", "persona_name": "Name, age, description", "persona_summary": "2-sentence profile", "reaction": "Their reaction — 3-4 sentences" },
+    { "title": "Persona 3 Name & Profile", "type": "persona", "persona_name": "Name, age, description", "persona_summary": "2-sentence profile", "reaction": "Their reaction — 3-4 sentences" },
+    { "title": "Common Patterns", "type": "list", "items": ["Pattern 1", "Pattern 2"] },
+    { "title": "Sharp Differences", "type": "list", "items": ["Difference 1", "Difference 2"] },
+    { "title": "Best-Fit Audience", "type": "list", "items": ["Primary target: explanation", "Secondary target: explanation"] }
+  ],
+  "confidence": "medium",
+  "caveats": "Modeled panel — validate differences with real segmentation research."
+}
+
+### RESEARCH mode (Research Design):
+{
+  "mode": "research",
+  "summary": "1-2 sentence description of the research instrument",
+  "sections": [
+    { "title": "Research Objectives", "type": "list", "items": ["Objective 1", "Objective 2"] },
+    { "title": "Screening Criteria", "type": "list", "items": ["Criterion 1", "Criterion 2"] },
+    { "title": "Discussion Guide / Survey Questions", "type": "list", "items": ["Q1: Question text", "Q2: Question text", "Q3: Question text"] },
+    { "title": "Probing Questions", "type": "list", "items": ["Probe 1", "Probe 2"] },
+    { "title": "Learning Agenda", "type": "list", "items": ["What to learn 1", "What to learn 2"] }
+  ],
+  "confidence": "high",
+  "caveats": "Adapt questions to your specific context and participant profile."
 }
 
 Rules:
-- Return ONLY valid JSON.
-- Be concise, insightful, and commercially useful.
-- Prefer specific observations over abstract marketing jargon.
-- Make outputs actionable for product, insights, and marketing teams.
-- Keep personas meaningfully distinct when multiple are involved.`;
+- Return ONLY valid JSON matching the exact structure above for the requested mode.
+- All items in arrays must be plain strings — never objects.
+- Be specific, insightful, and commercially useful.
+- Avoid generic marketing jargon.`;
 
     async function callClaude(systemPrompt, userMessage) {
       const res = await fetch('/api/chat', {
