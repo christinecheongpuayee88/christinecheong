@@ -324,6 +324,14 @@ Call with client 9 June. Project running 2 weeks behind schedule due to delayed 
         <input class="input-field" id="context" placeholder="e.g. Recurring weekly update — last week we flagged the asset delay risk. Audience has no technical background." />
       </div>
 
+      <div style="margin-top:10px;">
+        <div id="_dropZone" style="border:1.5px dashed var(--border);border-radius:8px;padding:10px 16px;cursor:pointer;transition:border-color 0.2s;background:var(--surface);" onclick="document.getElementById('_fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue,#1E88C7)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="_handleDrop(event)">
+          <span style="font-size:12px;color:var(--text-muted);">📎 Attach files or paste/drop images — <span style="color:var(--blue,#1E88C7);font-weight:600;">click to browse</span></span>
+          <span style="font-size:11px;color:var(--text-muted);margin-left:8px;">.txt .csv .pdf .md .json or any image</span>
+        </div>
+        <input id="_fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf,image/*" style="display:none" onchange="_handleFiles(this.files)" />
+        <div id="_attachList" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;"></div>
+      </div>
       <div class="input-footer">
         <span style="font-size:12px;color:var(--text-muted)">Agent follows a 7-step workflow — facts separated from decisions, actions sharpened with owners and deadlines</span>
         <button class="run-btn" id="runBtn" disabled>
@@ -466,12 +474,76 @@ Output format:
       }
     });
 
+
+    // ── Attachments (files + images) ──────────────────────────────
+    const _uploadedDocs = {};
+    const _uploadedImages = [];
+
+    function _handleDrop(e) {
+      e.preventDefault();
+      const dz = document.getElementById('_dropZone');
+      if (dz) dz.style.borderColor = 'var(--border)';
+      _handleFiles(e.dataTransfer.files);
+    }
+
+    function _handleFiles(files) {
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const r = new FileReader();
+          r.onload = ev => { _uploadedImages.push({ name: file.name, dataUrl: ev.target.result }); _renderAttachments(); };
+          r.readAsDataURL(file);
+        } else {
+          const r = new FileReader();
+          r.onload = ev => { _uploadedDocs[file.name] = ev.target.result; _renderAttachments(); };
+          r.readAsText(file);
+        }
+      });
+    }
+
+    function _renderAttachments() {
+      const c = document.getElementById('_attachList');
+      if (!c) return;
+      const docItems = Object.keys(_uploadedDocs).map((n, i) => ({ n, icon: '📄', key: 'doc_' + i }));
+      const imgItems = _uploadedImages.map((img, i) => ({ n: img.name, icon: '🖼️', key: 'img_' + i }));
+      c.innerHTML = [...docItems, ...imgItems].map(a =>
+        `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:var(--blue-light,#E8F4FB);border:1px solid #BFDBFE;border-radius:100px;font-size:11px;font-weight:500;color:var(--blue,#1E88C7);">${a.icon} ${a.n.replace(/</g,'&lt;')} <span onclick="_removeAttachment('${a.key}','${a.n.replace(/'/g,'\\\'')}')" style="cursor:pointer;margin-left:2px;font-weight:700;">×</span></span>`
+      ).join('');
+    }
+
+    function _removeAttachment(key, name) {
+      if (key.startsWith('doc_')) delete _uploadedDocs[name];
+      else { const i = parseInt(key.replace('img_','')); if (!isNaN(i)) _uploadedImages.splice(i, 1); }
+      _renderAttachments();
+    }
+
+    function _buildDocContext(base) {
+      const docs = Object.entries(_uploadedDocs);
+      if (!docs.length) return base;
+      return base + '\n\n===\nATTACHED DOCUMENTS (treat as primary source material — cite by filename):\n\n' +
+        docs.map(([n, c]) => `--- ${n} ---\n${c.slice(0, 8000)}\n--- END: ${n} ---`).join('\n\n') + '\n===';
+    }
+
+    function _buildUserContent(text) {
+      const fullText = _buildDocContext(text);
+      if (!_uploadedImages.length) return fullText;
+      const parts = [{ type: 'text', text: fullText }];
+      _uploadedImages.forEach(img => parts.push({ type: 'image_url', image_url: { url: img.dataUrl } }));
+      return parts;
+    }
+
+    document.addEventListener('paste', e => {
+      Array.from(e.clipboardData?.items || []).forEach(item => {
+        if (item.type.startsWith('image/')) { const f = item.getAsFile(); if (f) _handleFiles([f]); }
+      });
+    });
+    // ─────────────────────────────────────────────────────────────
+
     async function callClaude(system, message) {
       const _apiKey = localStorage.getItem('openai_api_key') || '';
       if (_apiKey) {
         const _msgs = [];
-        if (system || systemPrompt) _msgs.push({ role: 'system', content: system || systemPrompt });
-        _msgs.push({ role: 'user', content: message || userMessage });
+        if (system) _msgs.push({ role: 'system', content: system });
+        _msgs.push({ role: 'user', content: _buildUserContent(message) });
         const _res = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}`},
