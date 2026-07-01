@@ -369,13 +369,15 @@
     function _buildDocContext(base){const docs=Object.entries(_uploadedDocs);if(!docs.length)return base;return base+'\n\n===\nATTACHED DOCUMENTS (treat as primary source material — cite by filename):\n\n'+docs.map(([n,c])=>'--- '+n+' ---\n'+c.slice(0,8000)+'\n--- END: '+n+' ---').join('\n\n')+'\n===';}
     function _buildUserContent(text){const fullText=_buildDocContext(text);if(!_uploadedImages.length)return fullText;const parts=[{type:'text',text:fullText}];_uploadedImages.forEach(img=>parts.push({type:'image_url',image_url:{url:img.dataUrl}}));return parts;}
     function _handlePaste(e){
-      // Don't intercept pastes into text inputs — let the textarea handle it normally
-      if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
       const items=Array.from(e.clipboardData?.items||[]);
       const imgItem=items.find(i=>i.type.startsWith('image/'));
-      if(imgItem){e.preventDefault();const f=imgItem.getAsFile();if(f)_handleFiles([f]);}
+      if(imgItem){
+        const f=imgItem.getAsFile();
+        if(f)_handleFiles([f]);
+        // Only block default if NOT in a text field (textareas can't receive images anyway)
+        if(e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='INPUT')e.preventDefault();
+      }
     }
-    // Global handler (skips text inputs above); also attach directly to drop zone
     document.addEventListener('paste',_handlePaste);
     const _dz=document.getElementById('_dropZone');
     if(_dz){
