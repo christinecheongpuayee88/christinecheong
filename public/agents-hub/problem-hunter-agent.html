@@ -309,7 +309,7 @@
       </div>
 <div class="input-footer">
         <span style="font-size:12px;color:var(--text-muted)">Five specialist agents interrogate your brief simultaneously — no assumption is safe</span>
-        <button class="run-btn" id="runBtn" disabled>
+        <button class="run-btn" id="runBtn">
           <span>🔎</span>
           <span>Hunt the Problem</span>
         </button>
@@ -438,15 +438,16 @@ Output format:
     const contextEl  = document.getElementById('context');
     const runBtn     = document.getElementById('runBtn');
 
-    function checkReady() {
-      runBtn.disabled = briefEl.value.trim().length < 20;
-    }
-    [briefEl, industryEl, stakesEl, contextEl].forEach(el => el.addEventListener('input', checkReady));
-
     let currentOutput = null;
     let phaseInterval;
 
     runBtn.addEventListener('click', async () => {
+      if (briefEl.value.trim().length < 10) {
+        briefEl.focus();
+        briefEl.style.borderColor = 'var(--red, #C0392B)';
+        setTimeout(() => briefEl.style.borderColor = '', 2000);
+        return;
+      }
       const message = [
         `Brief / Problem Statement:\n${briefEl.value.trim()}`,
         industryEl.value.trim() ? `Industry / Context: ${industryEl.value.trim()}` : '',
