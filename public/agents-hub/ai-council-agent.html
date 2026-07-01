@@ -208,19 +208,22 @@
     .customise-section-label { font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--slate); display:flex; align-items:center; gap:8px; }
     .customise-section-label::before { content:''; width:14px; height:2px; background:var(--slate); }
     .customise-section-hint { font-size:11px; color:var(--text-muted); }
-    .customise-row { display:grid; grid-template-columns:auto 1fr 1fr; gap:10px; align-items:center; margin-bottom:8px; }
+    .customise-row { display:grid; grid-template-columns:auto 160px 1fr 1fr; gap:10px; align-items:center; margin-bottom:8px; }
     .customise-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
     .customise-field { padding:9px 12px; font-family:var(--font-body); font-size:12px; font-weight:500; color:var(--text); background:var(--bg); border:1.5px solid var(--border); border-radius:6px; outline:none; width:100%; transition:border-color 0.2s; }
     .customise-field:focus { border-color:var(--slate); }
     .customise-field.name-field { font-weight:600; }
-    .customise-col-labels { display:grid; grid-template-columns:auto 1fr 1fr; gap:10px; align-items:center; margin-bottom:4px; padding:0 0 4px; }
+    .customise-select { padding:9px 10px; font-family:var(--font-body); font-size:11px; font-weight:500; color:var(--text-muted); background:var(--slate-light); border:1.5px solid var(--border); border-radius:6px; outline:none; width:100%; cursor:pointer; transition:border-color 0.2s; }
+    .customise-select:focus { border-color:var(--slate); }
+    .customise-col-labels { display:grid; grid-template-columns:auto 160px 1fr 1fr; gap:10px; align-items:center; margin-bottom:4px; padding:0 0 4px; }
     .customise-col-label { font-size:10px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
     .customise-col-label:first-child { width:10px; }
     .customise-footer { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
     .customise-reset { font-size:11px; font-weight:500; color:var(--text-muted); background:none; border:none; cursor:pointer; padding:4px 0; text-decoration:underline; text-underline-offset:2px; }
     .customise-reset:hover { color:var(--navy); }
     .customise-divider { height:1px; background:var(--border); margin:24px 0; }
-    @media (max-width:680px) { .customise-row { grid-template-columns:auto 1fr; } .customise-row .customise-field:last-child { grid-column:2; } .customise-col-labels { grid-template-columns:auto 1fr; } .customise-col-labels .customise-col-label:last-child { display:none; } }
+    @media (max-width:900px) { .customise-row { grid-template-columns:auto 1fr 1fr; } .customise-row .customise-select { grid-column:2; grid-row:1; } .customise-row .customise-field.name-field { grid-column:2; grid-row:2; } .customise-row .customise-field:last-child { grid-column:3; grid-row:2; } .customise-col-labels { grid-template-columns:auto 1fr 1fr; } }
+    @media (max-width:680px) { .customise-row { grid-template-columns:auto 1fr; } .customise-row .customise-select { grid-column:2; } .customise-row .customise-field { grid-column:2; } .customise-col-labels { grid-template-columns:auto 1fr; } .customise-col-labels .customise-col-label:nth-child(n+3) { display:none; } }
 
     .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
 
@@ -333,36 +336,42 @@
         </div>
         <div class="customise-col-labels">
           <div class="customise-col-label"></div>
+          <div class="customise-col-label">Pick a known figure</div>
           <div class="customise-col-label">Advisor name</div>
-          <div class="customise-col-label">Their focus / thinking lens</div>
+          <div class="customise-col-label">Their thinking lens</div>
         </div>
         <div class="customise-row">
           <div class="customise-dot" style="background:#DC2626"></div>
-          <input class="customise-field name-field" id="adv1name" placeholder="e.g. The Skeptic, The CFO, The Customer…" />
+          <select class="customise-select" id="adv1pick" onchange="applyPick(0)"><option value="">— or pick a known figure —</option></select>
+          <input class="customise-field name-field" id="adv1name" placeholder="e.g. The Skeptic, The CFO…" />
           <input class="customise-field" id="adv1role" placeholder="e.g. Finds risks and fatal flaws" />
         </div>
         <div class="customise-row">
           <div class="customise-dot" style="background:#2563EB"></div>
+          <select class="customise-select" id="adv2pick" onchange="applyPick(1)"><option value="">— or pick a known figure —</option></select>
           <input class="customise-field name-field" id="adv2name" placeholder="e.g. The Strategist, The Engineer…" />
-          <input class="customise-field" id="adv2role" placeholder="e.g. Challenges assumptions, reframes problems" />
+          <input class="customise-field" id="adv2role" placeholder="e.g. Challenges assumptions, reframes" />
         </div>
         <div class="customise-row">
           <div class="customise-dot" style="background:#059669"></div>
+          <select class="customise-select" id="adv3pick" onchange="applyPick(2)"><option value="">— or pick a known figure —</option></select>
           <input class="customise-field name-field" id="adv3name" placeholder="e.g. The Optimist, The Growth Lead…" />
           <input class="customise-field" id="adv3role" placeholder="e.g. Finds hidden upside and opportunity" />
         </div>
         <div class="customise-row">
           <div class="customise-dot" style="background:#7C3AED"></div>
+          <select class="customise-select" id="adv4pick" onchange="applyPick(3)"><option value="">— or pick a known figure —</option></select>
           <input class="customise-field name-field" id="adv4name" placeholder="e.g. The Outsider, The Investor…" />
           <input class="customise-field" id="adv4role" placeholder="e.g. External perspective, what insiders miss" />
         </div>
         <div class="customise-row">
           <div class="customise-dot" style="background:#D97706"></div>
-          <input class="customise-field name-field" id="adv5name" placeholder="e.g. The Operator, The PM, The Frontline…" />
+          <select class="customise-select" id="adv5pick" onchange="applyPick(4)"><option value="">— or pick a known figure —</option></select>
+          <input class="customise-field name-field" id="adv5name" placeholder="e.g. The Operator, The PM…" />
           <input class="customise-field" id="adv5role" placeholder="e.g. Execution focus, real-world constraints" />
         </div>
         <div class="customise-footer">
-          <span style="font-size:11px;color:var(--text-muted)">Leave any row blank to use a default advisor for that seat</span>
+          <span style="font-size:11px;color:var(--text-muted)">Pick a known figure to channel their real frameworks — or type any custom advisor</span>
           <button class="customise-reset" id="resetAdvisors">↺ Use defaults</button>
         </div>
       </div>
@@ -457,36 +466,92 @@ Examples:
     const contextEl  = document.getElementById('context');
     const runBtn     = document.getElementById('runBtn');
 
-    const DEFAULTS = [
-      { name: 'The Well-Intended Skeptic',     role: 'Finds fatal flaws, real risks, what could go badly wrong' },
-      { name: 'The First Principles Architect', role: 'Strips to root causes, challenges premises, reframes the problem' },
-      { name: 'The Upside Hunter',              role: 'Finds hidden leverage, bigger plays, upside being missed' },
-      { name: 'The Unattached Outsider',        role: 'External lens, what insiders miss, what a stranger sees' },
-      { name: 'The Operator',                   role: 'Execution focus, what happens Monday, real constraints' },
+    const KNOWN_ADVISORS = [
+      { id:'munger',       name:'Charlie Munger',       role:'Apply a mental models lattice across disciplines; use inversion (what could go wrong?); avoid stupidity rather than seek brilliance; think in second and third-order effects' },
+      { id:'buffett',      name:'Warren Buffett',        role:'Stay within circle of competence; look for durable competitive moats; prioritise long-term compounding over short-term gains; temperament beats intellect' },
+      { id:'dalio',        name:'Ray Dalio',             role:'Seek radical transparency; weight beliefs by the believability of their source; embrace pain + reflection = progress; diagnose root causes, not symptoms' },
+      { id:'bezos',        name:'Jeff Bezos',            role:'Work backwards from the customer; think in decades not quarters; use the regret minimisation framework; maintain Day 1 intensity; separate Type 1 (irreversible) from Type 2 (reversible) decisions' },
+      { id:'jobs',         name:'Steve Jobs',            role:'Say no to almost everything; obsess over simplicity and taste; 10x better, not 10% better; control the full experience; the customer does not always know what they want' },
+      { id:'taleb',        name:'Nassim Taleb',          role:'Design for antifragility, not just robustness; skin in the game changes behaviour; beware of prediction — build for optionality; via negativa: what to remove, not what to add; black swans break models' },
+      { id:'drucker',      name:'Peter Drucker',         role:'What business are you really in? Management by objectives and self-control; effectiveness over efficiency; the purpose of a business is to create a customer; abandon yesterday' },
+      { id:'porter',       name:'Michael Porter',        role:'Analyse the five competitive forces; sustainable advantage comes from strategic positioning, not operational excellence; differentiation and cost leadership rarely coexist; activity systems create defensibility' },
+      { id:'thiel',        name:'Peter Thiel',           role:'What important truth do very few people agree with you on? Build a monopoly, not a competitive market; go from 0 to 1, not 1 to n; definite optimism over indefinite hedging; the best plan beats the market' },
+      { id:'andreessen',   name:'Marc Andreessen',       role:'Product-market fit is the only thing that matters early; software eats every industry eventually; strong founder beats hired management; technology solves human problems at scale' },
+      { id:'grove',        name:'Andy Grove',            role:'Only the paranoid survive; identify strategic inflection points before they hit; OKRs create clarity and alignment; management is output, not activity; confront brutal facts early' },
+      { id:'horowitz',     name:'Ben Horowitz',          role:'Wartime CEO vs peacetime CEO require opposite skills; take care of the people, the products, and the profits — in that order; hard things have no formula; confronting reality is a leadership skill' },
+      { id:'christensen',  name:'Clayton Christensen',   role:'Disruption comes from below, not from the top; jobs-to-be-done: what is the customer really hiring this for? The innovator\'s dilemma — incumbents rationally ignore disruptors; watch the resource allocation process' },
+      { id:'suntzu',       name:'Sun Tzu',               role:'Win before fighting; know yourself and your enemy; position before action; the best strategy makes the outcome inevitable in advance; deception, terrain, timing, and concentration of force' },
+      { id:'godin',        name:'Seth Godin',            role:'Be the purple cow — remarkable or invisible; permission marketing beats interruption; lead a tribe; the dip separates winners from quitters; ship — imperfect work beats perfect inaction' },
+      { id:'welch',        name:'Jack Welch',            role:'Face reality as it is, not as you wish it were; differentiate: develop stars, manage the middle, remove underperformers; control your destiny or someone else will; simplicity and speed win' },
     ];
+
+    const DEFAULTS = [
+      { name: 'The Well-Intended Skeptic',      role: 'Finds fatal flaws, real risks, what could go badly wrong' },
+      { name: 'The First Principles Architect',  role: 'Strips to root causes, challenges premises, reframes the problem' },
+      { name: 'The Upside Hunter',               role: 'Finds hidden leverage, bigger plays, upside being missed' },
+      { name: 'The Unattached Outsider',         role: 'External lens, what insiders miss, what a stranger sees' },
+      { name: 'The Operator',                    role: 'Execution focus, what happens Monday, real constraints' },
+    ];
+
+    // Populate all dropdowns with the known advisor roster
+    (function populateDropdowns() {
+      for (let i = 1; i <= 5; i++) {
+        const sel = document.getElementById(`adv${i}pick`);
+        KNOWN_ADVISORS.forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.id;
+          opt.textContent = a.name;
+          sel.appendChild(opt);
+        });
+      }
+    })();
+
+    function applyPick(idx) {
+      const sel = document.getElementById(`adv${idx+1}pick`);
+      const picked = KNOWN_ADVISORS.find(a => a.id === sel.value);
+      if (picked) {
+        document.getElementById(`adv${idx+1}name`).value = picked.name;
+        document.getElementById(`adv${idx+1}role`).value = picked.role;
+      }
+    }
+
     document.getElementById('resetAdvisors').addEventListener('click', () => {
-      DEFAULTS.forEach((d, i) => {
-        document.getElementById(`adv${i+1}name`).value = d.name;
-        document.getElementById(`adv${i+1}role`).value = d.role;
-      });
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById(`adv${i}pick`).value = '';
+        document.getElementById(`adv${i}name`).value = '';
+        document.getElementById(`adv${i}role`).value = '';
+      }
     });
 
     function getAdvisors() {
-      return DEFAULTS.map((_, i) => ({
-        name: document.getElementById(`adv${i+1}name`).value.trim() || DEFAULTS[i].name,
-        role: document.getElementById(`adv${i+1}role`).value.trim() || DEFAULTS[i].role,
-      }));
+      return DEFAULTS.map((def, i) => {
+        const pickSel = document.getElementById(`adv${i+1}pick`);
+        const knownId = pickSel ? pickSel.value : '';
+        const known   = KNOWN_ADVISORS.find(a => a.id === knownId) || null;
+        return {
+          name:    document.getElementById(`adv${i+1}name`).value.trim() || (known ? known.name : def.name),
+          role:    document.getElementById(`adv${i+1}role`).value.trim() || (known ? known.role : def.role),
+          knownId: knownId || null,
+        };
+      });
     }
 
     function buildSystem(advisors) {
       const keys = ['skeptic','architect','hunter','outsider','operator'];
-      const advisorDefs = advisors.map((a, i) => `    "${keys[i]}": {
+      const advisorDefs = advisors.map((a, i) => {
+        const voiceNote = a.knownId
+          ? `Channel ${a.name}'s actual documented thinking: apply their real frameworks, mental models, and known positions as established in their books, interviews, and public record. Speak in their voice. Be specific to their intellectual tradition.`
+          : `${a.role}`;
+        return `    "${keys[i]}": {
       "name": "${a.name}",
-      "response": "Full 200-300 word response from ${a.name}'s lens: ${a.role}",
-      "inversion": "Assume the user followed this advice and it failed 6 months later. 1) Most likely cause of failure. 2) What to avoid. 3) Warning sign to watch for."
-    }`).join(',\n');
+      "response": "200-300 word response. ${voiceNote} Apply this lens directly to the specific decision presented.",
+      "inversion": "Assume the decision was made and failed 6 months later. As ${a.name}: 1) Most likely cause of failure. 2) The thing to avoid. 3) The early warning sign to watch."
+    }`;
+      }).join(',\n');
 
       return `You are the Imperial AI Advisory Council orchestrator. You run a structured multi-advisor decision session.
+
+Some advisors are real historical figures — when they are, you must channel their actual documented intellectual frameworks, vocabulary, and known positions as established in their published works and public record. Do not produce generic advice in their name; apply their real, specific thinking to this decision.
 
 Output valid JSON only — no prose before or after. The JSON must be complete and valid.
 
@@ -508,7 +573,7 @@ ${advisorDefs}
   }
 }
 
-CRITICAL: Never let all advisors agree. Each must represent their lens fully even if it creates conflict. Be specific to the actual decision described. No generic advice.`;
+CRITICAL: Never let all advisors agree. Each must represent their lens fully even if it creates conflict. Be specific to the actual decision described. No generic advice. When a real figure is used, their response must be unmistakably theirs — quoting their frameworks by name if applicable.`;
     }
 
     function checkReady() {
