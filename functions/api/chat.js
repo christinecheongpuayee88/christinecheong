@@ -53,11 +53,23 @@ export async function onRequestPost(context) {
       urlContext = "\n\nWEB REFERENCES (fetched server-side — treat as primary source material, cite by URL):\n\n" + fetched.join("\n\n");
     }
 
-    const fullMessage = message + urlContext;
+    // Support array content (multipart: text + images) or plain string
+    let userContent;
+    if (Array.isArray(message)) {
+      if (urlContext) {
+        userContent = message.map(part =>
+          part.type === 'text' ? { ...part, text: part.text + urlContext } : part
+        );
+      } else {
+        userContent = message;
+      }
+    } else {
+      userContent = message + urlContext;
+    }
 
     const messages = [];
     if (system) messages.push({ role: "system", content: system });
-    messages.push({ role: "user", content: fullMessage });
+    messages.push({ role: "user", content: userContent });
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
