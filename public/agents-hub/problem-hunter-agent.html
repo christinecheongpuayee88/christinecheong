@@ -366,17 +366,7 @@
     function _handleFiles(files){Array.from(files).forEach(file=>{if(file.type.startsWith('image/')){const r=new FileReader();r.onload=ev=>{_uploadedImages.push({name:file.name,dataUrl:ev.target.result});_renderAttachments();};r.readAsDataURL(file);}else{const r=new FileReader();r.onload=ev=>{_uploadedDocs[file.name]=ev.target.result;_renderAttachments();};r.readAsText(file);}});}
     function _renderAttachments(){const c=document.getElementById('_attachList');if(!c)return;const all=[...Object.keys(_uploadedDocs).map(n=>({n,icon:'📄',key:'doc_'+n})),..._uploadedImages.map((img,i)=>({n:img.name,icon:'🖼️',key:'img_'+i}))];c.innerHTML=all.map(a=>'<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:var(--blue-light,#E8F4FB);border:1px solid #BFDBFE;border-radius:100px;font-size:11px;font-weight:500;color:var(--blue,#1E88C7);">'+a.icon+' '+a.n+' <span onclick="_removeAttachment('' + a.key + '','' + a.n + '')" style="cursor:pointer;margin-left:2px;font-weight:700;">×</span></span>').join('');}
     function _removeAttachment(key,name){if(key.startsWith('doc_'))delete _uploadedDocs[name];else{const i=parseInt(key.replace('img_',''));if(!isNaN(i))_uploadedImages.splice(i,1);}  _renderAttachments();}
-    function _buildDocContext(base){const docs=Object.entries(_uploadedDocs);if(!docs.length)return base;return base+'
-
-===
-ATTACHED DOCUMENTS (treat as primary source material — cite by filename):
-
-'+docs.map(([n,c])=>('--- '+n+' ---
-'+c.slice(0,8000)+'
---- END: '+n+' ---')).join('
-
-')+'
-===';}
+    function _buildDocContext(base){const docs=Object.entries(_uploadedDocs);if(!docs.length)return base;return base+'\n\n===\nATTACHED DOCUMENTS (treat as primary source material — cite by filename):\n\n'+docs.map(([n,c])=>'--- '+n+' ---\n'+c.slice(0,8000)+'\n--- END: '+n+' ---').join('\n\n')+'\n===';}
     function _buildUserContent(text){const fullText=_buildDocContext(text);if(!_uploadedImages.length)return fullText;const parts=[{type:'text',text:fullText}];_uploadedImages.forEach(img=>parts.push({type:'image_url',image_url:{url:img.dataUrl}}));return parts;}
     function _handlePaste(e){
       // Don't intercept pastes into text inputs — let the textarea handle it normally
