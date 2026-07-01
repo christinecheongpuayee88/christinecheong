@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Behavioural Science Agent — NUS-ISS Living Lab</title>
+  <meta name="description" content="Apply behavioural science frameworks to decode consumer decisions, design better nudges, and remove friction from the path to action.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F2F2F2;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
+      --blue:         #1E88C7;
+      --blue-light:   #E8F4FB;
+      --indigo:       #4338CA;
+      --indigo-light: #EEF2FF;
+      --violet:       #7C3AED;
+      --violet-light: #EDE9FE;
+      --text:         #111827;
+      --text-muted:   #4B5563;
+      --border:       #DADADA;
+      --green:        #059669;
+      --green-light:  #D1FAE5;
+      --amber:        #B45309;
+      --amber-light:  #FEF3C7;
+      --red:          #C0392B;
+      --red-light:    #FDEDEC;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
+      --ease-spring:  cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 500; line-height: 1.65; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    h1,h2,h3,h4 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* ── NAV ─────────────────────────────────────── */
+    .nav { position:fixed; inset:0 0 auto; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 56px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
+    .nav-brand { display:flex; flex-direction:column; gap:1px; }
+    .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); }
+    .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
+    .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
+    .nav-links a:hover { color:var(--navy); }
+    .nav-back { font-size:12px; font-weight:600; letter-spacing:0.06em; padding:10px 20px; border-radius:6px; border:1.5px solid var(--border); color:var(--navy); transition:all 0.25s; }
+    .nav-back:hover { border-color:var(--navy); background:var(--navy); color:#fff; }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero { position:relative; padding:calc(var(--nav-h) + 80px) 56px 80px; background:var(--bg); border-bottom:1px solid var(--border); overflow:hidden; }
+    .hero-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.2fr 1fr; gap:80px; align-items:center; }
+    .hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--violet); margin-bottom:20px; }
+    .hero-eyebrow::before { content:''; width:28px; height:2px; background:var(--violet); }
+    .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--violet-light); color:var(--violet); margin-bottom:20px; }
+    .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,60px); font-weight:700; line-height:1.04; letter-spacing:-0.025em; color:var(--navy); margin-bottom:20px; }
+    .hero-h1 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+    .hero-sub { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
+    .hero-pills { display:flex; flex-wrap:wrap; gap:8px; }
+    .hero-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); }
+
+    /* ── WORKFLOW PANEL ──────────────────────────── */
+    .workflow { display:flex; flex-direction:column; gap:0; }
+    .wf-step { display:flex; align-items:flex-start; gap:14px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); }
+    .wf-step:first-child { border-radius:10px 10px 0 0; }
+    .wf-step:last-child  { border-radius:0 0 10px 10px; }
+    .wf-step:not(:first-child) { border-top:none; }
+    .wf-num { width:24px; height:24px; border-radius:6px; background:var(--violet); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .wf-name { font-size:12px; font-weight:700; color:var(--navy); }
+    .wf-desc { font-size:11px; font-weight:400; color:var(--text-muted); margin-top:2px; line-height:1.4; }
+
+    /* ── WORKSPACE ───────────────────────────────── */
+    .workspace { max-width:1280px; margin:0 auto; padding:72px 56px 112px; }
+    .workspace-label { font-size:11px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--violet); margin-bottom:12px; }
+    .workspace-h2 { font-family:var(--font-display); font-size:clamp(26px,3vw,38px); font-weight:700; line-height:1.1; letter-spacing:-0.02em; color:var(--navy); margin-bottom:40px; }
+    .workspace-h2 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
+
+    /* ── MODE TABS ───────────────────────────────── */
+    .mode-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+    .mode-tab { font-family:var(--font-body); font-size:12px; font-weight:600; padding:9px 18px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .mode-tab:hover { border-color:var(--violet); color:var(--violet); }
+    .mode-tab.active { background:var(--violet); border-color:var(--violet); color:#fff; }
+
+    /* ── INPUT ───────────────────────────────────── */
+    .input-panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:28px; }
+    .input-context { margin-bottom:24px; padding:14px 18px; background:var(--violet-light); border-left:3px solid var(--violet); border-radius:0 8px 8px 0; }
+    .input-context p { font-size:13px; font-weight:500; color:var(--navy-mid); line-height:1.55; }
+
+    .input-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+    .input-group:last-of-type { margin-bottom:0; }
+    .input-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+    .input-field {
+      padding:12px 14px; font-family:var(--font-body); font-size:13px; font-weight:400;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; outline:none; transition:border-color 0.25s; width:100%;
+    }
+    .input-field:focus { border-color:var(--violet); }
+    .input-field::placeholder { color:#9CA3AF; }
+    .input-textarea {
+      width:100%; padding:14px 16px;
+      font-family:var(--font-mono); font-size:12px; font-weight:400; line-height:1.7;
+      color:var(--text); background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; resize:vertical; outline:none; transition:border-color 0.25s;
+    }
+    .input-textarea:focus { border-color:var(--violet); }
+    .input-textarea::placeholder { color:#9CA3AF; font-family:var(--font-body); }
+
+    .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:20px; flex-wrap:wrap; gap:12px; }
+    .run-btn {
+      display:inline-flex; align-items:center; gap:10px;
+      font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em;
+      padding:14px 32px; border-radius:8px; border:none; cursor:pointer;
+      background:var(--violet); color:#fff;
+      transition:background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .run-btn:hover:not(:disabled) { background:#5B21B6; transform:translateY(-2px); box-shadow:0 8px 24px rgba(124,58,237,0.3); }
+    .run-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    /* ── LOADING ─────────────────────────────────── */
+    .loading-state { display:none; padding:48px 32px; text-align:center; }
+    .loading-state.show { display:block; }
+    .loading-dots { display:inline-flex; gap:6px; margin-bottom:16px; }
+    .loading-dots span { width:8px; height:8px; border-radius:50%; background:var(--violet); opacity:0.3; animation:pulse 1.4s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay:0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
+    .loading-label { font-size:13px; font-weight:500; color:var(--text-muted); margin-bottom:20px; }
+    .loading-phases { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .loading-phase { font-size:11px; font-weight:500; padding:5px 14px; border-radius:100px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); opacity:0.4; transition:opacity 0.4s; }
+    .loading-phase.active { opacity:1; border-color:var(--violet); color:var(--violet); }
+
+    /* ── OUTPUT ──────────────────────────────────── */
+    .output-panel { display:none; }
+    .output-panel.show { display:block; }
+    .output-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px; }
+    .output-tag { font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--violet); color:#fff; }
+    .action-btn { font-size:12px; font-weight:500; padding:8px 16px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .action-btn:hover { border-color:var(--navy); color:var(--navy); }
+
+    /* ── SECTION BLOCKS ──────────────────────────── */
+    .section-block { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px 26px; margin-bottom:20px; }
+    .section-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--violet); margin-bottom:16px; }
+
+    /* summary */
+    .summary-box { padding:16px 20px; background:var(--violet-light); border-left:3px solid var(--violet); border-radius:0 8px 8px 0; font-size:13px; color:#3B0764; line-height:1.7; }
+
+    /* list items */
+    .item-list { display:flex; flex-direction:column; gap:8px; }
+    .item-row { display:flex; gap:12px; align-items:flex-start; padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:8px; }
+    .item-icon { font-size:14px; flex-shrink:0; margin-top:2px; }
+    .item-text { font-size:12px; color:var(--text); line-height:1.6; }
+    .item-label { font-size:11px; font-weight:700; color:var(--navy); margin-bottom:2px; }
+
+    /* highlight box */
+    .highlight-box { padding:14px 18px; background:var(--violet-light); border-left:3px solid var(--violet); border-radius:0 8px 8px 0; font-size:13px; color:#3B0764; line-height:1.65; margin-top:12px; }
+    .highlight-label { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--violet); margin-bottom:6px; }
+
+    /* caveat / flag */
+    .caveat-list { display:flex; flex-direction:column; gap:6px; }
+    .caveat-item { display:flex; gap:8px; align-items:flex-start; padding:9px 13px; background:var(--amber-light); border-radius:7px; font-size:12px; color:var(--amber); line-height:1.55; }
+
+    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    .footer { background:var(--navy); color:#fff; padding:48px 56px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+    .footer-brand { font-family:var(--font-display); font-size:16px; font-weight:700; }
+    .footer-sub { font-size:12px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .footer-links { display:flex; gap:24px; list-style:none; }
+    .footer-links a { font-size:12px; color:rgba(255,255,255,0.4); transition:color 0.25s; }
+    .footer-links a:hover { color:#fff; }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width:1100px) { .hero,.workspace,.footer { padding-left:36px; padding-right:36px; } .nav { padding:0 36px; } }
+    @media (max-width:900px) { .hero-inner { grid-template-columns:1fr; gap:40px; } }
+    @media (max-width:680px) { .hero,.workspace,.footer { padding-left:22px; padding-right:22px; } .nav { padding:0 22px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ────────────────────────────────────── -->
+  <nav class="nav">
+    <a href="/agents-hub/" class="nav-brand">
+      <span class="nav-brand-sup">NUS-ISS</span>
+      <span class="nav-brand-name">Agents Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/agents-hub/">All Agents</a></li>
+      <li><a href="/living-lab.html">Living Lab</a></li>
+    </ul>
+    <a href="/agents-hub/" class="nav-back">← All Agents</a>
+  </nav>
+
+  <!-- ── HERO ────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="hero-eyebrow">Consumer &amp; Insight</p>
+        <div class="hero-badge">Expert · Behavioural Science</div>
+        <h1 class="hero-h1">Why people <em>really</em> do what they do.</h1>
+        <p class="hero-sub">Apply behavioural science frameworks to decode consumer decisions, design better nudges, and remove friction from the path to action.</p>
+        <div class="hero-pills">
+          <span class="hero-pill">Behaviour Design</span>
+          <span class="hero-pill">Nudges</span>
+          <span class="hero-pill">Decision Architecture</span>
+          <span class="hero-pill">Cognitive Biases</span>
+          <span class="hero-pill">Habit Loops</span>
+        </div>
+      </div>
+      <div>
+        <div class="workflow">
+          <div class="wf-step">
+            <div class="wf-num">1</div>
+            <div><div class="wf-name">Behaviour Decoder</div><div class="wf-desc">Behavioural and psychological drivers behind a consumer pattern</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">2</div>
+            <div><div class="wf-name">Nudge Designer</div><div class="wf-desc">Evidence-based nudges and choice architecture recommendations</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">3</div>
+            <div><div class="wf-name">Friction Audit</div><div class="wf-desc">Cognitive, emotional, and structural barriers stopping action</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">4</div>
+            <div><div class="wf-name">Bias Identifier</div><div class="wf-desc">Cognitive biases most likely at play in a given decision context</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-num">5</div>
+            <div><div class="wf-name">Habit Loop Analysis</div><div class="wf-desc">Cue-routine-reward structure and intervention points</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WORKSPACE ───────────────────────────────── -->
+  <main class="workspace">
+    <p class="workspace-label">Analysis Workspace</p>
+    <h2 class="workspace-h2">Describe the behaviour, get <em>science-backed answers</em></h2>
+
+    <!-- Mode tabs -->
+    <div class="mode-tabs" id="modeTabs">
+      <button type="button" class="mode-tab active" data-mode="decoder">Behaviour Decoder</button>
+      <button type="button" class="mode-tab" data-mode="nudge">Nudge Designer</button>
+      <button type="button" class="mode-tab" data-mode="friction">Friction Audit</button>
+      <button type="button" class="mode-tab" data-mode="bias">Bias Identifier</button>
+      <button type="button" class="mode-tab" data-mode="habit">Habit Loop Analysis</button>
+    </div>
+
+    <div class="input-panel">
+      <div class="input-context">
+        <p id="modeContextText">Explain the behavioural and psychological drivers behind a consumer pattern or decision. Describe what you observe people doing (or not doing) and the context around it.</p>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Behaviour or decision context</label>
+        <input class="input-field" id="behaviourInput" placeholder="e.g. Customers add items to cart but abandon at checkout, Employees don't submit expense reports on time" />
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Description, data, or research</label>
+        <textarea class="input-textarea" id="dataInput" rows="12" placeholder="Describe the behaviour, context, or paste any supporting data here — customer journey notes, survey verbatims, funnel data, user research findings, observed patterns, or any relevant context about the audience and situation…
+
+Example:
+We run a health insurance app. Users browse plan options extensively (avg 6-7 sessions) but only 23% complete a purchase. Exit surveys show they feel 'overwhelmed by choices' and 'unsure which plan is right'. We have 18 plans available. Competitors with 4-5 plans show 41% conversion. Our highest-dropout step is the plan comparison screen. Users who call our helpline convert at 68%."></textarea>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Target audience (optional)</label>
+        <input class="input-field" id="audienceInput" placeholder="e.g. Millennials 25-35, first-time home buyers, frequent business travellers, SME owners" />
+      </div>
+
+      <!-- ── Attachments ── -->
+      <div style="margin-top:10px;">
+        <div id="_dropZone" style="border:1.5px dashed var(--border);border-radius:8px;padding:10px 16px;cursor:pointer;transition:border-color 0.2s;background:var(--surface,#F2F2F2);" tabindex="0" onclick="document.getElementById('_fileInput').click()" onkeydown="if(event.key==='Enter')document.getElementById('_fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--violet,#7C3AED)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="_handleDrop(event)">
+          <span style="font-size:12px;color:var(--text-muted,#6B7280);">📎 <span style="color:var(--violet,#7C3AED);font-weight:600;">Click to browse</span> · drag &amp; drop · or <strong>click here then Ctrl+V</strong> to paste an image</span>
+          <span style="font-size:11px;color:var(--text-muted,#6B7280);display:block;margin-top:2px;">.txt .csv .pdf .md .json or any image</span>
+        </div>
+        <input id="_fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf,image/*" style="display:none" onchange="_handleFiles(this.files)" />
+        <div id="_attachList" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;"></div>
+      </div>
+
+      <div class="input-footer">
+        <span style="font-size:12px;color:var(--text-muted)">Grounded in Kahneman, Thaler, Cialdini, BJ Fogg, and COM-B frameworks</span>
+        <button type="button" class="run-btn" id="runBtn" disabled>
+          <span>🧠</span>
+          <span id="runBtnLabel">Decode Behaviour</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <p class="loading-label" id="loadingLabel">Decoding behavioural drivers…</p>
+      <div class="loading-phases">
+        <span class="loading-phase" id="ph1">Reading context</span>
+        <span class="loading-phase" id="ph2">Applying frameworks</span>
+        <span class="loading-phase" id="ph3">Identifying mechanisms</span>
+        <span class="loading-phase" id="ph4">Structuring insights</span>
+        <span class="loading-phase" id="ph5">Generating recommendations</span>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="output-panel" id="outputPanel">
+      <div class="output-header">
+        <span class="output-tag" id="outputTag">Behavioural Analysis</span>
+        <div style="display:flex;gap:10px">
+          <button class="action-btn" id="copyBtn">Copy Report</button>
+          <button class="action-btn" id="resetBtn">New Analysis</button>
+        </div>
+      </div>
+      <div id="outputContent"></div>
+    </div>
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Behavioural Science Agent</div>
+        <div class="footer-sub">NUS-ISS Living Lab · Agents Hub</div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/agents-hub/">All Agents</a></li>
+        <li><a href="/living-lab.html">Living Lab</a></li>
+        <li><a href="/living-lab.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const MODE_CONFIG = {
+      decoder: {
+        label: 'Behaviour Decoder',
+        context: 'Explain the behavioural and psychological drivers behind a consumer pattern or decision. Describe what you observe people doing (or not doing) and the context around it.',
+        loadingLabel: 'Decoding behavioural drivers…',
+        runLabel: 'Decode Behaviour'
+      },
+      nudge: {
+        label: 'Nudge Designer',
+        context: 'Generate evidence-based nudges and choice architecture recommendations to shift behaviour. Describe the target behaviour, the current environment or journey, and who the audience is.',
+        loadingLabel: 'Designing nudges and choice architecture…',
+        runLabel: 'Design Nudges'
+      },
+      friction: {
+        label: 'Friction Audit',
+        context: 'Identify the cognitive, emotional, and structural barriers stopping people from taking action. Describe the desired action, the current journey, and where people drop off or hesitate.',
+        loadingLabel: 'Auditing friction points…',
+        runLabel: 'Run Friction Audit'
+      },
+      bias: {
+        label: 'Bias Identifier',
+        context: 'Surface the cognitive biases most likely at play in a given decision context. Describe the decision situation, the options available, how they are presented, and what you observe people doing.',
+        loadingLabel: 'Identifying active cognitive biases…',
+        runLabel: 'Identify Biases'
+      },
+      habit: {
+        label: 'Habit Loop Analysis',
+        context: 'Decode the cue-routine-reward structure of an existing behaviour to find intervention points. Describe the behaviour pattern in as much detail as you have — context, triggers, what happens, and the outcome.',
+        loadingLabel: 'Analysing habit loop structure…',
+        runLabel: 'Analyse Habit Loop'
+      }
+    };
+
+    const SYSTEM_PROMPTS = {
+      decoder: `You are an expert behavioural science AI trained on Kahneman (Thinking Fast and Slow), Thaler and Sunstein (Nudge), Cialdini (Influence), BJ Fogg (Tiny Habits), and the COM-B model of behaviour change. Analyse the described behaviour and output structured JSON only — no prose before or after.
+
+Output this exact JSON schema:
+{
+  "mode": "decoder",
+  "summary": "2-3 sentence plain-language summary of the core behavioural dynamic and most important insight",
+  "confidence": "high | medium | low",
+  "caveats": ["specific limitation or assumption in this analysis"],
+  "sections": [
+    {
+      "title": "Behavioural Drivers",
+      "type": "list",
+      "items": [
+        { "label": "driver name (e.g. Loss Aversion, Social Proof, Status Quo Bias)", "value": "how this driver is operating in this specific context", "direction": "positive | neutral | negative" }
+      ]
+    },
+    {
+      "title": "Psychological Mechanisms",
+      "type": "list",
+      "items": [
+        { "label": "mechanism (e.g. Decision Fatigue, Present Bias, Cognitive Overload)", "value": "how this mechanism is shaping the observed behaviour", "direction": "positive | neutral | negative" }
+      ]
+    },
+    {
+      "title": "System 1 vs System 2",
+      "type": "list",
+      "items": [
+        { "label": "System 1 (fast, automatic) or System 2 (slow, deliberate)", "value": "what is driving the behaviour at each system level and which is dominant", "direction": "neutral" }
+      ]
+    },
+    {
+      "title": "What This Means",
+      "type": "list",
+      "items": [
+        { "label": "implication or recommendation", "value": "specific actionable implication for design, communication, or strategy", "direction": "positive" }
+      ]
+    }
+  ]
+}`,
+
+      nudge: `You are an expert behavioural science AI trained on Kahneman, Thaler and Sunstein (Nudge), Cialdini (Influence), BJ Fogg (Tiny Habits), and the COM-B model. Design evidence-based nudges and output structured JSON only — no prose before or after.
+
+Output this exact JSON schema:
+{
+  "mode": "nudge",
+  "summary": "2-3 sentence plain-language summary of the behavioural challenge and the strongest recommended nudge direction",
+  "confidence": "high | medium | low",
+  "caveats": ["specific limitation, ethical consideration, or implementation risk"],
+  "sections": [
+    {
+      "title": "Recommended Nudges",
+      "type": "list",
+      "items": [
+        { "label": "nudge name and type (e.g. Default Effect, Social Norm, Implementation Intention)", "value": "specific nudge description — what exactly to do or change, and the behavioural science rationale behind it", "direction": "positive" }
+      ]
+    },
+    {
+      "title": "Implementation Notes",
+      "type": "list",
+      "items": [
+        { "label": "implementation consideration", "value": "specific guidance on how to execute this nudge in practice — timing, placement, wording, or design", "direction": "neutral" }
+      ]
+    },
+    {
+      "title": "Expected Shifts",
+      "type": "list",
+      "items": [
+        { "label": "expected behaviour change", "value": "what should shift, by how much (directional estimate), and over what timeframe", "direction": "positive" }
+      ]
+    },
+    {
+      "title": "Risks",
+      "type": "list",
+      "items": [
+        { "label": "risk or ethical consideration", "value": "potential backfire effect, ethical concern, or unintended consequence to watch for", "direction": "negative" }
+      ]
+    }
+  ]
+}`,
+
+      friction: `You are an expert behavioural science AI trained on Kahneman, Thaler, BJ Fogg (Tiny Habits — Motivation, Ability, Prompt), and COM-B. Conduct a friction audit and output structured JSON only — no prose before or after.
+
+Output this exact JSON schema:
+{
+  "mode": "friction",
+  "summary": "2-3 sentence plain-language summary of the dominant friction type and the highest-priority fix",
+  "confidence": "high | medium | low",
+  "caveats": ["specific limitation or assumption in this analysis"],
+  "sections": [
+    {
+      "title": "Cognitive Friction",
+      "type": "list",
+      "items": [
+        { "label": "cognitive friction point (e.g. Too Many Choices, Unclear Next Step, Decision Fatigue)", "value": "how this friction is manifesting and its likely impact on action rates", "direction": "negative" }
+      ]
+    },
+    {
+      "title": "Emotional Friction",
+      "type": "list",
+      "items": [
+        { "label": "emotional friction point (e.g. Fear of Regret, Anxiety, Lack of Trust)", "value": "how this emotional barrier is operating and what triggers it", "direction": "negative" }
+      ]
+    },
+    {
+      "title": "Structural Friction",
+      "type": "list",
+      "items": [
+        { "label": "structural friction point (e.g. Too Many Steps, Poor Defaults, Misaligned Timing)", "value": "how this design or process element creates friction", "direction": "negative" }
+      ]
+    },
+    {
+      "title": "Priority Fixes",
+      "type": "list",
+      "items": [
+        { "label": "fix (priority-ordered, highest impact first)", "value": "specific change to make, which friction it addresses, and expected impact", "direction": "positive" }
+      ]
+    }
+  ]
+}`,
+
+      bias: `You are an expert behavioural science AI with deep knowledge of cognitive biases from Kahneman, Ariely, Thaler, and Cialdini. Identify active biases and output structured JSON only — no prose before or after.
+
+Output this exact JSON schema:
+{
+  "mode": "bias",
+  "summary": "2-3 sentence plain-language summary of the dominant bias pattern and its most important implication",
+  "confidence": "high | medium | low",
+  "caveats": ["specific limitation or assumption in this analysis"],
+  "sections": [
+    {
+      "title": "Active Biases",
+      "type": "list",
+      "items": [
+        { "label": "bias name (e.g. Anchoring Effect, Decoy Effect, Hyperbolic Discounting)", "value": "definition of this bias and exactly how it is operating in this specific decision context", "direction": "neutral" }
+      ]
+    },
+    {
+      "title": "Dominant Bias",
+      "type": "list",
+      "items": [
+        { "label": "the single most influential bias in this context", "value": "why this bias is dominant here, the evidence for it, and its likely magnitude of effect", "direction": "negative" }
+      ]
+    },
+    {
+      "title": "Mitigation Options",
+      "type": "list",
+      "items": [
+        { "label": "mitigation strategy (one per bias or bias cluster)", "value": "specific design or communication change that would reduce the negative impact of this bias or harness it constructively", "direction": "positive" }
+      ]
+    }
+  ]
+}`,
+
+      habit: `You are an expert behavioural science AI trained on BJ Fogg's Tiny Habits model, Charles Duhigg's habit loop (The Power of Habit), Nir Eyal's Hooked model, and COM-B. Analyse the habit loop and output structured JSON only — no prose before or after.
+
+Output this exact JSON schema:
+{
+  "mode": "habit",
+  "summary": "2-3 sentence plain-language summary of the habit loop structure and the most powerful intervention point",
+  "confidence": "high | medium | low",
+  "caveats": ["specific limitation or assumption in this analysis"],
+  "sections": [
+    {
+      "title": "Cue",
+      "type": "list",
+      "items": [
+        { "label": "cue type (e.g. Time, Location, Emotion, Preceding Action, Social Trigger)", "value": "what triggers this behaviour — the specific cue or cues operating in this context", "direction": "neutral" }
+      ]
+    },
+    {
+      "title": "Routine",
+      "type": "list",
+      "items": [
+        { "label": "routine element", "value": "description of the automatic behaviour or sequence of behaviours that follows the cue", "direction": "neutral" }
+      ]
+    },
+    {
+      "title": "Reward",
+      "type": "list",
+      "items": [
+        { "label": "reward type (e.g. Intrinsic Relief, Social Validation, Progress Signal, Variable Reward)", "value": "what reward or craving drives the routine — conscious and unconscious rewards", "direction": "neutral" }
+      ]
+    },
+    {
+      "title": "Craving",
+      "type": "list",
+      "items": [
+        { "label": "underlying craving or motivation", "value": "the deeper want the habit is satisfying — what the person is really after", "direction": "neutral" }
+      ]
+    },
+    {
+      "title": "Intervention Points",
+      "type": "list",
+      "items": [
+        { "label": "intervention point in the loop (Cue / Routine / Reward)", "value": "specific intervention opportunity at this point and why it would be effective", "direction": "positive" }
+      ]
+    },
+    {
+      "title": "Redesign Recommendations",
+      "type": "list",
+      "items": [
+        { "label": "redesign recommendation (priority-ordered)", "value": "specific change to cue, routine, or reward to shift behaviour — with rationale", "direction": "positive" }
+      ]
+    }
+  ]
+}`
+    };
+
+    let currentMode = 'decoder';
+    let currentOutput = null;
+    let phaseInterval;
+
+    const behaviourInputEl = document.getElementById('behaviourInput');
+    const dataInputEl = document.getElementById('dataInput');
+    const audienceInputEl = document.getElementById('audienceInput');
+    const runBtn = document.getElementById('runBtn');
+    const runBtnLabel = document.getElementById('runBtnLabel');
+
+    function checkReady() {
+      runBtn.disabled = behaviourInputEl.value.trim().length < 5 || dataInputEl.value.trim().length < 20;
+    }
+    [behaviourInputEl, dataInputEl, audienceInputEl].forEach(el => el.addEventListener('input', checkReady));
+
+    // Mode switching
+    document.getElementById('modeTabs').addEventListener('click', e => {
+      const btn = e.target.closest('.mode-tab');
+      if (!btn) return;
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      currentMode = btn.dataset.mode;
+      const cfg = MODE_CONFIG[currentMode];
+      document.getElementById('modeContextText').textContent = cfg.context;
+      runBtnLabel.textContent = cfg.runLabel;
+      document.getElementById('loadingLabel').textContent = cfg.loadingLabel;
+    });
+
+    runBtn.addEventListener('click', async () => {
+      const message = [
+        `Behaviour or Decision Context: ${behaviourInputEl.value.trim()}`,
+        `Analysis Mode: ${MODE_CONFIG[currentMode].label}`,
+        `Description / Data:\n${dataInputEl.value.trim()}`,
+        audienceInputEl.value.trim() ? `Target Audience: ${audienceInputEl.value.trim()}` : ''
+      ].filter(Boolean).join('\n\n');
+
+      showLoading();
+      try {
+        const text = await callClaude(SYSTEM_PROMPTS[currentMode], message);
+        const data = parseJSON(text);
+        currentOutput = data;
+        renderOutput(data);
+      } catch(err) {
+        showError(err.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    // ── Attachments (files + images) ──────────────────────────────
+    const _uploadedDocs = {};
+    const _uploadedImages = [];
+
+    function _handleDrop(e) {
+      e.preventDefault();
+      const dz = document.getElementById('_dropZone');
+      if (dz) dz.style.borderColor = 'var(--border)';
+      _handleFiles(e.dataTransfer.files);
+    }
+
+    function _handleFiles(files) {
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const r = new FileReader();
+          r.onload = ev => { _uploadedImages.push({ name: file.name, dataUrl: ev.target.result }); _renderAttachments(); };
+          r.readAsDataURL(file);
+        } else {
+          const r = new FileReader();
+          r.onload = ev => { _uploadedDocs[file.name] = ev.target.result; _renderAttachments(); };
+          r.readAsText(file);
+        }
+      });
+    }
+
+    function _renderAttachments() {
+      const c = document.getElementById('_attachList');
+      if (!c) return;
+      const docItems = Object.keys(_uploadedDocs).map((n, i) => ({ n, icon: '📄', key: 'doc_' + i }));
+      const imgItems = _uploadedImages.map((img, i) => ({ n: img.name, icon: '🖼️', key: 'img_' + i }));
+      c.innerHTML = [...docItems, ...imgItems].map(a =>
+        `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:var(--violet-light,#EDE9FE);border:1px solid #C4B5FD;border-radius:100px;font-size:11px;font-weight:500;color:var(--violet,#7C3AED);">${a.icon} ${a.n.replace(/</g,'&lt;')} <span onclick="_removeAttachment('${a.key}','${a.n.replace(/'/g,'\\\'')}')" style="cursor:pointer;margin-left:2px;font-weight:700;">×</span></span>`
+      ).join('');
+    }
+
+    function _removeAttachment(key, name) {
+      if (key.startsWith('doc_')) delete _uploadedDocs[name];
+      else { const i = parseInt(key.replace('img_','')); if (!isNaN(i)) _uploadedImages.splice(i, 1); }
+      _renderAttachments();
+    }
+
+    function _buildDocContext(base) {
+      const docs = Object.entries(_uploadedDocs);
+      if (!docs.length) return base;
+      return base + '\n\n===\nATTACHED DOCUMENTS (treat as primary source material — cite by filename):\n\n' + docs.map(([n, c]) => `--- ${n} ---\n${c.slice(0, 8000)}\n--- END: ${n} ---`).join('\n\n') + '\n===';
+    }
+
+    function _buildUserContent(text) {
+      const fullText = _buildDocContext(text);
+      if (!_uploadedImages.length) return fullText;
+      const parts = [{ type: 'text', text: fullText }];
+      _uploadedImages.forEach(img => parts.push({ type: 'image_url', image_url: { url: img.dataUrl } }));
+      return parts;
+    }
+
+    document.addEventListener('paste', e => {
+      Array.from(e.clipboardData?.items || []).forEach(item => {
+        if (item.type.startsWith('image/')) { const f = item.getAsFile(); if (f) _handleFiles([f]); }
+      });
+    });
+    // ─────────────────────────────────────────────────────────────
+
+    async function callClaude(system, message) {
+      const _apiKey = localStorage.getItem('openai_api_key') || '';
+      if (_apiKey) {
+        const _msgs = [];
+        if (system) _msgs.push({ role: 'system', content: system });
+        _msgs.push({ role: 'user', content: _buildUserContent(message) });
+        const _res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}`},
+          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 6000, messages: _msgs })
+        });
+        const _data = await _res.json();
+        if (!_res.ok) throw new Error(_data.error?.message || 'OpenAI API error');
+        return _data.choices[0].message.content;
+      }
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system, message: _buildDocContext(message), max_tokens: 6000 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API request failed');
+      return data.content[0].text;
+    }
+
+    function parseJSON(text) {
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON found in response');
+      return JSON.parse(match[0]);
+    }
+
+    function showLoading() {
+      document.getElementById('loadingState').classList.add('show');
+      document.getElementById('outputPanel').classList.remove('show');
+      runBtn.disabled = true;
+      const phases = document.querySelectorAll('.loading-phase');
+      let i = 0; phases[0].classList.add('active');
+      phaseInterval = setInterval(() => {
+        phases.forEach(p => p.classList.remove('active'));
+        i = (i + 1) % phases.length;
+        phases[i].classList.add('active');
+      }, 2200);
+    }
+
+    function hideLoading() {
+      clearInterval(phaseInterval);
+      document.getElementById('loadingState').classList.remove('show');
+      checkReady();
+    }
+
+    function directionColor(dir) {
+      if (dir === 'positive') return 'var(--green)';
+      if (dir === 'negative') return 'var(--red)';
+      return 'var(--violet)';
+    }
+
+    function directionIcon(dir) {
+      if (dir === 'positive') return '✓';
+      if (dir === 'negative') return '✕';
+      return '◆';
+    }
+
+    function renderOutput(d) {
+      const sections = d.sections || [];
+      const caveats = d.caveats || [];
+
+      const summaryHTML = d.summary ? `
+        <div class="section-block" style="border-left:4px solid var(--violet);border-radius:0 12px 12px 0">
+          <div class="section-label">Summary</div>
+          <div class="summary-box">${esc(d.summary)}</div>
+        </div>` : '';
+
+      const metaHTML = `
+        <div class="section-block" style="display:flex;gap:24px;flex-wrap:wrap;align-items:center">
+          <div><span style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted)">Mode</span><br><span style="font-size:13px;font-weight:600;color:var(--navy)">${esc(MODE_CONFIG[d.mode||currentMode]?.label||d.mode||currentMode)}</span></div>
+          <div><span style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted)">Confidence</span><br><span style="font-size:13px;font-weight:600;color:${d.confidence==='high'?'var(--green)':d.confidence==='low'?'var(--red)':'var(--amber)'}">${esc(d.confidence||'medium')}</span></div>
+          <div><span style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted)">Sections</span><br><span style="font-size:13px;font-weight:600;color:var(--navy)">${sections.length}</span></div>
+        </div>`;
+
+      const sectionsHTML = sections.map(sec => {
+        const itemsHTML = (sec.items || []).map(item => `
+          <div class="item-row">
+            <span class="item-icon" style="color:${directionColor(item.direction)}">${directionIcon(item.direction)}</span>
+            <div>
+              <div class="item-label">${esc(item.label)}</div>
+              <div class="item-text">${esc(item.value)}</div>
+            </div>
+          </div>`).join('');
+        return `
+          <div class="section-block">
+            <div class="section-label">${esc(sec.title)}</div>
+            <div class="item-list">${itemsHTML}</div>
+          </div>`;
+      }).join('');
+
+      const caveatsHTML = caveats.length ? `
+        <div class="section-block">
+          <div class="section-label">Caveats &amp; Assumptions</div>
+          <div class="caveat-list">
+            ${caveats.map(c => `<div class="caveat-item"><span>⚠️</span><span>${esc(c)}</span></div>`).join('')}
+          </div>
+        </div>` : '';
+
+      document.getElementById('outputContent').innerHTML = summaryHTML + metaHTML + sectionsHTML + caveatsHTML;
+      document.getElementById('outputTag').textContent = `${MODE_CONFIG[currentMode]?.label||currentMode} · ${sections.length} Sections`;
+      document.getElementById('outputPanel').classList.add('show');
+      document.getElementById('outputPanel').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function showError(msg) {
+      document.getElementById('outputContent').innerHTML = `<div class="error-box">Error: ${esc(msg)}</div>`;
+      document.getElementById('outputPanel').classList.add('show');
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      if (!currentOutput) return;
+      const lines = [];
+      if (currentOutput.summary) lines.push('SUMMARY\n' + currentOutput.summary + '\n');
+      (currentOutput.sections || []).forEach(sec => {
+        lines.push(sec.title.toUpperCase());
+        (sec.items || []).forEach(item => lines.push(`  ${item.label}: ${item.value}`));
+        lines.push('');
+      });
+      if ((currentOutput.caveats || []).length) lines.push('CAVEATS\n' + currentOutput.caveats.join('\n'));
+      navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy Report', 2000);
+      });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('outputPanel').classList.remove('show');
+      currentOutput = null;
+      behaviourInputEl.value = ''; dataInputEl.value = ''; audienceInputEl.value = '';
+      checkReady();
+      window.scrollTo({ top:0, behavior:'smooth' });
+    });
+  </script>
+</body>
+</html>
