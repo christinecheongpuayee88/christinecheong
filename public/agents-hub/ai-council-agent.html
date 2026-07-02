@@ -264,7 +264,7 @@
         <p class="hero-eyebrow">Strategy &amp; Intelligence</p>
         <div class="hero-badge">Multi-Agent · 4-Stage Session</div>
         <h1 class="hero-h1">AI Advisory <em>Council</em></h1>
-        <p class="hero-sub">Most people ask one AI one question and trust the answer. The AI Advisory Council gives you five independent thinking lenses, structured cross-examination, and a Chairman's decisive verdict — for decisions that actually matter.</p>
+        <p class="hero-sub">Most people ask one AI one question and trust the answer. THE AI ADVISORY COUNCIL gives you five independent thinking lenses, structured cross-examination, and a Chairman's decisive verdict — for decisions that actually matter.</p>
         <div class="hero-pills">
           <span class="hero-pill">5 Advisor Lenses</span>
           <span class="hero-pill">Cross-Examination</span>
@@ -654,7 +654,7 @@ Examples:
     }`;
       }).join(',\n');
 
-      return `You are the AI Advisory Council orchestrator. You run a structured multi-advisor decision session.
+      return `You are THE AI ADVISORY COUNCIL orchestrator. You run a structured multi-advisor decision session.
 
 You have comprehensive training knowledge of thousands of real-world figures — business leaders, investors, scientists, politicians, thinkers, and historical figures. When an advisor is named as a real person, you MUST channel their actual documented intellectual frameworks, vocabulary, and known positions. This applies to ANY real person named, whether they appear in a predefined list or not. Do not produce generic advice in their name — apply their specific, real thinking. If you know who they are, use that knowledge fully.
 
@@ -672,7 +672,7 @@ ${advisorDefs}
     "disagreements": ["Key point of genuine tension between advisors"]
   },
   "verdict": {
-    "summary": "3-4 paragraph Chairman synthesis (300-400 words). Identify strongest arguments, resolve contradictions, deliver a clear answer with reasoning. Do NOT average the advisors. End with the phrase: The AI Council has spoken.",
+    "summary": "3-4 paragraph Chairman synthesis (300-400 words). Identify strongest arguments, resolve contradictions, deliver a clear answer with reasoning. Do NOT average the advisors. End with the phrase: The AI Advisory Council Has Spoken.",
     "first_moves": ["First concrete action", "Second concrete action", "Third concrete action"],
     "warning_signs": ["First early warning sign", "Second early warning sign"]
   }
@@ -922,7 +922,7 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
             <div class="verdict-warnings-label">⚠ Early Warning Signs</div>
             ${verdict.warning_signs.map(w=>`<div class="verdict-warning">• ${esc(w)}</div>`).join('')}
           </div>` : ''}
-          <div class="verdict-spoken">The AI Council Has Spoken.</div>
+          <div class="verdict-spoken">The AI Advisory Council Has Spoken.</div>
         </div>`;
 
       document.getElementById('outputContent').innerHTML = briefHTML + advisorPanelsHTML + crossHTML + verdictHTML;
@@ -950,7 +950,7 @@ CRITICAL: Never let all advisors agree. Each must represent their lens fully eve
     document.getElementById('copyBtn').addEventListener('click', () => {
       if (!currentOutput) return;
       const d = currentOutput;
-      const lines = ['THE AI Advisory Council', '================================\n'];
+      const lines = ['THE AI ADVISORY COUNCIL', '================================\n'];
       if (d.decision_brief) lines.push(`DECISION BRIEF\n${d.decision_brief}\n`);
       Object.values(d.advisors||{}).forEach(adv => {
         lines.push(`--- ${adv.name.toUpperCase()} ---\n${adv.response}`);
