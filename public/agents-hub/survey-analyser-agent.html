@@ -282,13 +282,43 @@
       </div>
 
       <!-- Google Forms URL -->
-      <div class="input-group" style="margin-bottom:16px">
-        <label class="input-label">Google Forms URL (optional)</label>
+      <!-- Step 1: Google Forms URL -->
+      <div style="margin-bottom:20px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:10px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:10px">Step 1 — Google Forms URL <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — extracts the question list)</span></div>
         <div style="display:flex;gap:8px;align-items:center">
           <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/forms/d/e/…/viewform" style="flex:1;margin-bottom:0" />
-          <button type="button" id="fetchFormBtn" onclick="fetchGoogleForm()" style="padding:10px 18px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 0.2s">Fetch Questions</button>
+          <button type="button" id="fetchFormBtn" onclick="fetchGoogleForm()" style="padding:10px 18px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Fetch Questions</button>
         </div>
-        <span style="font-size:11px;color:var(--text-muted);margin-top:5px;display:block">Fetches form questions server-side. You still need to provide response data below (paste from Forms Summary view, or upload CSV).</span>
+      </div>
+
+      <!-- Step 2: Response data source -->
+      <div style="margin-bottom:20px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:10px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:10px">Step 2 — Response Data <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(choose one method)</span></div>
+
+        <!-- Option A: Google Sheets URL -->
+        <div style="margin-bottom:12px">
+          <label class="input-label" style="color:var(--text-muted)">Option A — Google Sheets URL (linked responses sheet, shared with "Anyone with link")</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="input-field" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/…" style="flex:1;margin-bottom:0" />
+            <button type="button" id="fetchSheetsBtn" onclick="fetchGoogleSheets()" style="padding:10px 18px;background:var(--teal,#0F766E);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Fetch Responses</button>
+          </div>
+          <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block">In Google Sheets: File → Share → Anyone with the link can view → copy URL here.</span>
+        </div>
+
+        <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text-muted);margin:8px 0">— OR —</div>
+
+        <!-- Option B: Paste / upload -->
+        <label class="input-label" style="color:var(--text-muted)">Option B — Paste responses directly (copy from Google Forms Summary, or paste spreadsheet rows)</label>
+        <textarea class="input-textarea" id="surveyData" rows="10" placeholder="Paste all survey responses here — copy from Google Forms Summary view, or paste rows from the linked Google Sheet.
+
+Example:
+Name: jia min / Gao Shuxin / Brandon
+Job Role: HR Exec / Data Analyst / Associate Faculty
+How would you rate your Generative AI experience? (1–5)
+Rating 2: 3 responses / Rating 3: 2 responses / Rating 4: 1 response
+What do you hope to learn?
+- Building AI Agents
+- Mastering agentic AI workflows"></textarea>
       </div>
 
       <div class="input-row">
@@ -308,34 +338,6 @@
             <option value="other">Other</option>
           </select>
         </div>
-      </div>
-
-      <div class="input-group" style="margin-top:16px">
-        <label class="input-label">Paste survey responses</label>
-        <textarea class="input-textarea" id="surveyData" rows="16" placeholder="Paste all survey responses here. You can copy the Summary text from Google Forms, or paste rows from a spreadsheet.
-
-Example format:
-Name: 6 responses
-jia min / Gao Shuxin / Brandon / Ted Chan / Lim Wei Li / Plato Lum
-
-Job Role: 6 responses
-hr exec / Senior Estate Manager / Data Analyst / Associate Faculty / Estate Management / Data Scientist
-
-Organisation/Industry: 6 responses
-mindef / Public Housing / HDB / PSA / Education / HDB / MINDEF
-
-How would you rate your current experience level with predictive analytics?
-Rating 1: 2 (33.3%) / Rating 2: 2 (33.3%) / Rating 3: 2 (33.3%)
-
-What do you hope to learn?
-- applications of predictive analytics
-- Modeling techniques and how they can be applied
-- How predictive model can predict trends and forecasting
-
-What business problem would you most like to solve?
-- Forecasting the HDB resale market
-- Demand and Supply trends
-- Volume forecasting"></textarea>
       </div>
 
       <div class="input-group">
@@ -459,24 +461,27 @@ Output format:
     const runBtn    = document.getElementById('runBtn');
 
     function checkReady() {
-      runBtn.disabled = titleEl.value.trim().length < 2 || dataEl.value.trim().length < 30;
+      const hasData = dataEl.value.trim().length > 30 || document.getElementById('sheetsUrl').value.trim().length > 10;
+      runBtn.disabled = titleEl.value.trim().length < 2 || !hasData;
     }
-    [titleEl, dataEl, contextEl].forEach(el => el.addEventListener('input', checkReady));
+    [titleEl, dataEl, contextEl, document.getElementById('sheetsUrl')].forEach(el => el && el.addEventListener('input', checkReady));
 
     let currentOutput = null;
     let phaseInterval;
 
     runBtn.addEventListener('click', async () => {
+      const sheetsUrlVal = document.getElementById('sheetsUrl').value.trim();
       const message = [
         `Survey Title: ${titleEl.value.trim()}`,
         `Survey Purpose: ${purposeEl.value}`,
-        `Raw Survey Responses:\n${dataEl.value.trim()}`,
+        dataEl.value.trim() ? `Raw Survey Responses:\n${dataEl.value.trim()}` : '',
         contextEl.value.trim() ? `Additional Context: ${contextEl.value.trim()}` : ''
       ].filter(Boolean).join('\n\n');
 
+      const sheetsUrls = sheetsUrlVal ? [sheetsUrlVal] : [];
       showLoading();
       try {
-        const text = await callClaude(SYSTEM, message);
+        const text = await callClaude(SYSTEM, message, sheetsUrls);
         const data = parseJSON(text);
         currentOutput = data;
         renderOutput(data);
@@ -551,9 +556,10 @@ Output format:
     });
     // ─────────────────────────────────────────────────────────────
 
-    async function callClaude(system, message) {
+    async function callClaude(system, message, urls=[]) {
       const _apiKey = localStorage.getItem('openai_api_key') || '';
-      if (_apiKey) {
+      // If Sheets URLs need fetching, always go through Cloudflare (server-side fetch)
+      if (_apiKey && !urls.length) {
         const _msgs = [];
         if (system) _msgs.push({ role: 'system', content: system });
         _msgs.push({ role: 'user', content: _buildUserContent(message) });
@@ -566,10 +572,11 @@ Output format:
         if (!_res.ok) throw new Error(_data.error?.message || 'OpenAI API error');
         return _data.choices[0].message.content;
       }
+      // Cloudflare Function: supports server-side URL fetching (for Google Sheets)
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system, message: _buildUserContent(message), max_tokens: 6000 })
+        body: JSON.stringify({ system, message: _buildUserContent(message), max_tokens: 8000, ...(urls.length ? { urls } : {}) })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'API request failed');
@@ -833,11 +840,51 @@ Output format:
       currentOutput = null;
       titleEl.value = ''; dataEl.value = ''; contextEl.value = '';
       document.getElementById('formsUrl').value = '';
+      document.getElementById('sheetsUrl').value = '';
       const fb = document.getElementById('fetchFormBtn');
       fb.textContent = 'Fetch Questions'; fb.style.background = 'var(--blue)'; fb.disabled = false;
+      const sb = document.getElementById('fetchSheetsBtn');
+      sb.textContent = 'Fetch Responses'; sb.style.background = 'var(--teal,#0F766E)'; sb.disabled = false;
       checkReady();
       window.scrollTo({ top:0, behavior:'smooth' });
     });
+
+    // ── Google Sheets fetch ───────────────────────────────────────
+    async function fetchGoogleSheets() {
+      const url = document.getElementById('sheetsUrl').value.trim();
+      if (!url) return;
+      const btn = document.getElementById('fetchSheetsBtn');
+      btn.textContent = 'Fetching…'; btn.disabled = true; btn.style.background = '#6B7280';
+      try {
+        // Convert share URL to CSV export URL
+        const csvUrl = url
+          .replace(/\/edit.*$/, '/export?format=csv')
+          .replace(/\/pub.*$/, '/export?format=csv')
+          .replace(/\/view.*$/, '/export?format=csv');
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system: 'You are a data extractor. The web page content below is CSV data from a Google Sheet containing survey responses. Return ALL the data exactly as-is, preserving every row and column. Do not summarise, filter, or modify anything.',
+            message: 'Return all the CSV data from this sheet exactly as-is.',
+            urls: [csvUrl],
+            max_tokens: 6000
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Fetch failed');
+        const sheetData = data.content[0].text.trim();
+        dataEl.value = sheetData;
+        // Auto-fill title if empty
+        if (!titleEl.value.trim()) titleEl.value = 'Google Forms Survey';
+        btn.textContent = '✓ Responses Loaded'; btn.style.background = 'var(--green,#059669)';
+        checkReady();
+      } catch(err) {
+        btn.textContent = 'Fetch Failed'; btn.style.background = 'var(--red,#C0392B)'; btn.disabled = false;
+        alert('Could not fetch sheet: ' + err.message + '\n\nMake sure the sheet is shared with "Anyone with the link can view".');
+      }
+    }
+    // ─────────────────────────────────────────────────────────────
 
     // ── Google Forms fetch ────────────────────────────────────────
     async function fetchGoogleForm() {
