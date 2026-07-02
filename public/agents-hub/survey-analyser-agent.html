@@ -606,18 +606,41 @@ Output format:
       return data.content[0].text;
     }
 
+    function fixJsonControlChars(str) {
+      let out = '', inStr = false, esc = false;
+      for (let i = 0; i < str.length; i++) {
+        const c = str[i];
+        if (esc)        { out += c; esc = false; continue; }
+        if (c === '\\' && inStr) { out += c; esc = true; continue; }
+        if (c === '"')  { inStr = !inStr; out += c; continue; }
+        if (inStr) {
+          if (c === '\n') { out += '\\n'; continue; }
+          if (c === '\r') { out += '\\r'; continue; }
+          if (c === '\t') { out += '\\t'; continue; }
+        }
+        out += c;
+      }
+      return out;
+    }
+
     function parseJSON(text) {
       const stripped = text.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();
       const match = stripped.match(/\{[\s\S]*\}/);
       if (!match) throw new Error('No JSON found in response. Model returned: ' + text.slice(0,200));
-      try { return JSON.parse(match[0]); } catch(e) {
-        let depth=0,start=-1,end=-1;
-        for(let i=0;i<stripped.length;i++){
-          if(stripped[i]==='{'){if(depth++===0)start=i;}
-          else if(stripped[i]==='}'){if(--depth===0){end=i;break;}}
+      const jsonStr = match[0];
+      try { return JSON.parse(jsonStr); } catch(e) {
+        try { return JSON.parse(fixJsonControlChars(jsonStr)); } catch(e2) {
+          let depth=0,start=-1,end=-1;
+          for(let i=0;i<stripped.length;i++){
+            if(stripped[i]==='{'){if(depth++===0)start=i;}
+            else if(stripped[i]==='}'){if(--depth===0){end=i;break;}}
+          }
+          if(start!==-1&&end!==-1){
+            try { return JSON.parse(fixJsonControlChars(stripped.slice(start,end+1))); } catch(e3){}
+            return JSON.parse(stripped.slice(start,end+1));
+          }
+          throw new Error('Could not parse JSON: '+e.message);
         }
-        if(start!==-1&&end!==-1)return JSON.parse(stripped.slice(start,end+1));
-        throw new Error('Could not parse JSON: '+e.message);
       }
     }
 
