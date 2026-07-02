@@ -438,47 +438,37 @@ Examples:
     // ─────────────────────────────────────────────────────────────
     dataInput.addEventListener('input',()=>{const l=dataInput.value.length;charCount.textContent=l.toLocaleString()+' character'+(l!==1?'s':'');});
 
-    // ── Internal documents ──
-    const uploadedDocs = {};
-
+    // ── Internal documents (legacy drop zone — feeds into unified _uploadedDocs) ──
     function handleDrop(e) {
       e.preventDefault();
-      document.getElementById('dropZone').style.borderColor = 'var(--border)';
-      handleFiles(e.dataTransfer.files);
+      const dz = document.getElementById('dropZone');
+      if (dz) dz.style.borderColor = 'var(--border)';
+      _handleFiles(e.dataTransfer.files);
     }
 
-    function handleFiles(files) {
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          uploadedDocs[file.name] = e.target.result;
-          renderFileList();
-        };
-        reader.readAsText(file);
-      });
-    }
+    function handleFiles(files) { _handleFiles(files); }
+    function removeDoc(name) { delete _uploadedDocs[name]; _renderAttachments(); renderFileList(); }
 
     function renderFileList() {
       const container = document.getElementById('fileList');
-      container.innerHTML = Object.keys(uploadedDocs).map(name => `
+      if (!container) return;
+      container.innerHTML = Object.keys(_uploadedDocs).map(name => `
         <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--blue-light);border:1px solid #BFDBFE;border-radius:100px;font-size:11px;font-weight:500;color:var(--blue);">
           📄 ${escapeHtml(name)}
           <span onclick="removeDoc('${name}')" style="cursor:pointer;color:var(--blue);font-weight:700;margin-left:2px;">×</span>
         </div>`).join('');
     }
 
-    function removeDoc(name) {
-      delete uploadedDocs[name];
-      renderFileList();
-    }
-
     function buildMessageWithDocs(question) {
-      const docEntries = Object.entries(uploadedDocs);
-      if (docEntries.length === 0) return question;
-      const docsBlock = docEntries.map(([name, content]) =>
-        `--- INTERNAL DOCUMENT: ${name} ---\n${content.slice(0, 8000)}\n--- END: ${name} ---`
-      ).join('\n\n');
-      return `RESEARCH QUESTION:\n${question}\n\n===\nINTERNAL REFERENCE DOCUMENTS (treat as primary source material — cite by filename when referencing):\n\n${docsBlock}\n===`;
+      // Always use _buildUserContent which merges text docs + images into multipart content
+      return _buildUserContent(
+        `RESEARCH QUESTION:\n${question}` +
+        (Object.keys(_uploadedDocs).length
+          ? '\n\n===\nATTACHED DOCUMENTS:\n\n' +
+            Object.entries(_uploadedDocs).map(([n,c]) =>
+              `--- ${n} ---\n${c.slice(0,8000)}\n--- END: ${n} ---`).join('\n\n') + '\n==='
+          : '')
+      );
     }
 
     const analyzeBtn=document.getElementById('analyzeBtn'),outputEmpty=document.getElementById('outputEmpty'),agentProgress=document.getElementById('agentProgress'),resultsContainer=document.getElementById('resultsContainer'),errorBox=document.getElementById('errorBox'),errorTitle=document.getElementById('errorTitle'),errorDetail=document.getElementById('errorDetail');
