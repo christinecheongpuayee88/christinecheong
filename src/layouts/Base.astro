@@ -1,4 +1,4 @@
----
+﻿---
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
@@ -14,9 +14,9 @@ const siteUrl = 'https://christinecheong.com';
 const pageUrl = canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
 const image = ogImage || `${siteUrl}/og-default.png`;
 const fullTitle =
-  title === 'Christine Cheong'
-    ? 'Christine Cheong — Data Science Educator'
-    : `${title} | Christine Cheong`;
+  title === 'Home'
+    ? 'Data Science Educator'
+    : `${title} `;
 ---
 
 <!DOCTYPE html>

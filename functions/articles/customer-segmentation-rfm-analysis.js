@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cloudflare Pages Function — server-side password gate
  * Route: /articles/customer-segmentation-rfm-analysis
  *
@@ -44,7 +44,7 @@ function loginPage(errorMsg = "") {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Password Required · Christine Cheong</title>
+  <title>Password Required</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
