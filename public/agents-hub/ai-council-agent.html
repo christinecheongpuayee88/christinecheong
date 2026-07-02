@@ -343,35 +343,40 @@
         <div class="customise-row">
           <div class="customise-dot" style="background:#DC2626"></div>
           <select class="customise-select" id="adv1pick" onchange="applyPick(0)"><option value="">— or pick a known figure —</option></select>
-          <input class="customise-field name-field" id="adv1name" placeholder="e.g. The Skeptic, The CFO…" />
+          <input class="customise-field name-field" id="adv1name" placeholder="e.g. Jensen Huang, Lee Kuan Yew…" oninput="onNameInput(0)" />
           <input class="customise-field" id="adv1role" placeholder="e.g. Finds risks and fatal flaws" />
         </div>
+        <div id="adv1hint" style="font-size:11px;color:#059669;padding:2px 0 4px 32px;min-height:16px;"></div>
         <div class="customise-row">
           <div class="customise-dot" style="background:#2563EB"></div>
           <select class="customise-select" id="adv2pick" onchange="applyPick(1)"><option value="">— or pick a known figure —</option></select>
-          <input class="customise-field name-field" id="adv2name" placeholder="e.g. The Strategist, The Engineer…" />
+          <input class="customise-field name-field" id="adv2name" placeholder="e.g. Andrew Ng, Elon Musk…" oninput="onNameInput(1)" />
           <input class="customise-field" id="adv2role" placeholder="e.g. Challenges assumptions, reframes" />
         </div>
+        <div id="adv2hint" style="font-size:11px;color:#059669;padding:2px 0 4px 32px;min-height:16px;"></div>
         <div class="customise-row">
           <div class="customise-dot" style="background:#059669"></div>
           <select class="customise-select" id="adv3pick" onchange="applyPick(2)"><option value="">— or pick a known figure —</option></select>
-          <input class="customise-field name-field" id="adv3name" placeholder="e.g. The Optimist, The Growth Lead…" />
+          <input class="customise-field name-field" id="adv3name" placeholder="e.g. Ray Dalio, Steve Jobs…" oninput="onNameInput(2)" />
           <input class="customise-field" id="adv3role" placeholder="e.g. Finds hidden upside and opportunity" />
         </div>
+        <div id="adv3hint" style="font-size:11px;color:#059669;padding:2px 0 4px 32px;min-height:16px;"></div>
         <div class="customise-row">
           <div class="customise-dot" style="background:#7C3AED"></div>
           <select class="customise-select" id="adv4pick" onchange="applyPick(3)"><option value="">— or pick a known figure —</option></select>
-          <input class="customise-field name-field" id="adv4name" placeholder="e.g. The Outsider, The Investor…" />
+          <input class="customise-field name-field" id="adv4name" placeholder="e.g. Warren Buffett, Sun Tzu…" oninput="onNameInput(3)" />
           <input class="customise-field" id="adv4role" placeholder="e.g. External perspective, what insiders miss" />
         </div>
+        <div id="adv4hint" style="font-size:11px;color:#059669;padding:2px 0 4px 32px;min-height:16px;"></div>
         <div class="customise-row">
           <div class="customise-dot" style="background:#D97706"></div>
           <select class="customise-select" id="adv5pick" onchange="applyPick(4)"><option value="">— or pick a known figure —</option></select>
-          <input class="customise-field name-field" id="adv5name" placeholder="e.g. The Operator, The PM…" />
+          <input class="customise-field name-field" id="adv5name" placeholder="e.g. Charlie Munger, Jeff Bezos…" oninput="onNameInput(4)" />
           <input class="customise-field" id="adv5role" placeholder="e.g. Execution focus, real-world constraints" />
         </div>
+        <div id="adv5hint" style="font-size:11px;color:#059669;padding:2px 0 4px 32px;min-height:16px;"></div>
         <div class="customise-footer">
-          <span style="font-size:11px;color:var(--text-muted)">Pick a known figure to channel their real frameworks — or type any custom advisor</span>
+          <span style="font-size:11px;color:var(--text-muted)">Type any name — known figures are auto-recognised and their real frameworks loaded</span>
           <button class="customise-reset" id="resetAdvisors">↺ Use defaults</button>
         </div>
       </div>
@@ -468,23 +473,83 @@ Examples:
     const runBtn     = document.getElementById('runBtn');
 
     const KNOWN_ADVISORS = [
-      { id:'munger',       name:'Charlie Munger',       role:'Apply a mental models lattice across disciplines; use inversion (what could go wrong?); avoid stupidity rather than seek brilliance; think in second and third-order effects' },
-      { id:'buffett',      name:'Warren Buffett',        role:'Stay within circle of competence; look for durable competitive moats; prioritise long-term compounding over short-term gains; temperament beats intellect' },
-      { id:'dalio',        name:'Ray Dalio',             role:'Seek radical transparency; weight beliefs by the believability of their source; embrace pain + reflection = progress; diagnose root causes, not symptoms' },
-      { id:'bezos',        name:'Jeff Bezos',            role:'Work backwards from the customer; think in decades not quarters; use the regret minimisation framework; maintain Day 1 intensity; separate Type 1 (irreversible) from Type 2 (reversible) decisions' },
-      { id:'jobs',         name:'Steve Jobs',            role:'Say no to almost everything; obsess over simplicity and taste; 10x better, not 10% better; control the full experience; the customer does not always know what they want' },
-      { id:'taleb',        name:'Nassim Taleb',          role:'Design for antifragility, not just robustness; skin in the game changes behaviour; beware of prediction — build for optionality; via negativa: what to remove, not what to add; black swans break models' },
-      { id:'drucker',      name:'Peter Drucker',         role:'What business are you really in? Management by objectives and self-control; effectiveness over efficiency; the purpose of a business is to create a customer; abandon yesterday' },
-      { id:'porter',       name:'Michael Porter',        role:'Analyse the five competitive forces; sustainable advantage comes from strategic positioning, not operational excellence; differentiation and cost leadership rarely coexist; activity systems create defensibility' },
-      { id:'thiel',        name:'Peter Thiel',           role:'What important truth do very few people agree with you on? Build a monopoly, not a competitive market; go from 0 to 1, not 1 to n; definite optimism over indefinite hedging; the best plan beats the market' },
-      { id:'andreessen',   name:'Marc Andreessen',       role:'Product-market fit is the only thing that matters early; software eats every industry eventually; strong founder beats hired management; technology solves human problems at scale' },
-      { id:'grove',        name:'Andy Grove',            role:'Only the paranoid survive; identify strategic inflection points before they hit; OKRs create clarity and alignment; management is output, not activity; confront brutal facts early' },
-      { id:'horowitz',     name:'Ben Horowitz',          role:'Wartime CEO vs peacetime CEO require opposite skills; take care of the people, the products, and the profits — in that order; hard things have no formula; confronting reality is a leadership skill' },
-      { id:'christensen',  name:'Clayton Christensen',   role:'Disruption comes from below, not from the top; jobs-to-be-done: what is the customer really hiring this for? The innovator\'s dilemma — incumbents rationally ignore disruptors; watch the resource allocation process' },
-      { id:'suntzu',       name:'Sun Tzu',               role:'Win before fighting; know yourself and your enemy; position before action; the best strategy makes the outcome inevitable in advance; deception, terrain, timing, and concentration of force' },
-      { id:'godin',        name:'Seth Godin',            role:'Be the purple cow — remarkable or invisible; permission marketing beats interruption; lead a tribe; the dip separates winners from quitters; ship — imperfect work beats perfect inaction' },
-      { id:'welch',        name:'Jack Welch',            role:'Face reality as it is, not as you wish it were; differentiate: develop stars, manage the middle, remove underperformers; control your destiny or someone else will; simplicity and speed win' },
+      // Business & Investing
+      { id:'munger',       name:'Charlie Munger',        aliases:['munger','charlie munger'],
+        role:'Apply a mental models lattice across disciplines; use inversion — ask what could go wrong; avoid stupidity rather than seek brilliance; think in second and third-order effects; the best defence is a wide moat' },
+      { id:'buffett',      name:'Warren Buffett',         aliases:['buffett','warren buffett'],
+        role:'Stay within circle of competence; look for durable competitive moats; prioritise long-term compounding over short-term gains; temperament beats intellect; price is what you pay, value is what you get' },
+      { id:'dalio',        name:'Ray Dalio',              aliases:['dalio','ray dalio'],
+        role:'Seek radical transparency and radical open-mindedness; weight beliefs by the believability of their source; embrace pain + reflection = progress; diagnose root causes not symptoms; understand the debt and economic machine' },
+      { id:'bezos',        name:'Jeff Bezos',             aliases:['bezos','jeff bezos'],
+        role:'Work backwards from the customer; think in decades not quarters; use the regret minimisation framework; maintain Day 1 intensity; separate Type 1 (irreversible) from Type 2 (reversible) decisions; invent and simplify' },
+      { id:'jobs',         name:'Steve Jobs',             aliases:['jobs','steve jobs'],
+        role:'Say no to almost everything; obsess over simplicity and taste; 10x better not 10% better; control the full experience end to end; the customer does not always know what they want; connecting the dots only works looking backward' },
+      { id:'musk',         name:'Elon Musk',              aliases:['musk','elon musk','elon'],
+        role:'First principles thinking — question every assumption and rebuild from physics up; compress timelines aggressively; vertical integration to control quality and cost; make it 10x better before incrementally improving; tolerate high failure rates in pursuit of breakthrough; move fast and accept asymmetric risk' },
+      { id:'taleb',        name:'Nassim Taleb',           aliases:['taleb','nassim taleb'],
+        role:'Design for antifragility not just robustness; skin in the game changes behaviour; beware of prediction — build for optionality; via negativa: what to remove not what to add; black swans break models; the map is not the territory' },
+      { id:'drucker',      name:'Peter Drucker',          aliases:['drucker','peter drucker'],
+        role:'What business are you really in? Management by objectives and self-control; effectiveness over efficiency; the purpose of a business is to create a customer; abandon yesterday to seize tomorrow; knowledge workers need different management' },
+      { id:'porter',       name:'Michael Porter',         aliases:['porter','michael porter'],
+        role:'Analyse the five competitive forces; sustainable advantage comes from strategic positioning not operational excellence; differentiation and cost leadership rarely coexist; activity systems create defensibility; strategy is about what not to do' },
+      { id:'thiel',        name:'Peter Thiel',            aliases:['thiel','peter thiel'],
+        role:'What important truth do very few people agree with you on? Build a monopoly not a competitive market; go from 0 to 1 not 1 to n; definite optimism over indefinite hedging; the best plan beats the market; secrets still exist — find them' },
+      { id:'andreessen',   name:'Marc Andreessen',        aliases:['andreessen','marc andreessen'],
+        role:'Product-market fit is the only thing that matters early; software eats every industry eventually; strong founder beats hired management; technology solves human problems at scale; the future is already here, unevenly distributed' },
+      { id:'grove',        name:'Andy Grove',             aliases:['grove','andy grove'],
+        role:'Only the paranoid survive; identify strategic inflection points before they hit; OKRs create clarity and alignment; management is output not activity; confront brutal facts early; the most important decision is who you listen to' },
+      { id:'horowitz',     name:'Ben Horowitz',           aliases:['horowitz','ben horowitz'],
+        role:'Wartime CEO vs peacetime CEO require opposite skills; take care of the people the products and the profits in that order; hard things have no formula; confronting reality is a leadership skill; every company becomes a product of its culture' },
+      { id:'christensen',  name:'Clayton Christensen',    aliases:['christensen','clayton christensen'],
+        role:'Disruption comes from below not from the top; jobs-to-be-done — what is the customer really hiring this for? The innovator\'s dilemma: incumbents rationally ignore disruptors; watch the resource allocation process not the strategy statement' },
+      { id:'welch',        name:'Jack Welch',             aliases:['welch','jack welch'],
+        role:'Face reality as it is not as you wish it were; differentiate: develop stars manage the middle remove underperformers; control your destiny or someone else will; simplicity and speed win; be number 1 or number 2 in every market you compete in' },
+      { id:'godin',        name:'Seth Godin',             aliases:['godin','seth godin'],
+        role:'Be the purple cow — remarkable or invisible; permission marketing beats interruption; lead a tribe not a market; the dip separates winners from quitters; ship — imperfect work beats perfect inaction; marketing is the art of telling true stories that resonate' },
+      // Tech & AI Leaders
+      { id:'jensen',       name:'Jensen Huang',           aliases:['jensen','jensen huang'],
+        role:'Accelerated computing is inevitable — bet on the platform not the application; pain and suffering build character and resilience; move at the speed of imagination; full-stack vertical integration creates defensibility; the next wave of AI is physical AI and robotics; be willing to reinvent your own products before others do' },
+      { id:'ng',           name:'Andrew Ng',              aliases:['ng','andrew ng'],
+        role:'AI is the new electricity — it will transform every industry; start with data not models; systematic approach to AI projects: validate feasibility early, build iteratively; MLOps and deployment matter as much as model quality; democratise AI so everyone can build; education and access are the real bottleneck to AI impact' },
+      { id:'altman',       name:'Sam Altman',             aliases:['altman','sam altman'],
+        role:'Compound growth and long-term thinking; invest in high-potential outliers; the most important thing is whether the idea is important and possible; execution speed matters enormously in technology; the future will be so bright that the risk of under-investing in it is larger than over-investing; AGI changes everything' },
+      { id:'lecun',        name:'Yann LeCun',             aliases:['lecun','yann lecun'],
+        role:'Deep learning and self-supervised learning are the path forward; intelligence is about world models not just pattern matching; be sceptical of hype and think from first principles; open science accelerates progress for everyone; AI safety through understanding not restriction' },
+      // Strategic & Political Leaders
+      { id:'lky',          name:'Lee Kuan Yew',           aliases:['lee kuan yew','lky','lee kuan','kuan yew'],
+        role:'Pragmatism over ideology — what works, not what sounds right; meritocracy and discipline as foundations of a resilient society; think 20–30 years ahead and build institutions that outlast individuals; small nations survive by being indispensable; social cohesion is a strategic asset; hard truths are more useful than comfortable illusions' },
+      { id:'kissinger',    name:'Henry Kissinger',        aliases:['kissinger','henry kissinger'],
+        role:'Geopolitics is shaped by power, not idealism; understand the balance of forces before committing; great powers define the rules — align with them or pay the price; strategy requires patience and willingness to play a long game; legitimacy and power must be balanced' },
+      { id:'churchill',    name:'Winston Churchill',      aliases:['churchill','winston churchill'],
+        role:'Never surrender the essential position; history is written by those who show up; rally through adversity — morale is a force multiplier; bet on the right alliance at the right time; communicate with clarity and conviction; preparation precedes opportunity' },
+      // Thinkers & Scientists
+      { id:'suntzu',       name:'Sun Tzu',                aliases:['sun tzu','suntzu'],
+        role:'Win before fighting; know yourself and know your enemy; position before action; the best strategy makes the outcome inevitable in advance; deception terrain timing and concentration of force; supreme excellence consists in breaking the enemy\'s resistance without fighting' },
+      { id:'kahneman',     name:'Daniel Kahneman',        aliases:['kahneman','daniel kahneman'],
+        role:'System 1 thinking is fast, intuitive, and prone to bias; System 2 is slow, deliberate, and effortful — use it for high-stakes decisions; cognitive biases are predictable and must be pre-committed against; regression to the mean is always lurking; what you see is not all there is' },
+      { id:'feynman',      name:'Richard Feynman',        aliases:['feynman','richard feynman'],
+        role:'If you cannot explain it simply you do not understand it; challenge every assumption until you hit bedrock physics; the first principle is not to fool yourself — and you are the easiest person to fool; curiosity is a competitive advantage; beauty and truth are usually aligned' },
     ];
+
+    // Build a flat alias → advisor lookup for name-field auto-detection
+    const KNOWN_BY_ALIAS = {};
+    KNOWN_ADVISORS.forEach(a => {
+      (a.aliases || [a.name.toLowerCase()]).forEach(alias => {
+        KNOWN_BY_ALIAS[alias.toLowerCase()] = a;
+      });
+    });
+
+    function detectKnownAdvisor(typedName) {
+      const q = typedName.trim().toLowerCase();
+      if (!q) return null;
+      // Exact alias match
+      if (KNOWN_BY_ALIAS[q]) return KNOWN_BY_ALIAS[q];
+      // Partial match — name starts with typed text or typed text is contained
+      return KNOWN_ADVISORS.find(a =>
+        a.name.toLowerCase().startsWith(q) ||
+        (a.aliases || []).some(alias => alias.startsWith(q) || q.includes(alias.split(' ')[0]))
+      ) || null;
+    }
 
     const DEFAULTS = [
       { name: 'The Well-Intended Skeptic',      role: 'Finds fatal flaws, real risks, what could go badly wrong' },
@@ -513,6 +578,34 @@ Examples:
       if (picked) {
         document.getElementById(`adv${idx+1}name`).value = picked.name;
         document.getElementById(`adv${idx+1}role`).value = picked.role;
+        clearHint(idx);
+      }
+    }
+
+    function clearHint(idx) {
+      const hint = document.getElementById(`adv${idx+1}hint`);
+      if (hint) hint.textContent = '';
+    }
+
+    // Auto-detect known figure when user types a name
+    function onNameInput(idx) {
+      const nameEl = document.getElementById(`adv${idx+1}name`);
+      const roleEl = document.getElementById(`adv${idx+1}role`);
+      const pickEl = document.getElementById(`adv${idx+1}pick`);
+      const hintEl = document.getElementById(`adv${idx+1}hint`);
+      const typed  = nameEl.value;
+      const match  = detectKnownAdvisor(typed);
+      if (match) {
+        // Snap name to canonical spelling, fill lens, sync dropdown
+        if (nameEl.value.trim().toLowerCase() !== match.name.toLowerCase()) {
+          // Don't overwrite while typing — just show hint
+        }
+        roleEl.value = match.role;
+        if (pickEl) pickEl.value = match.id;
+        if (hintEl) hintEl.textContent = `✓ Recognised: ${match.name} — frameworks loaded`;
+      } else {
+        if (pickEl) pickEl.value = '';
+        if (hintEl) hintEl.textContent = '';
       }
     }
 
@@ -526,13 +619,19 @@ Examples:
 
     function getAdvisors() {
       return DEFAULTS.map((def, i) => {
-        const pickSel = document.getElementById(`adv${i+1}pick`);
-        const knownId = pickSel ? pickSel.value : '';
-        const known   = KNOWN_ADVISORS.find(a => a.id === knownId) || null;
+        const pickSel   = document.getElementById(`adv${i+1}pick`);
+        const nameEl    = document.getElementById(`adv${i+1}name`);
+        const roleEl    = document.getElementById(`adv${i+1}role`);
+        const typedName = nameEl ? nameEl.value.trim() : '';
+        const typedRole = roleEl ? roleEl.value.trim() : '';
+        // Resolve known figure: prefer dropdown, fall back to name-field auto-detection
+        const knownId   = pickSel ? pickSel.value : '';
+        const known     = KNOWN_ADVISORS.find(a => a.id === knownId)
+                       || (typedName ? detectKnownAdvisor(typedName) : null);
         return {
-          name:    document.getElementById(`adv${i+1}name`).value.trim() || (known ? known.name : def.name),
-          role:    document.getElementById(`adv${i+1}role`).value.trim() || (known ? known.role : def.role),
-          knownId: knownId || null,
+          name:    typedName || (known ? known.name : def.name),
+          role:    typedRole || (known ? known.role : def.role),
+          knownId: known ? known.id : null,
         };
       });
     }
