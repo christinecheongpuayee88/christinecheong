@@ -408,50 +408,44 @@ What do you hope to learn?
   </footer>
 
   <script>
-    const SYSTEM = `You are a Survey Analyser Agent and executive reporting assistant. Your job is to transform raw survey response data into structured audience intelligence AND a polished email-ready executive report.
+    const SYSTEM = `You are a Survey Analyser Agent. Transform raw survey response data into structured audience intelligence. Output valid JSON only — no prose, no markdown fences.
 
-CRITICAL RULES:
-- Preserve every verbatim response — never paraphrase or silently drop answers.
-- Extract themes from open-ended answers based on what's actually written, not what you'd expect.
-- For rating questions, calculate average and show distribution across all scale points.
-- Recommendations must be specific and directly traceable to the data — never generic advice.
-- Output valid JSON only — no prose before or after.
+RULES:
+- Count respondent_count as total number of individual form submissions (rows).
+- Count unique_participants as distinct names/individuals.
+- Extract industries as distinct list of sectors/industries mentioned.
+- For rating questions: calculate rating_avg (one decimal), rating_distribution (counts per level 1-5), score_range (e.g. "2 – 3"), and rating_summary (2-3 plain-English sentences interpreting what the scores mean for the audience).
+- For key_themes: count how many of the total respondent_count mentioned it, express as mention_count (number) and mention_label (e.g. "Mentioned by 3 of 5 responses").
+- instructor_takeaway: 2-3 paragraph plain-English summary starting with a one-sentence headline insight, then specific recommendations for course design/delivery grounded in the data.
+- Output valid JSON only.
 
 Output format:
 {
   "survey_title": "...",
-  "survey_purpose": "...",
   "respondent_count": 0,
-  "summary": "2-3 sentence plain-language summary of the entire survey",
-  "audience_profile": "3-4 sentences describing who responded — sectors, roles, experience level, dominant motivations",
+  "unique_participants": 0,
+  "industries": ["Industry A", "Industry B"],
   "respondents": [
-    { "name": "...", "role": "...", "organisation": "..." }
+    { "name": "...", "job_title": "...", "industry": "..." }
   ],
-  "question_analyses": [
+  "rating_questions": [
     {
       "question": "Full question text",
-      "type": "short_answer | rating | open_ended",
-      "responses": ["verbatim response 1", "verbatim response 2"],
-      "rating_avg": null,
+      "rating_avg": 0.0,
+      "score_range": "2 – 3",
       "rating_distribution": { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 },
-      "themes": ["theme 1", "theme 2"]
+      "rating_summary": "2-3 sentence interpretation of what the scores mean"
     }
   ],
   "key_themes": [
-    { "theme": "Theme name", "description": "What this theme means and which responses support it", "count": 0 }
-  ],
-  "insights": [
-    "Specific, data-backed insight — what the data reveals, not just what it shows"
-  ],
-  "recommendations": [
     {
-      "recommendation": "Specific action to take",
-      "rationale": "Which data point(s) justify this"
+      "theme": "Theme name",
+      "mention_count": 0,
+      "mention_label": "Mentioned by X of Y responses",
+      "description": "What responses said and why this matters"
     }
   ],
-  "gaps": [
-    "Missing information, inconsistency, or question that wasn't answered clearly"
-  ]
+  "instructor_takeaway": "Headline insight sentence.\n\nParagraph 2 with specific course design recommendations.\n\nParagraph 3 with practical suggestions."
 }`;
 
     const titleEl   = document.getElementById('surveyTitle');
@@ -600,38 +594,36 @@ Output format:
 
     function generateEmailReport(d) {
       const respondents = d.respondents || [];
-      const questions   = d.question_analyses || [];
-      const recs        = d.recommendations || [];
+      const ratingQs   = d.rating_questions || [];
       const themes      = d.key_themes || [];
-      const comfortQ    = questions.find(q => q.type === 'rating');
-      const roles       = [...new Set(respondents.map(r => [r.role,r.organisation].filter(Boolean).join(', ')).filter(Boolean))];
-      const distRows    = comfortQ ? Object.entries(comfortQ.rating_distribution||{}).filter(([,v])=>Number(v)>0)
-        .map(([k,v])=>`<li style="margin:2px 0">Rating ${k}: <strong>${v}</strong> participant(s)</li>`).join('') : '';
-      const goalItems   = themes.length
-        ? themes.map(t=>`<li style="margin:4px 0"><strong>${t.theme}:</strong> ${t.description}</li>`).join('')
-        : (d.insights||[]).map(i=>`<li style="margin:4px 0">${i}</li>`).join('');
-      const recItems    = recs.slice(0,4).map(r=>`<li style="margin:4px 0">${r.recommendation}</li>`).join('');
-      const s = (str) => String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const total       = d.respondent_count || respondents.length;
+      const industries  = d.industries || [...new Set(respondents.map(r=>r.industry||r.organisation).filter(Boolean))];
+      const s = str => String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      let idx = 1;
       return `<div style="font-family:Arial,sans-serif;max-width:680px;color:#111827;line-height:1.65">
   <div style="background:#1E3A5F;color:#fff;padding:28px 32px;border-radius:8px 8px 0 0">
     <h1 style="margin:0;font-size:22px;font-weight:700">📋 Course Registrant Summary Report</h1>
     <p style="margin:6px 0 0;font-size:13px;opacity:0.8">${s(d.survey_title)} · ${new Date().toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</p>
   </div>
   <div style="border:1px solid #E5E7EB;border-top:none;border-radius:0 0 8px 8px;padding:0 32px 28px">
-    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">1. Participant Profile &amp; Demographics</h2>
-    <ul style="margin:0;padding-left:20px">
-      <li style="margin:4px 0"><strong>Total Responses:</strong> ${d.respondent_count||respondents.length}</li>
-      <li style="margin:4px 0"><strong>Industries / Roles Represented:</strong> ${roles.length ? roles.join(' · ') : 'See full report'}</li>
-    </ul>
-    ${d.audience_profile ? `<p style="margin:12px 0 0;padding:12px 16px;background:#F0F9FF;border-left:3px solid #1E88C7;border-radius:0 6px 6px 0;font-size:13px;color:#1A3A5C">${s(d.audience_profile)}</p>` : ''}
-    ${comfortQ ? `<h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">2. ${s(comfortQ.question)}</h2>
-    ${comfortQ.rating_avg ? `<p style="margin:0 0 8px"><strong>Average Score: ${Number(comfortQ.rating_avg).toFixed(1)} / 5</strong></p>` : ''}
-    <ul style="margin:0;padding-left:20px">${distRows}</ul>` : ''}
-    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${comfortQ ? '3' : '2'}. Core Learning Objectives &amp; Goals</h2>
-    <ul style="margin:0;padding-left:20px">${goalItems||'<li>See full analysis report</li>'}</ul>
-    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${comfortQ ? '4' : '3'}. Key Takeaways for the Instructor</h2>
-    <ul style="margin:0;padding-left:20px">${recItems||'<li>See recommendations in full report</li>'}</ul>
-    <p style="margin:28px 0 0;font-size:11px;color:#9CA3AF;border-top:1px solid #E5E7EB;padding-top:16px">Generated by NUS-ISS Living Lab · Survey Analyser Agent · christinecheong.com/agents-hub/survey-analyser-agent</p>
+    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Participant Profile &amp; Demographics</h2>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:12px">
+      <tr><td style="padding:6px 0;font-size:13px"><strong>Total Responses:</strong> ${total}</td><td style="padding:6px 0;font-size:13px"><strong>Industries:</strong> ${industries.join(', ')||'—'}</td></tr>
+    </table>
+    ${respondents.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px">
+      <tr style="background:#F8FAFC"><th style="text-align:left;padding:8px 10px;border:1px solid #E5E7EB">Name</th><th style="text-align:left;padding:8px 10px;border:1px solid #E5E7EB">Job Title</th><th style="text-align:left;padding:8px 10px;border:1px solid #E5E7EB">Industry</th></tr>
+      ${respondents.map(r=>`<tr><td style="padding:7px 10px;border:1px solid #E5E7EB">${s(r.name||'—')}</td><td style="padding:7px 10px;border:1px solid #E5E7EB">${s(r.job_title||r.role||'—')}</td><td style="padding:7px 10px;border:1px solid #E5E7EB">${s(r.industry||r.organisation||'—')}</td></tr>`).join('')}
+    </table>` : ''}
+    ${ratingQs.map(q=>`
+    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. ${s(q.question)}</h2>
+    <p style="margin:0 0 8px"><strong>Average: ${Number(q.rating_avg||0).toFixed(1)} / 5</strong>${q.score_range ? ` &nbsp;·&nbsp; Range: ${s(q.score_range)}` : ''}</p>
+    <ul style="margin:0 0 10px;padding-left:20px">${Object.entries(q.rating_distribution||{}).filter(([,v])=>Number(v)>0).map(([k,v])=>`<li style="margin:3px 0">Level ${k}: <strong>${v}</strong> response${Number(v)!==1?'s':''}</li>`).join('')}</ul>
+    ${q.rating_summary ? `<p style="margin:0;padding:10px 14px;background:#F0F9FF;border-left:3px solid #1E88C7;font-size:13px;color:#1A3A5C">${s(q.rating_summary)}</p>` : ''}`).join('')}
+    ${themes.length ? `<h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Core Learning Objectives &amp; Goals</h2>
+    ${themes.map(t=>`<div style="margin-bottom:12px"><strong style="font-size:14px">${s(t.theme)}</strong>${t.mention_label?`<br><span style="font-size:12px;color:#6D28D9">${s(t.mention_label)}</span>`:''}<br><span style="font-size:13px;color:#4B5563">${s(t.description)}</span></div>`).join('')}` : ''}
+    ${d.instructor_takeaway ? `<h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Key Takeaways for the Instructor</h2>
+    <div style="padding:16px 20px;background:#FEF3C7;border-left:4px solid #B45309;border-radius:0 8px 8px 0">💡 ${d.instructor_takeaway.split('\n\n').filter(Boolean).map(p=>`<p style="margin:0 0 10px;font-size:13px;color:#78350F">${s(p)}</p>`).join('')}</div>` : ''}
+    <p style="margin:28px 0 0;font-size:11px;color:#9CA3AF;border-top:1px solid #E5E7EB;padding-top:16px">Generated by NUS-ISS Living Lab · Survey Analyser Agent</p>
   </div>
 </div>`;
     }
@@ -656,137 +648,91 @@ Output format:
     }
 
     function renderOutput(d) {
-      const respondents = d.respondents || [];
-      const questions   = d.question_analyses || [];
-      const themes      = d.key_themes || [];
-      const insights    = d.insights || [];
-      const recs        = d.recommendations || [];
-      const gaps        = d.gaps || [];
+      const respondents   = d.respondents || [];
+      const ratingQs      = d.rating_questions || [];
+      const themes        = d.key_themes || [];
+      const totalCount    = d.respondent_count || respondents.length || 0;
+      const uniqueCount   = d.unique_participants || new Set(respondents.map(r=>r.name)).size || totalCount;
+      const industries    = d.industries || [...new Set(respondents.map(r=>r.industry||r.organisation).filter(Boolean))];
+      let sectionIdx      = 1;
 
-      // Summary takeaway
-      const summaryHTML = d.summary ? `
-        <div class="takeaway-box">
-          <div class="takeaway-label">Summary</div>
-          <div class="takeaway-text">${esc(d.summary)}</div>
-        </div>` : '';
-
-      // Stats
-      const statsHTML = `
-        <div class="stat-grid">
-          <div class="stat-card"><div class="stat-num">${d.respondent_count || respondents.length}</div><div class="stat-label">Respondents</div></div>
-          <div class="stat-card"><div class="stat-num">${questions.length}</div><div class="stat-label">Questions</div></div>
-          <div class="stat-card"><div class="stat-num">${themes.length}</div><div class="stat-label">Key Themes</div></div>
-          <div class="stat-card"><div class="stat-num">${recs.length}</div><div class="stat-label">Recommendations</div></div>
+      // ── 1. Header ──────────────────────────────────────────────
+      const headerHTML = `
+        <div style="margin-bottom:28px">
+          <h2 style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--navy);margin-bottom:4px">📋 ${esc(d.survey_title||'Course Registrant Summary Report')}</h2>
         </div>`;
 
-      // Audience profile
-      const profileHTML = d.audience_profile ? `
-        <div class="profile-box">
-          <div class="section-label" style="color:var(--blue);margin-bottom:8px">Audience Profile</div>
-          ${esc(d.audience_profile)}
-        </div>` : '';
-
-      // Respondents table
-      const respHTML = respondents.length ? `
+      // ── 2. Participant Profile ──────────────────────────────────
+      const statsHTML = `
         <div class="section-block">
-          <div class="section-label">Respondents</div>
-          <table class="resp-table">
-            <thead><tr><th>#</th><th>Name</th><th>Role</th><th>Organisation</th></tr></thead>
-            <tbody>
-              ${respondents.map((r,i) => `<tr>
-                <td style="color:var(--text-muted);font-size:11px">${i+1}</td>
-                <td><strong>${esc(r.name||'—')}</strong></td>
-                <td>${esc(r.role||'—')}</td>
-                <td>${esc(r.organisation||'—')}</td>
-              </tr>`).join('')}
-            </tbody>
-          </table>
-        </div>` : '';
+          <div class="section-label">${sectionIdx++}. Participant Profile &amp; Demographics</div>
+          <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+            <div class="stat-card"><div class="stat-num">${totalCount}</div><div class="stat-label">Total Responses</div></div>
+            <div class="stat-card"><div class="stat-num">${uniqueCount}</div><div class="stat-label">Unique Participants</div></div>
+            <div class="stat-card"><div class="stat-num">${industries.length}</div><div class="stat-label">Industries</div></div>
+          </div>
+          ${respondents.length ? `<table class="resp-table">
+            <thead><tr><th>Name</th><th>Job Title</th><th>Industry</th></tr></thead>
+            <tbody>${respondents.map(r=>`<tr>
+              <td><strong>${esc(r.name||'—')}</strong></td>
+              <td>${esc(r.job_title||r.role||'—')}</td>
+              <td>${esc(r.industry||r.organisation||'—')}</td>
+            </tr>`).join('')}</tbody>
+          </table>` : ''}
+        </div>`;
 
-      // Questions
-      const questHTML = questions.length ? `
-        <div class="section-block">
-          <div class="section-label">Question-by-Question Analysis</div>
-          ${questions.map(q => {
-            const isRating = q.type === 'rating' && q.rating_avg != null;
-            const dist = q.rating_distribution || {};
-            const maxCount = Math.max(1, ...Object.values(dist).map(Number));
-            const ratingHTML = isRating ? `
-              <div style="margin:12px 0 10px">
-                <div style="font-size:12px;font-weight:600;color:var(--blue);margin-bottom:8px">Avg ${Number(q.rating_avg).toFixed(1)} / 5</div>
-                ${[1,2,3,4,5].map(n => {
-                  const cnt = Number(dist[n]||0);
-                  const pct = maxCount > 0 ? Math.round((cnt/maxCount)*100) : 0;
-                  return `<div class="rating-row">
-                    <span class="rating-label">${n}</span>
-                    <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:${pct}%"></div></div>
-                    <span class="rating-count">${cnt} resp.</span>
-                  </div>`;
-                }).join('')}
-              </div>` : '';
-
-            return `<div class="q-card">
-              <div class="q-header">
-                <div class="q-title">${esc(q.question)}</div>
-                ${isRating ? `<span class="q-rating">Avg ${Number(q.rating_avg).toFixed(1)}</span>` : ''}
-              </div>
-              ${ratingHTML}
-              ${(q.responses||[]).length && q.type !== 'rating' ? `
-                <div class="q-responses">
-                  ${q.responses.map(r => `<div class="q-resp-item">${esc(r)}</div>`).join('')}
-                </div>` : ''}
-              ${(q.themes||[]).length ? `
-                <div class="q-themes">
-                  ${q.themes.map(t => `<span class="q-theme-tag">${esc(t)}</span>`).join('')}
-                </div>` : ''}
+      // ── 3. Rating questions ─────────────────────────────────────
+      const ratingsHTML = ratingQs.map(q => {
+        const dist = q.rating_distribution || {};
+        const maxCount = Math.max(1, ...Object.values(dist).map(Number));
+        const activeLevels = [1,2,3,4,5].filter(n => Number(dist[n]||0) > 0);
+        const range = activeLevels.length >= 2 ? `${activeLevels[0]} – ${activeLevels[activeLevels.length-1]}` : (activeLevels[0]||'—');
+        return `<div class="section-block">
+          <div class="section-label">${sectionIdx++}. ${esc(q.question)}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div class="stat-card"><div class="stat-num">${Number(q.rating_avg||0).toFixed(1)} <span style="font-size:16px;font-weight:400;color:var(--text-muted)">/ 5</span></div><div class="stat-label">Average Rating</div></div>
+            <div class="stat-card"><div class="stat-num">${esc(q.score_range||String(range))}</div><div class="stat-label">Score Range</div></div>
+          </div>
+          ${[1,2,3,4,5].map(n => {
+            const cnt = Number(dist[n]||0);
+            if (!cnt) return '';
+            const pct = Math.round((cnt/maxCount)*100);
+            return `<div class="rating-row" style="margin-bottom:8px">
+              <span class="rating-label" style="min-width:60px">Level ${n}</span>
+              <div class="rating-bar-bg" style="flex:1"><div class="rating-bar-fill" style="width:${pct}%"></div></div>
+              <span class="rating-count" style="min-width:100px;text-align:right">${cnt} response${cnt!==1?'s':''}</span>
             </div>`;
           }).join('')}
-        </div>` : '';
+          ${q.rating_summary ? `<div style="margin-top:16px;padding:14px 16px;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-size:13px;color:#1A3A5C;line-height:1.6">${esc(q.rating_summary)}</div>` : ''}
+        </div>`;
+      }).join('');
 
-      // Key themes
+      // ── 4. Learning objectives / key themes ─────────────────────
       const themesHTML = themes.length ? `
         <div class="section-block">
-          <div class="section-label">Key Themes Across Responses</div>
-          ${themes.map(t => `
-            <div class="insight-card" style="border-color:var(--purple)">
-              <strong>${esc(t.theme)}</strong>${t.count ? ` <span style="font-size:11px;color:var(--text-muted)">(${t.count} responses)</span>` : ''}<br>
-              <span style="font-weight:400;font-size:12px;color:var(--text-muted)">${esc(t.description)}</span>
+          <div class="section-label">${sectionIdx++}. Core Learning Objectives &amp; Goals</div>
+          ${themes.map((t,i) => `
+            <div style="padding:16px 18px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:${i===0?'var(--purple-light)':'var(--bg)'}">
+              <div style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px">${esc(t.theme)}</div>
+              ${t.mention_label ? `<div style="font-size:12px;font-weight:600;color:var(--purple);margin-bottom:6px">${esc(t.mention_label)}</div>` : t.count ? `<div style="font-size:12px;font-weight:600;color:var(--purple);margin-bottom:6px">Mentioned by ${t.count} responses</div>` : ''}
+              <div style="font-size:13px;color:var(--text-muted);line-height:1.55">${esc(t.description)}</div>
             </div>`).join('')}
         </div>` : '';
 
-      // Insights
-      const insightsHTML = insights.length ? `
+      // ── 5. Instructor takeaway ──────────────────────────────────
+      const takeawayHTML = d.instructor_takeaway ? `
         <div class="section-block">
-          <div class="section-label">Insights</div>
-          ${insights.map(ins => `<div class="insight-card">${esc(ins)}</div>`).join('')}
-        </div>` : '';
-
-      // Recommendations
-      const recsHTML = recs.length ? `
-        <div class="section-block">
-          <div class="section-label">Recommendations</div>
-          ${recs.map((r,i) => `
-            <div class="rec-card">
-              <div class="rec-num">${i+1}</div>
-              <div>
-                <div class="rec-text">${esc(r.recommendation)}</div>
-                ${r.rationale ? `<div class="rec-rationale">Why: ${esc(r.rationale)}</div>` : ''}
-              </div>
-            </div>`).join('')}
-        </div>` : '';
-
-      // Gaps
-      const gapsHTML = gaps.length ? `
-        <div class="section-block">
-          <div class="section-label">Data Gaps &amp; Limitations</div>
-          ${gaps.map(g => `<div style="padding:10px 14px;background:var(--amber-light);border-left:3px solid #FCD34D;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:12px;color:#78350F;line-height:1.55">⚑ ${esc(g)}</div>`).join('')}
+          <div class="section-label">${sectionIdx++}. Key Takeaways for the Instructor</div>
+          <div style="padding:20px 22px;background:var(--amber-light);border-left:4px solid var(--amber);border-radius:0 10px 10px 0">
+            <div style="font-size:20px;margin-bottom:10px">💡</div>
+            ${d.instructor_takeaway.split('\n\n').filter(Boolean).map(p=>`<p style="font-size:14px;color:#78350F;line-height:1.7;margin:0 0 12px">${esc(p)}</p>`).join('')}
+          </div>
         </div>` : '';
 
       document.getElementById('outputContent').innerHTML =
-        summaryHTML + statsHTML + profileHTML + respHTML + questHTML + themesHTML + insightsHTML + recsHTML + gapsHTML;
-
+        headerHTML + statsHTML + ratingsHTML + themesHTML + takeawayHTML;
       document.getElementById('outputTag').textContent =
-        `${esc(d.survey_title||'Survey')} · ${d.respondent_count||respondents.length} respondents · ${recs.length} recommendations`;
+        `${esc(d.survey_title||'Survey')} · ${totalCount} responses`;
       document.getElementById('outputPanel').classList.add('show');
       document.getElementById('outputPanel').scrollIntoView({ behavior:'smooth', block:'start' });
     }
@@ -806,32 +752,33 @@ Output format:
       const d = currentOutput;
       const lines = [];
       lines.push(`SURVEY ANALYSIS: ${d.survey_title||''}`);
-      lines.push(`${d.respondent_count||0} respondents | ${d.survey_purpose||''}\n`);
-      if (d.summary) lines.push(`SUMMARY\n${d.summary}\n`);
-      if (d.audience_profile) lines.push(`AUDIENCE PROFILE\n${d.audience_profile}\n`);
+      lines.push(`${d.respondent_count||0} total responses | ${d.unique_participants||''} unique participants\n`);
       if ((d.respondents||[]).length) {
         lines.push('RESPONDENTS');
-        d.respondents.forEach((r,i) => lines.push(`${i+1}. ${r.name||'—'} | ${r.role||'—'} | ${r.organisation||'—'}`));
+        d.respondents.forEach(r => lines.push(`• ${r.name||'—'} | ${r.job_title||r.role||'—'} | ${r.industry||r.organisation||'—'}`));
         lines.push('');
+      }
+      if ((d.rating_questions||[]).length) {
+        d.rating_questions.forEach(q => {
+          lines.push(q.question);
+          lines.push(`  Average: ${Number(q.rating_avg||0).toFixed(1)} / 5  |  Range: ${q.score_range||'—'}`);
+          if (q.rating_summary) lines.push(`  ${q.rating_summary}`);
+          lines.push('');
+        });
       }
       if ((d.key_themes||[]).length) {
-        lines.push('KEY THEMES');
-        d.key_themes.forEach(t => lines.push(`• ${t.theme}: ${t.description}`));
+        lines.push('LEARNING OBJECTIVES & GOALS');
+        d.key_themes.forEach(t => lines.push(`• ${t.theme}${t.mention_label?' ('+t.mention_label+')':''}: ${t.description}`));
         lines.push('');
       }
-      if ((d.insights||[]).length) {
-        lines.push('INSIGHTS');
-        d.insights.forEach(ins => lines.push(`• ${ins}`));
-        lines.push('');
-      }
-      if ((d.recommendations||[]).length) {
-        lines.push('RECOMMENDATIONS');
-        d.recommendations.forEach((r,i) => lines.push(`${i+1}. ${r.recommendation}${r.rationale?' ('+r.rationale+')':''}`));
+      if (d.instructor_takeaway) {
+        lines.push('KEY TAKEAWAYS FOR INSTRUCTOR');
+        lines.push(d.instructor_takeaway);
       }
       navigator.clipboard.writeText(lines.join('\n')).then(() => {
         const btn = document.getElementById('copyBtn');
         btn.textContent = 'Copied!';
-        setTimeout(() => btn.textContent = 'Copy Report', 2000);
+        setTimeout(() => btn.textContent = 'Copy Text', 2000);
       });
     });
 
