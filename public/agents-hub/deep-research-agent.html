@@ -535,13 +535,7 @@ Rules:
       try{
         const t1=setTimeout(()=>{setStep('step-1','done');setStep('step-2','active');},3000);
         const t2=setTimeout(()=>{setStep('step-2','done');setStep('step-3','active');},8000);
-        const siteUrls = [
-          'https://christinecheong.com',
-          'https://christinecheong.com/courses/',
-          'https://christinecheong.com/living-lab.html',
-          'https://christinecheong.com/agents-hub/'
-        ];
-        const result=await callClaude(SYSTEM_PROMPT,buildMessageWithDocs(inputText),siteUrls);
+        const result=await callClaude(SYSTEM_PROMPT,buildMessageWithDocs(inputText));
         clearTimeout(t1);clearTimeout(t2);setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
         let parsed;try{const m=result.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error('No JSON');}catch(e){throw new Error('Failed to parse agent response.');}
         await new Promise(r=>setTimeout(r,400));agentProgress.classList.remove('active');renderResults(parsed);
