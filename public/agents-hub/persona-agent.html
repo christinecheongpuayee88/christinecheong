@@ -363,6 +363,10 @@
       sendBtn.disabled = false;
     }
 
+    // ── Input elements (declared first so all functions can use them) ──
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+
     let currentMode = 'persona';
     renderStarterCards('persona');
     setDefaultPrompt('persona');
@@ -376,10 +380,6 @@
         renderStarterCards(currentMode);
       });
     });
-
-    // ── Send button enable/disable ─────────────────────────────
-    const chatInput = document.getElementById('chatInput');
-    const sendBtn = document.getElementById('sendBtn');
     chatInput.addEventListener('input', () => {
       sendBtn.disabled = chatInput.value.trim().length === 0;
       chatInput.style.height = 'auto';
