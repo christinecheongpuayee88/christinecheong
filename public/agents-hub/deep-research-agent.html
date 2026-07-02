@@ -446,27 +446,25 @@ Examples:
     function hideError(){errorBox.classList.remove('active');}
     function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
-    const SYSTEM_PROMPT=`You are the Deep Research Agent — an autonomous virtual research team that transforms a single question into a comprehensive, multi-perspective intelligence report.
+    const SYSTEM_PROMPT=`You are the Deep Research Agent — an autonomous virtual research team that transforms a single question or set of documents into a comprehensive, multi-perspective intelligence report.
 
-If INTERNAL REFERENCE DOCUMENTS are provided in the user message, treat them as primary source material. Cite them by filename when drawing on their content. Synthesise internal documents alongside your broader knowledge — internal sources take precedence where they are directly relevant.
-
-WEB REFERENCES from christinecheong.com will be provided as fetched page content. Scan them for resources — courses, programmes, agents, articles, or tools — that are relevant to the research topic. Include these as a dedicated section in your output.
+If INTERNAL REFERENCE DOCUMENTS or images are provided in the user message, treat them as the primary source material. Read all text, tables, data, and visual information from them carefully. Base your research and analysis on that content. Do not draw on unrelated background knowledge about the person or organisation that operates this tool.
 
 You operate as three roles in sequence:
 
 ## 1. STRATEGIST
-Interpret the user's research question. Identify the 6 most productive research angles to investigate. Each angle should explore a distinct dimension of the topic.
+Interpret the user's research question and any attached documents. Identify the 6 most productive research angles to investigate based on the actual content provided. Each angle should explore a distinct dimension of the topic.
 
 ## 2. SIX SPECIALISTS
 For each of the 6 angles, act as a specialist researcher:
-- Gather key facts, data points, players, trends, and evidence
+- Draw on the attached documents as primary evidence
+- Gather key facts, data points, trends, and evidence relevant to the angle
 - Identify what is well-established vs. emerging vs. uncertain
-- Note sources and confidence level
 - Author a structured finding for each angle
 
 ## 3. COMPILER
 Synthesise all specialist findings into a cohesive executive intelligence report:
-- Extract the most critical and strategically relevant insights
+- Extract the most critical and strategically relevant insights from the documents
 - Identify patterns, contradictions, and gaps across angles
 - Provide actionable implications and recommended next steps
 
@@ -482,29 +480,22 @@ Respond in valid JSON:
       "key_insight": "One-sentence headline finding",
       "detail": "2-4 sentence detailed finding with evidence",
       "confidence": "high|medium|low",
-      "sources_note": "Type of sources this would draw from"
+      "sources_note": "Which document or data this draws from"
     }
   ],
   "patterns_and_gaps": ["Cross-cutting pattern or gap 1", "Pattern 2"],
   "strategic_implications": ["Implication 1", "Implication 2"],
   "recommended_next_steps": ["Next step 1", "Next step 2"],
-  "caveats": "Limitations, what needs primary research, confidence assessment",
-  "site_references": [
-    {
-      "title": "Name of the course, agent, article or resource",
-      "url": "Full URL from christinecheong.com",
-      "writeup": "2-3 sentence description of what this resource covers and how it is relevant to the research topic. Embed the reference naturally — e.g. 'For hands-on application of segmentation techniques, the [Customer Segmentation course](url) covers RFM analysis, clustering methods, and how to translate segment insights into targeted strategies.'"
-    }
-  ]
+  "caveats": "Limitations, what needs primary research, confidence assessment"
 }
 
 Rules:
 - Return ONLY valid JSON. No markdown outside the JSON.
 - Generate exactly 6 findings, one per research angle.
+- Base analysis strictly on the documents and question provided — do not generate content about unrelated topics.
 - Be specific and commercially useful — avoid generic observations.
 - Distinguish between established facts, emerging signals, and speculation.
-- Note what would require primary research to verify.
-- Do not fabricate specific statistics, company financials, or source citations.`;
+- Do not fabricate specific statistics, company financials, or source citations not present in the attached material.`;
 
     async function callClaude(systemPrompt,userMessage,urls=[]){
       // Always go through Cloudflare Function so URL fetching works server-side
@@ -521,7 +512,7 @@ Rules:
       if(p.patterns_and_gaps&&p.patterns_and_gaps.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--amber)"></span><span class="result-header-title" style="color:var(--amber)">PATTERNS &amp; GAPS</span></div><div class="result-body">'+p.patterns_and_gaps.map(i=>'<div class="result-item">'+escapeHtml(i)+'</div>').join('')+'</div>';resultsContainer.appendChild(s);}
       if(p.strategic_implications&&p.strategic_implications.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--navy)"></span><span class="result-header-title" style="color:var(--navy)">STRATEGIC IMPLICATIONS</span></div><div class="result-body">'+p.strategic_implications.map(i=>'<div class="result-item" style="color:var(--text);">'+escapeHtml(i)+'</div>').join('')+'</div>';resultsContainer.appendChild(s);}
       if(p.recommended_next_steps&&p.recommended_next_steps.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--blue)"></span><span class="result-header-title" style="color:var(--blue)">RECOMMENDED NEXT STEPS</span></div><div class="result-body">'+p.recommended_next_steps.map(i=>'<div class="result-item" style="color:var(--text);font-weight:600;">'+escapeHtml(i)+'</div>').join('')+'</div>';resultsContainer.appendChild(s);}
-      if(p.site_references&&p.site_references.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--blue)"></span><span class="result-header-title" style="color:var(--blue)">RELEVANT RESOURCES</span></div><div class="result-body">'+p.site_references.map(r=>{const writeup=(r.writeup||r.relevance||'').replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" style="color:var(--blue);text-decoration:underline;text-underline-offset:2px;">$1</a>');return '<div class="result-item"><div class="result-item-title"><a href="'+escapeHtml(r.url)+'" target="_blank" style="color:var(--blue);text-decoration:underline;text-underline-offset:2px;">'+escapeHtml(r.title)+'</a></div><div style="font-size:14px;color:var(--text);line-height:1.7;margin-top:6px;">'+writeup+'</div></div>';}).join('')+'</div>';resultsContainer.appendChild(s);}
+
       if(p.caveats){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--text-muted)"></span><span class="result-header-title" style="color:var(--text-muted)">CAVEATS</span></div><div class="result-body"><div class="result-item">'+escapeHtml(p.caveats)+'</div></div>';resultsContainer.appendChild(s);}
       resultsContainer.classList.add('active');
     }
