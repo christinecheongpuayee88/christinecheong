@@ -348,25 +348,31 @@
     }
     // ─────────────────────────────────────────────────────────────
 
-    const MODE_PLACEHOLDERS = {
-      persona: 'Describe your target consumer and what you want to explore — e.g. "Simulate a millennial consumer reacting to a new plant-based snack brand targeting busy professionals."',
-      trend:   'Paste trend data, research notes, or observations — e.g. "Summarise the key consumer trends in beauty retail and what they mean for a mid-tier skincare brand."',
-      concept: 'Describe the concept you want to test — e.g. "Evaluate this loyalty programme concept for a beauty retailer targeting women aged 25–45 in Singapore."',
-      panel:   'Describe the stimulus and segments to compare — e.g. "Compare how teens, young adults, and middle-aged adults would react to a new eco-friendly beauty range."',
-      research:'Describe what you want to validate — e.g. "Create a discussion guide for 60-minute interviews with Gen Z consumers about their relationship with beauty influencers."'
+    const DEFAULT_PROMPTS = {
+      persona: 'Simulate a consumer and explain how their lifestyle, interests, social influences, and budget would shape their reaction to this concept.',
+      trend:   'Analyse the key consumer trends relevant to this market. What are the major shifts, what is driving them, and what do they mean for brand and product strategy?',
+      concept: 'Evaluate this concept through the eyes of the target consumer. Assess first impression, appeal, clarity, distinctiveness, barriers, and likely purchase intent.',
+      panel:   'Compare how different consumer segments would react to this concept. Highlight motivations, common patterns, sharp differences, and the strongest-fit audience.',
+      research:'Create a research guide to validate this concept with the target consumer. Include objectives, screening criteria, discussion questions, and a prioritised learning agenda.',
     };
+
+    function setDefaultPrompt(mode) {
+      chatInput.value = DEFAULT_PROMPTS[mode] || DEFAULT_PROMPTS.persona;
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px';
+      sendBtn.disabled = false;
+    }
 
     let currentMode = 'persona';
     renderStarterCards('persona');
+    setDefaultPrompt('persona');
 
     document.querySelectorAll('.mode-pill').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentMode = btn.dataset.mode;
-        if (!chatInput.value.trim()) {
-          chatInput.placeholder = MODE_PLACEHOLDERS[currentMode] || MODE_PLACEHOLDERS.persona;
-        }
+        setDefaultPrompt(currentMode);
         renderStarterCards(currentMode);
       });
     });
