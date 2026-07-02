@@ -289,16 +289,27 @@
         <div id="_urlError" style="display:none;margin-top:8px;padding:10px 14px;background:#FEE2E2;border-left:3px solid #C0392B;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6"></div>
       </div>
 
-      <!-- Hidden Sheets URL field (kept for JS compatibility) -->
+      <!-- Hidden fields -->
       <input type="hidden" id="sheetsUrl" />
+      <div id="_sheetsGuide" style="display:none"></div>
 
-      <!-- Response notice -->
-      <div id="_responseNotice" style="display:none;margin-bottom:12px;padding:12px 16px;background:#FEF3C7;border-left:3px solid #B45309;border-radius:0 8px 8px 0;font-size:13px;color:#78350F;font-weight:500">
-        ✅ Questions extracted. Now paste the <strong>Google Sheets</strong> URL above to load responses, or paste/upload response data below.
+      <!-- Step 2: shown after form questions are fetched -->
+      <div id="_step2" style="display:none;margin-bottom:16px;padding:16px 18px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px">
+        <div style="font-size:12px;font-weight:700;color:#1E3A5F;margin-bottom:10px">Step 2 — Load responses</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="input-field" id="sheetsUrlInline" placeholder="Paste your Google Sheets responses URL here (docs.google.com/spreadsheets/…)" style="flex:1;margin-bottom:0" oninput="onSheetsInlineInput()" />
+          <button type="button" id="fetchSheetsBtn" onclick="fetchSheetsInline()" style="padding:10px 18px;background:var(--teal,#0F766E);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Fetch Responses</button>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#374151;line-height:1.6">
+          Open your Form → <strong>Responses</strong> tab → green <strong>⊞ Sheets icon</strong> → File → Share → <em>Anyone with the link can view</em> → copy &amp; paste the URL above.
+        </div>
+        <div id="_sheetsInlineError" style="display:none;margin-top:8px;padding:8px 12px;background:#FEE2E2;border-radius:6px;font-size:12px;color:#7F1D1D"></div>
       </div>
 
-      <!-- Hidden legacy error div -->
-      <div id="_sheetsGuide" style="display:none"></div>
+      <!-- Response notice (fallback) -->
+      <div id="_responseNotice" style="display:none;margin-bottom:12px;padding:12px 16px;background:#FEF3C7;border-left:3px solid #B45309;border-radius:0 8px 8px 0;font-size:13px;color:#78350F;font-weight:500">
+        ✅ Questions extracted. Paste your Google Sheets URL in Step 2 above, or paste/upload response data below.
+      </div>
 
       <!-- Paste / upload fallback -->
       <div style="margin-bottom:16px">
@@ -447,21 +458,67 @@ Output format:
     function checkReady() {
       const raw = dataEl.value.trim();
       const urlVal = document.getElementById('formsUrl').value.trim();
+      const inlineSheets = (document.getElementById('sheetsUrlInline')||{}).value||'';
       const isSheets = urlVal.includes('docs.google.com/spreadsheets');
-      const sheetsReady = isSheets && urlVal.length > 10;
+      const sheetsReady = (isSheets && urlVal.length > 10) || inlineSheets.includes('docs.google.com/spreadsheets');
       const hasResponses = raw.includes(FETCH_SEPARATOR)
         ? raw.split(FETCH_SEPARATOR).slice(1).join('').trim().length > 10
         : raw.length > 30;
-      const hasData = hasResponses || sheetsReady || _uploadedDocs && Object.keys(_uploadedDocs).length > 0;
+      const hasUpload = Object.keys(_uploadedDocs||{}).length > 0 || (_uploadedImages||[]).length > 0;
+      const hasData = hasResponses || sheetsReady || hasUpload;
       runBtn.disabled = titleEl.value.trim().length < 2 || !hasData;
       const notice = document.getElementById('_responseNotice');
-      if (notice) notice.style.display = raw.includes(FETCH_SEPARATOR) && !hasResponses && !sheetsReady ? 'block' : 'none';
+      if (notice) notice.style.display = raw.includes(FETCH_SEPARATOR) && !hasResponses && !sheetsReady && !hasUpload ? 'block' : 'none';
     }
     function onUrlInput() { checkReady(); }
+    function onSheetsInlineInput() {
+      document.getElementById('sheetsUrl').value = (document.getElementById('sheetsUrlInline')||{}).value||'';
+      checkReady();
+    }
     [titleEl, dataEl, contextEl].forEach(el => el && el.addEventListener('input', checkReady));
 
     let currentOutput = null;
     let phaseInterval;
+
+    async function fetchSheetsInline() {
+      const inlineEl = document.getElementById('sheetsUrlInline');
+      const url = inlineEl.value.trim();
+      if (!url) return;
+      const errEl = document.getElementById('_sheetsInlineError');
+      errEl.style.display = 'none';
+      if (url.includes('docs.google.com/forms')) {
+        errEl.textContent = '❌ That\'s a Google Forms URL. Paste the Google Sheets URL instead (docs.google.com/spreadsheets/…).';
+        errEl.style.display = 'block'; return;
+      }
+      document.getElementById('sheetsUrl').value = url;
+      const btn = document.getElementById('fetchSheetsBtn');
+      btn.textContent = 'Fetching…'; btn.disabled = true; btn.style.background = '#6B7280';
+      try {
+        const csvUrl = url
+          .replace(/\/edit[^?]*(\?.*)?$/, '/export?format=csv')
+          .replace(/\/pub[^?]*(\?.*)?$/, '/export?format=csv')
+          .replace(/\/view[^?]*(\?.*)?$/, '/export?format=csv');
+        const res = await fetch('/api/chat', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ system: 'Return the CSV data exactly as-is. If the content is an HTML error page, respond only with: ERROR: could not read sheet data.', message: 'Return all the sheet data exactly as provided.', urls: [csvUrl], max_tokens: 6000 })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Fetch failed');
+        const sheetData = data.content[0].text.trim();
+        if (sheetData.startsWith('ERROR:') || sheetData.toLowerCase().includes('page not found') || sheetData.toLowerCase().includes('unavailable')) {
+          throw new Error('Sheet not publicly accessible. In Google Sheets: File → Share → Anyone with the link can view.');
+        }
+        const existing = dataEl.value.trim();
+        dataEl.value = existing
+          ? existing.replace(/=== PASTE RESPONSE DATA BELOW ===[\s\S]*$/, '=== PASTE RESPONSE DATA BELOW ===\n' + sheetData)
+          : sheetData;
+        btn.textContent = '✓ Responses Loaded'; btn.style.background = 'var(--green,#059669)';
+        checkReady();
+      } catch(err) {
+        btn.textContent = 'Fetch Responses'; btn.style.background = 'var(--teal,#0F766E)'; btn.disabled = false;
+        errEl.textContent = '❌ ' + err.message; errEl.style.display = 'block';
+      }
+    }
 
     async function fetchSurveyUrl() {
       const url = document.getElementById('formsUrl').value.trim();
@@ -831,6 +888,12 @@ Output format:
       titleEl.value = ''; dataEl.value = ''; contextEl.value = '';
       document.getElementById('formsUrl').value = '';
       document.getElementById('sheetsUrl').value = '';
+      const inlineEl = document.getElementById('sheetsUrlInline');
+      if (inlineEl) inlineEl.value = '';
+      document.getElementById('_step2').style.display = 'none';
+      document.getElementById('_sheetsInlineError').style.display = 'none';
+      const sb = document.getElementById('fetchSheetsBtn');
+      if (sb) { sb.textContent = 'Fetch Responses'; sb.style.background = 'var(--teal,#0F766E)'; sb.disabled = false; }
       const fb = document.getElementById('fetchFormBtn');
       fb.textContent = 'Fetch'; fb.style.background = 'var(--blue)'; fb.disabled = false;
       document.getElementById('_urlError').style.display = 'none';
@@ -921,8 +984,8 @@ Output format:
         }
         if (!titleEl.value.trim()) titleEl.value = 'Google Form Survey';
         btn.textContent = '✓ Questions Fetched'; btn.style.background = 'var(--green,#059669)';
-        const hint = document.getElementById('_urlHint');
-        if (hint) hint.innerHTML = '✅ Questions extracted. Now paste the <strong>Google Sheets responses URL</strong> above and click <strong>Fetch</strong> again to load responses — or paste them in the box below.';
+        document.getElementById('_step2').style.display = 'block';
+        document.getElementById('_step2').scrollIntoView({ behavior:'smooth', block:'nearest' });
         checkReady();
       } catch(err) {
         btn.textContent = 'Fetch'; btn.style.background = 'var(--blue)'; btn.disabled = false;
