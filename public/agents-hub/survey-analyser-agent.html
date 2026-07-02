@@ -297,15 +297,25 @@
 
         <!-- Option A: Google Sheets URL -->
         <div style="margin-bottom:12px">
-          <label class="input-label" style="color:var(--text-muted)">Option A — Google Sheets URL (linked responses sheet, shared with "Anyone with link")</label>
+          <label class="input-label" style="color:var(--text-muted)">Option A — Google Sheets URL <span style="font-weight:400;text-transform:none;letter-spacing:0">(where your form responses are stored)</span></label>
+
+          <!-- How-to guide — always visible -->
+          <div style="margin-bottom:12px;padding:14px 16px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;font-size:12px;color:#14532D;line-height:1.7">
+            <div style="font-weight:700;margin-bottom:8px;font-size:13px">📋 How to get your Sheets URL (3 steps):</div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:start">
+              <span style="font-weight:700;color:#059669">Step 1</span><span>Open your Google Form → click the <strong>Responses</strong> tab at the top</span>
+              <span style="font-weight:700;color:#059669">Step 2</span><span>Click the green <strong>Google Sheets icon</strong> (⊞) to open the linked spreadsheet</span>
+              <span style="font-weight:700;color:#059669">Step 3</span><span>In that spreadsheet: <strong>File → Share → Anyone with the link can view</strong> → copy the URL and paste below</span>
+            </div>
+            <div style="margin-top:8px;padding:6px 10px;background:#DCFCE7;border-radius:4px;font-size:11px">⚠️ The URL must start with <code>docs.google.com/<strong>spreadsheets</strong>/d/…</code> — not forms/d/…</div>
+          </div>
+
           <div style="display:flex;gap:8px;align-items:center">
-            <input class="input-field" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/…" style="flex:1;margin-bottom:0" />
+            <input class="input-field" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/…/edit" style="flex:1;margin-bottom:0" />
             <button type="button" id="fetchSheetsBtn" onclick="fetchGoogleSheets()" style="padding:10px 18px;background:var(--teal,#0F766E);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Fetch Responses</button>
           </div>
-          <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block">Must be a Google <strong>Sheets</strong> URL (spreadsheets/d/…), not a Forms URL. In Sheets: File → Share → Anyone with link can view → copy URL.</span>
           <div id="_sheetsGuide" style="display:none;margin-top:8px;padding:12px 14px;background:#FEE2E2;border-left:3px solid #C0392B;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6">
-            ⚠️ <strong>That's a Google Forms URL — it doesn't contain response data.</strong><br>
-            To get the Sheets URL: open your form → <strong>Responses tab</strong> → click the green Sheets icon to open the linked spreadsheet → in Sheets: <strong>File → Share → Anyone with the link can view</strong> → copy that URL and paste it here.
+            ❌ <strong>That's a Google Forms URL — responses are not stored there.</strong> Follow the 3 steps above to get the correct Sheets URL.
           </div>
         </div>
 
