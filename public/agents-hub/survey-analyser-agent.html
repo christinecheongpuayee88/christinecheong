@@ -277,49 +277,26 @@
 
     <div class="input-panel">
       <!-- Single URL field -->
-      <div style="margin-bottom:16px">
-        <label class="input-label" style="margin-bottom:8px;display:block">Google Forms or Google Sheets URL</label>
+      <div style="margin-bottom:20px">
+        <label class="input-label" style="margin-bottom:8px;display:block">Google Forms URL</label>
         <div style="display:flex;gap:8px;align-items:center">
-          <input class="input-field" id="formsUrl" placeholder="Paste your Google Forms URL or Google Sheets responses URL here" style="flex:1;margin-bottom:0" oninput="onUrlInput()" />
-          <button type="button" id="fetchFormBtn" onclick="fetchSurveyUrl()" style="padding:10px 20px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Fetch</button>
-        </div>
-        <div id="_urlHint" style="margin-top:8px;font-size:12px;color:var(--text-muted);line-height:1.5">
-          Paste a <strong>Google Forms</strong> URL to extract questions, or a <strong>Google Sheets</strong> responses URL to load response data. To get the Sheets URL: open your Form → Responses tab → green Sheets icon (⊞) → File → Share → Anyone with link → copy URL.
+          <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/forms/d/e/…/viewform" style="flex:1;margin-bottom:0;font-size:13px" oninput="onUrlInput()" />
         </div>
         <div id="_urlError" style="display:none;margin-top:8px;padding:10px 14px;background:#FEE2E2;border-left:3px solid #C0392B;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6"></div>
       </div>
 
-      <!-- Hidden fields -->
+      <!-- Hidden compat fields -->
       <input type="hidden" id="sheetsUrl" />
+      <input type="hidden" id="sheetsUrlInline" />
       <div id="_sheetsGuide" style="display:none"></div>
+      <div id="_step2" style="display:none"></div>
+      <div id="_sheetsInlineError" style="display:none"></div>
+      <div id="_responseNotice" style="display:none"></div>
 
-      <!-- Step 2: shown after form questions are fetched -->
-      <div id="_step2" style="display:none;margin-bottom:16px;padding:16px 18px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px">
-        <div style="font-size:12px;font-weight:700;color:#1E3A5F;margin-bottom:10px">Step 2 — Load responses</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input class="input-field" id="sheetsUrlInline" placeholder="Paste your Google Sheets responses URL here (docs.google.com/spreadsheets/…)" style="flex:1;margin-bottom:0" oninput="onSheetsInlineInput()" />
-          <button type="button" id="fetchSheetsBtn" onclick="fetchSheetsInline()" style="padding:10px 18px;background:var(--teal,#0F766E);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Fetch Responses</button>
-        </div>
-        <div style="margin-top:8px;font-size:11px;color:#374151;line-height:1.6">
-          Open your Form → <strong>Responses</strong> tab → green <strong>⊞ Sheets icon</strong> → File → Share → <em>Anyone with the link can view</em> → copy &amp; paste the URL above.
-        </div>
-        <div id="_sheetsInlineError" style="display:none;margin-top:8px;padding:8px 12px;background:#FEE2E2;border-radius:6px;font-size:12px;color:#7F1D1D"></div>
-      </div>
-
-      <!-- Response notice (fallback) -->
-      <div id="_responseNotice" style="display:none;margin-bottom:12px;padding:12px 16px;background:#FEF3C7;border-left:3px solid #B45309;border-radius:0 8px 8px 0;font-size:13px;color:#78350F;font-weight:500">
-        ✅ Questions extracted. Paste your Google Sheets URL in Step 2 above, or paste/upload response data below.
-      </div>
-
-      <!-- Paste / upload fallback -->
+      <!-- Optional: paste / upload responses -->
       <div style="margin-bottom:16px">
-        <label class="input-label" style="margin-bottom:6px;display:block;color:var(--text-muted)">Or paste / upload response data directly</label>
-        <textarea class="input-textarea" id="surveyData" rows="6" placeholder="Paste rows from Google Sheets, or copy from the Google Forms Summary view.
-
-Example:
-Name: Jia Min / Gao Shuxin / Brandon
-Job Role: HR Exec / Senior Estate Manager / Data Analyst
-Experience level (1–5): 1 / 2 / 2"></textarea>
+        <label class="input-label" style="margin-bottom:6px;display:block;color:var(--text-muted)">Response data (optional — paste or upload if you have it)</label>
+        <textarea class="input-textarea" id="surveyData" rows="5" placeholder="Paste survey response rows here if you have them — or leave blank and the agent will work from the form URL above."></textarea>
       </div>
 
       <div class="input-row">
@@ -456,25 +433,18 @@ Output format:
 
     const FETCH_SEPARATOR = '=== PASTE RESPONSE DATA BELOW ===';
     function checkReady() {
-      const raw = dataEl.value.trim();
       const urlVal = document.getElementById('formsUrl').value.trim();
-      const inlineSheets = (document.getElementById('sheetsUrlInline')||{}).value||'';
-      const isSheets = urlVal.includes('docs.google.com/spreadsheets');
-      const sheetsReady = (isSheets && urlVal.length > 10) || inlineSheets.includes('docs.google.com/spreadsheets');
-      const hasResponses = raw.includes(FETCH_SEPARATOR)
-        ? raw.split(FETCH_SEPARATOR).slice(1).join('').trim().length > 10
-        : raw.length > 30;
+      const raw = dataEl.value.trim();
       const hasUpload = Object.keys(_uploadedDocs||{}).length > 0 || (_uploadedImages||[]).length > 0;
-      const hasData = hasResponses || sheetsReady || hasUpload;
+      const hasData = urlVal.length > 10 || raw.length > 30 || hasUpload;
       runBtn.disabled = titleEl.value.trim().length < 2 || !hasData;
-      const notice = document.getElementById('_responseNotice');
-      if (notice) notice.style.display = raw.includes(FETCH_SEPARATOR) && !hasResponses && !sheetsReady && !hasUpload ? 'block' : 'none';
     }
-    function onUrlInput() { checkReady(); }
-    function onSheetsInlineInput() {
-      document.getElementById('sheetsUrl').value = (document.getElementById('sheetsUrlInline')||{}).value||'';
+    function onUrlInput() {
+      const url = document.getElementById('formsUrl').value.trim();
+      if (!titleEl.value.trim() && url.includes('docs.google.com/forms')) titleEl.value = 'Google Form Survey';
       checkReady();
     }
+    function onSheetsInlineInput() { checkReady(); }
     [titleEl, dataEl, contextEl].forEach(el => el && el.addEventListener('input', checkReady));
 
     let currentOutput = null;
@@ -540,8 +510,7 @@ Output format:
 
     runBtn.addEventListener('click', async () => {
       const urlVal = document.getElementById('formsUrl').value.trim();
-      const sheetsUrlVal = urlVal.includes('docs.google.com/spreadsheets') ? urlVal
-        : document.getElementById('sheetsUrl').value.trim();
+      const sheetsUrlVal = urlVal.includes('docs.google.com/spreadsheets') ? urlVal : '';
       const message = [
         `Survey Title: ${titleEl.value.trim()}`,
         `Survey Purpose: ${purposeEl.value}`,
@@ -549,10 +518,11 @@ Output format:
         contextEl.value.trim() ? `Additional Context: ${contextEl.value.trim()}` : ''
       ].filter(Boolean).join('\n\n');
 
-      const sheetsUrls = sheetsUrlVal ? [sheetsUrlVal] : [];
+      // Pass the URL for server-side fetch: Sheets URL for CSV data, Forms URL for form content
+      const fetchUrls = sheetsUrlVal ? [sheetsUrlVal] : (urlVal ? [urlVal] : []);
       showLoading();
       try {
-        const text = await callClaude(SYSTEM, message, sheetsUrls);
+        const text = await callClaude(SYSTEM, message, fetchUrls);
         const data = parseJSON(text);
         currentOutput = data;
         renderOutput(data);
