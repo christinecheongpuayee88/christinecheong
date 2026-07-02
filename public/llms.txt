@@ -1,4 +1,4 @@
-# Christine Cheong
+﻿# Christine Cheong
 
 > Data Science Educator teaching students and working professionals to understand,
 > apply, and communicate data science in real-world contexts.
@@ -13,7 +13,7 @@
 
 ## About Christine
 
-Christine Cheong is a Data Science Lecturer at NUS-ISS. She teaches data science across
+Christine Cheong is a Data Science Lecturer at . She teaches data science across
 university and executive education settings, with a focus on practical application and
 clear communication of complex concepts. Her students range from undergraduates building
 analytical foundations to senior executives making data-driven decisions.
