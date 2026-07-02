@@ -55,11 +55,11 @@
 
     /* ── CHAT INPUT ── */
     .chat-wrap { width:100%; max-width:680px; margin-bottom:28px; }
-    .chat-input-row { display:flex; align-items:center; gap:8px; background:var(--bg); border:1.5px solid var(--border); border-radius:100px; padding:10px 12px 10px 20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:border-color 0.2s, box-shadow 0.2s; }
+    .chat-input-row { display:flex; align-items:flex-end; gap:8px; background:var(--bg); border:1.5px solid var(--border); border-radius:16px; padding:12px 12px 12px 20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:border-color 0.2s, box-shadow 0.2s; }
     .chat-input-row:focus-within { border-color:var(--blue); box-shadow:0 2px 20px rgba(30,136,199,0.12); }
     .chat-add-btn { background:none; border:none; cursor:pointer; color:var(--text-muted); display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; transition:background 0.2s; flex-shrink:0; }
     .chat-add-btn:hover { background:var(--surface); color:var(--navy); }
-    .chat-input { flex:1; font-family:var(--font-body); font-size:15px; font-weight:400; color:var(--text); border:none; outline:none; background:transparent; }
+    .chat-input { flex:1; font-family:var(--font-body); font-size:15px; font-weight:400; color:var(--text); border:none; outline:none; background:transparent; resize:none; min-height:24px; max-height:160px; line-height:1.5; overflow-y:auto; }
     .chat-input::placeholder { color:var(--text-muted); font-weight:300; }
     .chat-mic-btn { background:none; border:none; cursor:pointer; color:var(--text-muted); display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; flex-shrink:0; transition:background 0.2s; }
     .chat-mic-btn:hover { background:var(--surface); }
@@ -197,7 +197,7 @@
     <!-- Chat input -->
     <div class="chat-wrap">
       <div class="chat-input-row">
-        <input class="chat-input" id="chatInput" type="text" placeholder="Ask Persona Agent" autocomplete="off" spellcheck="false" />
+        <textarea class="chat-input" id="chatInput" placeholder="Ask Persona Agent" autocomplete="off" spellcheck="false" rows="2" style="resize:none;height:auto;"></textarea>
         <button class="chat-mic-btn" type="button" aria-label="Voice input">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="6" height="8" rx="3" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 7.5A5.5 5.5 0 008 13a5.5 5.5 0 005.5-5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="8" y1="13" x2="8" y2="15.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         </button>
@@ -345,9 +345,11 @@
     const sendBtn = document.getElementById('sendBtn');
     chatInput.addEventListener('input', () => {
       sendBtn.disabled = chatInput.value.trim().length === 0;
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px';
     });
     chatInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey && !sendBtn.disabled) { e.preventDefault(); runAgent(chatInput.value.trim()); }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) runAgent(chatInput.value.trim()); }
     });
     sendBtn.addEventListener('click', () => { if (!sendBtn.disabled) runAgent(chatInput.value.trim()); });
 
@@ -362,6 +364,8 @@
           if (pill) { pill.classList.add('active'); currentMode = mode; }
         }
         chatInput.value = prompt;
+        chatInput.style.height = 'auto';
+        chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px';
         sendBtn.disabled = false;
         chatInput.focus();
       });
