@@ -278,7 +278,17 @@
 
     <div class="input-panel">
       <div class="input-context">
-        <p>Paste the raw text from any survey — copy directly from Google Forms Summary view, export from a spreadsheet, or paste individual responses. Include question labels if possible. The agent will parse respondents, analyse every question, extract themes, profile the audience, and deliver recommendations.</p>
+        <p>Paste a Google Forms URL to auto-extract questions, then provide response data via paste, CSV upload, or file. The agent will parse respondents, analyse every question, extract themes, profile the audience, and generate an email-ready executive report.</p>
+      </div>
+
+      <!-- Google Forms URL -->
+      <div class="input-group" style="margin-bottom:16px">
+        <label class="input-label">Google Forms URL (optional)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/forms/d/e/…/viewform" style="flex:1;margin-bottom:0" />
+          <button type="button" id="fetchFormBtn" onclick="fetchGoogleForm()" style="padding:10px 18px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 0.2s">Fetch Questions</button>
+        </div>
+        <span style="font-size:11px;color:var(--text-muted);margin-top:5px;display:block">Fetches form questions server-side. You still need to provide response data below (paste from Forms Summary view, or upload CSV).</span>
       </div>
 
       <div class="input-row">
@@ -371,7 +381,8 @@ What business problem would you most like to solve?
       <div class="output-header">
         <span class="output-tag" id="outputTag">Survey Analysis</span>
         <div style="display:flex;gap:10px">
-          <button class="action-btn" id="copyBtn">Copy Report</button>
+          <button class="action-btn" id="emailBtn">Copy Email Report</button>
+          <button class="action-btn" id="copyBtn">Copy Text</button>
           <button class="action-btn" id="resetBtn">New Analysis</button>
         </div>
       </div>
@@ -395,7 +406,7 @@ What business problem would you most like to solve?
   </footer>
 
   <script>
-    const SYSTEM = `You are a Survey Analyser Agent. Your job is to transform raw survey response data into structured audience intelligence.
+    const SYSTEM = `You are a Survey Analyser Agent and executive reporting assistant. Your job is to transform raw survey response data into structured audience intelligence AND a polished email-ready executive report.
 
 CRITICAL RULES:
 - Preserve every verbatim response — never paraphrase or silently drop answers.
@@ -438,7 +449,8 @@ Output format:
   ],
   "gaps": [
     "Missing information, inconsistency, or question that wasn't answered clearly"
-  ]
+  ],
+  "email_report": "FULL HTML EMAIL — a self-contained <div> (no DOCTYPE/html/body tags) using only inline styles, safe for Gmail. Structure: (1) header with title and date, (2) Participant Profile & Demographics — total responses + bullet list of industries/roles, (3) Comfort/Experience Level section — average score + distribution summary sentence, (4) Core Learning Objectives & Goals — bulleted list synthesising what participants want to achieve, (5) Key Takeaways for the Instructor — 2-3 sentence recommendation grounded in the data. Use inline CSS: font-family Arial, max-width 680px, clean heading hierarchy with color #1E88C7 for h2s, light background #F8FAFC for sections, border-left accent #1E88C7 for callout boxes. Make it polished and professional — ready to paste directly into Gmail."
 }`;
 
     const titleEl   = document.getElementById('surveyTitle');
@@ -558,7 +570,7 @@ Output format:
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system, message: _buildDocContext(message), max_tokens: 6000 })
+        body: JSON.stringify({ system, message: _buildUserContent(message), max_tokens: 6000 })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'API request failed');
@@ -774,9 +786,72 @@ Output format:
       document.getElementById('outputPanel').classList.remove('show');
       currentOutput = null;
       titleEl.value = ''; dataEl.value = ''; contextEl.value = '';
+      document.getElementById('formsUrl').value = '';
+      const fb = document.getElementById('fetchFormBtn');
+      fb.textContent = 'Fetch Questions'; fb.style.background = 'var(--blue)'; fb.disabled = false;
       checkReady();
       window.scrollTo({ top:0, behavior:'smooth' });
     });
+
+    // ── Google Forms fetch ────────────────────────────────────────
+    async function fetchGoogleForm() {
+      const url = document.getElementById('formsUrl').value.trim();
+      if (!url) return;
+      const btn = document.getElementById('fetchFormBtn');
+      btn.textContent = 'Fetching…'; btn.disabled = true; btn.style.background = '#6B7280';
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system: 'You are a form parser. Extract all question titles from this Google Form page. Return ONLY a numbered list of the questions, one per line, with no extra commentary. If you cannot find any questions, say "No questions found."',
+            message: 'List all form questions found on this page.',
+            urls: [url],
+            max_tokens: 1500
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Fetch failed');
+        const questions = data.content[0].text.trim();
+        const existing = dataEl.value.trim();
+        if (!existing) {
+          dataEl.value = '=== FORM QUESTIONS (auto-extracted) ===\n' + questions + '\n\n=== PASTE RESPONSE DATA BELOW ===\n';
+        } else {
+          dataEl.value = '=== FORM QUESTIONS (auto-extracted) ===\n' + questions + '\n\n' + existing;
+        }
+        // Auto-fill title from URL if empty
+        if (!titleEl.value.trim()) {
+          const match = url.match(/\/forms\/d\/e\/([^/]+)/);
+          titleEl.value = 'Google Form Survey';
+        }
+        btn.textContent = '✓ Questions Fetched'; btn.style.background = 'var(--green,#059669)';
+        checkReady();
+      } catch(err) {
+        btn.textContent = 'Fetch Failed'; btn.style.background = 'var(--red,#C0392B)'; btn.disabled = false;
+        alert('Could not fetch form: ' + err.message);
+      }
+    }
+    // ─────────────────────────────────────────────────────────────
+
+    // ── Email Report copy ─────────────────────────────────────────
+    document.getElementById('emailBtn').addEventListener('click', async () => {
+      if (!currentOutput) return;
+      const btn = document.getElementById('emailBtn');
+      const html = currentOutput.email_report;
+      if (!html) { btn.textContent = 'No email report'; setTimeout(() => btn.textContent = 'Copy Email Report', 2000); return; }
+      try {
+        // Copy as rich HTML so Gmail renders it formatted
+        const blob = new Blob([html], { type: 'text/html' });
+        await navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })]);
+        btn.textContent = '✓ Copied — paste into Gmail';
+      } catch(e) {
+        // Fallback: copy raw HTML source
+        await navigator.clipboard.writeText(html);
+        btn.textContent = '✓ HTML copied';
+      }
+      setTimeout(() => btn.textContent = 'Copy Email Report', 3000);
+    });
+    // ─────────────────────────────────────────────────────────────
   </script>
 </body>
 </html>
