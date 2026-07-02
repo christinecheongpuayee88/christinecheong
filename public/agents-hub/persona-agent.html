@@ -300,63 +300,45 @@
     // ─────────────────────────────────────────────────────────────
 
     // ── Mode selector ──────────────────────────────────────────
-    // ── Starter card definitions per mode ─────────────────────
-    const MODE_CARDS = {
-      persona: [
-        { icon:'🧑',  title:'Teens',              desc:'Younger consumers and students.',         prompt:'Simulate a teen consumer and explain how their lifestyle, interests, social influences, and budget would shape their reaction to this concept.' },
-        { icon:'💼',  title:'Young Adults',        desc:'Early-career and young working adults.',  prompt:'Simulate a young adult consumer and explain how their lifestyle, interests, social influences, and budget would shape their reaction to this concept.' },
-        { icon:'❤️', title:'Middle-Aged Adults',  desc:'Established adults with practical needs.',prompt:'Simulate a middle-aged adult consumer and explain how their lifestyle, interests, social influences, and budget would shape their reaction to this concept.' },
-        { icon:'🧑‍🦳',title:'Older Consumers',    desc:'Older adults with distinct priorities.',   prompt:'Simulate an older consumer and explain how their lifestyle, interests, social influences, and budget would shape their reaction to this concept.' },
-        { icon:'🔬',  title:'Test 4 age groups',  desc:'Compare reactions across generations.',   prompt:'Simulate a teen, young adult, middle-aged adult, and older consumer and explain how each of their lifestyles, interests, social influences, and budgets would shape their reaction to this concept.' },
-        { icon:'📊',  title:'Compare age groups', desc:'Contrast younger and older audiences.',    prompt:'Simulate a younger consumer (under 35) and an older consumer (over 50) and contrast how their lifestyles, interests, social influences, and budgets would shape their reactions to this concept.' },
-      ],
-      trend: [
-        { icon:'💄',  title:'Beauty & Skincare',  desc:'Retail and personal care trends.',        prompt:'Analyse the key consumer trends in beauty and skincare retail. What are the major shifts, what is driving them, and what do they mean for brand and product strategy?' },
-        { icon:'🌱',  title:'Wellness & Health',  desc:'Health-conscious consumer shifts.',        prompt:'Synthesise the emerging consumer trends in wellness and health. Identify the major themes, what is driving each, and the whitespace opportunities for brands.' },
-        { icon:'📱',  title:'Digital Commerce',   desc:'Shopping behaviour online and offline.',   prompt:'What are the key trends reshaping how consumers discover, evaluate, and buy products digitally? What should brands prioritise in response?' },
-        { icon:'⚡',  title:'Gen Z Behaviour',    desc:'Attitudes and habits of Gen Z.',           prompt:'Summarise the most important trend shifts in Gen Z consumer behaviour — values, spending, loyalty, and media habits — and their implications for brand strategy.' },
-        { icon:'♻️', title:'Sustainability',      desc:'Ethics and eco-conscious consumption.',   prompt:'Analyse consumer trends around sustainability, ethical sourcing, and eco-conscious consumption. What do they mean for product development and brand positioning?' },
-        { icon:'🛍️', title:'Retail Experience',  desc:'In-store and omnichannel shifts.',         prompt:'What are the biggest trends reshaping the physical and omnichannel retail experience? Identify the key consumer expectations and what brands need to do differently.' },
-      ],
-      concept: [
-        { icon:'🆕',  title:'New Product',        desc:'Evaluate a product concept.',             prompt:'Evaluate this new product concept through the lens of the target consumer. Assess first impression, appeal, clarity, distinctiveness, barriers, and likely purchase intent.' },
-        { icon:'📣',  title:'Campaign Idea',      desc:'Test a marketing or campaign concept.',   prompt:'Evaluate this marketing campaign concept. Assess how the target consumer would react — what resonates, what confuses, what creates hesitation, and how to improve it.' },
-        { icon:'🎁',  title:'Packaging Design',   desc:'Test packaging or visual identity.',       prompt:'Evaluate this packaging concept through the eyes of the target consumer. Assess first impression, shelf appeal, clarity of proposition, and what would drive or block purchase.' },
-        { icon:'💰',  title:'Pricing Strategy',   desc:'Test price points and value perception.',  prompt:'Evaluate this pricing model or price point from the consumer perspective. Assess perceived value, willingness to pay, how it compares to alternatives, and what would improve conversion.' },
-        { icon:'🏆',  title:'Loyalty Programme',  desc:'Evaluate a loyalty or rewards concept.',  prompt:'Evaluate this loyalty programme concept through the lens of the target consumer. Assess appeal, clarity, perceived value, effort vs reward, and likelihood of participation.' },
-        { icon:'✨',  title:'Brand Proposition',  desc:'Test a brand positioning or promise.',    prompt:'Evaluate this brand proposition or positioning statement through the target consumer\'s perspective. Assess relevance, distinctiveness, believability, and emotional resonance.' },
-      ],
-      panel: [
-        { icon:'👥',  title:'Age groups',          desc:'Compare reactions across age segments.',  prompt:'Compare how a teen, young adult, middle-aged adult, and older consumer would each react to this concept. Highlight common patterns, sharp differences, and the strongest-fit audience.' },
-        { icon:'⚡',  title:'Gen Z vs Millennials',desc:'Younger segment comparison.',             prompt:'Compare how Gen Z (born 1997–2012) and Millennial (born 1981–1996) consumers would react differently to this concept. Highlight key differences in values, habits, and likely intent.' },
-        { icon:'💎',  title:'Budget vs Premium',   desc:'Spending attitude comparison.',           prompt:'Compare how a budget-conscious consumer and a premium-oriented consumer would react to this concept. Highlight differences in value perception, barriers, and purchase intent.' },
-        { icon:'🌍',  title:'Local vs Global',     desc:'Cultural orientation comparison.',        prompt:'Compare how a locally-oriented consumer and a globally-minded consumer would react to this concept. Highlight differences in appeal, trust, and cultural fit.' },
-        { icon:'🆕',  title:'First-time vs Loyal', desc:'Acquisition vs retention lens.',          prompt:'Compare how a first-time buyer and a loyal existing customer would react to this concept. Highlight differences in what attracts them, what they need to convert, and what could lose them.' },
-        { icon:'👩‍👩‍👧', title:'Family segments',   desc:'Life stage comparison.',                  prompt:'Compare how a single young professional, a parent with young children, and an empty-nester would each react to this concept. Highlight how life stage shapes their priorities and likely response.' },
-      ],
-      research: [
-        { icon:'🎤',  title:'IDI Guide',           desc:'In-depth interview discussion guide.',    prompt:'Create an in-depth interview discussion guide for 60-minute sessions with the target consumer. Include research objectives, screening criteria, warm-up questions, topic areas, probing questions, and a closing agenda.' },
-        { icon:'👥',  title:'Focus Group',         desc:'Group discussion guide and screener.',    prompt:'Create a focus group moderator guide for a 90-minute session. Include screening logic, session structure, stimulus introduction approach, discussion questions, and a debrief template.' },
-        { icon:'📋',  title:'Survey Framework',    desc:'Quantitative survey question set.',       prompt:'Design a consumer survey framework to validate this concept. Include screening questions, key metrics to measure, question types, and a suggested scale or rating approach.' },
-        { icon:'💡',  title:'Concept Test Plan',   desc:'Structured concept validation plan.',     prompt:'Design a concept test plan to validate this idea with real consumers. Include: test objective, target sample, stimulus format, evaluation criteria, question set, and success metrics.' },
-        { icon:'🔍',  title:'Insight Gaps',        desc:'Identify what you still need to learn.',  prompt:'Based on this brief or concept, identify the most critical insight gaps — what we do not yet know about the target consumer that would most affect the decision. Suggest how to address each gap.' },
-        { icon:'📐',  title:'Learning Agenda',     desc:'Prioritised research questions.',         prompt:'Build a prioritised learning agenda for this project. List the most important questions to answer about the consumer, organised by priority, and suggest the best research approach for each.' },
-      ],
+    // ── Segment cards (fixed across all modes) ────────────────
+    const SEGMENTS = [
+      { icon:'🧑',    title:'Teens',              desc:'Younger consumers and students.',        segment:'a teen consumer',                                       segmentPanel:'teen, young adult, middle-aged adult, and older consumers' },
+      { icon:'💼',    title:'Young Adults',        desc:'Early-career and young working adults.', segment:'a young adult consumer',                                segmentPanel:'young adult and teen consumers' },
+      { icon:'❤️',   title:'Middle-Aged Adults',  desc:'Established adults with practical needs.',segment:'a middle-aged adult consumer',                         segmentPanel:'middle-aged adult and older consumers' },
+      { icon:'🧑‍🦳',  title:'Older Consumers',    desc:'Older adults with distinct priorities.',  segment:'an older consumer',                                     segmentPanel:'older and middle-aged consumers' },
+      { icon:'🔬',    title:'Test 4 age groups',  desc:'Compare reactions across generations.',  segment:'teen, young adult, middle-aged adult, and older consumers',segmentPanel:'teen, young adult, middle-aged adult, and older consumers' },
+      { icon:'📊',    title:'Compare age groups', desc:'Contrast younger and older audiences.',   segment:'younger consumers (under 35) vs older consumers (over 50)',segmentPanel:'younger consumers (under 35) and older consumers (over 50)' },
+    ];
+
+    // Prompt templates per mode — {segment} is replaced with segment label
+    const MODE_TEMPLATES = {
+      persona:  'Simulate {segment} and explain how their lifestyle, interests, social influences, and budget would shape their reaction to this concept.',
+      trend:    'Analyse the key consumer trends relevant to {segment}. What are the major shifts, what is driving them, and what do they mean for brand and product strategy targeting this audience?',
+      concept:  'Evaluate this concept through the eyes of {segment}. Assess first impression, appeal, clarity, distinctiveness, barriers, and likely purchase intent.',
+      panel:    'Compare how {segment} would each react to this concept. Show how motivations and priorities differ across the group, highlight common patterns and sharp differences, and identify the strongest-fit audience.',
+      research: 'Create a research guide to validate this concept with {segment}. Include research objectives, screening criteria, key discussion questions, probing questions, and a prioritised learning agenda.',
     };
+
+    function buildPrompt(mode, seg) {
+      const template = MODE_TEMPLATES[mode] || MODE_TEMPLATES.persona;
+      const segLabel = (mode === 'panel') ? seg.segmentPanel : seg.segment;
+      return template.replace('{segment}', segLabel);
+    }
 
     function renderStarterCards(mode) {
       const grid = document.getElementById('starterGrid');
-      const cards = MODE_CARDS[mode] || MODE_CARDS.persona;
-      grid.innerHTML = cards.map(c => `
-        <div class="starter-card" data-prompt="${c.prompt.replace(/"/g,'&quot;')}" data-mode="${mode}">
-          <div class="starter-card-icon">${c.icon}</div>
-          <div class="starter-card-title">${c.title}</div>
-          <div class="starter-card-desc">${c.desc}</div>
-        </div>`).join('');
+      grid.innerHTML = SEGMENTS.map(seg => {
+        const prompt = buildPrompt(mode, seg);
+        return `
+        <div class="starter-card" data-prompt="${prompt.replace(/"/g,'&quot;')}" data-mode="${mode}">
+          <div class="starter-card-icon">${seg.icon}</div>
+          <div class="starter-card-title">${seg.title}</div>
+          <div class="starter-card-desc">${seg.desc}</div>
+        </div>`;
+      }).join('');
       grid.querySelectorAll('.starter-card').forEach(card => {
         card.addEventListener('click', () => {
-          const prompt = card.dataset.prompt;
-          chatInput.value = prompt;
+          chatInput.value = card.dataset.prompt;
           chatInput.style.height = 'auto';
           chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px';
           sendBtn.disabled = false;
