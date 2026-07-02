@@ -449,8 +449,7 @@ Output format:
   ],
   "gaps": [
     "Missing information, inconsistency, or question that wasn't answered clearly"
-  ],
-  "email_report": "FULL HTML EMAIL — a self-contained <div> (no DOCTYPE/html/body tags) using only inline styles, safe for Gmail. Structure: (1) header with title and date, (2) Participant Profile & Demographics — total responses + bullet list of industries/roles, (3) Comfort/Experience Level section — average score + distribution summary sentence, (4) Core Learning Objectives & Goals — bulleted list synthesising what participants want to achieve, (5) Key Takeaways for the Instructor — 2-3 sentence recommendation grounded in the data. Use inline CSS: font-family Arial, max-width 680px, clean heading hierarchy with color #1E88C7 for h2s, light background #F8FAFC for sections, border-left accent #1E88C7 for callout boxes. Make it polished and professional — ready to paste directly into Gmail."
+  ]
 }`;
 
     const titleEl   = document.getElementById('surveyTitle');
@@ -561,7 +560,7 @@ Output format:
         const _res = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}`},
-          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 6000, messages: _msgs })
+          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 8000, messages: _msgs, response_format: { type: 'json_object' } })
         });
         const _data = await _res.json();
         if (!_res.ok) throw new Error(_data.error?.message || 'OpenAI API error');
@@ -578,9 +577,56 @@ Output format:
     }
 
     function parseJSON(text) {
-      const match = text.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error('No JSON found in response');
-      return JSON.parse(match[0]);
+      const stripped = text.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();
+      const match = stripped.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON found in response. Model returned: ' + text.slice(0,200));
+      try { return JSON.parse(match[0]); } catch(e) {
+        let depth=0,start=-1,end=-1;
+        for(let i=0;i<stripped.length;i++){
+          if(stripped[i]==='{'){if(depth++===0)start=i;}
+          else if(stripped[i]==='}'){if(--depth===0){end=i;break;}}
+        }
+        if(start!==-1&&end!==-1)return JSON.parse(stripped.slice(start,end+1));
+        throw new Error('Could not parse JSON: '+e.message);
+      }
+    }
+
+    function generateEmailReport(d) {
+      const respondents = d.respondents || [];
+      const questions   = d.question_analyses || [];
+      const recs        = d.recommendations || [];
+      const themes      = d.key_themes || [];
+      const comfortQ    = questions.find(q => q.type === 'rating');
+      const roles       = [...new Set(respondents.map(r => [r.role,r.organisation].filter(Boolean).join(', ')).filter(Boolean))];
+      const distRows    = comfortQ ? Object.entries(comfortQ.rating_distribution||{}).filter(([,v])=>Number(v)>0)
+        .map(([k,v])=>`<li style="margin:2px 0">Rating ${k}: <strong>${v}</strong> participant(s)</li>`).join('') : '';
+      const goalItems   = themes.length
+        ? themes.map(t=>`<li style="margin:4px 0"><strong>${t.theme}:</strong> ${t.description}</li>`).join('')
+        : (d.insights||[]).map(i=>`<li style="margin:4px 0">${i}</li>`).join('');
+      const recItems    = recs.slice(0,4).map(r=>`<li style="margin:4px 0">${r.recommendation}</li>`).join('');
+      const s = (str) => String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return `<div style="font-family:Arial,sans-serif;max-width:680px;color:#111827;line-height:1.65">
+  <div style="background:#1E3A5F;color:#fff;padding:28px 32px;border-radius:8px 8px 0 0">
+    <h1 style="margin:0;font-size:22px;font-weight:700">📋 Course Registrant Summary Report</h1>
+    <p style="margin:6px 0 0;font-size:13px;opacity:0.8">${s(d.survey_title)} · ${new Date().toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</p>
+  </div>
+  <div style="border:1px solid #E5E7EB;border-top:none;border-radius:0 0 8px 8px;padding:0 32px 28px">
+    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">1. Participant Profile &amp; Demographics</h2>
+    <ul style="margin:0;padding-left:20px">
+      <li style="margin:4px 0"><strong>Total Responses:</strong> ${d.respondent_count||respondents.length}</li>
+      <li style="margin:4px 0"><strong>Industries / Roles Represented:</strong> ${roles.length ? roles.join(' · ') : 'See full report'}</li>
+    </ul>
+    ${d.audience_profile ? `<p style="margin:12px 0 0;padding:12px 16px;background:#F0F9FF;border-left:3px solid #1E88C7;border-radius:0 6px 6px 0;font-size:13px;color:#1A3A5C">${s(d.audience_profile)}</p>` : ''}
+    ${comfortQ ? `<h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">2. ${s(comfortQ.question)}</h2>
+    ${comfortQ.rating_avg ? `<p style="margin:0 0 8px"><strong>Average Score: ${Number(comfortQ.rating_avg).toFixed(1)} / 5</strong></p>` : ''}
+    <ul style="margin:0;padding-left:20px">${distRows}</ul>` : ''}
+    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${comfortQ ? '3' : '2'}. Core Learning Objectives &amp; Goals</h2>
+    <ul style="margin:0;padding-left:20px">${goalItems||'<li>See full analysis report</li>'}</ul>
+    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${comfortQ ? '4' : '3'}. Key Takeaways for the Instructor</h2>
+    <ul style="margin:0;padding-left:20px">${recItems||'<li>See recommendations in full report</li>'}</ul>
+    <p style="margin:28px 0 0;font-size:11px;color:#9CA3AF;border-top:1px solid #E5E7EB;padding-top:16px">Generated by NUS-ISS Living Lab · Survey Analyser Agent · christinecheong.com/agents-hub/survey-analyser-agent</p>
+  </div>
+</div>`;
     }
 
     function showLoading() {
@@ -837,8 +883,7 @@ Output format:
     document.getElementById('emailBtn').addEventListener('click', async () => {
       if (!currentOutput) return;
       const btn = document.getElementById('emailBtn');
-      const html = currentOutput.email_report;
-      if (!html) { btn.textContent = 'No email report'; setTimeout(() => btn.textContent = 'Copy Email Report', 2000); return; }
+      const html = generateEmailReport(currentOutput);
       try {
         // Copy as rich HTML so Gmail renders it formatted
         const blob = new Blob([html], { type: 'text/html' });
