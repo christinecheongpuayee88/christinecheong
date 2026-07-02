@@ -278,9 +278,18 @@
     <div class="input-panel">
       <!-- Single URL field -->
       <div style="margin-bottom:20px">
-        <label class="input-label" style="margin-bottom:8px;display:block">Google Forms URL</label>
+        <label class="input-label" style="margin-bottom:8px;display:block">Survey URL</label>
         <div style="display:flex;gap:8px;align-items:center">
-          <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/forms/d/e/…/viewform" style="flex:1;margin-bottom:0;font-size:13px" oninput="onUrlInput()" />
+          <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/spreadsheets/d/…  (paste your Google Sheets responses URL)" style="flex:1;margin-bottom:0;font-size:13px" oninput="onUrlInput()" />
+          <button type="button" id="fetchFormBtn" onclick="tryFetchSheets()" style="padding:10px 18px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Load Responses</button>
+        </div>
+        <!-- shown when Forms URL pasted -->
+        <div id="_formsUrlHint" style="display:none;margin-top:10px;padding:14px 16px;background:#FEF3C7;border-left:4px solid #B45309;border-radius:0 8px 8px 0;font-size:13px;color:#78350F;line-height:1.7">
+          <strong>⚠️ That's a Google Forms URL — it only shows questions, not responses.</strong><br>
+          To get your responses, do this <strong>once</strong>:<br>
+          <span style="display:inline-block;margin-top:6px">1 · Open your Form → click the <strong>Responses</strong> tab</span><br>
+          <span style="display:inline-block">2 · Click the green <strong>⊞ Sheets icon</strong> — this opens your linked spreadsheet</span><br>
+          <span style="display:inline-block">3 · Copy that Sheets URL from the browser bar and paste it above</span>
         </div>
         <div id="_urlError" style="display:none;margin-top:8px;padding:10px 14px;background:#FEE2E2;border-left:3px solid #C0392B;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6"></div>
       </div>
@@ -441,8 +450,52 @@ Output format:
     }
     function onUrlInput() {
       const url = document.getElementById('formsUrl').value.trim();
-      if (!titleEl.value.trim() && url.includes('docs.google.com/forms')) titleEl.value = 'Google Form Survey';
+      const isForm = url.includes('docs.google.com/forms');
+      const isSheet = url.includes('docs.google.com/spreadsheets');
+      document.getElementById('_formsUrlHint').style.display = isForm ? 'block' : 'none';
+      document.getElementById('_urlError').style.display = 'none';
+      if (!titleEl.value.trim() && (isForm || isSheet)) titleEl.value = 'Google Form Survey';
       checkReady();
+    }
+
+    async function tryFetchSheets() {
+      const url = document.getElementById('formsUrl').value.trim();
+      const btn = document.getElementById('fetchFormBtn');
+      const errEl = document.getElementById('_urlError');
+      errEl.style.display = 'none';
+      if (!url) return;
+      if (url.includes('docs.google.com/forms')) {
+        document.getElementById('_formsUrlHint').style.display = 'block';
+        return;
+      }
+      if (!url.includes('docs.google.com/spreadsheets')) {
+        errEl.textContent = 'Please paste a Google Sheets URL (docs.google.com/spreadsheets/…).';
+        errEl.style.display = 'block'; return;
+      }
+      btn.textContent = 'Loading…'; btn.disabled = true; btn.style.background = '#6B7280';
+      try {
+        const csvUrl = url
+          .replace(/\/edit[^?]*(\?.*)?$/, '/export?format=csv')
+          .replace(/\/pub[^?]*(\?.*)?$/, '/export?format=csv')
+          .replace(/\/view[^?]*(\?.*)?$/, '/export?format=csv');
+        const res = await fetch('/api/chat', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ system: 'Return the CSV data exactly as-is. If the content looks like an HTML error page, respond only with: ERROR: could not read sheet data.', message: 'Return all sheet data exactly as provided.', urls: [csvUrl], max_tokens: 6000 })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Fetch failed');
+        const sheetData = data.content[0].text.trim();
+        if (sheetData.startsWith('ERROR:') || sheetData.toLowerCase().includes('page not found') || sheetData.toLowerCase().includes('unavailable')) {
+          throw new Error('Sheet not publicly accessible. In Google Sheets: File → Share → Anyone with the link can view.');
+        }
+        dataEl.value = sheetData;
+        if (!titleEl.value.trim()) titleEl.value = 'Google Form Survey';
+        btn.textContent = '✓ Responses Loaded'; btn.style.background = 'var(--green)';
+        checkReady();
+      } catch(err) {
+        btn.textContent = 'Load Responses'; btn.style.background = 'var(--teal)'; btn.disabled = false;
+        errEl.textContent = '❌ ' + err.message; errEl.style.display = 'block';
+      }
     }
     function onSheetsInlineInput() { checkReady(); }
     [titleEl, dataEl, contextEl].forEach(el => el && el.addEventListener('input', checkReady));
