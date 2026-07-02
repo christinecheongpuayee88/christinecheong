@@ -289,38 +289,16 @@ Examples:
 &#8226; &quot;What is the current state of tokenization in supply chain management?&quot;
 &#8226; &quot;Deep dive on Competitor X: strategy, product portfolio, recent moves, and market perception&quot;" spellcheck="false"></textarea>
 
-            <!-- Internal documents upload -->
+            <!-- ── Attachments (unified — files + images + paste) ── -->
             <div style="margin-top:12px;">
-              <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;">📁 Internal Documents <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — upload files to include in research)</span></div>
-              <div id="dropZone" style="border:2px dashed var(--border);border-radius:8px;padding:16px 20px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--surface);" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleDrop(event)">
-                <div style="font-size:12px;color:var(--text-muted);">Drag &amp; drop files here, or <span style="color:var(--blue);font-weight:600;">click to browse</span></div>
-                <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Supports .txt, .md, .csv, .json, .html, .pdf (text-based)</div>
+              <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;">📎 Attachments <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — images, docs, or paste a screenshot)</span></div>
+              <div id="_dropZone" style="border:2px dashed var(--border);border-radius:8px;padding:16px 20px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--surface);" onclick="document.getElementById('_fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="_handleDrop(event)">
+                <div style="font-size:12px;color:var(--text-muted);">Drag &amp; drop files here, or <span style="color:var(--blue);font-weight:600;">click to browse</span> · or <strong>Ctrl+V</strong> to paste a screenshot</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Supports .txt .md .csv .json .pdf or any image (PNG, JPG, etc.)</div>
               </div>
-              <input id="fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf" style="display:none" onchange="handleFiles(this.files)" />
-              <div id="fileList" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;"></div>
+              <input id="_fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf,image/*" style="display:none" onchange="_handleFiles(this.files)" />
+              <div id="_attachList" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;"></div>
             </div>
-
-      
-      <!-- ── Attachments ── -->
-      <div style="margin-top:10px;">
-        <!-- Image paste zone -->
-        <div id="_pasteZone"
-          tabindex="0"
-          style="border:2px dashed var(--blue,#1E88C7);border-radius:8px;padding:18px 16px;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:#EBF5FB;margin-bottom:8px;outline:none;text-align:center;"
-          onclick="this.focus()"
-          ondragover="event.preventDefault();this.style.background='#d0eaf8'"
-          ondragleave="this.style.background='#EBF5FB'"
-          ondrop="_handleDrop(event);this.style.background='#EBF5FB'"
-          onfocus="this.style.borderColor='#1670A6';this.style.background='#d0eaf8'"
-          onblur="this.style.borderColor='var(--blue,#1E88C7)';this.style.background='#EBF5FB'">
-          <div style="font-size:22px;margin-bottom:6px;">📋</div>
-          <div style="font-size:14px;font-weight:700;color:var(--blue,#1E88C7);margin-bottom:3px;">Click here, then Ctrl+V to paste an image</div>
-          <div style="font-size:12px;color:var(--text-muted,#6B7280);">Also accepts drag &amp; drop · or <span style="color:var(--blue,#1E88C7);font-weight:600;cursor:pointer;" onclick="event.stopPropagation();document.getElementById('_fileInput').click()">click to browse files</span></div>
-          <div style="font-size:11px;color:var(--text-muted,#6B7280);margin-top:4px;">.txt .csv .pdf .md .json or any image (PNG, JPG, etc.)</div>
-        </div>
-        <input id="_fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf,image/*" style="display:none" onchange="_handleFiles(this.files)" />
-        <div id="_attachList" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;"></div>
-      </div>
       <div class="input-footer">
               <span class="char-count" id="charCount">0 characters</span>
               <button class="analyze-btn" id="analyzeBtn" type="button"><span class="btn-text">Deploy Research Team</span><span class="spinner"></span></button>
@@ -411,65 +389,14 @@ Examples:
       return parts;
     }
 
-    // Global paste — catches Ctrl+V anywhere on the page
+    // Global Ctrl+V paste — works from anywhere on the page
     document.addEventListener('paste', e => {
-      const items = Array.from(e.clipboardData?.items || []);
-      const imageItems = items.filter(i => i.type.startsWith('image/'));
-      if (imageItems.length) {
-        e.preventDefault();
-        imageItems.forEach(item => { const f = item.getAsFile(); if (f) _handleFiles([f]); });
-        // Flash the paste zone green to confirm receipt
-        const z = document.getElementById('_pasteZone');
-        if (z) {
-          z.style.background = '#d1fae5';
-          z.style.borderColor = '#059669';
-          setTimeout(() => { z.style.background = '#EBF5FB'; z.style.borderColor = 'var(--blue,#1E88C7)'; }, 800);
-        }
-      }
+      Array.from(e.clipboardData?.items || []).forEach(item => {
+        if (item.type.startsWith('image/')) { const f = item.getAsFile(); if (f) _handleFiles([f]); }
+      });
     });
 
-    // Paste zone keydown — intercept Ctrl+V when zone has focus
-    document.getElementById('_pasteZone').addEventListener('keydown', e => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
-        // Let the global paste handler above do the work
-        // Just keep focus so the paste event fires correctly
-      }
-    });
-    // ─────────────────────────────────────────────────────────────
     dataInput.addEventListener('input',()=>{const l=dataInput.value.length;charCount.textContent=l.toLocaleString()+' character'+(l!==1?'s':'');});
-
-    // ── Internal documents (legacy drop zone — feeds into unified _uploadedDocs) ──
-    function handleDrop(e) {
-      e.preventDefault();
-      const dz = document.getElementById('dropZone');
-      if (dz) dz.style.borderColor = 'var(--border)';
-      _handleFiles(e.dataTransfer.files);
-    }
-
-    function handleFiles(files) { _handleFiles(files); }
-    function removeDoc(name) { delete _uploadedDocs[name]; _renderAttachments(); renderFileList(); }
-
-    function renderFileList() {
-      const container = document.getElementById('fileList');
-      if (!container) return;
-      container.innerHTML = Object.keys(_uploadedDocs).map(name => `
-        <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--blue-light);border:1px solid #BFDBFE;border-radius:100px;font-size:11px;font-weight:500;color:var(--blue);">
-          📄 ${escapeHtml(name)}
-          <span onclick="removeDoc('${name}')" style="cursor:pointer;color:var(--blue);font-weight:700;margin-left:2px;">×</span>
-        </div>`).join('');
-    }
-
-    function buildMessageWithDocs(question) {
-      // Always use _buildUserContent which merges text docs + images into multipart content
-      return _buildUserContent(
-        `RESEARCH QUESTION:\n${question}` +
-        (Object.keys(_uploadedDocs).length
-          ? '\n\n===\nATTACHED DOCUMENTS:\n\n' +
-            Object.entries(_uploadedDocs).map(([n,c]) =>
-              `--- ${n} ---\n${c.slice(0,8000)}\n--- END: ${n} ---`).join('\n\n') + '\n==='
-          : '')
-      );
-    }
 
     const analyzeBtn=document.getElementById('analyzeBtn'),outputEmpty=document.getElementById('outputEmpty'),agentProgress=document.getElementById('agentProgress'),resultsContainer=document.getElementById('resultsContainer'),errorBox=document.getElementById('errorBox'),errorTitle=document.getElementById('errorTitle'),errorDetail=document.getElementById('errorDetail');
     function setStep(id,s){const el=document.getElementById(id);el.classList.remove('active','done');if(s)el.classList.add(s);}
@@ -569,7 +496,7 @@ Rules:
       try{
         const t1=setTimeout(()=>{setStep('step-1','done');setStep('step-2','active');},3000);
         const t2=setTimeout(()=>{setStep('step-2','done');setStep('step-3','active');},8000);
-        const result=await callClaude(SYSTEM_PROMPT,buildMessageWithDocs(inputText));
+        const result=await callClaude(SYSTEM_PROMPT,_buildUserContent(`RESEARCH QUESTION:\n${inputText}`));
         clearTimeout(t1);clearTimeout(t2);setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
         await new Promise(r=>setTimeout(r,400));agentProgress.classList.remove('active');renderMarkdown(result);
       }catch(err){agentProgress.classList.remove('active');outputEmpty.style.display='none';showError('Research Failed',err.message);}
