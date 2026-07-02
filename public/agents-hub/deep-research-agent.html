@@ -149,6 +149,8 @@
     .result-md li{margin-bottom:5px;}
     .result-md hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
     .result-md code{font-family:var(--font-mono);font-size:13px;background:var(--surface);padding:1px 5px;border-radius:3px;}
+    .result-md a{color:var(--blue);text-decoration:underline;text-underline-offset:2px;font-weight:500;}
+    .result-md a:hover{color:#1670A6;}
     .result-header{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border);}
     .result-header-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
     .result-header-title{font-size:14px;font-weight:600;letter-spacing:0.06em;}
@@ -489,6 +491,7 @@ Rules:
         .replace(/^### (.+)$/gm,'<h3>$1</h3>')
         .replace(/^## (.+)$/gm,'<h2>$1</h2>')
         .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
         .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
         .replace(/\*(.+?)\*/g,'<em>$1</em>')
         .replace(/^---$/gm,'<hr>')
