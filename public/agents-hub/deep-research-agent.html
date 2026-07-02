@@ -303,9 +303,20 @@ Examples:
       
       <!-- ── Attachments ── -->
       <div style="margin-top:10px;">
-        <div id="_dropZone" style="border:1.5px dashed var(--border);border-radius:8px;padding:10px 16px;cursor:pointer;transition:border-color 0.2s;background:var(--surface,#F2F2F2);" tabindex="0" onclick="document.getElementById('_fileInput').click()" onkeydown="if(event.key==='Enter')document.getElementById('_fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue,#1E88C7)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="_handleDrop(event)">
-          <span style="font-size:12px;color:var(--text-muted,#6B7280);">📎 <span style="color:var(--blue,#1E88C7);font-weight:600;">Click to browse</span> · drag &amp; drop · or <strong>click here then Ctrl+V</strong> to paste an image</span>
-          <span style="font-size:11px;color:var(--text-muted,#6B7280);display:block;margin-top:2px;">.txt .csv .pdf .md .json or any image</span>
+        <!-- Image paste zone -->
+        <div id="_pasteZone"
+          tabindex="0"
+          style="border:2px dashed var(--blue,#1E88C7);border-radius:8px;padding:18px 16px;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:#EBF5FB;margin-bottom:8px;outline:none;text-align:center;"
+          onclick="this.focus()"
+          ondragover="event.preventDefault();this.style.background='#d0eaf8'"
+          ondragleave="this.style.background='#EBF5FB'"
+          ondrop="_handleDrop(event);this.style.background='#EBF5FB'"
+          onfocus="this.style.borderColor='#1670A6';this.style.background='#d0eaf8'"
+          onblur="this.style.borderColor='var(--blue,#1E88C7)';this.style.background='#EBF5FB'">
+          <div style="font-size:22px;margin-bottom:6px;">📋</div>
+          <div style="font-size:14px;font-weight:700;color:var(--blue,#1E88C7);margin-bottom:3px;">Click here, then Ctrl+V to paste an image</div>
+          <div style="font-size:12px;color:var(--text-muted,#6B7280);">Also accepts drag &amp; drop · or <span style="color:var(--blue,#1E88C7);font-weight:600;cursor:pointer;" onclick="event.stopPropagation();document.getElementById('_fileInput').click()">click to browse files</span></div>
+          <div style="font-size:11px;color:var(--text-muted,#6B7280);margin-top:4px;">.txt .csv .pdf .md .json or any image (PNG, JPG, etc.)</div>
         </div>
         <input id="_fileInput" type="file" multiple accept=".txt,.md,.csv,.json,.html,.pdf,image/*" style="display:none" onchange="_handleFiles(this.files)" />
         <div id="_attachList" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;"></div>
@@ -400,10 +411,29 @@ Examples:
       return parts;
     }
 
+    // Global paste — catches Ctrl+V anywhere on the page
     document.addEventListener('paste', e => {
-      Array.from(e.clipboardData?.items || []).forEach(item => {
-        if (item.type.startsWith('image/')) { const f = item.getAsFile(); if (f) _handleFiles([f]); }
-      });
+      const items = Array.from(e.clipboardData?.items || []);
+      const imageItems = items.filter(i => i.type.startsWith('image/'));
+      if (imageItems.length) {
+        e.preventDefault();
+        imageItems.forEach(item => { const f = item.getAsFile(); if (f) _handleFiles([f]); });
+        // Flash the paste zone green to confirm receipt
+        const z = document.getElementById('_pasteZone');
+        if (z) {
+          z.style.background = '#d1fae5';
+          z.style.borderColor = '#059669';
+          setTimeout(() => { z.style.background = '#EBF5FB'; z.style.borderColor = 'var(--blue,#1E88C7)'; }, 800);
+        }
+      }
+    });
+
+    // Paste zone keydown — intercept Ctrl+V when zone has focus
+    document.getElementById('_pasteZone').addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+        // Let the global paste handler above do the work
+        // Just keep focus so the paste event fires correctly
+      }
     });
     // ─────────────────────────────────────────────────────────────
     dataInput.addEventListener('input',()=>{const l=dataInput.value.length;charCount.textContent=l.toLocaleString()+' character'+(l!==1?'s':'');});
