@@ -248,6 +248,24 @@
 
   <div class="footer-note">NUS-ISS Living Lab &mdash; Consumer Persona Agent &nbsp;·&nbsp; Outputs are modelled directional guidance, not primary research.</div>
 
+  <style>
+    /* Markdown-style response rendering */
+    .md-body { font-size:14px; font-weight:300; color:var(--text); line-height:1.75; }
+    .md-body p { margin-bottom:12px; }
+    .md-body p:last-child { margin-bottom:0; }
+    .md-body strong, .md-body b { font-weight:600; color:var(--navy); }
+    .md-body em { font-style:italic; }
+    .md-body h1,.md-body h2,.md-body h3 { font-family:var(--font-display); font-weight:700; color:var(--navy); margin:18px 0 8px; line-height:1.2; }
+    .md-body h1 { font-size:20px; } .md-body h2 { font-size:17px; } .md-body h3 { font-size:15px; }
+    .md-body ul,.md-body ol { padding-left:20px; margin-bottom:12px; }
+    .md-body li { margin-bottom:5px; color:var(--text-muted); }
+    .md-body li strong { color:var(--text); }
+    .md-body hr { border:none; border-top:1px solid var(--border); margin:16px 0; }
+    .md-body blockquote { border-left:3px solid var(--blue); padding:8px 14px; background:var(--blue-light); border-radius:0 6px 6px 0; margin:12px 0; font-style:italic; color:var(--text-muted); }
+    .md-body code { font-family:var(--font-mono); font-size:12px; background:var(--surface2); padding:1px 5px; border-radius:4px; }
+    .md-body .caveat { margin-top:16px; font-size:12px; color:var(--text-muted); opacity:0.75; border-top:1px solid var(--border); padding-top:10px; font-style:italic; }
+  </style>
+
   <script>
     // ── Attachments ──────────────────────────────────────────────
     const _uploadedDocs = {};
@@ -349,49 +367,91 @@
       });
     });
 
-    // ── System prompts ─────────────────────────────────────────
-    const MODE_INSTRUCTIONS = {
-      persona: 'The user wants PERSONA SIMULATION mode. Generate or adopt a realistic consumer persona matching their description. Respond AS the persona in natural language, then provide analysis of motivations, drivers, barriers, and likely behavior.',
-      trend: 'The user wants TREND ANALYSIS mode. Synthesize the provided inputs into actionable trend insights with: key themes, what is driving each trend, consumer implications, brand/product implications, opportunities & risks, and recommended next moves.',
-      concept: 'The user wants CONCEPT TESTING mode. Evaluate the concept through relevant persona lenses. Assess: appeal, clarity, relevance, distinctiveness, believability, value, emotional resonance, practical fit, barriers, likely intent, and improvement opportunities.',
-      panel: 'The user wants PANEL COMPARISON mode. Create 3-4 meaningfully distinct personas and show how each responds to the same stimulus. Include: persona-by-persona reactions, common patterns, sharp differences, strongest-fit audience, weakest-fit audience, and actions to improve fit.',
-      research: 'The user wants RESEARCH DESIGN mode. Generate a professional research instrument (discussion guide, survey questions, screening criteria, or learning agenda) based on their validation needs.'
+    // ── System prompt ──────────────────────────────────────────
+    const MODE_HINTS = {
+      persona: 'MODE: Talk to Consumers — Simulate a realistic consumer persona matching the description. Respond naturally in the persona\'s voice, then provide structured analysis: persona profile, what drives them, what holds them back, says vs. does, and key takeaways.',
+      trend: 'MODE: Trend Analysis — Synthesise the inputs into an actionable trend digest. Cover: key themes, what is driving each trend, consumer implications, brand/product opportunities, risks to watch, and recommended next moves.',
+      concept: 'MODE: Concept Testing — Evaluate the concept through the relevant persona lens. Assess: first impression, appeal and relevance, clarity and distinctiveness, barriers and risks, likely intent, and improvement opportunities.',
+      panel: 'MODE: Panel Comparison — Create 3–4 meaningfully distinct personas and show how each responds to the same stimulus. Then cover: common patterns, sharp differences, strongest-fit audience, weakest-fit audience, and actions to improve fit.',
+      research: 'MODE: Research Design — Generate a professional research instrument tailored to the user\'s validation goals. Include: research objectives, screening criteria, discussion guide or survey questions, probing questions, and learning agenda.'
     };
 
     const SYSTEM_PROMPT = `You are an AI Consumer Persona Agent for simulated consumer insight generation, trend interpretation, and concept testing.
 
-Your job is to help users explore market shifts, model likely consumer reactions, and pressure-test new ideas through realistic persona-based responses and structured insight summaries.
+You operate like an insight strategist and simulation partner. Your job is to help users explore market shifts, model likely consumer reactions, and pressure-test new ideas through realistic persona-based responses and structured insight summaries. Treat outputs as modelled directional guidance unless the user provides real research, survey, retail, or interview data to analyse.
 
-Treat outputs as modeled directional guidance unless the user provides real research data to analyze.
+If the user provides images (slides, screenshots, case material, research summaries, or data), analyse their visual content thoroughly and use it as the primary input for your response — describe what you see and draw conclusions from it.
 
-If the user provides images (slides, screenshots, case material, data), analyze their visual content and use it as the primary input for your response.
+## Core Capabilities
 
-## Persona Modeling Rules
-- Build personas around plausible consumer attributes: life stage, identity, motivations, category behaviors, attitudes, routines, aspirations, and constraints.
-- Include emotional, social, and practical drivers, not just demographics.
+### Talk to Consumers
+Generate or adopt personas matching the requested audience. Keep each persona internally consistent in life stage, attitudes, behaviours, needs, and constraints. Answer as the persona would naturally respond, then explain motivations, emotional drivers, barriers, and tradeoffs. Distinguish what the persona says from what they are likely to do.
+
+### Trend Analysis
+Synthesise provided trend reports, research notes, interview findings, or market observations. Identify major themes, tensions, unmet needs, and growth signals. Explain implications for innovation, branding, messaging, or portfolio strategy. Separate strong observations from weaker hypotheses.
+
+### Concept & Hypothesis Testing
+Evaluate concepts, propositions, messages, features, or campaigns through the lens of the relevant persona or panel. Assess appeal, clarity, relevance, distinctiveness, believability, value, and likely intent. Identify what resonates, what confuses, what creates hesitation, and what would improve adoption.
+
+### Research Design Support
+Create interview guides, survey questions, screening logic, test plans, or learning agendas to validate ideas with real consumers.
+
+## Persona Modelling Rules
+- Build personas around plausible consumer attributes: life stage, identity-relevant context, motivations, category behaviours, attitudes, routines, aspirations, and constraints.
+- Include emotional, social, and practical drivers — not just demographics.
 - Keep each persona coherent. Avoid stereotypes or caricatures.
+- Make multiple personas meaningfully distinct in motivations, context, habits, and objections.
 - Distinguish between what the persona says and what they are likely to do.
 - Model realistic tradeoffs rather than universally positive or negative reactions.
 
-## Output Format
-CRITICAL: Return ONLY a raw valid JSON object — absolutely no markdown, no code fences, no explanation text before or after. Your entire response must start with { and end with }. This applies even when analyzing images or visual content.
+## Trend Analysis Rules
+- Treat trend inputs as signals to interpret, not facts to exaggerate.
+- Distinguish clearly between observed patterns, inferred implications, and speculative opportunities.
+- Do not fabricate external reports, benchmarks, or citations.
 
-Use EXACTLY this structure for the requested mode:
+## Evidence & Confidence
+- Be explicit that simulated responses are modelled outputs, not substitutes for primary consumer research.
+- Do not present simulated verbatims as real consumer quotes — label them as modelled.
+- If the user provides real interviews, surveys, or transcripts, shift into analysis-first mode.
+- When confidence is limited, explain what is missing or uncertain.
 
-### PERSONA mode:
-{"mode":"persona","summary":"1-2 sentence overview","sections":[{"title":"Persona Profile","type":"persona","persona_name":"First name, age, life stage","persona_summary":"2-sentence description","reaction":"Their natural spoken reaction — 3-5 sentences in their voice"},{"title":"What Drives Them","type":"list","items":["Driver 1","Driver 2","Driver 3"]},{"title":"What Holds Them Back","type":"list","items":["Barrier 1","Barrier 2"]},{"title":"Says vs. Does","type":"list","items":["Says: X — Does: Y"]}],"confidence":"medium","caveats":"Modelled persona — validate with primary research."}
+## Output Style
+- Write in clean, structured prose with headers and bullet points where they help readability.
+- Use markdown formatting: **bold** for key labels, ## for section headers, bullet lists for items.
+- Be concise, insightful, and commercially useful. Prefer specific observations over abstract marketing jargon.
+- Write so product, insights, innovation, and marketing teams can act on the output.
+- End with a brief italicised caveat line noting that outputs are modelled and directional.
+- Do NOT return JSON. Return well-formatted markdown text only.`;
 
-### TREND mode:
-{"mode":"trend","summary":"1-2 sentence synthesis","sections":[{"title":"Key Themes","type":"list","items":["Theme 1","Theme 2"]},{"title":"What Is Driving This","type":"list","items":["Driver 1"]},{"title":"Consumer Implications","type":"list","items":["Implication 1"]},{"title":"Brand & Product Opportunities","type":"list","items":["Opportunity 1"]},{"title":"Risks to Watch","type":"list","items":["Risk 1"]},{"title":"Recommended Next Moves","type":"list","items":["Action 1"]}],"confidence":"medium","caveats":"Modelled synthesis."}
+    // ── Simple markdown → HTML renderer ────────────────────────
+    function mdToHtml(md) {
+      return md
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^---$/gm, '<hr>')
+        .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/^[-•] (.+)$/gm, '<li>$1</li>')
+        .replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>')
+        .replace(/(<li>[\s\S]*?<\/li>)(?=\s*<li>|$)/g, (m) => m)
+        .replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>')
+        .replace(/\n{2,}/g, '</p><p>')
+        .replace(/^(?!<[hul]|<blockquote|<hr)(.+)$/gm, (m) => m.startsWith('<') ? m : m)
+        .replace(/^([^<\n].*)$/gm, (m, p1) => {
+          if (!p1.startsWith('<')) return '<p>' + p1 + '</p>';
+          return p1;
+        })
+        .replace(/<p><\/p>/g, '')
+        .replace(/<\/ul><ul>/g, '')
+        .replace(/<p>(<[hul])/g, '$1')
+        .replace(/(<\/[hul][^>]*>)<\/p>/g, '$1');
+    }
 
-### CONCEPT mode:
-{"mode":"concept","summary":"1-2 sentence verdict","sections":[{"title":"First Impression","type":"list","items":["Observation 1"]},{"title":"Appeal & Relevance","type":"list","items":["Strength 1"]},{"title":"Barriers & Risks","type":"list","items":["Barrier 1"]},{"title":"Improvement Opportunities","type":"list","items":["Suggestion 1"]},{"title":"Likely Consumer Intent","type":"list","items":["Intent 1"]}],"confidence":"medium","caveats":"Modelled evaluation."}
-
-### PANEL mode:
-{"mode":"panel","summary":"1-2 sentence overview","sections":[{"title":"Persona 1","type":"persona","persona_name":"Name, age","persona_summary":"2-sentence profile","reaction":"Reaction 3-4 sentences"},{"title":"Persona 2","type":"persona","persona_name":"Name, age","persona_summary":"Profile","reaction":"Reaction"},{"title":"Persona 3","type":"persona","persona_name":"Name, age","persona_summary":"Profile","reaction":"Reaction"},{"title":"Common Patterns","type":"list","items":["Pattern 1"]},{"title":"Sharp Differences","type":"list","items":["Difference 1"]},{"title":"Best-Fit Audience","type":"list","items":["Target 1"]}],"confidence":"medium","caveats":"Modelled panel."}
-
-### RESEARCH mode:
-{"mode":"research","summary":"Description","sections":[{"title":"Research Objectives","type":"list","items":["Objective 1"]},{"title":"Screening Criteria","type":"list","items":["Criterion 1"]},{"title":"Discussion Guide","type":"list","items":["Q1: Question"]},{"title":"Learning Agenda","type":"list","items":["Learn 1"]}],"confidence":"high","caveats":"Adapt to your context."}`;
+    function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
     // ── API call ───────────────────────────────────────────────
     async function callAgent(systemPrompt, userMessage) {
@@ -400,7 +460,7 @@ Use EXACTLY this structure for the requested mode:
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_apiKey}` },
-          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 6000, temperature: 0.3, messages: [
+          body: JSON.stringify({ model: 'gpt-4o', max_tokens: 6000, temperature: 0.7, messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: _buildUserContent(userMessage) }
           ]})
@@ -419,60 +479,19 @@ Use EXACTLY this structure for the requested mode:
       return data.content[0].text;
     }
 
-    function parseResult(raw) {
-      try { return JSON.parse(raw.trim()); } catch(_) {}
-      const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
-      if (fence) { try { return JSON.parse(fence[1].trim()); } catch(_) {} }
-      const m = raw.match(/\{[\s\S]*\}/);
-      if (m) { try { return JSON.parse(m[0]); } catch(_) {} }
-      throw new Error('Could not parse response. Please try again.');
-    }
-
-    function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
-    function renderResultCards(parsed) {
-      const modeColors = { persona:'#1E88C7', trend:'#3B82F6', concept:'#F59E0B', panel:'#4A6F8A', research:'#B7791F' };
-      const accent = modeColors[parsed.mode || currentMode] || '#1E88C7';
-      let html = '';
-
-      if (parsed.summary) {
-        html += `<div class="result-card"><div class="result-card-header"><span class="result-card-dot" style="background:${accent}"></span><span class="result-card-label" style="color:${accent}">Summary</span></div><div class="result-card-body"><div class="result-item" style="color:var(--text);font-weight:400;">${escHtml(parsed.summary)}</div></div></div>`;
-      }
-
-      (parsed.sections || []).forEach(sec => {
-        let body = '';
-        if (sec.type === 'persona') {
-          body = `<div class="result-item"><div class="result-item-title">${escHtml(sec.persona_name || sec.title || '')}</div><div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-style:italic;">${escHtml(sec.persona_summary || '')}</div><div style="font-size:13px;color:var(--text);line-height:1.7;">${escHtml(sec.reaction || '')}</div></div>`;
-        } else if (sec.items && sec.items.length) {
-          body = sec.items.map(i => `<div class="result-item">${escHtml(typeof i === 'string' ? i : JSON.stringify(i))}</div>`).join('');
-        }
-        if (!body) return;
-        const color = sec.type === 'persona' ? '#1E88C7' : sec.type === 'list' ? '#3B82F6' : accent;
-        html += `<div class="result-card"><div class="result-card-header"><span class="result-card-dot" style="background:${color}"></span><span class="result-card-label" style="color:${color}">${escHtml((sec.title || '').toUpperCase())}</span></div><div class="result-card-body">${body}</div></div>`;
-      });
-
-      if (parsed.caveats) {
-        html += `<div class="result-card"><div class="result-card-header"><span class="result-card-dot" style="background:#B7791F"></span><span class="result-card-label" style="color:#B7791F">CAVEATS · ${escHtml((parsed.confidence || '').toUpperCase())}</span></div><div class="result-card-body"><div class="result-item">${escHtml(parsed.caveats)}</div></div></div>`;
-      }
-      return html;
-    }
-
     // ── Run agent ──────────────────────────────────────────────
     async function runAgent(inputText) {
       if (!inputText || inputText.trim().length < 5) return;
 
-      // Hide starters
       document.getElementById('starterGrid').style.display = 'none';
 
       const area = document.getElementById('resultsArea');
       area.classList.add('active');
 
-      // User bubble
       const hasImages = _uploadedImages.length > 0;
       const imgNote = hasImages ? ` <span style="font-size:11px;opacity:0.6;">(+ ${_uploadedImages.length} image${_uploadedImages.length > 1 ? 's' : ''})</span>` : '';
       area.innerHTML += `<div class="msg-user"><div class="msg-user-bubble">${escHtml(inputText)}${imgNote}</div></div>`;
 
-      // Agent progress bubble
       const agentMsgId = 'agent-msg-' + Date.now();
       area.innerHTML += `<div class="msg-agent" id="${agentMsgId}">
         <div class="msg-agent-avatar">👤</div>
@@ -484,10 +503,8 @@ Use EXACTLY this structure for the requested mode:
           </div>
         </div>
       </div>`;
-      area.scrollTop = area.scrollHeight;
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 
-      // Clear input
       chatInput.value = '';
       sendBtn.disabled = true;
 
@@ -502,19 +519,18 @@ Use EXACTLY this structure for the requested mode:
         const t1 = setTimeout(() => { setPS('ps1-'+agentMsgId,'done'); setPS('ps2-'+agentMsgId,'active'); }, 2500);
         const t2 = setTimeout(() => { setPS('ps2-'+agentMsgId,'done'); setPS('ps3-'+agentMsgId,'active'); }, 5000);
 
-        const imageNote = hasImages ? '\n\nImages are attached — treat them as primary source material. Analyze their visual content (text, data, charts, slides, screenshots) and base your response on what you see. Still return ONLY valid JSON.' : '';
-        const modeInstruction = MODE_INSTRUCTIONS[currentMode] || MODE_INSTRUCTIONS.persona;
-        const result = await callAgent(SYSTEM_PROMPT, modeInstruction + imageNote + '\n\n---\n\nUser input:\n' + inputText);
+        const imageNote = hasImages ? '\n\nImages are attached — analyse their visual content thoroughly (read all text, tables, charts, slide content) and use what you see as the primary basis for your response.' : '';
+        const modeHint = MODE_HINTS[currentMode] || MODE_HINTS.persona;
+        const result = await callAgent(SYSTEM_PROMPT, modeHint + imageNote + '\n\n---\n\nUser input:\n' + inputText);
 
         clearTimeout(t1); clearTimeout(t2);
         setPS('ps1-'+agentMsgId,'done'); setPS('ps2-'+agentMsgId,'done'); setPS('ps3-'+agentMsgId,'done');
 
         await new Promise(r => setTimeout(r, 300));
 
-        const parsed = parseResult(result);
         const msgEl = document.getElementById(agentMsgId);
         if (msgEl) {
-          msgEl.querySelector('.msg-agent-body').innerHTML = renderResultCards(parsed);
+          msgEl.querySelector('.msg-agent-body').innerHTML = `<div class="md-body">${mdToHtml(result)}</div>`;
         }
       } catch(err) {
         const msgEl = document.getElementById(agentMsgId);
