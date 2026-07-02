@@ -302,7 +302,11 @@
             <input class="input-field" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/…" style="flex:1;margin-bottom:0" />
             <button type="button" id="fetchSheetsBtn" onclick="fetchGoogleSheets()" style="padding:10px 18px;background:var(--teal,#0F766E);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Fetch Responses</button>
           </div>
-          <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block">In Google Sheets: File → Share → Anyone with the link can view → copy URL here.</span>
+          <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block">Must be a Google <strong>Sheets</strong> URL (spreadsheets/d/…), not a Forms URL. In Sheets: File → Share → Anyone with link can view → copy URL.</span>
+          <div id="_sheetsGuide" style="display:none;margin-top:8px;padding:12px 14px;background:#FEE2E2;border-left:3px solid #C0392B;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6">
+            ⚠️ <strong>That's a Google Forms URL — it doesn't contain response data.</strong><br>
+            To get the Sheets URL: open your form → <strong>Responses tab</strong> → click the green Sheets icon to open the linked spreadsheet → in Sheets: <strong>File → Share → Anyone with the link can view</strong> → copy that URL and paste it here.
+          </div>
         </div>
 
         <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text-muted);margin:8px 0">— OR —</div>
@@ -816,19 +820,34 @@ Output format:
       const url = document.getElementById('sheetsUrl').value.trim();
       if (!url) return;
       const btn = document.getElementById('fetchSheetsBtn');
+
+      // Detect if user accidentally pasted a Google Forms URL here
+      if (url.includes('docs.google.com/forms')) {
+        btn.textContent = 'Wrong URL type'; btn.style.background = 'var(--red,#C0392B)';
+        setTimeout(() => { btn.textContent = 'Fetch Responses'; btn.style.background = 'var(--teal,#0F766E)'; btn.disabled = false; }, 3000);
+        document.getElementById('sheetsUrl').style.borderColor = 'var(--red,#C0392B)';
+        const notice = document.getElementById('_sheetsGuide');
+        if (notice) notice.style.display = 'block';
+        return;
+      }
+      document.getElementById('sheetsUrl').style.borderColor = '';
+      const notice = document.getElementById('_sheetsGuide');
+      if (notice) notice.style.display = 'none';
+
       btn.textContent = 'Fetching…'; btn.disabled = true; btn.style.background = '#6B7280';
       try {
         // Convert share URL to CSV export URL
         const csvUrl = url
-          .replace(/\/edit.*$/, '/export?format=csv')
-          .replace(/\/pub.*$/, '/export?format=csv')
-          .replace(/\/view.*$/, '/export?format=csv');
+          .replace(/\/edit[^?]*(\?.*)?$/, '/export?format=csv')
+          .replace(/\/pub[^?]*(\?.*)?$/, '/export?format=csv')
+          .replace(/\/view[^?]*(\?.*)?$/, '/export?format=csv');
+        // Directly fetch the CSV (Cloudflare function fetches server-side)
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            system: 'You are a data extractor. The web page content below is CSV data from a Google Sheet containing survey responses. Return ALL the data exactly as-is, preserving every row and column. Do not summarise, filter, or modify anything.',
-            message: 'Return all the CSV data from this sheet exactly as-is.',
+            system: 'You are given the raw text content of a CSV file exported from Google Sheets. It contains survey response rows. Return the data EXACTLY as-is — every row, every column, no changes, no summarisation. If the content appears to be an HTML error page rather than CSV data, respond only with: ERROR: could not read sheet data.',
+            message: 'Return all the sheet data exactly as provided.',
             urls: [csvUrl],
             max_tokens: 6000
           })
@@ -836,14 +855,17 @@ Output format:
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Fetch failed');
         const sheetData = data.content[0].text.trim();
+        if (sheetData.startsWith('ERROR:') || sheetData.toLowerCase().includes('page not found') || sheetData.toLowerCase().includes('unavailable')) {
+          throw new Error('Sheet is not publicly accessible. In Google Sheets: File → Share → "Anyone with the link can view", then copy the URL.');
+        }
         dataEl.value = sheetData;
-        // Auto-fill title if empty
         if (!titleEl.value.trim()) titleEl.value = 'Google Forms Survey';
         btn.textContent = '✓ Responses Loaded'; btn.style.background = 'var(--green,#059669)';
         checkReady();
       } catch(err) {
         btn.textContent = 'Fetch Failed'; btn.style.background = 'var(--red,#C0392B)'; btn.disabled = false;
-        alert('Could not fetch sheet: ' + err.message + '\n\nMake sure the sheet is shared with "Anyone with the link can view".');
+        dataEl.value = '';
+        alert('Could not load responses:\n\n' + err.message);
       }
     }
     // ─────────────────────────────────────────────────────────────
