@@ -138,6 +138,17 @@
     .results-container{display:none;flex-direction:column;gap:20px;}
     .results-container.active{display:flex;}
     .result-section{background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .result-md{font-size:15px;line-height:1.8;color:var(--text);}
+    .result-md h1,.result-md h2{font-family:var(--font-display);font-weight:700;color:var(--navy);margin:24px 0 10px;line-height:1.2;}
+    .result-md h1{font-size:22px;}.result-md h2{font-size:19px;border-bottom:1px solid var(--border);padding-bottom:6px;}
+    .result-md h3{font-size:16px;font-weight:700;color:var(--navy);margin:18px 0 6px;}
+    .result-md p{margin-bottom:12px;}.result-md p:last-child{margin-bottom:0;}
+    .result-md strong{font-weight:700;color:var(--navy);}
+    .result-md em{font-style:italic;color:var(--text-muted);}
+    .result-md ul{padding-left:20px;margin-bottom:12px;}
+    .result-md li{margin-bottom:5px;}
+    .result-md hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
+    .result-md code{font-family:var(--font-mono);font-size:13px;background:var(--surface);padding:1px 5px;border-radius:3px;}
     .result-header{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border);}
     .result-header-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
     .result-header-title{font-size:14px;font-weight:600;letter-spacing:0.06em;}
@@ -446,56 +457,54 @@ Examples:
     function hideError(){errorBox.classList.remove('active');}
     function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
-    const SYSTEM_PROMPT=`You are the Deep Research Agent — an autonomous virtual research team that transforms a single question or set of documents into a comprehensive, multi-perspective intelligence report.
+    const SYSTEM_PROMPT=`You are the Deep Research Agent — an autonomous virtual research team that transforms a question or uploaded documents into a comprehensive, multi-perspective intelligence report.
 
-If INTERNAL REFERENCE DOCUMENTS or images are provided in the user message, treat them as the primary source material. Read all text, tables, data, and visual information from them carefully. Base your research and analysis on that content. Do not draw on unrelated background knowledge about the person or organisation that operates this tool.
+If documents or images are attached, treat them as the primary source material. Read all text, tables, data, and visual information carefully. Base your entire analysis on that content. Do not draw on unrelated background knowledge.
 
 You operate as three roles in sequence:
 
 ## 1. STRATEGIST
-Interpret the user's research question and any attached documents. Identify the 6 most productive research angles to investigate based on the actual content provided. Each angle should explore a distinct dimension of the topic.
+Interpret the research question and any attached material. Identify 6 productive research angles — each exploring a distinct dimension of the topic.
 
 ## 2. SIX SPECIALISTS
-For each of the 6 angles, act as a specialist researcher:
-- Draw on the attached documents as primary evidence
-- Gather key facts, data points, trends, and evidence relevant to the angle
-- Identify what is well-established vs. emerging vs. uncertain
-- Author a structured finding for each angle
+For each angle, act as a specialist researcher:
+- Draw on attached documents as primary evidence
+- Surface key facts, data points, trends, and evidence
+- Flag what is well-established vs. uncertain
 
 ## 3. COMPILER
-Synthesise all specialist findings into a cohesive executive intelligence report:
-- Extract the most critical and strategically relevant insights from the documents
-- Identify patterns, contradictions, and gaps across angles
-- Provide actionable implications and recommended next steps
+Synthesise all findings into a structured intelligence report.
 
 ## OUTPUT FORMAT
-Respond in valid JSON:
-{
-  "research_question": "The interpreted research question",
-  "angles": ["Angle 1 name", "Angle 2 name", ...],
-  "executive_summary": "3-5 sentence overview of key findings",
-  "findings": [
-    {
-      "angle": "Angle name",
-      "key_insight": "One-sentence headline finding",
-      "detail": "2-4 sentence detailed finding with evidence",
-      "confidence": "high|medium|low",
-      "sources_note": "Which document or data this draws from"
-    }
-  ],
-  "patterns_and_gaps": ["Cross-cutting pattern or gap 1", "Pattern 2"],
-  "strategic_implications": ["Implication 1", "Implication 2"],
-  "recommended_next_steps": ["Next step 1", "Next step 2"],
-  "caveats": "Limitations, what needs primary research, confidence assessment"
-}
+Write in clear markdown using these exact section headers:
+
+## Executive Summary
+3–5 sentences covering the most critical findings.
+
+## Specialist Findings
+For each of the 6 angles use this sub-structure:
+### [Angle Name]
+**Key insight:** One-sentence headline finding.
+Detail: 2–4 sentences of evidence and analysis.
+*Confidence: high / medium / low*
+
+## Patterns & Gaps
+Bullet list of cross-cutting patterns and notable gaps.
+
+## Strategic Implications
+Bullet list of actionable implications.
+
+## Recommended Next Steps
+Numbered list of concrete next steps.
+
+## Caveats
+Brief note on limitations and what would need primary research to verify.
 
 Rules:
-- Return ONLY valid JSON. No markdown outside the JSON.
-- Generate exactly 6 findings, one per research angle.
-- Base analysis strictly on the documents and question provided — do not generate content about unrelated topics.
-- Be specific and commercially useful — avoid generic observations.
-- Distinguish between established facts, emerging signals, and speculation.
-- Do not fabricate specific statistics, company financials, or source citations not present in the attached material.`;
+- Write in plain markdown only — no JSON, no code blocks wrapping the output.
+- Be specific to the actual documents and question provided.
+- Do not fabricate statistics or citations not present in the source material.
+- Be commercially useful and direct — avoid generic observations.`;
 
     async function callClaude(systemPrompt,userMessage,urls=[]){
       // Always go through Cloudflare Function so URL fetching works server-side
@@ -505,21 +514,35 @@ Rules:
       return data.content[0].text;
     }
 
-    function renderResults(p){
-      resultsContainer.innerHTML='';
-      if(p.executive_summary){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--blue)"></span><span class="result-header-title" style="color:var(--blue)">EXECUTIVE SUMMARY</span></div><div class="result-body"><div class="result-item" style="color:var(--text);">'+escapeHtml(p.executive_summary)+'</div></div>';resultsContainer.appendChild(s);}
-      if(p.findings&&p.findings.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--navy)"></span><span class="result-header-title" style="color:var(--navy)">SPECIALIST FINDINGS</span><span style="margin-left:auto;font-size:11px;font-weight:600;color:var(--text-muted);font-family:var(--font-mono);">'+p.findings.length+' angles</span></div><div class="result-body">'+p.findings.map(f=>'<div class="result-item"><div class="result-item-title">'+escapeHtml(f.angle)+'</div><div style="font-weight:600;color:var(--blue);margin-bottom:4px;">'+escapeHtml(f.key_insight)+'</div><div>'+escapeHtml(f.detail)+'</div><div style="margin-top:6px;font-size:11px;color:var(--text-muted);">Confidence: '+escapeHtml(f.confidence||'')+'</div></div>').join('')+'</div>';resultsContainer.appendChild(s);}
-      if(p.patterns_and_gaps&&p.patterns_and_gaps.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--amber)"></span><span class="result-header-title" style="color:var(--amber)">PATTERNS &amp; GAPS</span></div><div class="result-body">'+p.patterns_and_gaps.map(i=>'<div class="result-item">'+escapeHtml(i)+'</div>').join('')+'</div>';resultsContainer.appendChild(s);}
-      if(p.strategic_implications&&p.strategic_implications.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--navy)"></span><span class="result-header-title" style="color:var(--navy)">STRATEGIC IMPLICATIONS</span></div><div class="result-body">'+p.strategic_implications.map(i=>'<div class="result-item" style="color:var(--text);">'+escapeHtml(i)+'</div>').join('')+'</div>';resultsContainer.appendChild(s);}
-      if(p.recommended_next_steps&&p.recommended_next_steps.length){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--blue)"></span><span class="result-header-title" style="color:var(--blue)">RECOMMENDED NEXT STEPS</span></div><div class="result-body">'+p.recommended_next_steps.map(i=>'<div class="result-item" style="color:var(--text);font-weight:600;">'+escapeHtml(i)+'</div>').join('')+'</div>';resultsContainer.appendChild(s);}
+    function mdToHtml(md){
+      return md
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+        .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+        .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g,'<em>$1</em>')
+        .replace(/^---$/gm,'<hr>')
+        .replace(/`([^`]+)`/g,'<code>$1</code>')
+        .replace(/^[-•] (.+)$/gm,'<li>$1</li>')
+        .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
+        .replace(/((?:<li>[\s\S]*?<\/li>\n?)+)/g,'<ul>$1</ul>')
+        .replace(/\n{2,}/g,'</p><p>')
+        .replace(/^(?!<[hul])(.+)$/gm,'<p>$1</p>')
+        .replace(/<p><\/p>/g,'')
+        .replace(/<\/ul><ul>/g,'')
+        .replace(/<p>(<[hul])/g,'$1')
+        .replace(/(<\/h[123]>)<\/p>/g,'$1');
+    }
 
-      if(p.caveats){const s=document.createElement('div');s.className='result-section';s.innerHTML='<div class="result-header"><span class="result-header-dot" style="background:var(--text-muted)"></span><span class="result-header-title" style="color:var(--text-muted)">CAVEATS</span></div><div class="result-body"><div class="result-item">'+escapeHtml(p.caveats)+'</div></div>';resultsContainer.appendChild(s);}
+    function renderMarkdown(text){
+      resultsContainer.innerHTML='<div class="result-md">'+mdToHtml(text)+'</div>';
       resultsContainer.classList.add('active');
     }
 
     analyzeBtn.addEventListener('click',async()=>{
       const inputText=dataInput.value.trim();hideError();
-      if(!inputText||inputText.length<20){showError('Input Too Short','Please provide a research question of at least 20 characters.');return;}
+      if(!inputText||inputText.length<5){showError('Input Too Short','Please provide a research question or attach documents.');return;}
       outputEmpty.style.display='none';resultsContainer.classList.remove('active');resultsContainer.innerHTML='';
       agentProgress.classList.add('active');analyzeBtn.classList.add('loading');analyzeBtn.disabled=true;
       setStep('step-1','active');setStep('step-2','');setStep('step-3','');
@@ -528,8 +551,7 @@ Rules:
         const t2=setTimeout(()=>{setStep('step-2','done');setStep('step-3','active');},8000);
         const result=await callClaude(SYSTEM_PROMPT,buildMessageWithDocs(inputText));
         clearTimeout(t1);clearTimeout(t2);setStep('step-1','done');setStep('step-2','done');setStep('step-3','done');
-        let parsed;try{const m=result.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error('No JSON');}catch(e){throw new Error('Failed to parse agent response.');}
-        await new Promise(r=>setTimeout(r,400));agentProgress.classList.remove('active');renderResults(parsed);
+        await new Promise(r=>setTimeout(r,400));agentProgress.classList.remove('active');renderMarkdown(result);
       }catch(err){agentProgress.classList.remove('active');outputEmpty.style.display='none';showError('Research Failed',err.message);}
       finally{analyzeBtn.classList.remove('loading');analyzeBtn.disabled=false;}
     });
