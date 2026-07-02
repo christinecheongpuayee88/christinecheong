@@ -331,12 +331,23 @@
     // ─────────────────────────────────────────────────────────────
 
     // ── Mode selector ──────────────────────────────────────────
+    const MODE_PLACEHOLDERS = {
+      persona: 'Describe your target consumer and what you want to explore — e.g. "Simulate a millennial consumer reacting to a new plant-based snack brand targeting busy professionals."',
+      trend:   'Paste trend data, research notes, or observations — e.g. "Summarise the key consumer trends in beauty retail and what they mean for a mid-tier skincare brand."',
+      concept: 'Describe the concept you want to test — e.g. "Evaluate this loyalty programme concept for a beauty retailer targeting women aged 25–45 in Singapore."',
+      panel:   'Describe the stimulus and segments to compare — e.g. "Compare how teens, young adults, and middle-aged adults would react to a new eco-friendly beauty range."',
+      research:'Describe what you want to validate — e.g. "Create a discussion guide for 60-minute interviews with Gen Z consumers about their relationship with beauty influencers."'
+    };
+
     let currentMode = 'persona';
     document.querySelectorAll('.mode-pill').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentMode = btn.dataset.mode;
+        if (!chatInput.value.trim()) {
+          chatInput.placeholder = MODE_PLACEHOLDERS[currentMode] || MODE_PLACEHOLDERS.persona;
+        }
       });
     });
 
