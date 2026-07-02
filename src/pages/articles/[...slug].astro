@@ -1,4 +1,4 @@
----
+﻿---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 
@@ -56,7 +56,7 @@ function formatDate(d: Date) {
   }
   .back-link {
     display: inline-block;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-3);
     margin-bottom: var(--sp-5);
@@ -79,10 +79,10 @@ function formatDate(d: Date) {
     margin-bottom: var(--sp-5);
     max-width: 55ch;
   }
-  .article-date { font-size: 13px; color: var(--text-3); display: block; }
+  .article-date { font-size: 14px; color: var(--text-3); display: block; }
 
   /* Prose styling */
-  .article-body { font-size: 17px; line-height: 1.85; color: var(--text-2); }
+  .article-body { font-size: 19px; line-height: 1.85; color: var(--text-2); }
   .article-body :global(h2) {
     font-size: 28px;
     color: var(--text);
@@ -132,7 +132,7 @@ function formatDate(d: Date) {
     overflow-x: auto;
     margin: var(--sp-5) 0;
   }
-  .article-body :global(pre code) { background: none; border: none; padding: 0; font-size: 14px; }
+  .article-body :global(pre code) { background: none; border: none; padding: 0; font-size: 16px; }
   .article-body :global(a) {
     color: var(--accent);
     text-decoration: underline;

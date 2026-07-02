@@ -107,7 +107,7 @@
       list-style: none;
     }
     .nav-links a {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
       color: var(--text-muted);
       transition: color 0.25s;
@@ -221,7 +221,7 @@
     }
 
     .hero-sub {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 300;
       color: var(--text-muted);
       line-height: 1.75;
@@ -261,7 +261,7 @@
     .signal-preview--int .signal-preview-label { color: #60A5FA; }
 
     .signal-preview-item {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 300;
       color: var(--text-muted);
       line-height: 1.6;
@@ -280,7 +280,7 @@
       align-items: center;
       gap: 8px;
       font-family: var(--font-body);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.04em;
       border-radius: 6px;
@@ -320,7 +320,7 @@
     }
     .btn-arrow::after {
       content: '\2192';
-      font-size: 15px;
+      font-size: 17px;
     }
 
     /* ── SECTION PRIMITIVES ──────────────────────── */
@@ -352,7 +352,7 @@
     }
 
     .section-lead {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 300;
       color: var(--text-muted);
       line-height: 1.78;
@@ -457,7 +457,7 @@
     .agent-column--critic .agent-chip-dot { background: var(--purple); }
 
     .agent-chip-name {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       color: var(--text);
     }
@@ -525,7 +525,7 @@
     }
 
     .uc-desc {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 300;
       color: var(--text-muted);
       line-height: 1.72;
@@ -655,7 +655,7 @@
     .data-input {
       flex: 1;
       font-family: var(--font-body);
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 300;
       color: var(--text);
       line-height: 1.7;
@@ -683,7 +683,7 @@
     }
     .char-count {
       font-size: 11px;
-      font-weight: 400;
+      font-weight: 500;
       color: var(--text-muted);
       font-family: var(--font-mono);
     }
@@ -696,7 +696,7 @@
       background: var(--navy);
       color: #fff;
       font-family: var(--font-body);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.04em;
       border: none;
@@ -754,13 +754,13 @@
     }
     .output-empty-title {
       font-family: var(--font-display);
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 600;
       color: var(--text-muted);
       margin-bottom: 8px;
     }
     .output-empty-desc {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 300;
       color: var(--text-muted);
       opacity: 0.7;
@@ -853,7 +853,7 @@
     .result-section--critic .result-header-dot { background: var(--purple); }
 
     .result-header-title {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.06em;
     }
@@ -880,7 +880,7 @@
     .signal-item:last-child { border-bottom: none; }
 
     .signal-title {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 4px;
@@ -888,7 +888,7 @@
     }
 
     .signal-detail {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 300;
       color: var(--text-muted);
       line-height: 1.65;
@@ -920,7 +920,7 @@
     .signal-tag--spark { background: var(--amber-light); color: var(--amber); }
 
     .critic-note {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 300;
       color: var(--text-muted);
       line-height: 1.72;
@@ -937,7 +937,7 @@
     }
     .error-box.active { display: block; }
     .error-title {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       color: var(--red);
       margin-bottom: 4px;
@@ -968,12 +968,12 @@
 
     .footer-brand {
       font-family: var(--font-display);
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
     }
     .footer-brand-sup {
       font-size: 10px;
-      font-weight: 400;
+      font-weight: 500;
       color: var(--orange);
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -985,7 +985,7 @@
       list-style: none;
     }
     .footer-links a {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 300;
       color: rgba(255,255,255,0.48);
       transition: color 0.25s;
@@ -1036,7 +1036,7 @@
     }
     .drawer-logo {
       font-family: var(--font-display);
-      font-size: 17px;
+      font-size: 19px;
       font-weight: 700;
       color: #fff;
     }
@@ -1674,7 +1674,7 @@ Tip: The more detailed your input, the richer the analysis."
             <span class="result-header-title">EXECUTIVE READ</span>
           </div>
           <div class="result-body">
-            ${parsed.executive_read.map(b => `<div class="signal-item"><div class="signal-detail" style="color:var(--text);font-weight:400;">${escapeHtml(b)}</div></div>`).join('')}
+            ${parsed.executive_read.map(b => `<div class="signal-item"><div class="signal-detail" style="color:var(--text);font-weight:500;">${escapeHtml(b)}</div></div>`).join('')}
           </div>
         `;
         resultsContainer.appendChild(section);

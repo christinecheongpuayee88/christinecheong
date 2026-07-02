@@ -51,7 +51,7 @@
     .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); }
     .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
     .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
+    .nav-links a { font-size:14px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
     .nav-links a:hover { color:var(--navy); }
     .nav-back { font-size:12px; font-weight:600; letter-spacing:0.06em; padding:10px 20px; border-radius:6px; border:1.5px solid var(--border); color:var(--navy); transition:all 0.25s; }
     .nav-back:hover { border-color:var(--navy); background:var(--navy); color:#fff; }
@@ -64,7 +64,7 @@
     .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--blue-light); color:var(--blue); margin-bottom:20px; }
     .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,60px); font-weight:700; line-height:1.04; letter-spacing:-0.025em; color:var(--navy); margin-bottom:20px; }
     .hero-h1 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
-    .hero-sub { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
+    .hero-sub { font-size:18px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
     .hero-pills { display:flex; flex-wrap:wrap; gap:8px; }
     .hero-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); }
 
@@ -76,7 +76,7 @@
     .wf-step:not(:first-child) { border-top:none; }
     .wf-num { width:24px; height:24px; border-radius:6px; background:var(--blue); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
     .wf-name { font-size:12px; font-weight:700; color:var(--navy); }
-    .wf-desc { font-size:11px; font-weight:400; color:var(--text-muted); margin-top:2px; line-height:1.4; }
+    .wf-desc { font-size:11px; font-weight:500; color:var(--text-muted); margin-top:2px; line-height:1.4; }
 
     /* ── WORKSPACE ───────────────────────────────── */
     .workspace { max-width:1280px; margin:0 auto; padding:72px 56px 112px; }
@@ -87,12 +87,12 @@
     /* ── INPUT ───────────────────────────────────── */
     .input-panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:28px; }
     .input-context { margin-bottom:24px; padding:14px 18px; background:var(--blue-light); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; }
-    .input-context p { font-size:13px; font-weight:500; color:#1A3A5C; line-height:1.55; }
+    .input-context p { font-size:14px; font-weight:500; color:#1A3A5C; line-height:1.55; }
     .input-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
     .input-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
     .input-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
     .input-field {
-      padding:12px 14px; font-family:var(--font-body); font-size:13px; font-weight:400;
+      padding:12px 14px; font-family:var(--font-body); font-size:14px; font-weight:500;
       color:var(--text); background:var(--bg); border:1.5px solid var(--border);
       border-radius:8px; outline:none; transition:border-color 0.25s; width:100%;
     }
@@ -101,16 +101,16 @@
     select.input-field { cursor:pointer; }
     .input-textarea {
       width:100%; padding:14px 16px;
-      font-family:var(--font-mono); font-size:12px; font-weight:400; line-height:1.7;
+      font-family:var(--font-mono); font-size:12px; font-weight:500; line-height:1.7;
       color:var(--text); background:var(--bg); border:1.5px solid var(--border);
       border-radius:8px; resize:vertical; outline:none; transition:border-color 0.25s;
     }
     .input-textarea:focus { border-color:var(--blue); }
-    .input-textarea::placeholder { color:#9CA3AF; font-family:var(--font-body); font-size:13px; }
+    .input-textarea::placeholder { color:#9CA3AF; font-family:var(--font-body); font-size:14px; }
     .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:20px; flex-wrap:wrap; gap:12px; }
     .run-btn {
       display:inline-flex; align-items:center; gap:10px;
-      font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em;
+      font-family:var(--font-body); font-size:14px; font-weight:600; letter-spacing:0.04em;
       padding:14px 32px; border-radius:8px; border:none; cursor:pointer;
       background:var(--blue); color:#fff;
       transition:background 0.25s, transform 0.25s, box-shadow 0.25s;
@@ -126,7 +126,7 @@
     .loading-dots span:nth-child(2) { animation-delay:0.2s; }
     .loading-dots span:nth-child(3) { animation-delay:0.4s; }
     @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
-    .loading-label { font-size:13px; font-weight:500; color:var(--text-muted); margin-bottom:20px; }
+    .loading-label { font-size:14px; font-weight:500; color:var(--text-muted); margin-bottom:20px; }
     .loading-phases { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
     .loading-phase { font-size:11px; font-weight:500; padding:5px 14px; border-radius:100px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); opacity:0.4; transition:opacity 0.4s; }
     .loading-phase.active { opacity:1; border-color:var(--blue); color:var(--blue); }
@@ -152,7 +152,7 @@
     /* takeaway */
     .takeaway-box { padding:18px 22px; background:var(--navy); border-radius:10px; margin-bottom:20px; }
     .takeaway-label { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:10px; }
-    .takeaway-text { font-size:15px; font-weight:400; color:#fff; line-height:1.7; font-family:var(--font-display); font-style:italic; }
+    .takeaway-text { font-size:17px; font-weight:500; color:#fff; line-height:1.7; font-family:var(--font-display); font-style:italic; }
 
     /* respondent table */
     .resp-table { width:100%; border-collapse:collapse; font-size:12px; }
@@ -164,7 +164,7 @@
     /* question analysis card */
     .q-card { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:18px 20px; margin-bottom:12px; }
     .q-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
-    .q-title { font-size:13px; font-weight:600; color:var(--navy); line-height:1.45; flex:1; }
+    .q-title { font-size:14px; font-weight:600; color:var(--navy); line-height:1.45; flex:1; }
     .q-rating { font-size:12px; font-weight:700; padding:3px 10px; border-radius:100px; background:var(--blue-light); color:var(--blue); white-space:nowrap; }
     .q-responses { display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
     .q-resp-item { font-size:12px; color:var(--text-muted); padding:6px 10px; background:var(--surface); border-radius:6px; line-height:1.5; border-left:2px solid var(--border); }
@@ -172,16 +172,16 @@
     .q-theme-tag { font-size:10px; font-weight:600; padding:3px 10px; border-radius:100px; background:var(--blue-light); color:var(--blue); }
 
     /* insight cards */
-    .insight-card { padding:12px 16px; background:var(--bg); border:1px solid var(--border); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; margin-bottom:8px; font-size:13px; color:var(--navy); line-height:1.6; }
+    .insight-card { padding:12px 16px; background:var(--bg); border:1px solid var(--border); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; margin-bottom:8px; font-size:14px; color:var(--navy); line-height:1.6; }
 
     /* recommendation cards */
     .rec-card { display:flex; gap:14px; align-items:flex-start; padding:14px 16px; background:var(--bg); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; }
     .rec-num { width:28px; height:28px; border-radius:8px; background:var(--blue); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .rec-text { font-size:13px; color:var(--navy); line-height:1.55; flex:1; }
+    .rec-text { font-size:14px; color:var(--navy); line-height:1.55; flex:1; }
     .rec-rationale { font-size:11px; color:var(--text-muted); margin-top:3px; }
 
     /* profile box */
-    .profile-box { padding:18px 22px; background:var(--blue-light); border:1px solid rgba(30,136,199,0.15); border-radius:10px; font-size:13px; color:#1A3A5C; line-height:1.75; margin-bottom:20px; }
+    .profile-box { padding:18px 22px; background:var(--blue-light); border:1px solid rgba(30,136,199,0.15); border-radius:10px; font-size:14px; color:#1A3A5C; line-height:1.75; margin-bottom:20px; }
 
     /* rating bar */
     .rating-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
@@ -190,12 +190,12 @@
     .rating-bar-fill { height:8px; border-radius:100px; background:var(--blue); transition:width 0.6s var(--ease-spring); }
     .rating-count { font-size:11px; font-weight:500; color:var(--text-muted); width:40px; flex-shrink:0; }
 
-    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
+    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:14px; font-weight:500; }
 
     /* ── FOOTER ──────────────────────────────────── */
     .footer { background:var(--navy); color:#fff; padding:48px 56px 32px; }
     .footer-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
-    .footer-brand { font-family:var(--font-display); font-size:16px; font-weight:700; }
+    .footer-brand { font-family:var(--font-display); font-size:18px; font-weight:700; }
     .footer-sub { font-size:12px; color:rgba(255,255,255,0.35); margin-top:3px; }
     .footer-links { display:flex; gap:24px; list-style:none; }
     .footer-links a { font-size:12px; color:rgba(255,255,255,0.4); transition:color 0.25s; }
@@ -280,11 +280,11 @@
       <div style="margin-bottom:20px">
         <label class="input-label" style="margin-bottom:8px;display:block">Survey URL</label>
         <div style="display:flex;gap:8px;align-items:center">
-          <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/spreadsheets/d/…  (paste your Google Sheets responses URL)" style="flex:1;margin-bottom:0;font-size:13px" oninput="onUrlInput()" />
+          <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/spreadsheets/d/…  (paste your Google Sheets responses URL)" style="flex:1;margin-bottom:0;font-size:14px" oninput="onUrlInput()" />
           <button type="button" id="fetchFormBtn" onclick="tryFetchSheets()" style="padding:10px 18px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Load Responses</button>
         </div>
         <!-- shown when Forms URL pasted -->
-        <div id="_formsUrlHint" style="display:none;margin-top:10px;padding:14px 16px;background:#FEF3C7;border-left:4px solid #B45309;border-radius:0 8px 8px 0;font-size:13px;color:#78350F;line-height:1.7">
+        <div id="_formsUrlHint" style="display:none;margin-top:10px;padding:14px 16px;background:#FEF3C7;border-left:4px solid #B45309;border-radius:0 8px 8px 0;font-size:14px;color:#78350F;line-height:1.7">
           <strong>⚠️ That's a Google Forms URL — it only shows questions, not responses.</strong><br>
           To get your responses, do this <strong>once</strong>:<br>
           <span style="display:inline-block;margin-top:6px">1 · Open your Form → click the <strong>Responses</strong> tab</span><br>
@@ -726,26 +726,26 @@ Output format:
       return `<div style="font-family:Arial,sans-serif;max-width:680px;color:#111827;line-height:1.65">
   <div style="background:#1E3A5F;color:#fff;padding:28px 32px;border-radius:8px 8px 0 0">
     <h1 style="margin:0;font-size:22px;font-weight:700">📋 Course Registrant Summary Report</h1>
-    <p style="margin:6px 0 0;font-size:13px;opacity:0.8">${s(d.survey_title)} · ${new Date().toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</p>
+    <p style="margin:6px 0 0;font-size:14px;opacity:0.8">${s(d.survey_title)} · ${new Date().toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</p>
   </div>
   <div style="border:1px solid #E5E7EB;border-top:none;border-radius:0 0 8px 8px;padding:0 32px 28px">
-    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Participant Profile &amp; Demographics</h2>
+    <h2 style="color:#1E88C7;font-size:18px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Participant Profile &amp; Demographics</h2>
     <table style="width:100%;border-collapse:collapse;margin-bottom:12px">
-      <tr><td style="padding:6px 0;font-size:13px"><strong>Total Responses:</strong> ${total}</td><td style="padding:6px 0;font-size:13px"><strong>Industries:</strong> ${industries.join(', ')||'—'}</td></tr>
+      <tr><td style="padding:6px 0;font-size:14px"><strong>Total Responses:</strong> ${total}</td><td style="padding:6px 0;font-size:14px"><strong>Industries:</strong> ${industries.join(', ')||'—'}</td></tr>
     </table>
-    ${respondents.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px">
+    ${respondents.length ? `<table style="width:100%;border-collapse:collapse;font-size:14px">
       <tr style="background:#F8FAFC"><th style="text-align:left;padding:8px 10px;border:1px solid #E5E7EB">Name</th><th style="text-align:left;padding:8px 10px;border:1px solid #E5E7EB">Job Title</th><th style="text-align:left;padding:8px 10px;border:1px solid #E5E7EB">Industry</th></tr>
       ${respondents.map(r=>`<tr><td style="padding:7px 10px;border:1px solid #E5E7EB">${s(r.name||'—')}</td><td style="padding:7px 10px;border:1px solid #E5E7EB">${s(r.job_title||r.role||'—')}</td><td style="padding:7px 10px;border:1px solid #E5E7EB">${s(r.industry||r.organisation||'—')}</td></tr>`).join('')}
     </table>` : ''}
     ${ratingQs.map(q=>`
-    <h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. ${s(q.question)}</h2>
+    <h2 style="color:#1E88C7;font-size:18px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. ${s(q.question)}</h2>
     <p style="margin:0 0 8px"><strong>Average: ${Number(q.rating_avg||0).toFixed(1)} / 5</strong>${q.score_range ? ` &nbsp;·&nbsp; Range: ${s(q.score_range)}` : ''}</p>
     <ul style="margin:0 0 10px;padding-left:20px">${Object.entries(q.rating_distribution||{}).filter(([,v])=>Number(v)>0).map(([k,v])=>`<li style="margin:3px 0">Level ${k}: <strong>${v}</strong> response${Number(v)!==1?'s':''}</li>`).join('')}</ul>
-    ${q.rating_summary ? `<p style="margin:0;padding:10px 14px;background:#F0F9FF;border-left:3px solid #1E88C7;font-size:13px;color:#1A3A5C">${s(q.rating_summary)}</p>` : ''}`).join('')}
-    ${themes.length ? `<h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Core Learning Objectives &amp; Goals</h2>
-    ${themes.map(t=>`<div style="margin-bottom:12px"><strong style="font-size:14px">${s(t.theme)}</strong>${t.mention_label?`<br><span style="font-size:12px;color:#6D28D9">${s(t.mention_label)}</span>`:''}<br><span style="font-size:13px;color:#4B5563">${s(t.description)}</span></div>`).join('')}` : ''}
-    ${d.instructor_takeaway ? `<h2 style="color:#1E88C7;font-size:16px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Key Takeaways for the Instructor</h2>
-    <div style="padding:16px 20px;background:#FEF3C7;border-left:4px solid #B45309;border-radius:0 8px 8px 0">💡 ${d.instructor_takeaway.split('\n\n').filter(Boolean).map(p=>`<p style="margin:0 0 10px;font-size:13px;color:#78350F">${s(p)}</p>`).join('')}</div>` : ''}
+    ${q.rating_summary ? `<p style="margin:0;padding:10px 14px;background:#F0F9FF;border-left:3px solid #1E88C7;font-size:14px;color:#1A3A5C">${s(q.rating_summary)}</p>` : ''}`).join('')}
+    ${themes.length ? `<h2 style="color:#1E88C7;font-size:18px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Core Learning Objectives &amp; Goals</h2>
+    ${themes.map(t=>`<div style="margin-bottom:12px"><strong style="font-size:16px">${s(t.theme)}</strong>${t.mention_label?`<br><span style="font-size:12px;color:#6D28D9">${s(t.mention_label)}</span>`:''}<br><span style="font-size:14px;color:#4B5563">${s(t.description)}</span></div>`).join('')}` : ''}
+    ${d.instructor_takeaway ? `<h2 style="color:#1E88C7;font-size:18px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Key Takeaways for the Instructor</h2>
+    <div style="padding:16px 20px;background:#FEF3C7;border-left:4px solid #B45309;border-radius:0 8px 8px 0">💡 ${d.instructor_takeaway.split('\n\n').filter(Boolean).map(p=>`<p style="margin:0 0 10px;font-size:14px;color:#78350F">${s(p)}</p>`).join('')}</div>` : ''}
     <p style="margin:28px 0 0;font-size:11px;color:#9CA3AF;border-top:1px solid #E5E7EB;padding-top:16px">Generated by Agents Hub · Survey Analyser Agent</p>
   </div>
 </div>`;
@@ -813,7 +813,7 @@ Output format:
         return `<div class="section-block">
           <div class="section-label">${sectionIdx++}. ${esc(q.question)}</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-            <div class="stat-card"><div class="stat-num">${Number(q.rating_avg||0).toFixed(1)} <span style="font-size:16px;font-weight:400;color:var(--text-muted)">/ 5</span></div><div class="stat-label">Average Rating</div></div>
+            <div class="stat-card"><div class="stat-num">${Number(q.rating_avg||0).toFixed(1)} <span style="font-size:18px;font-weight:500;color:var(--text-muted)">/ 5</span></div><div class="stat-label">Average Rating</div></div>
             <div class="stat-card"><div class="stat-num">${esc(q.score_range||String(range))}</div><div class="stat-label">Score Range</div></div>
           </div>
           ${[1,2,3,4,5].map(n => {
@@ -826,7 +826,7 @@ Output format:
               <span class="rating-count" style="min-width:100px;text-align:right">${cnt} response${cnt!==1?'s':''}</span>
             </div>`;
           }).join('')}
-          ${q.rating_summary ? `<div style="margin-top:16px;padding:14px 16px;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-size:13px;color:#1A3A5C;line-height:1.6">${esc(q.rating_summary)}</div>` : ''}
+          ${q.rating_summary ? `<div style="margin-top:16px;padding:14px 16px;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-size:14px;color:#1A3A5C;line-height:1.6">${esc(q.rating_summary)}</div>` : ''}
         </div>`;
       }).join('');
 
@@ -836,9 +836,9 @@ Output format:
           <div class="section-label">${sectionIdx++}. Core Learning Objectives &amp; Goals</div>
           ${themes.map((t,i) => `
             <div style="padding:16px 18px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:${i===0?'var(--purple-light)':'var(--bg)'}">
-              <div style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px">${esc(t.theme)}</div>
+              <div style="font-weight:700;font-size:17px;color:var(--navy);margin-bottom:4px">${esc(t.theme)}</div>
               ${t.mention_label ? `<div style="font-size:12px;font-weight:600;color:var(--purple);margin-bottom:6px">${esc(t.mention_label)}</div>` : t.count ? `<div style="font-size:12px;font-weight:600;color:var(--purple);margin-bottom:6px">Mentioned by ${t.count} responses</div>` : ''}
-              <div style="font-size:13px;color:var(--text-muted);line-height:1.55">${esc(t.description)}</div>
+              <div style="font-size:14px;color:var(--text-muted);line-height:1.55">${esc(t.description)}</div>
             </div>`).join('')}
         </div>` : '';
 
@@ -848,7 +848,7 @@ Output format:
           <div class="section-label">${sectionIdx++}. Key Takeaways for the Instructor</div>
           <div style="padding:20px 22px;background:var(--amber-light);border-left:4px solid var(--amber);border-radius:0 10px 10px 0">
             <div style="font-size:20px;margin-bottom:10px">💡</div>
-            ${d.instructor_takeaway.split('\n\n').filter(Boolean).map(p=>`<p style="font-size:14px;color:#78350F;line-height:1.7;margin:0 0 12px">${esc(p)}</p>`).join('')}
+            ${d.instructor_takeaway.split('\n\n').filter(Boolean).map(p=>`<p style="font-size:16px;color:#78350F;line-height:1.7;margin:0 0 12px">${esc(p)}</p>`).join('')}
           </div>
         </div>` : '';
 

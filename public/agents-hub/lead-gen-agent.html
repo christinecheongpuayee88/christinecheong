@@ -50,7 +50,7 @@
     .nav-brand-sup { font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--blue); }
     .nav-brand-name { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--navy); letter-spacing:-0.01em; }
     .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
+    .nav-links a { font-size:14px; font-weight:500; color:var(--text-muted); transition:color 0.25s; }
     .nav-links a:hover { color:var(--navy); }
     .nav-back { font-size:12px; font-weight:600; letter-spacing:0.06em; padding:10px 20px; border-radius:6px; border:1.5px solid var(--border); color:var(--navy); transition:all 0.25s; }
     .nav-back:hover { border-color:var(--navy); background:var(--navy); color:#fff; }
@@ -65,7 +65,7 @@
     .hero-badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:5px 12px; border-radius:4px; background:var(--blue-light); color:var(--blue); margin-bottom:20px; }
     .hero-h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,60px); font-weight:700; line-height:1.04; letter-spacing:-0.025em; color:var(--navy); margin-bottom:20px; }
     .hero-h1 em { font-style:italic; font-weight:300; color:var(--navy-mid); }
-    .hero-sub { font-size:16px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
+    .hero-sub { font-size:18px; font-weight:300; color:var(--text-muted); line-height:1.75; max-width:500px; margin-bottom:32px; }
     .hero-pills { display:flex; flex-wrap:wrap; gap:8px; }
     .hero-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); }
 
@@ -74,9 +74,9 @@
     .pipeline-step:first-child { border-radius:10px 10px 0 0; }
     .pipeline-step:last-child  { border-radius:0 0 10px 10px; }
     .pipeline-step:not(:first-child) { border-top:none; }
-    .pipeline-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+    .pipeline-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
     .pipeline-body-name { font-size:12px; font-weight:700; color:var(--navy); }
-    .pipeline-body-desc { font-size:11px; font-weight:400; color:var(--text-muted); margin-top:2px; line-height:1.4; }
+    .pipeline-body-desc { font-size:11px; font-weight:500; color:var(--text-muted); margin-top:2px; line-height:1.4; }
 
     /* ── WORKSPACE ───────────────────────────────── */
     .workspace { max-width:1280px; margin:0 auto; padding:72px 56px 112px; }
@@ -87,13 +87,13 @@
     /* ── INPUT ───────────────────────────────────── */
     .input-panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:28px; }
     .input-context { margin-bottom:20px; padding:14px 18px; background:var(--blue-light); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; }
-    .input-context p { font-size:13px; font-weight:500; color:var(--navy-mid); line-height:1.55; }
+    .input-context p { font-size:14px; font-weight:500; color:var(--navy-mid); line-height:1.55; }
 
     .input-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
     .input-group { display:flex; flex-direction:column; gap:6px; }
     .input-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
     .input-field {
-      padding:12px 14px; font-family:var(--font-body); font-size:13px; font-weight:400;
+      padding:12px 14px; font-family:var(--font-body); font-size:14px; font-weight:500;
       color:var(--text); background:var(--bg); border:1.5px solid var(--border);
       border-radius:8px; outline:none; transition:border-color 0.25s; width:100%;
     }
@@ -101,7 +101,7 @@
     .input-field::placeholder { color:#9CA3AF; }
     .input-textarea {
       width:100%; min-height:120px; padding:14px 16px;
-      font-family:var(--font-body); font-size:13px; font-weight:400; line-height:1.7;
+      font-family:var(--font-body); font-size:14px; font-weight:500; line-height:1.7;
       color:var(--text); background:var(--bg); border:1.5px solid var(--border);
       border-radius:8px; resize:vertical; outline:none; transition:border-color 0.25s;
     }
@@ -111,7 +111,7 @@
     .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:16px; flex-wrap:wrap; gap:12px; }
     .run-btn {
       display:inline-flex; align-items:center; gap:10px;
-      font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.04em;
+      font-family:var(--font-body); font-size:14px; font-weight:600; letter-spacing:0.04em;
       padding:14px 32px; border-radius:8px; border:none; cursor:pointer;
       background:var(--green); color:#fff;
       transition:background 0.25s, transform 0.25s, box-shadow 0.25s;
@@ -127,7 +127,7 @@
     .loading-dots span:nth-child(2) { animation-delay:0.2s; }
     .loading-dots span:nth-child(3) { animation-delay:0.4s; }
     @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
-    .loading-label { font-size:13px; font-weight:500; color:var(--text-muted); margin-bottom:20px; }
+    .loading-label { font-size:14px; font-weight:500; color:var(--text-muted); margin-bottom:20px; }
     .loading-phases { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
     .loading-phase { font-size:11px; font-weight:500; padding:5px 14px; border-radius:100px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); opacity:0.4; transition:opacity 0.4s; }
     .loading-phase.active { opacity:1; border-color:var(--green); color:var(--green); }
@@ -163,7 +163,7 @@
     .lead-card-header { display:flex; align-items:center; gap:14px; padding:16px 20px; background:var(--surface); border-bottom:1px solid var(--border); cursor:pointer; }
     .lead-rank { width:30px; height:30px; border-radius:50%; background:var(--navy); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .lead-meta { flex:1; }
-    .lead-company { font-size:14px; font-weight:700; color:var(--navy); }
+    .lead-company { font-size:16px; font-weight:700; color:var(--navy); }
     .lead-contact { font-size:12px; color:var(--text-muted); margin-top:2px; }
     .lead-fit { font-size:11px; font-weight:600; padding:3px 10px; border-radius:4px; background:var(--green-light); color:var(--green); flex-shrink:0; }
     .lead-card-body { padding:18px 20px; display:none; }
@@ -178,11 +178,11 @@
     /* ── EMAIL CARDS ─────────────────────────────── */
     .email-card { background:var(--bg); border:1px solid var(--border); border-radius:12px; margin-bottom:16px; overflow:hidden; }
     .email-card-header { display:flex; align-items:center; gap:14px; padding:14px 20px; background:var(--surface); border-bottom:1px solid var(--border); cursor:pointer; }
-    .email-to { flex:1; font-size:13px; font-weight:600; color:var(--navy); }
+    .email-to { flex:1; font-size:14px; font-weight:600; color:var(--navy); }
     .email-subject-preview { font-size:11px; color:var(--text-muted); margin-top:2px; }
     .email-card-body { padding:20px; display:none; font-family:var(--font-mono); font-size:12px; line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; }
     .email-card-body.open { display:block; }
-    .email-subject-line { font-weight:700; color:var(--blue); margin-bottom:12px; font-family:var(--font-body); font-size:13px; }
+    .email-subject-line { font-weight:700; color:var(--blue); margin-bottom:12px; font-family:var(--font-body); font-size:14px; }
     .copy-email-btn { font-size:11px; font-weight:500; padding:5px 12px; border-radius:5px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer; transition:all 0.2s; flex-shrink:0; }
     .copy-email-btn:hover { border-color:var(--blue); color:var(--blue); }
 
@@ -191,12 +191,12 @@
     .market-item { padding:12px 14px; background:var(--bg); border:1px solid var(--border); border-radius:8px; font-size:12px; color:var(--text); line-height:1.55; }
     .market-item::before { content:'→ '; color:var(--blue); font-weight:700; }
 
-    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:13px; font-weight:500; }
+    .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:14px; font-weight:500; }
 
     /* ── FOOTER ──────────────────────────────────── */
     .footer { background:var(--navy); color:#fff; padding:48px 56px 32px; }
     .footer-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
-    .footer-brand { font-family:var(--font-display); font-size:16px; font-weight:700; }
+    .footer-brand { font-family:var(--font-display); font-size:18px; font-weight:700; }
     .footer-sub { font-size:12px; color:rgba(255,255,255,0.35); margin-top:3px; }
     .footer-links { display:flex; gap:24px; list-style:none; }
     .footer-links a { font-size:12px; color:rgba(255,255,255,0.4); transition:color 0.25s; }
@@ -584,7 +584,7 @@ Output format (valid JSON only):
       const mrHTML = `
         <div class="section-block">
           <div class="section-label">Market Research</div>
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.7">${esc(mr.summary || '')}</p>
+          <p style="font-size:14px;color:var(--text-muted);margin-bottom:14px;line-height:1.7">${esc(mr.summary || '')}</p>
           <div class="market-grid">
             ${(mr.pain_points || []).concat(mr.buying_triggers || []).concat(mr.trends || []).map(x => `<div class="market-item">${esc(x)}</div>`).join('')}
           </div>
@@ -614,7 +614,7 @@ Output format (valid JSON only):
                 <div class="lead-card-header" onclick="toggleCard(this)">
                   <div class="lead-rank">${l.rank}</div>
                   <div class="lead-meta">
-                    <div class="lead-company">${esc(l.company_name)} ${l.website && l.website !== 'not_found' ? `<a href="${esc(l.website)}" target="_blank" style="font-size:11px;color:var(--blue);font-weight:400;margin-left:6px">${esc(l.website)}</a>` : ''}</div>
+                    <div class="lead-company">${esc(l.company_name)} ${l.website && l.website !== 'not_found' ? `<a href="${esc(l.website)}" target="_blank" style="font-size:11px;color:var(--blue);font-weight:500;margin-left:6px">${esc(l.website)}</a>` : ''}</div>
                     <div class="lead-contact">${esc(l.decision_maker)} · ${esc(l.title)} · ${esc(l.location)}</div>
                   </div>
                   <span class="lead-fit">Strong fit</span>
@@ -649,7 +649,7 @@ Output format (valid JSON only):
           ${(dash.next_steps || []).map((s,i) => `
             <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:8px">
               <div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div>
-              <div style="font-size:13px;color:var(--text);line-height:1.6">${esc(s)}</div>
+              <div style="font-size:14px;color:var(--text);line-height:1.6">${esc(s)}</div>
             </div>`).join('')}
         </div>` : '';
 
