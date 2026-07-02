@@ -293,51 +293,48 @@
 
       <!-- Step 2: Response data source -->
       <div style="margin-bottom:20px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:10px">
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:10px">Step 2 — Response Data <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(choose one method)</span></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:14px">Step 2 — Response Data <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(choose one method)</span></div>
 
-        <!-- Option A: Google Sheets URL -->
-        <div style="margin-bottom:12px">
-          <label class="input-label" style="color:var(--text-muted)">Option A — Google Sheets URL <span style="font-weight:400;text-transform:none;letter-spacing:0">(where your form responses are stored)</span></label>
-
-          <!-- How-to guide — always visible -->
-          <div style="margin-bottom:12px;padding:14px 16px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;font-size:12px;color:#14532D;line-height:1.7">
-            <div style="font-weight:700;margin-bottom:8px;font-size:13px">📋 How to get your Sheets URL (3 steps):</div>
-            <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:start">
-              <span style="font-weight:700;color:#059669">Step 1</span><span>Open your Google Form → click the <strong>Responses</strong> tab at the top</span>
-              <span style="font-weight:700;color:#059669">Step 2</span><span>Click the green <strong>Google Sheets icon</strong> (⊞) to open the linked spreadsheet</span>
-              <span style="font-weight:700;color:#059669">Step 3</span><span>In that spreadsheet: <strong>File → Share → Anyone with the link can view</strong> → copy the URL and paste below</span>
-            </div>
-            <div style="margin-top:8px;padding:6px 10px;background:#DCFCE7;border-radius:4px;font-size:11px">⚠️ The URL must start with <code>docs.google.com/<strong>spreadsheets</strong>/d/…</code> — not forms/d/…</div>
+        <!-- Option A: Download CSV from Forms (primary) -->
+        <div style="margin-bottom:16px;padding:14px 16px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px">
+          <div style="font-weight:700;font-size:13px;color:#14532D;margin-bottom:10px">✅ Option A — Download CSV directly from Google Forms <span style="font-weight:400;font-size:12px">(easiest — no sharing required)</span></div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:start;font-size:12px;color:#14532D;line-height:1.6">
+            <span style="font-weight:700;color:#059669;font-size:13px">1</span><span>Open your Google Form → click the <strong>Responses</strong> tab</span>
+            <span style="font-weight:700;color:#059669;font-size:13px">2</span><span>Click the <strong>⬇ download icon</strong> (top-right of Responses tab) → <strong>Download responses (.csv)</strong></span>
+            <span style="font-weight:700;color:#059669;font-size:13px">3</span><span><strong>Drag &amp; drop</strong> the downloaded CSV file into the attachment zone below, or upload it</span>
           </div>
+        </div>
 
+        <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text-muted);margin:10px 0">— OR —</div>
+
+        <!-- Option B: Google Sheets URL -->
+        <div style="margin-bottom:12px">
+          <label class="input-label" style="color:var(--text-muted);margin-bottom:8px;display:block">Option B — Google Sheets URL <span style="font-weight:400;text-transform:none;letter-spacing:0">(if your responses sheet is already shared publicly)</span></label>
           <div style="display:flex;gap:8px;align-items:center">
             <input class="input-field" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/…/edit" style="flex:1;margin-bottom:0" />
             <button type="button" id="fetchSheetsBtn" onclick="fetchGoogleSheets()" style="padding:10px 18px;background:var(--teal,#0F766E);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Fetch Responses</button>
           </div>
-          <div id="_sheetsGuide" style="display:none;margin-top:8px;padding:12px 14px;background:#FEE2E2;border-left:3px solid #C0392B;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6">
-            ❌ <strong>That's a Google Forms URL — responses are not stored there.</strong> Follow the 3 steps above to get the correct Sheets URL.
+          <div id="_sheetsGuide" style="display:none;margin-top:8px;padding:10px 14px;background:#FEE2E2;border-left:3px solid #C0392B;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6">
+            ❌ <strong>That's a Google Forms URL.</strong> Use Option A above to download the CSV directly, or open the linked Google Sheet and share it first.
           </div>
         </div>
 
-        <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text-muted);margin:8px 0">— OR —</div>
+        <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text-muted);margin:10px 0">— OR —</div>
 
-        <!-- Notice shown after fetch but before responses added -->
+        <!-- Notice shown after form fetch but before responses added -->
         <div id="_responseNotice" style="display:none;margin-bottom:10px;padding:12px 16px;background:#FEF3C7;border-left:3px solid #B45309;border-radius:0 8px 8px 0;font-size:13px;color:#78350F;font-weight:500">
-          ✅ Form questions extracted. Now add the response data: use Option A (Google Sheets URL) or paste below in Option B — then click Analyse Survey.
+          ✅ Form questions extracted. Now add the response data via Option A (CSV download), Option B (Sheets URL), or Option C below — then click Analyse Survey.
         </div>
 
-        <!-- Option B: Paste / upload -->
-        <label class="input-label" style="color:var(--text-muted)">Option B — Paste responses directly (copy from Google Forms Summary, or paste spreadsheet rows)</label>
-        <textarea class="input-textarea" id="surveyData" rows="10" placeholder="Paste all survey responses here — copy from Google Forms Summary view, or paste rows from the linked Google Sheet.
+        <!-- Option C: Paste / upload -->
+        <label class="input-label" style="color:var(--text-muted);margin-bottom:6px;display:block">Option C — Paste responses directly</label>
+        <textarea class="input-textarea" id="surveyData" rows="8" placeholder="Paste rows copied from Google Sheets, or from the Google Forms Summary view.
 
 Example:
-Name: jia min / Gao Shuxin / Brandon
-Job Role: HR Exec / Data Analyst / Associate Faculty
-How would you rate your Generative AI experience? (1–5)
-Rating 2: 3 responses / Rating 3: 2 responses / Rating 4: 1 response
-What do you hope to learn?
-- Building AI Agents
-- Mastering agentic AI workflows"></textarea>
+Name: Jia Min / Gao Shuxin / Brandon
+Job Role: HR Exec / Senior Estate Manager / Data Analyst
+Experience level (1–5): 1 / 2 / 2
+What do you hope to learn? applications of predictive analytics / forecasting / trends"></textarea>
       </div>
 
       <div class="input-row">
