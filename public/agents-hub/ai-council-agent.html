@@ -636,11 +636,18 @@ Examples:
       });
     }
 
+    // Heuristic: does this look like a real person's name (2+ capitalised words)?
+    function looksLikeRealPerson(name) {
+      if (!name || name.trim().split(/\s+/).length < 2) return false;
+      return /^[A-Z]/.test(name.trim()) && !/^The\b/.test(name.trim());
+    }
+
     function buildSystem(advisors) {
       const keys = ['skeptic','architect','hunter','outsider','operator'];
       const advisorDefs = advisors.map((a, i) => {
-        const voiceNote = a.knownId
-          ? `Channel ${a.name}'s actual documented thinking: apply their real frameworks, mental models, and known positions as established in their books, interviews, and public record. Speak in their voice. Be specific to their intellectual tradition.`
+        const isKnown  = !!a.knownId || looksLikeRealPerson(a.name);
+        const voiceNote = isKnown
+          ? `You are channelling ${a.name}. Use your full training knowledge of this person — their books, interviews, speeches, documented frameworks, mental models, known positions, and intellectual tradition. Respond unmistakably in their voice. Apply their specific, real thinking to this decision. Do not produce generic advice in their name.`
           : `${a.role}`;
         return `    "${keys[i]}": {
       "name": "${a.name}",
@@ -651,7 +658,7 @@ Examples:
 
       return `You are the Imperial AI Advisory Council orchestrator. You run a structured multi-advisor decision session.
 
-Some advisors are real historical figures — when they are, you must channel their actual documented intellectual frameworks, vocabulary, and known positions as established in their published works and public record. Do not produce generic advice in their name; apply their real, specific thinking to this decision.
+You have comprehensive training knowledge of thousands of real-world figures — business leaders, investors, scientists, politicians, thinkers, and historical figures. When an advisor is named as a real person, you MUST channel their actual documented intellectual frameworks, vocabulary, and known positions. This applies to ANY real person named, whether they appear in a predefined list or not. Do not produce generic advice in their name — apply their specific, real thinking. If you know who they are, use that knowledge fully.
 
 Output valid JSON only — no prose before or after. The JSON must be complete and valid.
 
