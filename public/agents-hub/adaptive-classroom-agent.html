@@ -10,14 +10,12 @@
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Plus Jakarta Sans',system-ui,sans-serif; background:#F8FAFC; color:#111827; font-size:15px; }
 
-    /* NAV */
     .nav { position:fixed; inset:0 0 auto; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:#fff; border-bottom:1px solid #E5E7EB; z-index:50; }
     .back { font-size:0.8rem; font-weight:600; color:#6B7280; text-decoration:none; display:flex; align-items:center; gap:5px; }
     .back:hover { color:#111827; }
     .nav-title { font-family:'Fraunces',serif; font-size:1rem; color:#111827; }
     .nav-badge { font-size:0.7rem; font-weight:700; background:#EDE9FE; color:#6D28D9; padding:3px 10px; border-radius:20px; }
 
-    /* PAGE */
     .page { margin-top:56px; max-width:720px; margin-left:auto; margin-right:auto; padding:24px 20px 80px; display:flex; flex-direction:column; gap:14px; }
 
     /* SURVEY BOX */
@@ -31,59 +29,49 @@
     .upload svg { width:16px; height:16px; }
     .upload input { display:none; }
 
-    /* ACTION BUTTONS ROW */
-    .actions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-    .action-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:16px 10px; border-radius:12px; border:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:0.82rem; text-align:center; line-height:1.3; transition:opacity 0.2s, transform 0.15s; }
+    /* 4 ACTION BUTTONS */
+    .actions { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; }
+    .action-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:14px 8px; border-radius:12px; border:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:0.78rem; text-align:center; line-height:1.3; transition:opacity 0.2s, transform 0.15s; }
     .action-btn:hover:not(:disabled) { opacity:0.88; transform:translateY(-1px); }
     .action-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
-    .action-btn .btn-icon { font-size:1.4rem; }
+    .action-btn .btn-icon { font-size:1.3rem; }
     .btn-brief  { background:#6D28D9; color:#fff; }
-    .btn-pivot  { background:#0369A1; color:#fff; }
+    .btn-orch   { background:#0369A1; color:#fff; }
+    .btn-pivot  { background:#B45309; color:#fff; }
     .btn-close  { background:#065F46; color:#fff; }
 
-    /* PIVOT INPUT (shown inline) */
-    .pivot-input-wrap { display:none; background:#fff; border:1px solid #BFDBFE; border-radius:12px; padding:14px; }
+    /* PIVOT INPUT */
+    .pivot-input-wrap { display:none; background:#fff; border:1px solid #FED7AA; border-radius:12px; padding:14px; }
     .pivot-input-wrap.show { display:block; }
-    .pivot-input-wrap textarea { min-height:60px; border-color:#BFDBFE; }
+    .pivot-input-wrap textarea { min-height:60px; border-color:#FED7AA; }
     .pivot-submit { display:flex; justify-content:flex-end; margin-top:8px; }
-    .small-btn { padding:8px 16px; border-radius:7px; font-size:0.82rem; font-weight:700; border:none; cursor:pointer; background:#0369A1; color:#fff; }
+    .small-btn { padding:8px 16px; border-radius:7px; font-size:0.82rem; font-weight:700; border:none; cursor:pointer; background:#B45309; color:#fff; }
 
     /* OUTPUT CARDS */
     .output-card { background:#fff; border-radius:12px; border:1px solid #E5E7EB; overflow:hidden; }
     .card-head { padding:10px 16px; display:flex; align-items:center; gap:8px; }
     .card-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
     .card-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; }
-    .card-body { padding:16px 18px; font-size:0.88rem; line-height:1.8; color:#1F2937; }
+    .card-body { padding:16px 20px; font-size:0.88rem; line-height:1.8; color:#1F2937; }
+    .card-body h2 { font-size:1rem; font-weight:700; color:#111827; margin:16px 0 8px; }
+    .card-body h3 { font-size:0.88rem; font-weight:700; color:#374151; margin:14px 0 6px; }
+    .card-body h4 { font-size:0.82rem; font-weight:700; color:#6B7280; margin:12px 0 5px; text-transform:uppercase; letter-spacing:0.05em; }
+    .card-body ul, .card-body ol { padding-left:18px; margin:4px 0 10px; }
+    .card-body li { margin-bottom:3px; }
+    .card-body table { width:100%; border-collapse:collapse; margin:8px 0; font-size:0.84rem; }
+    .card-body td, .card-body th { padding:8px 10px; border:1px solid #E5E7EB; vertical-align:top; }
+    .card-body th { background:#F8FAFC; font-weight:700; }
+    .card-body hr { border:none; border-top:1px solid #E5E7EB; margin:16px 0; }
+    .card-body small { color:#9CA3AF; }
+    .card-body em { font-style:italic; }
+    .card-body strong { font-weight:700; }
 
-    /* BRIEF CARD — scannable sections */
-    .brief-section { margin-bottom:14px; }
-    .brief-section:last-child { margin-bottom:0; }
-    .brief-tag { display:inline-block; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; padding:2px 8px; border-radius:4px; margin-bottom:5px; }
-    .tag-who   { background:#EDE9FE; color:#6D28D9; }
-    .tag-pitch { background:#FEF3C7; color:#92400E; }
-    .tag-group { background:#DBEAFE; color:#1E40AF; }
-    .tag-use   { background:#D1FAE5; color:#065F46; }
-    .tag-ask   { background:#FCE7F3; color:#9D174D; }
-    .brief-text { font-size:0.9rem; line-height:1.7; color:#111827; }
-
-    /* PIVOT CARD */
-    .pivot-row { padding:10px 18px; border-top:1px solid #F3F4F6; }
-    .pivot-row-label { font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#6B7280; margin-bottom:3px; }
-    .pivot-row-text { font-size:0.9rem; color:#111827; line-height:1.65; }
-
-    /* CLOSE CARD */
-    .close-section { margin-bottom:16px; }
-    .close-section h4 { font-size:0.8rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:7px; }
-    .close-section p, .close-section li { font-size:0.88rem; color:#1F2937; line-height:1.75; }
-    .close-section ul, .close-section ol { padding-left:18px; }
-    .closing-line { background:#F0FDF4; border-left:3px solid #065F46; padding:10px 14px; border-radius:0 6px 6px 0; font-style:italic; color:#065F46; font-size:0.88rem; margin-top:4px; }
-
-    /* LOADING */
-    .loading { padding:16px 18px; }
-    .loading-bar { height:3px; border-radius:2px; margin-bottom:10px; }
-    .bar-brief { background:linear-gradient(90deg,transparent,#6D28D9,transparent); background-size:200%; animation:sh 1.4s infinite; }
-    .bar-pivot { background:linear-gradient(90deg,transparent,#0369A1,transparent); background-size:200%; animation:sh 1.4s infinite; }
-    .bar-close { background:linear-gradient(90deg,transparent,#065F46,transparent); background-size:200%; animation:sh 1.4s infinite; }
+    .loading { padding:16px; }
+    .loading-bar { height:3px; border-radius:2px; margin-bottom:10px; background-size:200%; animation:sh 1.4s infinite; }
+    .bar-brief { background:linear-gradient(90deg,transparent,#6D28D9,transparent); }
+    .bar-orch  { background:linear-gradient(90deg,transparent,#0369A1,transparent); }
+    .bar-pivot { background:linear-gradient(90deg,transparent,#B45309,transparent); }
+    .bar-close { background:linear-gradient(90deg,transparent,#065F46,transparent); }
     @keyframes sh { 0%{background-position:200%}100%{background-position:-200%} }
     .dots { display:flex; gap:5px; }
     .dots span { width:6px; height:6px; border-radius:50%; background:#D1D5DB; animation:dp 1.4s infinite; }
@@ -94,7 +82,7 @@
     .copy-btn { font-size:0.75rem; font-weight:600; color:#9CA3AF; background:none; border:1px solid #E5E7EB; border-radius:6px; padding:4px 12px; cursor:pointer; }
     .copy-btn:hover { color:#6D28D9; border-color:#6D28D9; }
 
-    @media(max-width:480px) { .actions { grid-template-columns:1fr; } }
+    @media(max-width:520px) { .actions { grid-template-columns:1fr 1fr; } }
   </style>
 </head>
 <body>
@@ -125,35 +113,40 @@
     </div>
   </div>
 
-  <!-- 3 ACTION BUTTONS -->
+  <!-- 4 ACTION BUTTONS -->
   <div class="actions">
     <button class="action-btn btn-brief" onclick="runBrief()">
       <span class="btn-icon">📋</span>
       Survey Summary
-      <span style="font-size:0.7rem;font-weight:500;opacity:0.85;">Cohort profile &amp; instructor brief</span>
+      <span style="font-size:0.68rem;font-weight:500;opacity:0.85;">Cohort profile &amp; quick brief</span>
+    </button>
+    <button class="action-btn btn-orch" onclick="runOrch()">
+      <span class="btn-icon">🗂️</span>
+      Teaching Orchestrator
+      <span style="font-size:0.68rem;font-weight:500;opacity:0.85;">Pacing, groupings &amp; materials</span>
     </button>
     <button class="action-btn btn-pivot" onclick="togglePivot()">
       <span class="btn-icon">🔄</span>
       Live Pivot
-      <span style="font-size:0.7rem;font-weight:500;opacity:0.85;">Something's not working right now</span>
+      <span style="font-size:0.68rem;font-weight:500;opacity:0.85;">Something's not working now</span>
     </button>
     <button class="action-btn btn-close" onclick="runClose()">
       <span class="btn-icon">🪞</span>
       Close Class
-      <span style="font-size:0.7rem;font-weight:500;opacity:0.85;">Reflection &amp; follow-up tasks</span>
+      <span style="font-size:0.68rem;font-weight:500;opacity:0.85;">Reflection &amp; follow-up tasks</span>
     </button>
   </div>
 
-  <!-- PIVOT INPUT (shown on demand) -->
+  <!-- PIVOT INPUT -->
   <div class="pivot-input-wrap" id="pivotWrap">
     <div class="box-label" style="margin-bottom:8px;">What's happening in the room right now?</div>
-    <textarea id="pivotInput" placeholder="e.g. 'Groups are stuck on root cause vs symptoms' · 'Half the class already knows this' · 'Energy has dropped after lunch' · 'A learner asked a question I'm not sure how to answer'" style="min-height:60px;"></textarea>
+    <textarea id="pivotInput" placeholder="e.g. 'Groups are stuck on root cause vs symptoms' · 'Half the class already knows this' · 'Energy has dropped' · 'A learner asked a question I can't answer'" style="min-height:60px;"></textarea>
     <div class="pivot-submit">
       <button class="small-btn" onclick="runPivot()">Get Pivot →</button>
     </div>
   </div>
 
-  <!-- OUTPUTS (injected here) -->
+  <!-- OUTPUTS -->
   <div id="outputs"></div>
 
 </div>
@@ -174,85 +167,133 @@ const MATERIALS = `TEACHING LIBRARY (recommend from this when relevant — inclu
 • Student Hours Workshop (notebook) → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\1.Student_hours.ipynb`;
 
 const PROMPTS = {
-  brief: `You are an expert data analyst and executive assistant. Analyse the raw learning survey responses and generate a clean executive summary report AND a quick instructor brief.
 
-Output your response as valid HTML using exactly this structure:
+  brief: `You are an expert data analyst and executive assistant. Analyse the raw learning survey responses and generate a clean executive summary report followed by a quick instructor brief. Output valid HTML only — no markdown, no code fences.
 
 <h2>📋 Course Registrant Summary Report</h2>
 
 <h3>1. Participant Profile &amp; Demographics</h3>
 <ul>
   <li><strong>Total Responses:</strong> [number]</li>
-  <li><strong>Industries / Roles Represented:</strong> [list or summarise]</li>
-  <li><strong>Experience Level Distribution:</strong> [breakdown e.g. 2 at Level 1, 4 at Level 2, 3 at Level 3]</li>
+  <li><strong>Industries / Roles Represented:</strong> [list]</li>
+  <li><strong>Experience Level Distribution:</strong> [breakdown]</li>
 </ul>
 
 <h3>2. AI / Analytics Comfort Level (Scale 1–5)</h3>
 <ul>
   <li><strong>Average Score:</strong> [X.X / 5]</li>
-  <li><strong>Spread:</strong> [summarise distribution — e.g. "Mostly beginner to intermediate; no advanced learners"]</li>
+  <li><strong>Spread:</strong> [plain-language summary of distribution]</li>
 </ul>
 
 <h3>3. Core Learning Objectives &amp; Goals</h3>
 <ul>
-  [Bulleted list of key goals synthesised from the survey — what participants want to achieve]
+  [bulleted list synthesising what participants want to achieve]
 </ul>
 
 <h3>4. Key Takeaways for the Instructor</h3>
 <ul>
-  <li>[1–2 sentence insight about this cohort — who they are, what they need, what to watch out for]</li>
+  <li>[1–2 sentence insight: who this cohort is, what they need, what to watch out for]</li>
 </ul>
 
 <hr>
 
 <h3>⚡ Quick Instructor Brief</h3>
-<table style="border-collapse:collapse;width:100%;">
-  <tr><td style="padding:8px 12px;border:1px solid #E5E7EB;background:#F5F3FF;font-weight:700;width:160px;">Pitch it at</td><td style="padding:8px 12px;border:1px solid #E5E7EB;">[one sentence: what level, what to simplify or skip]</td></tr>
-  <tr><td style="padding:8px 12px;border:1px solid #E5E7EB;background:#EFF6FF;font-weight:700;">Group them</td><td style="padding:8px 12px;border:1px solid #E5E7EB;">[specific pairings using actual names and why]</td></tr>
-  <tr><td style="padding:8px 12px;border:1px solid #E5E7EB;background:#F0FDF4;font-weight:700;">Use this example</td><td style="padding:8px 12px;border:1px solid #E5E7EB;">[one sector-specific example that resonates with most of the room]</td></tr>
-  <tr><td style="padding:8px 12px;border:1px solid #E5E7EB;background:#FEF3C7;font-weight:700;">Open with this</td><td style="padding:8px 12px;border:1px solid #E5E7EB;">[one discussion question grounded in their contexts]</td></tr>
+<table>
+  <tr><td style="background:#F5F3FF;font-weight:bold;width:150px;">Pitch it at</td><td>[level to start, what to simplify or skip]</td></tr>
+  <tr><td style="background:#EFF6FF;font-weight:bold;">Group them</td><td>[specific pairings using actual names and why]</td></tr>
+  <tr><td style="background:#F0FDF4;font-weight:bold;">Use this example</td><td>[one sector-specific example resonating with most of the room]</td></tr>
+  <tr><td style="background:#FEF3C7;font-weight:bold;">Open with this</td><td>[one discussion question grounded in their contexts, in quotes]</td></tr>
 </table>
 
-<br>
-<h4>📚 Recommended Materials (2–3 most relevant)</h4>
+Use actual names and organisations from the survey throughout.`,
+
+  orch: `You are an AI Teaching Assistant generating a teaching orchestration brief for an instructor. The instructor has just collected a survey at the start of class. Output valid HTML only — no markdown, no code fences.
+
 ${MATERIALS}
-Pick 2–3 materials from the list above that best fit this cohort's topic and experience level. For each, output:
+
+Output this structure:
+
+<h2>🗂️ Teaching Orchestrator</h2>
+
+<h3>Teaching Adjustments</h3>
 <ul>
-  <li><strong>[Material name]</strong> — [one-line reason it fits] — <em>Scaffolding: [e.g. skip derivation for Level 1 / pre-fill notebook cells for beginners / mark as optional for advanced]</em><br><small style="color:#6B7280;">[full file path]</small></li>
+  <li><strong>Difficulty:</strong> [what level to pitch and why]</li>
+  <li><strong>Pacing:</strong> [what to expand, compress, add]</li>
+  <li><strong>Groupings:</strong> [specific pairings using actual names — reference the survey]</li>
 </ul>
 
-Use actual names and organisations from the survey throughout. Output clean HTML only — no markdown, no code fences.`,
+<h3>Recommended Examples for This Cohort</h3>
+<ul>
+  [sector-specific examples naming the actual organisations from the survey]
+</ul>
 
-  pivot: `You are a live classroom assistant. The instructor describes something going wrong in the room RIGHT NOW. Respond in 3 blocks only — no preamble:
+<h3>During-Class Guidance</h3>
+<p><strong>Discussion Prompts</strong></p>
+<ol>
+  [3 discussion prompts tailored to this cohort's sectors and goals]
+</ol>
+<p><strong>Challenge Questions</strong> (for more experienced participants)</p>
+<ul>
+  [1–2 challenge questions for advanced learners by name]
+</ul>
+
+<h3>📚 Recommended Teaching Materials</h3>
+<p>Pick 2–4 materials from the library that best fit this cohort's topic and experience level.</p>
+<table>
+  <tr><th>Material</th><th>Level Fit</th><th>Scaffolding Recommendation</th></tr>
+  [rows: material name + colour-coded level badge (Beginner/Intermediate/Advanced/All Levels/Optional) + specific scaffolding instruction referencing actual participant names]
+</table>
+<p><small>[full file path below each material name]</small></p>
+
+<h3>Instructor Notes</h3>
+<ul>
+  [2–3 practical reminders specific to this cohort]
+</ul>
+
+Be specific. Reference actual names and organisations from the survey.`,
+
+  pivot: `You are a live classroom assistant. The instructor describes something going wrong RIGHT NOW. Respond in 3 blocks only — no preamble, no extra text:
 
 WHAT'S HAPPENING
 One sentence diagnosis of the real issue.
 
 DO THIS NOW
-A specific 5–10 minute activity or intervention the instructor can run immediately with no extra materials. Step by step, max 3 steps.
+A specific 5–10 minute activity the instructor can run immediately with no extra materials. Max 3 steps.
 
 SAY THIS
 The exact words the instructor can say out loud to introduce it. In quotes.`,
 
-  close: `You are an AI Teaching Assistant helping an instructor close a class well. Based on the learning survey, generate a tight end-of-class pack.
+  close: `You are an AI Teaching Assistant helping an instructor close a class. Based on the learning survey, generate a tight end-of-class pack. Output valid HTML only — no markdown, no code fences.
 
-REFLECTION PROMPTS (3 questions)
-Questions that connect today's learning to each learner's real workplace. Specific to the sectors in this cohort.
+<h2>🪞 Post-Learning Activities</h2>
 
-WORKPLACE TASKS (30-day)
-One concrete task per major sector/role group. Name the organisation and the data or problem they would realistically use.
+<h3>Reflection Prompts</h3>
+<ol>
+  [3 questions connecting today's learning to each learner's real workplace — specific to the sectors in this cohort]
+</ol>
 
-CLOSING LINE
-One sentence the instructor says to end class. Should feel personal to this cohort, not generic.
+<h3>30-Day Workplace Tasks</h3>
+<table>
+  <tr><th>Participant / Sector</th><th>Task</th></tr>
+  [one concrete task per major sector/role group — name the organisation and realistic data or problem they would use]
+</table>
 
-Keep it tight. Reference actual names and organisations from the survey.`
+<h3>Peer Learning Suggestions</h3>
+<ul>
+  [1–2 ways this cohort could continue learning together after class]
+</ul>
+
+<h3>Instructor Notes for Next Delivery</h3>
+<ul>
+  [2–3 things to improve, source, or design differently next time]
+</ul>
+
+<p><em>Closing line: "[one sentence the instructor says to end class — grounded in this cohort's context]"</em></p>
+
+Reference actual names and organisations from the survey.`
 };
 
 let outputs = {};
-
-function getSurvey() {
-  return document.getElementById('survey').value.trim();
-}
 
 function uploadCSV(input) {
   const file = input.files[0];
@@ -269,9 +310,8 @@ function flash(el) {
 
 function togglePivot() {
   const wrap = document.getElementById('pivotWrap');
-  const isShown = wrap.classList.contains('show');
-  wrap.classList.toggle('show', !isShown);
-  if (!isShown) document.getElementById('pivotInput').focus();
+  wrap.classList.toggle('show');
+  if (wrap.classList.contains('show')) document.getElementById('pivotInput').focus();
 }
 
 async function callAPI(systemPrompt, userMsg) {
@@ -283,7 +323,7 @@ async function callAPI(systemPrompt, userMsg) {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userMsg }
       ],
-      max_tokens: 1200
+      max_tokens: 1800
     })
   });
   const data = await res.json();
@@ -296,16 +336,8 @@ async function callAPI(systemPrompt, userMsg) {
   return text;
 }
 
-function showLoading(id, barClass) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.querySelector('.card-body').innerHTML = `<div class="loading"><div class="loading-bar ${barClass}"></div><div class="dots"><span></span><span></span><span></span></div></div>`;
-  }
-}
-
-function prependCard(id, headBg, dotColor, label, bodyHTML) {
+function prependCard(id, headBg, dotColor, label, loadingBarClass) {
   const out = document.getElementById('outputs');
-  // remove existing card of same type
   const existing = document.getElementById(id);
   if (existing) existing.remove();
   const card = document.createElement('div');
@@ -316,25 +348,43 @@ function prependCard(id, headBg, dotColor, label, bodyHTML) {
       <div class="card-dot" style="background:${dotColor};"></div>
       <span class="card-label" style="color:${dotColor};">${label}</span>
     </div>
-    <div class="card-body">${bodyHTML}</div>
+    <div class="card-body">
+      <div class="loading"><div class="loading-bar ${loadingBarClass}"></div><div class="dots"><span></span><span></span><span></span></div></div>
+    </div>
     <div class="copy-row"><button class="copy-btn" onclick="copyOut('${id}')">Copy</button></div>`;
   out.prepend(card);
 }
 
-// ── QUICK BRIEF ──
+function setCardBody(id, html) {
+  const clean = html.replace(/```html/gi,'').replace(/```/g,'').trim();
+  document.getElementById(id).querySelector('.card-body').innerHTML = clean;
+}
+
+// ── SURVEY SUMMARY ──
 async function runBrief() {
-  const survey = getSurvey();
+  const survey = document.getElementById('survey').value.trim();
   if (!survey) { flash(document.getElementById('survey')); return; }
-
-  prependCard('card-brief', '#F5F3FF', '#6D28D9', '📋 Survey Summary',
-    `<div class="loading"><div class="loading-bar bar-brief"></div><div class="dots"><span></span><span></span><span></span></div></div>`);
-
+  prependCard('card-brief', '#F5F3FF', '#6D28D9', '📋 Survey Summary', 'bar-brief');
   try {
     const text = await callAPI(PROMPTS.brief, `LEARNING SURVEY:\n${survey}`);
     outputs['card-brief'] = text;
-    document.getElementById('card-brief').querySelector('.card-body').innerHTML = renderBrief(text);
+    setCardBody('card-brief', text);
   } catch(err) {
-    document.getElementById('card-brief').querySelector('.card-body').innerHTML = `<p style="color:#DC2626">Error: ${err.message}</p>`;
+    setCardBody('card-brief', `<p style="color:#DC2626">Error: ${err.message}</p>`);
+  }
+}
+
+// ── TEACHING ORCHESTRATOR ──
+async function runOrch() {
+  const survey = document.getElementById('survey').value.trim();
+  if (!survey) { flash(document.getElementById('survey')); return; }
+  prependCard('card-orch', '#EFF6FF', '#0369A1', '🗂️ Teaching Orchestrator', 'bar-orch');
+  try {
+    const text = await callAPI(PROMPTS.orch, `LEARNING SURVEY:\n${survey}`);
+    outputs['card-orch'] = text;
+    setCardBody('card-orch', text);
+  } catch(err) {
+    setCardBody('card-orch', `<p style="color:#DC2626">Error: ${err.message}</p>`);
   }
 }
 
@@ -342,95 +392,60 @@ async function runBrief() {
 async function runPivot() {
   const situation = document.getElementById('pivotInput').value.trim();
   if (!situation) { flash(document.getElementById('pivotInput')); return; }
-
-  const survey = getSurvey();
+  const survey = document.getElementById('survey').value.trim();
   const userMsg = survey
     ? `LEARNING SURVEY CONTEXT:\n${survey}\n\nSITUATION:\n${situation}`
     : `SITUATION:\n${situation}`;
-
-  prependCard('card-pivot', '#EFF6FF', '#0369A1', '🔄 Live Pivot',
-    `<div class="loading"><div class="loading-bar bar-pivot"></div><div class="dots"><span></span><span></span><span></span></div></div>`);
-
+  prependCard('card-pivot', '#FFF7ED', '#B45309', '🔄 Live Pivot', 'bar-pivot');
   document.getElementById('pivotWrap').classList.remove('show');
-
   try {
     const text = await callAPI(PROMPTS.pivot, userMsg);
     outputs['card-pivot'] = text;
-    document.getElementById('card-pivot').querySelector('.card-body').innerHTML = renderPivot(text);
+    setCardBody('card-pivot', renderPivot(text));
   } catch(err) {
-    document.getElementById('card-pivot').querySelector('.card-body').innerHTML = `<p style="color:#DC2626">Error: ${err.message}</p>`;
+    setCardBody('card-pivot', `<p style="color:#DC2626">Error: ${err.message}</p>`);
   }
 }
 
 // ── CLOSE CLASS ──
 async function runClose() {
-  const survey = getSurvey();
+  const survey = document.getElementById('survey').value.trim();
   if (!survey) { flash(document.getElementById('survey')); return; }
-
-  prependCard('card-close', '#F0FDF4', '#065F46', '🪞 Close Class',
-    `<div class="loading"><div class="loading-bar bar-close"></div><div class="dots"><span></span><span></span><span></span></div></div>`);
-
+  prependCard('card-close', '#F0FDF4', '#065F46', '🪞 Close Class', 'bar-close');
   try {
     const text = await callAPI(PROMPTS.close, `LEARNING SURVEY:\n${survey}`);
     outputs['card-close'] = text;
-    document.getElementById('card-close').querySelector('.card-body').innerHTML = renderClose(text);
+    setCardBody('card-close', text);
   } catch(err) {
-    document.getElementById('card-close').querySelector('.card-body').innerHTML = `<p style="color:#DC2626">Error: ${err.message}</p>`;
+    setCardBody('card-close', `<p style="color:#DC2626">Error: ${err.message}</p>`);
   }
 }
 
-// ── RENDERERS ──
-function renderBrief(text) {
-  // API returns HTML directly — inject as-is with light styling wrapper
-  const clean = text
-    .replace(/```html/gi, '').replace(/```/g, '') // strip any accidental code fences
-    .trim();
-  return `<div style="font-size:0.88rem;line-height:1.8;color:#1F2937;">${clean}</div>`;
-}
-
+// ── PIVOT RENDERER (plain text → structured) ──
 function renderPivot(text) {
-  const sections = { 'WHAT\'S HAPPENING':'', 'DO THIS NOW':'', 'SAY THIS':'' };
+  const sections = ["WHAT'S HAPPENING", "DO THIS NOW", "SAY THIS"];
+  const colors = { "WHAT'S HAPPENING":"#F5F3FF", "DO THIS NOW":"#EFF6FF", "SAY THIS":"#F0FDF4" };
+  let lines = {};
+  sections.forEach(s => lines[s] = []);
   let current = null;
-  let lines = { "WHAT'S HAPPENING":[], 'DO THIS NOW':[], 'SAY THIS':[] };
-
   text.split('\n').forEach(line => {
     const t = line.trim();
-    const key = Object.keys(sections).find(k => t.toUpperCase().startsWith(k));
-    if (key) {
-      current = key;
-      const rest = t.slice(key.length).replace(/^[:\-–—\s]+/, '');
-      if (rest) lines[key].push(rest);
-    } else if (t && current) {
-      lines[current].push(t);
-    }
+    const match = sections.find(s => t.toUpperCase().startsWith(s));
+    if (match) { current = match; const rest = t.slice(match.length).replace(/^[:\-–\s]+/,''); if(rest) lines[match].push(rest); }
+    else if (t && current) lines[current].push(t);
   });
-
-  const labels = { "WHAT'S HAPPENING":'WHAT\'S HAPPENING', 'DO THIS NOW':'DO THIS NOW', 'SAY THIS':'SAY THIS' };
-  const hasContent = Object.values(lines).some(l => l.length > 0);
-  if (!hasContent) return `<div style="white-space:pre-wrap;font-size:0.88rem;line-height:1.75;">${text}</div>`;
-
-  return Object.keys(lines).map(k => {
-    if (!lines[k].length) return '';
-    const body = lines[k].join('\n')
-      .replace(/^\d+\.\s+(.+)$/gm, '<div style="padding:2px 0;">$&</div>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    return `<div class="pivot-row">
-      <div class="pivot-row-label">${labels[k]}</div>
-      <div class="pivot-row-text">${body}</div>
+  const hasContent = sections.some(s => lines[s].length > 0);
+  if (!hasContent) return `<div style="white-space:pre-wrap;">${text}</div>`;
+  return sections.map(s => {
+    if (!lines[s].length) return '';
+    return `<div style="background:${colors[s]};border-radius:8px;padding:12px 14px;margin-bottom:10px;">
+      <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:5px;">${s}</div>
+      <div style="font-size:0.9rem;line-height:1.7;">${lines[s].join('<br>')}</div>
     </div>`;
   }).join('');
 }
 
-function renderClose(text) {
-  const formatted = text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^(REFLECTION PROMPTS|WORKPLACE TASKS|CLOSING LINE)(.*)/gm, (_, h, rest) =>
-      `</div><div class="close-section"><h4>${h}${rest}</h4>`)
-    .replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>')
-    .replace(/^(\d+)\.\s+(.+)$/gm, '<li>$2</li>');
-  return `<div class="close-section">${formatted}</div>`;
-}
-
+// ── COPY ──
 function copyOut(id) {
   const text = outputs[id] || document.getElementById(id)?.querySelector('.card-body')?.innerText || '';
   navigator.clipboard.writeText(text);
