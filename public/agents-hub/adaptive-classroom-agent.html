@@ -272,9 +272,16 @@
           <input type="text" id="courseName" class="input-box short" placeholder="e.g. Decision Intelligence with AI" value="Decision Intelligence with AI" oninput="document.getElementById('courseNameDisplay').textContent=this.value||'Your Course'">
         </div>
         <div>
-          <div class="input-label">Survey Responses</div>
+          <div class="input-label" style="display:flex;align-items:center;justify-content:space-between;">
+            Survey Responses
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.75rem;font-weight:600;color:var(--blue);background:var(--blue-light);padding:5px 12px;border-radius:20px;border:1px solid var(--blue);transition:all 0.15s;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M8 2v8M4 6l4-4 4 4M2 12h12"/></svg>
+              Upload CSV
+              <input type="file" accept=".csv,.tsv,.txt" id="csvUpload1" style="display:none" onchange="loadCSV(this)">
+            </label>
+          </div>
           <div class="input-row">
-            <textarea class="input-box" id="input1" rows="5" placeholder="Paste survey responses, CSV data, or type a description of your cohort...&#10;&#10;e.g. 28 learners, mix of analysts and managers, mostly Retail sector, avg confidence 2.8/5..."></textarea>
+            <textarea class="input-box" id="input1" rows="5" placeholder="Paste survey responses or upload a CSV file above.&#10;&#10;e.g. Timestamp, Name, Role, Department, AI Experience, Confidence, Learning Goal..."></textarea>
             <button class="run-btn s1" id="btn1" onclick="runStage(1)">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
               Analyse
@@ -359,11 +366,11 @@
       </div>
 
       <div class="hint-row">
-        <span class="hint-pill" onclick="insertHint(3, 'Adapt all six activity templates for this cohort.')">All 6 activities</span>
-        <span class="hint-pill" onclick="insertHint(3, 'Adapt only the Problem Framing activity — assign sector-specific cases per group.')">Problem Framing</span>
-        <span class="hint-pill" onclick="insertHint(3, 'Adapt the Diagnose activity — adjust hint levels and starter hypotheses based on experience mix.')">Diagnose activity</span>
-        <span class="hint-pill" onclick="insertHint(3, 'Adapt the Deliver activity — personalise implementation plan format by role (student/manager/executive).')">Deliver activity</span>
-        <span class="hint-pill" onclick="insertHint(3, 'Which activity templates should I prioritise adapting for this cohort and why?')">What to prioritise</span>
+        <span class="hint-pill" onclick="insertHint(3, 'Suggest how to adapt all my main in-class activities for this cohort.')">All activities</span>
+        <span class="hint-pill" onclick="insertHint(3, 'Adapt my case study activity — assign sector-specific cases per group based on cohort preferences.')">Case study</span>
+        <span class="hint-pill" onclick="insertHint(3, 'Adapt my group exercise — adjust scaffolding and hint level based on experience mix.')">Group exercise</span>
+        <span class="hint-pill" onclick="insertHint(3, 'Adapt the final deliverable — personalise output format by role (student/manager/executive).')">Final deliverable</span>
+        <span class="hint-pill" onclick="insertHint(3, 'Which activities should I prioritise adapting for this cohort and why?')">What to prioritise</span>
       </div>
 
       <div class="input-area">
@@ -371,7 +378,7 @@
         <div>
           <div class="input-label">Activity template to adapt</div>
           <div class="input-row">
-            <textarea class="input-box" id="input3" rows="3" placeholder="Adapt all six activity templates — or specify one: Problem Framing, Situation Assessment, Diagnose, Validate, Options &amp; Trade-offs, Deliver."></textarea>
+            <textarea class="input-box" id="input3" rows="3" placeholder="Describe your activities to adapt — e.g. 'group case study', 'model-building exercise', 'final presentation' — or ask for general adaptation recommendations for this cohort."></textarea>
             <button class="run-btn s3" id="btn3" onclick="runStage(3)">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
               Adapt
@@ -494,6 +501,20 @@
   let courseName = 'Decision Intelligence with AI';
   let stageOutputs = { 1:'', 2:'', 3:'', 4:'', 5:'' };
 
+  // ── CSV UPLOAD ──
+  function loadCSV(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      document.getElementById('input1').value = text;
+      document.getElementById('input1').style.borderColor = 'var(--s1)';
+      setTimeout(() => document.getElementById('input1').style.borderColor = '', 1500);
+    };
+    reader.readAsText(file);
+  }
+
   // ── SYSTEM PROMPTS PER STAGE ──
   const SYSTEMS = {
     1: `You are the Learner Insights Agent for the AI Adaptive Classroom — a five-stage teaching intelligence system.
@@ -521,59 +542,92 @@ Be specific with numbers. Be brief but complete. No fluff.`,
 
     2: `You are the Teaching Orchestrator Agent for the AI Adaptive Classroom.
 
-Your job: generate an adaptive teaching playbook for the instructor based on cohort intelligence. The course uses the Discover → Diagnose → Decide → Deliver framework (but generalise to any course framework provided).
+Your job: generate an adaptive teaching playbook for the instructor based on cohort intelligence.
 
 Key principle: The AI isn't changing the curriculum. It's changing HOW you teach it.
 
 Output as a clear Teaching Playbook:
 
 TEACHING PLAYBOOK
-For each teaching decision, give the AI Recommendation:
 | Teaching Decision | AI Recommendation |
 Format as: Spend more time | [specific topic/concept]
            Reduce time | [what to cut or compress]
            Use examples from | [specific sectors/industries]
-           Grouping | [how to mix learners]
+           Grouping | [how to mix learners and why]
            Introduce [tool/technique] | [at which point in the session]
            Scaffolding | [where to add support and for whom]
            Challenge | [what to give advanced learners]
-           Reflection focus | [what to emphasise]
+           Reflection focus | [what to emphasise at end]
 
-PACING CHANGES (specific time reallocation if possible)
+PACING CHANGES (specific time reallocation)
 
-INSTRUCTOR NOTES (2–3 practical reminders)
+RECOMMENDED TEACHING MATERIALS
+Based on the course topic and cohort profile, recommend relevant files from Christine's teaching library below. For each recommended file, state: the filename, why it fits this cohort, and the full local file path so it can be opened directly.
 
-Be specific. Reference the actual cohort data. No generic advice.
+Christine's Teaching Library (local paths):
+--- PREDICTIVE ANALYTICS ---
+- 1.1 Introduction to Predictive Analytics (June 2026)_v3.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.1 Introduction to Predictive Analytics (June 2026)_v3.pdf
+- 1.2 Logistic Regression (June 2026)_v2.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.2 Logistic Regression (June 2026)_v2.pdf
+- 1.2 Linear Regression (July 2024)_v2.1.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.2 Linear Regression (July 2024)_v2.1.pdf
+- 1.3 Logistic Regression (July 2024)_v2.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.3 Logistic Regression (July 2024)_v2.pdf
+- 1.1 Introduction to Predictive Analytics (Sept 2025)_v2.1.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.1 Introduction to Predictive Analytics (Sept 2025)_v2.1.pdf
 
+--- WORKSHOPS & DATASETS (Python Notebooks) ---
+- Diabetes Workshop (Classification) → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\4.Diabetes_workshop.ipynb | Dataset: diabetes.csv (768 rows, 9 features — Glucose, BMI, Age, Outcome)
+- Credit Card Workshop (Logistic Regression) → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\2.CreditCard.ipynb | Dataset: CreditCard.csv
+- Coupon Campaign Workshop → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\3.Coupon_sub.ipynb | Dataset: coupon_sub.csv
+- Student Hours Workshop (Linear Regression) → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\1.Student_hours.ipynb | Dataset: student_hours.csv
+
+--- CUSTOMER ANALYTICS ---
+- 1.1 Introduction to Customer Analytics (Jan 2026)_v1.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.1 Introduction to Customer Analytics (Jan 2026)_v1.pdf
+- 3.1 ACA Understanding and Determining CLV_V2 (Jan 2026).pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\3.1 ACA Understanding and Determining CLV_V2 (Jan 2026).pptx
+- 3.2 ACA Customer Revenue Calculation & Usage V5.pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\3.2 ACA Customer Revenue Calculation & Usage V5.pptx
+
+--- EXPLAINABLE AI (XAI) ---
+- 1.1 XAI Machine Learning Explainability_Jan2026_v2 (final).pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.1 XAI Machine Learning Explainability_Jan2026_v2 (final).pdf
+- 1.2 XAI Explain black-box models_Jan2026_v2 (final).pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.2 XAI Explain black-box models_Jan2026_v2 (final).pdf
+
+--- CAUSAL INFERENCE ---
+- 1.1 Introduction to Causal Inference (Jan 25)_v3.1.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.1 Introduction to Causal Inference (Jan 25)_v3.1.pdf
+
+--- CLUSTERING & SEGMENTATION ---
+- 3.1 Day 3 Clustering v1.15 DH.pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\3.1 Day 3 Clustering v1.15 DH.pptx
+- 3.2 Cluster Workshop 2025.pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\3.2 Cluster Workshop 2025.pptx
+
+--- DECISION INTELLIGENCE ---
+- Decision Intelligence Teaching Agent PDF → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Decision Intelligence - Innovative AI Teaching Methods (teaching agent).pdf
+
+--- DATA STORYTELLING ---
+- 01 Fundamentals of Data Storytelling_vB2 Upload.pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\01 Fundamentals of Data Storytelling_vB2 Upload.pptx
+
+INSTRUCTOR NOTES (2–3 practical reminders based on this cohort)
+
+Be specific. Reference actual cohort numbers. No generic advice.
 The cohort context will be prepended to the user's question.`,
 
     3: `You are the Activity Adaptation Agent for the AI Adaptive Classroom.
 
-Your job: adapt the six Decision Intelligence activity templates to the specific cohort. Each template should preserve the same learning outcome but change the context, difficulty, sector, or scaffolding level.
+Your job: adapt the instructor's course activities or activity templates to this specific cohort. Each adaptation should preserve the same learning outcome but change the context, difficulty, sector, or scaffolding level.
 
-The six templates are:
-1. Problem Framing
-2. Situation Assessment
-3. Diagnose
-4. Validate
-5. Options & Trade-offs
-6. Deliver
+If the instructor specifies activity names (e.g. "Problem Framing", "Case Study", "Group Exercise"), adapt those specifically.
+If they ask for general recommendations, suggest how to adapt their typical in-class activities.
 
-For each template requested, output:
-TEMPLATE [N] — [NAME]
-Normally: [what happens in a standard class]
+For each activity, output:
+ACTIVITY — [NAME]
+Normally: [what happens in a standard delivery]
 Instead — AI recommends:
 → [Specific adaptation based on cohort data]
 → [Group differentiation if relevant]
-→ [Sector-specific case/dataset assignment]
-Note: Same learning outcome. Different [context/dataset/scaffolding].
+→ [Sector-specific case or dataset assignment]
+Note: Same learning outcome. Different [context / dataset / scaffolding].
 
 Key adaptation principles:
-- Assign different industry sectors to different groups (Retail / Healthcare / Government / Finance / Sustainability) based on survey preferences
-- Adjust hint/scaffold level based on experience mix (beginners get starter hypotheses; advanced get blank worksheets)
-- If most learners struggle with a concept, adapt the activity to address it directly
-- If learners are overconfident, add validation/reflection questions
-- For Deliver: personalise output format by role (Students → career plan, Managers → team implementation, Executives → org-wide roadmap)
+- Assign different industry contexts to different groups based on survey sector preferences
+- Adjust scaffolding: beginners get worked examples and starter prompts; advanced learners get open-ended problems
+- If most learners struggle with a concept, build in an extra clarification step or worked example before the activity
+- If learners are overconfident in any area, add a validation or stress-test step
+- Personalise deliverables by role: Students → career-oriented output; Managers → team implementation plan; Executives → org-level recommendation
+- Reference actual industries and KPIs relevant to this cohort's sectors
 
 Be concrete. Reference cohort numbers. The cohort context will be prepended.`,
 
@@ -698,7 +752,7 @@ The cohort context will be prepended.`
       if (!res.ok) throw new Error(`API error ${res.status}`);
 
       const data = await res.json();
-      const text = data.choices?.[0]?.message?.content || data.content || '';
+      const text = data.choices?.[0]?.message?.content || data.content?.[0]?.text || (typeof data.content === 'string' ? data.content : '') || '';
 
       if (!text) throw new Error('Empty response');
 
