@@ -276,8 +276,9 @@
       <div style="margin-bottom:20px">
         <label class="input-label" style="margin-bottom:8px;display:block">Google Forms URL</label>
         <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/forms/d/…" style="margin-bottom:0" oninput="onUrlInput()" />
-        <div id="_urlHint" style="margin-top:8px;padding:12px 14px;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-size:12px;color:#1A3A5C;line-height:1.6">
-          💡 <strong>Paste your Google Forms URL and ask Claude to analyse it for you</strong> — Claude has Google Drive access and can fetch your private responses directly. Or paste response data below manually.
+        <div id="_urlHint" style="margin-top:8px;padding:12px 14px;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-size:13px;color:#1A3A5C;line-height:1.7">
+          💡 <strong>To analyse Google Form responses</strong>, open <a href="https://claude.ai/code" target="_blank" style="color:var(--blue);font-weight:700;text-decoration:underline">Claude Code</a> or the Claude desktop app, paste your form link, and ask: <em>"Analyse my survey at [your URL]"</em> — Claude has Google Drive access and fetches your private responses instantly.<br><br>
+          Or export responses from Google Forms → Responses tab → Sheets icon → File → Download → CSV, then paste the CSV data in the field below.
         </div>
         <div id="_urlError" style="display:none;margin-top:8px;padding:10px 14px;background:#FEE2E2;border-left:3px solid #C0392B;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6"></div>
       </div>
