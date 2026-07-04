@@ -272,15 +272,19 @@
     <h2 class="workspace-h2">Paste survey responses, get <em>audience intelligence</em></h2>
 
     <div class="input-panel">
-      <!-- Google Forms URL -->
-      <div style="margin-bottom:20px">
-        <label class="input-label" style="margin-bottom:8px;display:block">Google Forms URL</label>
-        <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/forms/d/…" style="margin-bottom:0" oninput="onUrlInput()" />
-        <div id="_urlHint" style="margin-top:8px;padding:12px 14px;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-size:13px;color:#1A3A5C;line-height:1.7">
-          💡 <strong>To analyse Google Form responses</strong>, open <a href="https://claude.ai/code" target="_blank" style="color:var(--blue);font-weight:700;text-decoration:underline">Claude Code</a> or the Claude desktop app, paste your form link, and ask: <em>"Analyse my survey at [your URL]"</em> — Claude has Google Drive access and fetches your private responses instantly.<br><br>
-          Or export responses from Google Forms → Responses tab → Sheets icon → File → Download → CSV, then paste the CSV data in the field below.
+      <!-- Google Sheets Responses URL (primary input) -->
+      <div style="margin-bottom:16px">
+        <label class="input-label" style="margin-bottom:6px;display:block">Google Responses Sheet URL <span style="font-weight:400;font-size:11px;text-transform:none;letter-spacing:0;color:var(--text-muted)">(from your Google Form → Responses tab → open in Sheets)</span></label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="input-field" id="formsUrl" placeholder="https://docs.google.com/spreadsheets/d/…" style="margin-bottom:0;flex:1" oninput="onUrlInput()" />
+          <button id="fetchSheetBtn" onclick="autoFetchSheet()" style="white-space:nowrap;padding:10px 18px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">Fetch Responses</button>
+        </div>
+        <div id="_urlHint" style="margin-top:8px;padding:10px 14px;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-size:12px;color:#1A3A5C;line-height:1.6">
+          📋 <strong>How to get the Responses Sheet URL:</strong> Open your Google Form → click <strong>Responses</strong> tab → click the Google Sheets icon → copy the URL from your browser. Then paste it above and click <strong>Fetch Responses</strong>.<br>
+          ⚠️ Make sure the sheet is shared: <strong>Share → Anyone with the link → Viewer</strong>.
         </div>
         <div id="_urlError" style="display:none;margin-top:8px;padding:10px 14px;background:#FEE2E2;border-left:3px solid #C0392B;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6"></div>
+        <div id="_fetchSuccess" style="display:none;margin-top:8px;padding:10px 14px;background:var(--green-light);border-left:3px solid var(--green);border-radius:0 8px 8px 0;font-size:12px;color:#065F46;line-height:1.6"></div>
       </div>
 
       <!-- Hidden compat fields -->
@@ -292,10 +296,10 @@
       <div id="_responseNotice" style="display:none"></div>
       <div id="_formsUrlHint" style="display:none"></div>
 
-      <!-- Response data textarea -->
+      <!-- Response data textarea (auto-filled or manual paste) -->
       <div style="margin-bottom:16px">
-        <label class="input-label" style="margin-bottom:6px;display:block;color:var(--text-muted)">Response data <span style="font-weight:400;text-transform:none;letter-spacing:0">(paste CSV, JSON, or raw text)</span></label>
-        <textarea class="input-textarea" id="surveyData" rows="5" placeholder="Paste your survey response data here — CSV export from Google Sheets, raw text, or any format."></textarea>
+        <label class="input-label" style="margin-bottom:6px;display:block;color:var(--text-muted)">Response data <span style="font-weight:400;text-transform:none;letter-spacing:0">(auto-filled after Fetch, or paste CSV manually)</span></label>
+        <textarea class="input-textarea" id="surveyData" rows="5" placeholder="Response data will appear here after clicking Fetch Responses — or paste CSV text manually."></textarea>
       </div>
 
       <div class="input-row">
@@ -465,15 +469,63 @@ Output format:
     }
 
     const FETCH_SEPARATOR = '=== PASTE RESPONSE DATA BELOW ===';
-    function checkReady() {
-      // Button is always enabled — no data gate needed
-    }
+    function checkReady() { /* button always enabled */ }
+
     function onUrlInput() {
-      const url = document.getElementById('formsUrl').value.trim();
-      const isForm = url.includes('docs.google.com/forms');
       document.getElementById('_urlError').style.display = 'none';
-      if (!titleEl.value.trim() && isForm) titleEl.value = 'Google Form Survey';
-      checkReady();
+      document.getElementById('_fetchSuccess').style.display = 'none';
+    }
+
+    function extractSheetId(url) {
+      const m = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+      return m ? m[1] : null;
+    }
+
+    async function autoFetchSheet() {
+      const url = document.getElementById('formsUrl').value.trim();
+      const errEl = document.getElementById('_urlError');
+      const okEl  = document.getElementById('_fetchSuccess');
+      const btn   = document.getElementById('fetchSheetBtn');
+      errEl.style.display = 'none';
+      okEl.style.display  = 'none';
+
+      if (!url) {
+        errEl.textContent = '❌ Please paste your Google Responses Sheet URL first.';
+        errEl.style.display = 'block'; return;
+      }
+      const sheetId = extractSheetId(url);
+      if (!sheetId) {
+        errEl.textContent = '❌ That doesn\'t look like a Google Sheets URL. Open your Google Form → Responses tab → click the Sheets icon → copy that URL.';
+        errEl.style.display = 'block'; return;
+      }
+
+      btn.textContent = 'Fetching…'; btn.disabled = true;
+      try {
+        const res = await fetch('/api/google-forms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sheetId })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          if (data.error === 'SHEET_NOT_PUBLIC') {
+            errEl.innerHTML = '❌ <strong>Sheet is private.</strong> In Google Sheets: click <strong>Share</strong> → change to <strong>"Anyone with the link"</strong> → <strong>Viewer</strong> → Done. Then click Fetch Responses again.';
+          } else {
+            errEl.textContent = '❌ ' + (data.message || data.error || 'Failed to fetch sheet.');
+          }
+          errEl.style.display = 'block'; return;
+        }
+        dataEl.value = data.csv;
+        if (!titleEl.value.trim()) titleEl.value = 'Google Form Survey';
+        okEl.innerHTML = `✅ <strong>${data.responseCount} response${data.responseCount !== 1 ? 's' : ''} loaded.</strong> Click <strong>Analyse Survey</strong> to run the full analysis.`;
+        okEl.style.display = 'block';
+        btn.textContent = '✓ Loaded';
+        btn.style.background = 'var(--green)';
+      } catch (err) {
+        errEl.textContent = '❌ Network error: ' + err.message;
+        errEl.style.display = 'block';
+        btn.textContent = 'Fetch Responses'; btn.disabled = false; btn.style.background = 'var(--blue)';
+      }
     }
 
     async function tryFetchSheets() {
