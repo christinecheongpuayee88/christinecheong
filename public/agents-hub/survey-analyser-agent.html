@@ -466,8 +466,10 @@ Output format:
     const FETCH_SEPARATOR = '=== PASTE RESPONSE DATA BELOW ===';
     function checkReady() {
       const raw = dataEl.value.trim();
+      const url = document.getElementById('formsUrl').value.trim();
       const hasUpload = Object.keys(_uploadedDocs||{}).length > 0 || (_uploadedImages||[]).length > 0;
-      const hasData = raw.length > 30 || hasUpload;
+      const hasUrl = url.includes('docs.google.com/forms') || url.includes('docs.google.com/spreadsheets');
+      const hasData = raw.length > 30 || hasUpload || hasUrl;
       runBtn.disabled = titleEl.value.trim().length < 2 || !hasData;
     }
     function onUrlInput() {
@@ -584,9 +586,11 @@ Output format:
     runBtn.addEventListener('click', async () => {
       const urlVal = document.getElementById('formsUrl').value.trim();
       const sheetsUrlVal = urlVal.includes('docs.google.com/spreadsheets') ? urlVal : '';
+      const formsUrlVal  = urlVal.includes('docs.google.com/forms') ? urlVal : '';
       const message = [
         `Survey Title: ${titleEl.value.trim()}`,
         `Survey Purpose: ${purposeEl.value}`,
+        formsUrlVal ? `Google Forms URL: ${formsUrlVal}` : '',
         dataEl.value.trim() ? `Raw Survey Responses:\n${dataEl.value.trim()}` : '',
         contextEl.value.trim() ? `Additional Context: ${contextEl.value.trim()}` : ''
       ].filter(Boolean).join('\n\n');
