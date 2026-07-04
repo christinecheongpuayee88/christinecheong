@@ -128,9 +128,9 @@
   <!-- 3 ACTION BUTTONS -->
   <div class="actions">
     <button class="action-btn btn-brief" onclick="runBrief()">
-      <span class="btn-icon">⚡</span>
-      Quick Brief
-      <span style="font-size:0.7rem;font-weight:500;opacity:0.85;">Who's in the room &amp; what to adjust</span>
+      <span class="btn-icon">📋</span>
+      Survey Summary
+      <span style="font-size:0.7rem;font-weight:500;opacity:0.85;">Cohort profile &amp; instructor brief</span>
     </button>
     <button class="action-btn btn-pivot" onclick="togglePivot()">
       <span class="btn-icon">🔄</span>
@@ -174,34 +174,54 @@ const MATERIALS = `TEACHING LIBRARY (recommend from this when relevant — inclu
 • Student Hours Workshop (notebook) → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\1.Student_hours.ipynb`;
 
 const PROMPTS = {
-  brief: `You are an AI Teaching Assistant. The instructor has just collected a learning survey at the start of class and has 5 minutes before teaching begins. Generate a SCANNABLE BRIEF — not a long document.
+  brief: `You are an expert data analyst and executive assistant. Analyse the raw learning survey responses and generate a clean executive summary report AND a quick instructor brief.
 
-Output exactly these 5 sections, each as a single short block:
+Output your response as valid HTML using exactly this structure:
 
-WHO'S IN THE ROOM
-One sentence: experience mix (beginner/intermediate/advanced split), sectors, any outlier to note.
+<h2>📋 Course Registrant Summary Report</h2>
 
-PITCH IT AT
-One sentence: what level to start at and why. What to simplify, what to skip, what to assume.
+<h3>1. Participant Profile &amp; Demographics</h3>
+<ul>
+  <li><strong>Total Responses:</strong> [number]</li>
+  <li><strong>Industries / Roles Represented:</strong> [list or summarise]</li>
+  <li><strong>Experience Level Distribution:</strong> [breakdown e.g. 2 at Level 1, 4 at Level 2, 3 at Level 3]</li>
+</ul>
 
-GROUP THEM
-2–3 specific pairings or groupings using actual names from the survey. One sentence of reasoning.
+<h3>2. AI / Analytics Comfort Level (Scale 1–5)</h3>
+<ul>
+  <li><strong>Average Score:</strong> [X.X / 5]</li>
+  <li><strong>Spread:</strong> [summarise distribution — e.g. "Mostly beginner to intermediate; no advanced learners"]</li>
+</ul>
 
-USE THIS EXAMPLE
-One sector-specific example that will resonate with most of the room. Name the organisation if possible.
+<h3>3. Core Learning Objectives &amp; Goals</h3>
+<ul>
+  [Bulleted list of key goals synthesised from the survey — what participants want to achieve]
+</ul>
 
-OPEN WITH THIS
-One discussion question to start class — grounded in their actual contexts.
+<h3>4. Key Takeaways for the Instructor</h3>
+<ul>
+  <li>[1–2 sentence insight about this cohort — who they are, what they need, what to watch out for]</li>
+</ul>
 
----
-Then on a new line add:
+<hr>
 
-MATERIALS (2–3 only — most relevant for this cohort and topic):
+<h3>⚡ Quick Instructor Brief</h3>
+<table style="border-collapse:collapse;width:100%;">
+  <tr><td style="padding:8px 12px;border:1px solid #E5E7EB;background:#F5F3FF;font-weight:700;width:160px;">Pitch it at</td><td style="padding:8px 12px;border:1px solid #E5E7EB;">[one sentence: what level, what to simplify or skip]</td></tr>
+  <tr><td style="padding:8px 12px;border:1px solid #E5E7EB;background:#EFF6FF;font-weight:700;">Group them</td><td style="padding:8px 12px;border:1px solid #E5E7EB;">[specific pairings using actual names and why]</td></tr>
+  <tr><td style="padding:8px 12px;border:1px solid #E5E7EB;background:#F0FDF4;font-weight:700;">Use this example</td><td style="padding:8px 12px;border:1px solid #E5E7EB;">[one sector-specific example that resonates with most of the room]</td></tr>
+  <tr><td style="padding:8px 12px;border:1px solid #E5E7EB;background:#FEF3C7;font-weight:700;">Open with this</td><td style="padding:8px 12px;border:1px solid #E5E7EB;">[one discussion question grounded in their contexts]</td></tr>
+</table>
+
+<br>
+<h4>📚 Recommended Materials (2–3 most relevant)</h4>
 ${MATERIALS}
+Pick 2–3 materials from the list above that best fit this cohort's topic and experience level. For each, output:
+<ul>
+  <li><strong>[Material name]</strong> — [one-line reason it fits] — <em>Scaffolding: [e.g. skip derivation for Level 1 / pre-fill notebook cells for beginners / mark as optional for advanced]</em><br><small style="color:#6B7280;">[full file path]</small></li>
+</ul>
 
-For each material recommended: name, one-line reason it fits, scaffolding note (e.g. "skip derivation for Level 1", "optional for advanced", "pre-fill notebook cells for beginners").
-
-Keep the whole output SHORT. The instructor reads this in 5 minutes.`,
+Use actual names and organisations from the survey throughout. Output clean HTML only — no markdown, no code fences.`,
 
   pivot: `You are a live classroom assistant. The instructor describes something going wrong in the room RIGHT NOW. Respond in 3 blocks only — no preamble:
 
@@ -306,7 +326,7 @@ async function runBrief() {
   const survey = getSurvey();
   if (!survey) { flash(document.getElementById('survey')); return; }
 
-  prependCard('card-brief', '#F5F3FF', '#6D28D9', '⚡ Quick Brief',
+  prependCard('card-brief', '#F5F3FF', '#6D28D9', '📋 Survey Summary',
     `<div class="loading"><div class="loading-bar bar-brief"></div><div class="dots"><span></span><span></span><span></span></div></div>`);
 
   try {
@@ -361,48 +381,11 @@ async function runClose() {
 
 // ── RENDERERS ──
 function renderBrief(text) {
-  const tags = {
-    "WHO'S IN THE ROOM": { cls:'tag-who', label:"WHO'S IN THE ROOM" },
-    'PITCH IT AT':       { cls:'tag-pitch', label:'PITCH IT AT' },
-    'GROUP THEM':        { cls:'tag-group', label:'GROUP THEM' },
-    'USE THIS EXAMPLE':  { cls:'tag-use', label:'USE THIS EXAMPLE' },
-    'OPEN WITH THIS':    { cls:'tag-ask', label:'OPEN WITH THIS' },
-    'MATERIALS':         { cls:'tag-pitch', label:'MATERIALS' }
-  };
-
-  const sections = [];
-  let current = null;
-  let currentLines = [];
-
-  text.split('\n').forEach(line => {
-    const trimmed = line.trim();
-    const matchedTag = Object.keys(tags).find(k => trimmed.toUpperCase().startsWith(k));
-    if (matchedTag) {
-      if (current) sections.push({ tag: current, lines: currentLines });
-      current = matchedTag;
-      currentLines = [];
-      const rest = trimmed.slice(matchedTag.length).replace(/^[:\-–—\s]+/, '');
-      if (rest) currentLines.push(rest);
-    } else if (trimmed && current) {
-      currentLines.push(trimmed);
-    }
-  });
-  if (current) sections.push({ tag: current, lines: currentLines });
-
-  if (!sections.length) {
-    return `<div style="white-space:pre-wrap;font-size:0.88rem;line-height:1.75;">${text}</div>`;
-  }
-
-  return sections.map(s => {
-    const t = tags[s.tag] || { cls:'tag-who', label:s.tag };
-    const body = s.lines.join('\n')
-      .replace(/^[-•]\s+(.+)$/gm, '<div style="display:flex;gap:6px;padding:2px 0;">• <span>$1</span></div>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    return `<div class="brief-section">
-      <span class="brief-tag ${t.cls}">${t.label}</span>
-      <div class="brief-text">${body}</div>
-    </div>`;
-  }).join('');
+  // API returns HTML directly — inject as-is with light styling wrapper
+  const clean = text
+    .replace(/```html/gi, '').replace(/```/g, '') // strip any accidental code fences
+    .trim();
+  return `<div style="font-size:0.88rem;line-height:1.8;color:#1F2937;">${clean}</div>`;
 }
 
 function renderPivot(text) {
