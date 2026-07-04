@@ -611,9 +611,6 @@ Output format:
     });
 
 
-    // Enable button state on load
-    checkReady();
-
     // ── Attachments (files + images) ──────────────────────────────
     const _uploadedDocs = {};
     const _uploadedImages = [];
@@ -1114,6 +1111,8 @@ Output format:
       setTimeout(() => btn.textContent = 'Copy Email Report', 3000);
     });
 
+    // Initialise button state after all vars are defined
+    checkReady();
     // ─────────────────────────────────────────────────────────────
   </script>
 </body>
