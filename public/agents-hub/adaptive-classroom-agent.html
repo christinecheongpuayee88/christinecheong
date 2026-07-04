@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Adaptive Classroom Agent</title>
+  <meta name="description" content="One agent, five activities. Paste your learner survey and let AI configure the whole teaching experience — cohort intelligence, teaching playbook, adaptive activities, live classroom support, and personalised reflection.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F5F5F5;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
+      --blue:         #1E88C7;
+      --blue-light:   #E8F4FB;
+      --amber:        #B45309;
+      --amber-light:  #FEF3C7;
+      --text:         #111827;
+      --text-muted:   #4B5563;
+      --border:       #E0E0E0;
+      --green:        #059669;
+      --green-light:  #D1FAE5;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+      --teal:         #0F766E;
+      --teal-light:   #CCFBF1;
+      --red:          #DC2626;
+      --red-light:    #FEE2E2;
+
+      --s1: #1E88C7; --s1-l: #E8F4FB;
+      --s2: #6D28D9; --s2-l: #EDE9FE;
+      --s3: #B45309; --s3-l: #FEF3C7;
+      --s4: #0F766E; --s4-l: #CCFBF1;
+      --s5: #059669; --s5-l: #D1FAE5;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+      --nav-h: 64px;
+      --sidebar-w: 260px;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--bg); color:var(--text); font-family:var(--font-body); font-weight:500; line-height:1.65; overflow-x:hidden; }
+    a { color:inherit; text-decoration:none; }
+
+    /* NAV */
+    .nav { position:fixed; inset:0 0 auto; z-index:300; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 24px; background:rgba(255,255,255,0.97); backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
+    .nav-left { display:flex; align-items:center; gap:16px; }
+    .nav-back { display:flex; align-items:center; gap:6px; font-size:0.82rem; font-weight:600; color:var(--text-muted); padding:6px 12px; border-radius:8px; border:1px solid var(--border); transition:all 0.2s; }
+    .nav-back:hover { color:var(--blue); border-color:var(--blue); }
+    .nav-back svg { width:14px; height:14px; }
+    .nav-title { font-family:var(--font-display); font-weight:700; font-size:1.05rem; color:var(--navy); }
+    .nav-subtitle { font-size:0.72rem; color:var(--text-muted); letter-spacing:0.05em; text-transform:uppercase; }
+    .nav-badge { background:var(--blue-light); color:var(--blue); font-size:0.7rem; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:0.04em; }
+
+    /* LAYOUT */
+    .layout { display:flex; margin-top:var(--nav-h); min-height:calc(100vh - var(--nav-h)); }
+
+    /* SIDEBAR */
+    .sidebar { width:var(--sidebar-w); flex-shrink:0; border-right:1px solid var(--border); display:flex; flex-direction:column; position:sticky; top:var(--nav-h); height:calc(100vh - var(--nav-h)); overflow-y:auto; background:#FAFAFA; }
+    .sidebar-header { padding:20px 20px 12px; border-bottom:1px solid var(--border); }
+    .sidebar-label { font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
+    .sidebar-course { font-size:0.88rem; font-weight:600; color:var(--navy); }
+
+    .stage-nav { padding:12px 12px; display:flex; flex-direction:column; gap:4px; flex:1; }
+    .stage-btn { display:flex; align-items:flex-start; gap:12px; padding:12px 12px; border-radius:10px; cursor:pointer; transition:all 0.18s; border:none; background:transparent; text-align:left; width:100%; position:relative; }
+    .stage-btn:hover { background:var(--surface); }
+    .stage-btn.active { background:var(--surface); }
+    .stage-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; flex-shrink:0; margin-top:1px; transition:all 0.18s; }
+    .stage-btn-text { flex:1; }
+    .stage-btn-name { font-size:0.82rem; font-weight:700; color:var(--navy); line-height:1.25; }
+    .stage-btn-sub { font-size:0.72rem; color:var(--text-muted); margin-top:2px; }
+    .stage-btn.s1 .stage-num { background:var(--s1-l); color:var(--s1); }
+    .stage-btn.s2 .stage-num { background:var(--s2-l); color:var(--s2); }
+    .stage-btn.s3 .stage-num { background:var(--s3-l); color:var(--s3); }
+    .stage-btn.s4 .stage-num { background:var(--s4-l); color:var(--s4); }
+    .stage-btn.s5 .stage-num { background:var(--s5-l); color:var(--s5); }
+    .stage-btn.active.s1 { border-left:3px solid var(--s1); }
+    .stage-btn.active.s2 { border-left:3px solid var(--s2); }
+    .stage-btn.active.s3 { border-left:3px solid var(--s3); }
+    .stage-btn.active.s4 { border-left:3px solid var(--s4); }
+    .stage-btn.active.s5 { border-left:3px solid var(--s5); }
+    .stage-done { width:16px; height:16px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:6px; }
+    .stage-done::after { content:'✓'; color:#fff; font-size:0.6rem; font-weight:700; }
+
+    .sidebar-cohort { margin:0 12px 12px; border-radius:10px; background:var(--navy); color:#fff; padding:14px 14px; font-size:0.75rem; }
+    .sidebar-cohort-title { font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#93C5FD; margin-bottom:8px; }
+    .sidebar-cohort-text { color:#D1D5DB; line-height:1.5; white-space:pre-wrap; font-family:var(--font-mono); font-size:0.7rem; max-height:160px; overflow-y:auto; }
+    .sidebar-cohort-empty { color:#6B7280; font-style:italic; }
+
+    /* MAIN */
+    .main { flex:1; display:flex; flex-direction:column; min-height:calc(100vh - var(--nav-h)); }
+
+    /* STAGE PANEL */
+    .stage-panel { display:none; flex-direction:column; height:100%; }
+    .stage-panel.active { display:flex; }
+
+    .stage-hero { padding:28px 32px 20px; border-bottom:1px solid var(--border); }
+    .stage-hero-top { display:flex; align-items:center; gap:14px; margin-bottom:10px; }
+    .stage-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+    .s1 .stage-icon { background:var(--s1-l); }
+    .s2 .stage-icon { background:var(--s2-l); }
+    .s3 .stage-icon { background:var(--s3-l); }
+    .s4 .stage-icon { background:var(--s4-l); }
+    .s5 .stage-icon { background:var(--s5-l); }
+    .stage-hero h2 { font-family:var(--font-display); font-size:1.4rem; font-weight:700; color:var(--navy); }
+    .stage-hero p { font-size:0.88rem; color:var(--text-muted); max-width:600px; }
+
+    /* HINT PILLS */
+    .hint-row { display:flex; flex-wrap:wrap; gap:8px; padding:14px 32px; border-bottom:1px solid var(--border); background:var(--surface); }
+    .hint-pill { background:#fff; border:1px solid var(--border); border-radius:20px; font-size:0.75rem; font-weight:600; color:var(--text-muted); padding:5px 12px; cursor:pointer; transition:all 0.15s; }
+    .hint-pill:hover { border-color:var(--blue); color:var(--blue); }
+
+    /* INPUT AREA */
+    .input-area { padding:16px 32px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:12px; }
+    .input-row { display:flex; gap:10px; align-items:flex-end; }
+    .input-label { font-size:0.75rem; font-weight:700; color:var(--text-muted); letter-spacing:0.04em; text-transform:uppercase; margin-bottom:6px; }
+    .input-box { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 16px; font-family:var(--font-body); font-size:0.88rem; color:var(--text); resize:vertical; min-height:80px; transition:border-color 0.2s; }
+    .input-box:focus { outline:none; border-color:var(--blue); background:#fff; }
+    .input-box.short { min-height:44px; resize:none; }
+    .run-btn { flex-shrink:0; display:flex; align-items:center; gap:8px; padding:12px 22px; border-radius:10px; font-size:0.88rem; font-weight:700; border:none; cursor:pointer; transition:all 0.2s; }
+    .run-btn svg { width:16px; height:16px; }
+    .run-btn.s1 { background:var(--s1); color:#fff; }
+    .run-btn.s2 { background:var(--s2); color:#fff; }
+    .run-btn.s3 { background:var(--s3); color:#fff; }
+    .run-btn.s4 { background:var(--s4); color:#fff; }
+    .run-btn.s5 { background:var(--s5); color:#fff; }
+    .run-btn:hover { opacity:0.88; transform:translateY(-1px); }
+    .run-btn:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
+
+    /* OUTPUT */
+    .output-area { flex:1; overflow-y:auto; padding:24px 32px; }
+    .output-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:200px; text-align:center; color:var(--text-muted); gap:12px; }
+    .output-empty .empty-icon { font-size:2.5rem; opacity:0.4; }
+    .output-empty p { font-size:0.9rem; max-width:340px; line-height:1.6; }
+
+    .output-card { background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:16px; }
+    .output-card-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .output-card-header .label { font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+    .output-card-body { padding:20px; font-size:0.88rem; line-height:1.7; color:var(--text); white-space:pre-wrap; font-family:var(--font-body); }
+
+    /* LOADING */
+    .loading-bar { height:3px; background:linear-gradient(90deg, transparent, var(--blue), transparent); background-size:200% 100%; animation:loading 1.4s infinite; border-radius:2px; margin-bottom:16px; }
+    @keyframes loading { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .thinking-dots { display:flex; gap:5px; align-items:center; padding:16px 0; }
+    .thinking-dots span { width:7px; height:7px; border-radius:50%; background:var(--text-muted); animation:dot 1.4s infinite; }
+    .thinking-dots span:nth-child(2) { animation-delay:0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes dot { 0%,80%,100%{opacity:0.25;transform:scale(0.9)} 40%{opacity:1;transform:scale(1.1)} }
+
+    /* COHORT BADGE inline */
+    .cohort-banner { background:var(--navy); color:#fff; border-radius:10px; padding:12px 16px; margin-bottom:16px; display:flex; align-items:flex-start; gap:12px; }
+    .cohort-banner .cb-icon { font-size:1rem; flex-shrink:0; margin-top:2px; }
+    .cohort-banner .cb-text { font-size:0.78rem; color:#D1D5DB; line-height:1.5; }
+    .cohort-banner .cb-title { font-size:0.65rem; font-weight:700; color:#93C5FD; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:4px; }
+
+    /* NEXT STAGE */
+    .next-stage-row { display:flex; justify-content:flex-end; padding:12px 32px 16px; border-top:1px solid var(--border); }
+    .next-btn { display:flex; align-items:center; gap:8px; padding:10px 20px; border-radius:10px; font-size:0.85rem; font-weight:700; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .next-btn:hover { background:var(--navy); color:#fff; border-color:var(--navy); }
+    .next-btn svg { width:14px; height:14px; }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .sidebar { display:none; }
+      .stage-hero, .input-area, .output-area, .hint-row { padding-left:20px; padding-right:20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-left">
+    <a href="/agents-hub" class="nav-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
+      Hub
+    </a>
+    <div>
+      <div class="nav-title">AI Adaptive Classroom</div>
+      <div class="nav-subtitle">5 activities · one workflow</div>
+    </div>
+  </div>
+  <div class="nav-badge">Process &amp; Operations</div>
+</nav>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-label">Course</div>
+      <div class="sidebar-course" id="courseNameDisplay">Decision Intelligence with AI</div>
+    </div>
+
+    <div class="stage-nav">
+      <button class="stage-btn s1 active" onclick="switchStage(1)">
+        <div class="stage-num">1</div>
+        <div class="stage-btn-text">
+          <div class="stage-btn-name">Learner Insights</div>
+          <div class="stage-btn-sub">Who is in the room?</div>
+        </div>
+        <div class="stage-done" id="done1" style="display:none"></div>
+      </button>
+      <button class="stage-btn s2" onclick="switchStage(2)">
+        <div class="stage-num">2</div>
+        <div class="stage-btn-text">
+          <div class="stage-btn-name">Teaching Orchestrator</div>
+          <div class="stage-btn-sub">How to teach this cohort?</div>
+        </div>
+        <div class="stage-done" id="done2" style="display:none"></div>
+      </button>
+      <button class="stage-btn s3" onclick="switchStage(3)">
+        <div class="stage-num">3</div>
+        <div class="stage-btn-text">
+          <div class="stage-btn-name">Activity Adaptation</div>
+          <div class="stage-btn-sub">Cases, datasets, groupings</div>
+        </div>
+        <div class="stage-done" id="done3" style="display:none"></div>
+      </button>
+      <button class="stage-btn s4" onclick="switchStage(4)">
+        <div class="stage-num">4</div>
+        <div class="stage-btn-text">
+          <div class="stage-btn-name">Classroom Support</div>
+          <div class="stage-btn-sub">Live teaching assistant</div>
+        </div>
+        <div class="stage-done" id="done4" style="display:none"></div>
+      </button>
+      <button class="stage-btn s5" onclick="switchStage(5)">
+        <div class="stage-num">5</div>
+        <div class="stage-btn-text">
+          <div class="stage-btn-name">Reflection &amp; Transfer</div>
+          <div class="stage-btn-sub">Close the learning loop</div>
+        </div>
+        <div class="stage-done" id="done5" style="display:none"></div>
+      </button>
+    </div>
+
+    <div class="sidebar-cohort" id="sidebarCohort">
+      <div class="sidebar-cohort-title">Cohort Intelligence</div>
+      <div class="sidebar-cohort-text sidebar-cohort-empty" id="sidebarCohortText">Run Stage 1 to populate cohort data for all activities.</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ══ STAGE 1: LEARNER INSIGHTS ══ -->
+    <div class="stage-panel s1 active" id="panel1">
+      <div class="stage-hero">
+        <div class="stage-hero-top">
+          <div class="stage-icon">📋</div>
+          <div>
+            <h2>Learner Insights Agent</h2>
+          </div>
+        </div>
+        <p>Paste your pre-class survey responses — CSV, copy-paste from Google Forms, or plain text. AI profiles the cohort and generates the intelligence brief that configures all five stages.</p>
+      </div>
+
+      <div class="hint-row">
+        <span class="hint-pill" onclick="insertHint(1, 'Sample cohort: 28 learners. Mix of Students, Analysts, Managers, Executives. AI experience ranges from Never used AI to Regular ChatGPT users. Decision experience: mostly operational level. Biggest challenges: framing problems (70%), choosing between options (60%), convincing stakeholders (50%). Preferred industries: Retail and Healthcare (dominant). Confidence scores: avg 2.8/5.')">Use sample data</span>
+        <span class="hint-pill" onclick="insertHint(1, 'Paste your Google Forms CSV export here and I will profile the cohort.')">Guide me</span>
+      </div>
+
+      <div class="input-area">
+        <div>
+          <div class="input-label">Course Name (optional)</div>
+          <input type="text" id="courseName" class="input-box short" placeholder="e.g. Decision Intelligence with AI" value="Decision Intelligence with AI" oninput="document.getElementById('courseNameDisplay').textContent=this.value||'Your Course'">
+        </div>
+        <div>
+          <div class="input-label">Survey Responses</div>
+          <div class="input-row">
+            <textarea class="input-box" id="input1" rows="5" placeholder="Paste survey responses, CSV data, or type a description of your cohort...&#10;&#10;e.g. 28 learners, mix of analysts and managers, mostly Retail sector, avg confidence 2.8/5..."></textarea>
+            <button class="run-btn s1" id="btn1" onclick="runStage(1)">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
+              Analyse
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="output-area" id="output1">
+        <div class="output-empty">
+          <div class="empty-icon">📊</div>
+          <p>Paste your survey data and click Analyse. The cohort intelligence brief will appear here and flow into all subsequent stages.</p>
+        </div>
+      </div>
+
+      <div class="next-stage-row">
+        <button class="next-btn" onclick="switchStage(2)">
+          Teaching Orchestrator
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STAGE 2: TEACHING ORCHESTRATOR ══ -->
+    <div class="stage-panel s2" id="panel2">
+      <div class="stage-hero">
+        <div class="stage-hero-top">
+          <div class="stage-icon">🗂️</div>
+          <div>
+            <h2>Teaching Orchestrator Agent</h2>
+          </div>
+        </div>
+        <p>AI generates your adaptive teaching playbook — what to spend more time on, which examples to use, how to group learners, and where to add scaffolding. The AI isn't changing the curriculum. It's changing how you teach it.</p>
+      </div>
+
+      <div class="hint-row">
+        <span class="hint-pill" onclick="insertHint(2, 'Generate the full teaching playbook based on the cohort profile.')">Full playbook</span>
+        <span class="hint-pill" onclick="insertHint(2, 'Focus on pacing recommendations only — what to expand, what to cut, what to skip.')">Pacing only</span>
+        <span class="hint-pill" onclick="insertHint(2, 'Give me grouping strategy and why, based on the experience mix.')">Grouping strategy</span>
+        <span class="hint-pill" onclick="insertHint(2, 'Which concepts need most scaffolding for this cohort and how?')">Scaffolding priorities</span>
+      </div>
+
+      <div class="input-area">
+        <div id="cohortBanner2"></div>
+        <div>
+          <div class="input-label">Specific question or generate full playbook</div>
+          <div class="input-row">
+            <textarea class="input-box" id="input2" rows="3" placeholder="Generate the full teaching playbook for this cohort — or ask something specific like 'which concepts need most scaffolding?'"></textarea>
+            <button class="run-btn s2" id="btn2" onclick="runStage(2)">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
+              Generate
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="output-area" id="output2">
+        <div class="output-empty">
+          <div class="empty-icon">🗂️</div>
+          <p>Run Stage 1 first to populate cohort data, then generate your adaptive teaching playbook here.</p>
+        </div>
+      </div>
+
+      <div class="next-stage-row">
+        <button class="next-btn" onclick="switchStage(3)">
+          Activity Adaptation
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STAGE 3: ACTIVITY ADAPTATION ══ -->
+    <div class="stage-panel s3" id="panel3">
+      <div class="stage-hero">
+        <div class="stage-hero-top">
+          <div class="stage-icon">🎯</div>
+          <div>
+            <h2>Activity Adaptation Agent</h2>
+          </div>
+        </div>
+        <p>Adapts your six course activity templates to this specific cohort. Same learning outcomes. Different cases, datasets, sectors, and scaffolding levels. Everyone learns the same framework — in different contexts.</p>
+      </div>
+
+      <div class="hint-row">
+        <span class="hint-pill" onclick="insertHint(3, 'Adapt all six activity templates for this cohort.')">All 6 activities</span>
+        <span class="hint-pill" onclick="insertHint(3, 'Adapt only the Problem Framing activity — assign sector-specific cases per group.')">Problem Framing</span>
+        <span class="hint-pill" onclick="insertHint(3, 'Adapt the Diagnose activity — adjust hint levels and starter hypotheses based on experience mix.')">Diagnose activity</span>
+        <span class="hint-pill" onclick="insertHint(3, 'Adapt the Deliver activity — personalise implementation plan format by role (student/manager/executive).')">Deliver activity</span>
+        <span class="hint-pill" onclick="insertHint(3, 'Which activity templates should I prioritise adapting for this cohort and why?')">What to prioritise</span>
+      </div>
+
+      <div class="input-area">
+        <div id="cohortBanner3"></div>
+        <div>
+          <div class="input-label">Activity template to adapt</div>
+          <div class="input-row">
+            <textarea class="input-box" id="input3" rows="3" placeholder="Adapt all six activity templates — or specify one: Problem Framing, Situation Assessment, Diagnose, Validate, Options &amp; Trade-offs, Deliver."></textarea>
+            <button class="run-btn s3" id="btn3" onclick="runStage(3)">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
+              Adapt
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="output-area" id="output3">
+        <div class="output-empty">
+          <div class="empty-icon">🎯</div>
+          <p>Describe which activity templates to adapt, or ask for all six. Activities are tailored to cohort sectors, experience levels, and common challenges.</p>
+        </div>
+      </div>
+
+      <div class="next-stage-row">
+        <button class="next-btn" onclick="switchStage(4)">
+          Classroom Support
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STAGE 4: CLASSROOM SUPPORT ══ -->
+    <div class="stage-panel s4" id="panel4">
+      <div class="stage-hero">
+        <div class="stage-hero-top">
+          <div class="stage-icon">🎓</div>
+          <div>
+            <h2>Classroom Support Agent</h2>
+          </div>
+        </div>
+        <p>Your live teaching assistant. Describe what is happening in the room right now — a group struggling, energy dropping, half the class already knowing a concept — and get an immediate, actionable response.</p>
+      </div>
+
+      <div class="hint-row">
+        <span class="hint-pill" onclick="insertHint(4, 'Most groups are struggling to distinguish symptoms from root causes. Suggest a 10-minute pivot activity.')">Groups stuck on root cause</span>
+        <span class="hint-pill" onclick="insertHint(4, 'Half the class is already familiar with SWOT. Should I skip it? What should I do instead?')">Half class knows SWOT</span>
+        <span class="hint-pill" onclick="insertHint(4, 'Energy is low after lunch. Give me a quick re-engagement activity.')">Energy low</span>
+        <span class="hint-pill" onclick="insertHint(4, 'Advanced learners are finished early. What stretch challenge should I give them?')">Advanced learners ahead</span>
+        <span class="hint-pill" onclick="insertHint(4, 'A learner asked a question I am not sure how to answer: how do we know our decision was right?')">Difficult learner question</span>
+      </div>
+
+      <div class="input-area">
+        <div id="cohortBanner4"></div>
+        <div>
+          <div class="input-label">What is happening in the room right now?</div>
+          <div class="input-row">
+            <textarea class="input-box" id="input4" rows="3" placeholder="Describe the situation: what concept are you teaching, what problem are groups having, or what question came up? I will give you an immediate, specific response."></textarea>
+            <button class="run-btn s4" id="btn4" onclick="runStage(4)">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
+              Assist
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="output-area" id="output4">
+        <div class="output-empty">
+          <div class="empty-icon">🎓</div>
+          <p>Describe what is happening in class. Get a specific, ready-to-use response in seconds — pivot activities, alternative explanations, or discussion prompts.</p>
+        </div>
+      </div>
+
+      <div class="next-stage-row">
+        <button class="next-btn" onclick="switchStage(5)">
+          Reflection &amp; Transfer
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STAGE 5: REFLECTION & TRANSFER ══ -->
+    <div class="stage-panel s5" id="panel5">
+      <div class="stage-hero">
+        <div class="stage-hero-top">
+          <div class="stage-icon">🪞</div>
+          <div>
+            <h2>Reflection &amp; Transfer Agent</h2>
+          </div>
+        </div>
+        <p>Closes the learning loop. Generates personalised end-of-class reflection prompts per learner type, workplace application tasks, and instructor improvement notes — connecting what was learned to what learners will actually do at work.</p>
+      </div>
+
+      <div class="hint-row">
+        <span class="hint-pill" onclick="insertHint(5, 'Generate end-of-class reflection prompts for each learner type in this cohort.')">Reflection prompts by role</span>
+        <span class="hint-pill" onclick="insertHint(5, 'Generate 30-day workplace application tasks per learner type — what should each group do differently at work next week?')">Workplace transfer tasks</span>
+        <span class="hint-pill" onclick="insertHint(5, 'Generate instructor debrief notes — what worked, what to improve, what to change for the next cohort.')">Instructor debrief</span>
+        <span class="hint-pill" onclick="insertHint(5, 'Compare morning learning goals against likely end-of-day outcomes for this cohort.')">Goals vs outcomes</span>
+      </div>
+
+      <div class="input-area">
+        <div id="cohortBanner5"></div>
+        <div>
+          <div class="input-label">What do you need at end of class?</div>
+          <div class="input-row">
+            <textarea class="input-box" id="input5" rows="3" placeholder="Generate reflection prompts per learner role — or ask for workplace transfer tasks, instructor debrief notes, or a goals vs. outcomes comparison."></textarea>
+            <button class="run-btn s5" id="btn5" onclick="runStage(5)">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
+              Generate
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="output-area" id="output5">
+        <div class="output-empty">
+          <div class="empty-icon">🪞</div>
+          <p>End-of-class reflection prompts, workplace transfer tasks, and instructor notes will appear here — personalised to this cohort's profile and morning learning goals.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // ── STATE ──
+  let cohortIntelligence = '';
+  let courseName = 'Decision Intelligence with AI';
+  let stageOutputs = { 1:'', 2:'', 3:'', 4:'', 5:'' };
+
+  // ── SYSTEM PROMPTS PER STAGE ──
+  const SYSTEMS = {
+    1: `You are the Learner Insights Agent for the AI Adaptive Classroom — a five-stage teaching intelligence system.
+
+Your job: analyse pre-class survey responses and produce a concise, instructor-ready cohort intelligence brief.
+
+Output structure:
+COHORT SNAPSHOT
+- Total learners and role breakdown (Student / Analyst / Manager / Executive)
+- AI experience levels with percentages
+- Decision-making experience breakdown
+- Average confidence score (out of 5)
+- Preferred industries / sectors
+
+TOP CHALLENGES (ranked by frequency)
+List the top 3–5 challenges with percentages
+
+KEY PATTERNS (3–5 bullet insights)
+What the instructor needs to know before class starts
+
+INSTRUCTOR ALERT (1–2 sentences)
+The single most important thing to address in how this class is taught
+
+Be specific with numbers. Be brief but complete. No fluff.`,
+
+    2: `You are the Teaching Orchestrator Agent for the AI Adaptive Classroom.
+
+Your job: generate an adaptive teaching playbook for the instructor based on cohort intelligence. The course uses the Discover → Diagnose → Decide → Deliver framework (but generalise to any course framework provided).
+
+Key principle: The AI isn't changing the curriculum. It's changing HOW you teach it.
+
+Output as a clear Teaching Playbook:
+
+TEACHING PLAYBOOK
+For each teaching decision, give the AI Recommendation:
+| Teaching Decision | AI Recommendation |
+Format as: Spend more time | [specific topic/concept]
+           Reduce time | [what to cut or compress]
+           Use examples from | [specific sectors/industries]
+           Grouping | [how to mix learners]
+           Introduce [tool/technique] | [at which point in the session]
+           Scaffolding | [where to add support and for whom]
+           Challenge | [what to give advanced learners]
+           Reflection focus | [what to emphasise]
+
+PACING CHANGES (specific time reallocation if possible)
+
+INSTRUCTOR NOTES (2–3 practical reminders)
+
+Be specific. Reference the actual cohort data. No generic advice.
+
+The cohort context will be prepended to the user's question.`,
+
+    3: `You are the Activity Adaptation Agent for the AI Adaptive Classroom.
+
+Your job: adapt the six Decision Intelligence activity templates to the specific cohort. Each template should preserve the same learning outcome but change the context, difficulty, sector, or scaffolding level.
+
+The six templates are:
+1. Problem Framing
+2. Situation Assessment
+3. Diagnose
+4. Validate
+5. Options & Trade-offs
+6. Deliver
+
+For each template requested, output:
+TEMPLATE [N] — [NAME]
+Normally: [what happens in a standard class]
+Instead — AI recommends:
+→ [Specific adaptation based on cohort data]
+→ [Group differentiation if relevant]
+→ [Sector-specific case/dataset assignment]
+Note: Same learning outcome. Different [context/dataset/scaffolding].
+
+Key adaptation principles:
+- Assign different industry sectors to different groups (Retail / Healthcare / Government / Finance / Sustainability) based on survey preferences
+- Adjust hint/scaffold level based on experience mix (beginners get starter hypotheses; advanced get blank worksheets)
+- If most learners struggle with a concept, adapt the activity to address it directly
+- If learners are overconfident, add validation/reflection questions
+- For Deliver: personalise output format by role (Students → career plan, Managers → team implementation, Executives → org-wide roadmap)
+
+Be concrete. Reference cohort numbers. The cohort context will be prepended.`,
+
+    4: `You are the Classroom Support Agent — a real-time teaching assistant for the AI Adaptive Classroom.
+
+The instructor describes what is happening in class RIGHT NOW. Respond immediately with practical, ready-to-use guidance.
+
+Always structure your response as:
+
+DIAGNOSIS (1 sentence: what is actually happening)
+
+PIVOT ACTIVITY (5–15 min, ready to run NOW)
+Name: [activity name]
+Instructions: [step by step, maximum 4 steps]
+Purpose: [what this fixes]
+
+ALTERNATIVE EXPLANATION
+[A different framing or analogy to try immediately]
+
+DISCUSSION PROMPT (to re-engage or deepen)
+"[exact wording the instructor can say out loud]"
+
+Be fast. Be specific. Instructors need to act in the next 2 minutes.
+Reference cohort context if available. Never give generic advice.`,
+
+    5: `You are the Reflection & Transfer Agent — the final stage of the AI Adaptive Classroom.
+
+Your job: close the learning loop with personalised end-of-class outputs.
+
+For REFLECTION PROMPTS — generate role-specific prompts that connect the day's learning to the learner's real workplace context. Reference their morning goal if known.
+
+For WORKPLACE TRANSFER TASKS — generate a specific 30-day action per learner type. Not "apply what you learned" — a concrete, role-appropriate task.
+
+For INSTRUCTOR DEBRIEF NOTES — identify what worked, what to change, and what to design differently for the next cohort.
+
+For GOALS VS OUTCOMES — compare what learners said they wanted in the morning survey against what they likely achieved.
+
+Output structure for reflection prompts:
+
+REFLECTION PROMPTS BY LEARNER TYPE
+
+[ROLE TYPE]
+Morning goal: [what this learner type wanted]
+End-of-class questions:
+1. [Specific reflection question connecting today's concept to their workplace]
+2. [Assumption to examine]
+3. [Next action question]
+30-day task: [concrete, role-specific workplace application]
+
+Personalise to the cohort. Reference their sectors and challenges. No generic prompts.
+The cohort context will be prepended.`
+  };
+
+  // ── STAGE SWITCH ──
+  function switchStage(n) {
+    document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel' + n).classList.add('active');
+    document.querySelectorAll('.stage-btn')[n - 1].classList.add('active');
+    renderCohortBanners();
+  }
+
+  // ── INSERT HINT ──
+  function insertHint(stage, text) {
+    const el = document.getElementById('input' + stage);
+    el.value = text;
+    el.focus();
+  }
+
+  // ── COHORT BANNERS ──
+  function renderCohortBanners() {
+    [2, 3, 4, 5].forEach(n => {
+      const el = document.getElementById('cohortBanner' + n);
+      if (!el) return;
+      if (cohortIntelligence) {
+        const preview = cohortIntelligence.substring(0, 200) + (cohortIntelligence.length > 200 ? '…' : '');
+        el.innerHTML = `<div class="cohort-banner"><div class="cb-icon">📊</div><div><div class="cb-title">Cohort Context Active</div><div class="cb-text">${preview}</div></div></div>`;
+      } else {
+        el.innerHTML = `<div class="cohort-banner" style="background:var(--surface);border:1px solid var(--border);"><div class="cb-icon">⚠️</div><div><div class="cb-title" style="color:var(--amber)">No Cohort Data Yet</div><div class="cb-text" style="color:var(--text-muted)">Run Stage 1 — Learner Insights to populate cohort intelligence for all stages.</div></div></div>`;
+      }
+    });
+  }
+
+  // ── RUN STAGE ──
+  async function runStage(n) {
+    const inputEl = document.getElementById('input' + n);
+    const outputEl = document.getElementById('output' + n);
+    const btnEl = document.getElementById('btn' + n);
+    const userText = inputEl.value.trim();
+
+    if (!userText) {
+      inputEl.focus();
+      inputEl.style.borderColor = 'var(--red)';
+      setTimeout(() => inputEl.style.borderColor = '', 1500);
+      return;
+    }
+
+    btnEl.disabled = true;
+    outputEl.innerHTML = `<div class="loading-bar"></div><div class="thinking-dots"><span></span><span></span><span></span></div>`;
+
+    // Build messages
+    const messages = [];
+    messages.push({ role: 'system', content: SYSTEMS[n] });
+
+    let userContent = userText;
+    if (n > 1 && cohortIntelligence) {
+      userContent = `COHORT INTELLIGENCE:\n${cohortIntelligence}\n\nCOURSE: ${document.getElementById('courseName').value || 'this course'}\n\n---\n\nINSTRUCTOR REQUEST:\n${userText}`;
+    } else if (n === 1) {
+      const cn = document.getElementById('courseName').value;
+      userContent = `Course: ${cn || 'Decision Intelligence with AI'}\n\nSurvey data:\n${userText}`;
+    }
+
+    messages.push({ role: 'user', content: userContent });
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages, max_tokens: 2000 })
+      });
+
+      if (!res.ok) throw new Error(`API error ${res.status}`);
+
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content || data.content || '';
+
+      if (!text) throw new Error('Empty response');
+
+      stageOutputs[n] = text;
+
+      // Stage 1: save as cohort intelligence
+      if (n === 1) {
+        cohortIntelligence = text;
+        document.getElementById('sidebarCohortText').textContent = text.substring(0, 400) + (text.length > 400 ? '…' : '');
+        document.getElementById('sidebarCohortText').classList.remove('sidebar-cohort-empty');
+        document.getElementById('done1').style.display = 'flex';
+        renderCohortBanners();
+      } else {
+        document.getElementById('done' + n).style.display = 'flex';
+      }
+
+      outputEl.innerHTML = renderOutput(n, text);
+
+    } catch (err) {
+      outputEl.innerHTML = `<div class="output-card"><div class="output-card-body" style="color:var(--red)">Error: ${err.message}. Please check your connection and try again.</div></div>`;
+    }
+
+    btnEl.disabled = false;
+  }
+
+  // ── RENDER OUTPUT ──
+  function renderOutput(stage, text) {
+    const stageColors = { 1: 'var(--s1)', 2: 'var(--s2)', 3: 'var(--s3)', 4: 'var(--s4)', 5: 'var(--s5)' };
+    const stageLabels = { 1: 'Cohort Intelligence', 2: 'Teaching Playbook', 3: 'Adapted Activities', 4: 'Classroom Guidance', 5: 'Reflection & Transfer' };
+    const color = stageColors[stage];
+    const label = stageLabels[stage];
+
+    const formatted = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^#{1,3}\s+(.+)$/gm, '<h4 style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--navy);margin:16px 0 6px;">$1</h4>')
+      .replace(/\|(.+)\|/g, (m) => {
+        const cells = m.split('|').filter(c => c.trim());
+        const isHeader = cells.some(c => c.trim().match(/^[-]+$/));
+        if (isHeader) return '';
+        return '<div style="display:flex;gap:0;border-bottom:1px solid var(--border);padding:8px 0;">' +
+          cells.map((c, i) => `<div style="flex:${i===0?'0 0 200px':'1'};font-weight:${i===0?'700':'400'};font-size:0.85rem;padding:0 8px;color:${i===0?'var(--navy)':'var(--text)'}">${c.trim()}</div>`).join('') +
+          '</div>';
+      })
+      .replace(/^[-•]\s+(.+)$/gm, '<div style="display:flex;gap:8px;padding:3px 0;font-size:0.87rem;"><span style="color:' + color + ';flex-shrink:0;margin-top:4px;">▸</span><span>$1</span></div>')
+      .replace(/^\d+\.\s+(.+)$/gm, '<div style="display:flex;gap:8px;padding:3px 0;font-size:0.87rem;color:var(--text);">$&</div>')
+      .replace(/→\s+(.+)/g, '<div style="padding:3px 0 3px 16px;font-size:0.87rem;color:var(--text-muted);">→ $1</div>');
+
+    return `
+      <div class="output-card">
+        <div class="output-card-header">
+          <div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0;"></div>
+          <div class="label" style="color:${color}">${label}</div>
+        </div>
+        <div class="output-card-body" style="white-space:normal;">${formatted}</div>
+      </div>
+      <div style="text-align:right;margin-top:8px;">
+        <button onclick="copyOutput(${stage})" style="background:none;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:0.78rem;font-weight:600;color:var(--text-muted);cursor:pointer;">Copy output</button>
+      </div>`;
+  }
+
+  // ── COPY ──
+  function copyOutput(n) {
+    navigator.clipboard.writeText(stageOutputs[n]).then(() => {
+      const btns = document.querySelectorAll('#output' + n + ' button');
+      btns.forEach(b => { b.textContent = 'Copied!'; setTimeout(() => b.textContent = 'Copy output', 1500); });
+    });
+  }
+
+  // ── INIT ──
+  renderCohortBanners();
+</script>
+</body>
+</html>
