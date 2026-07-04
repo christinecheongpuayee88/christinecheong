@@ -191,6 +191,32 @@
 
     .error-box { padding:20px 24px; background:var(--red-light); border:1px solid #F5C6CB; border-radius:10px; color:var(--red); font-size:14px; font-weight:500; }
 
+    /* ── FOLLOW-UP THREAD ────────────────────────── */
+    .followup-section { margin-top:32px; border-top:2px solid var(--border); padding-top:28px; }
+    .followup-label { font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--slate); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+    .followup-label::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--green); }
+    .followup-thread { display:flex; flex-direction:column; gap:14px; margin-bottom:24px; }
+    .fup-exchange { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .fup-q { padding:11px 18px; background:var(--slate-light); border-bottom:1px solid var(--border); font-size:13px; font-weight:600; color:var(--navy); line-height:1.5; }
+    .fup-q::before { content:'You  '; font-family:var(--font-mono); font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--slate); margin-right:6px; }
+    .fup-a { padding:16px 18px; font-size:14px; line-height:1.78; color:var(--text); }
+    .fup-a p { margin-bottom:10px; }
+    .fup-a p:last-child { margin-bottom:0; }
+    .fup-a h2,.fup-a h3 { font-family:var(--font-display); font-weight:700; color:var(--navy); margin:14px 0 6px; font-size:16px; }
+    .fup-a ul { padding-left:18px; margin:8px 0 10px; }
+    .fup-a li { margin-bottom:5px; }
+    .fup-a strong { color:var(--navy); font-weight:700; }
+    .fup-a em { font-style:italic; color:var(--text-muted); }
+    .fup-a code { font-family:var(--font-mono); font-size:12px; background:var(--surface); padding:1px 5px; border-radius:3px; border:1px solid var(--border); }
+    .fup-loading { padding:16px 18px; display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-muted); }
+    .followup-input-row { display:flex; gap:10px; align-items:flex-end; }
+    .followup-input-row textarea { flex:1; padding:12px 14px; font-family:var(--font-body); font-size:14px; font-weight:500; line-height:1.65; color:var(--text); background:var(--bg); border:1.5px solid var(--border); border-radius:8px; resize:vertical; outline:none; transition:border-color 0.25s; min-height:56px; }
+    .followup-input-row textarea:focus { border-color:var(--slate); }
+    .followup-input-row textarea::placeholder { color:#9CA3AF; }
+    .fup-send-btn { padding:13px 22px; font-family:var(--font-body); font-size:13px; font-weight:600; background:var(--slate); color:#fff; border:none; border-radius:8px; cursor:pointer; white-space:nowrap; transition:background 0.25s,transform 0.25s; flex-shrink:0; }
+    .fup-send-btn:hover:not(:disabled) { background:#1E293B; transform:translateY(-1px); }
+    .fup-send-btn:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
+
     /* ── FOOTER ──────────────────────────────────── */
     .footer { background:var(--navy); color:#fff; padding:48px 56px 32px; }
     .footer-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
@@ -340,6 +366,16 @@
       </div>
       <div id="outputContent"></div>
     </div>
+
+    <!-- Follow-up conversation thread -->
+    <div class="followup-section" id="followupSection" style="display:none">
+      <div class="followup-label">Continue the conversation</div>
+      <div class="followup-thread" id="followupThread"></div>
+      <div class="followup-input-row">
+        <textarea id="followupText" rows="2" placeholder="Ask a follow-up question — e.g. "Which hypothesis should we prioritise?" or "How does this change our approach?""></textarea>
+        <button class="fup-send-btn" id="followupBtn">Ask ↵</button>
+      </div>
+    </div>
   </main>
 
   <!-- ── FOOTER ──────────────────────────────────── -->
@@ -477,6 +513,11 @@ Output format:
 
     let currentOutput = null;
     let phaseInterval;
+    let _history = []; // in-session conversation history
+
+    const FOLLOWUP_SYSTEM = `You are the Problem Hunter Agent. You have already completed a structured problem diagnosis — the full JSON analysis is in the conversation history. The user is now asking follow-up questions.
+
+Respond in clear, direct markdown — not JSON. Be specific and refer back to the diagnosis where relevant. Keep answers focused and actionable.`;
 
     runBtn.addEventListener('click', async () => {
       if (briefEl.value.trim().length < 10) {
@@ -498,6 +539,13 @@ Output format:
         const data = parseJSON(text);
         currentOutput = data;
         renderOutput(data);
+        // Seed conversation history with this exchange
+        _history = [
+          { role: 'user', content: message },
+          { role: 'assistant', content: text }
+        ];
+        document.getElementById('followupSection').style.display = 'block';
+        document.getElementById('followupThread').innerHTML = '';
       } catch(err) {
         showError(err.message);
       } finally {
@@ -671,12 +719,86 @@ Output format:
 
     document.getElementById('resetBtn').addEventListener('click', () => {
       document.getElementById('outputPanel').classList.remove('show');
+      document.getElementById('followupSection').style.display = 'none';
+      document.getElementById('followupThread').innerHTML = '';
+      _history = [];
       briefEl.value = '';
       industryEl.value = '';
       stakesEl.value = '';
       contextEl.value = '';
       checkReady();
     });
+
+    // ── Follow-up conversation ─────────────────────────────────────
+    function fupMdToHtml(md) {
+      return md
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+        .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g,'<em>$1</em>')
+        .replace(/`([^`]+)`/g,'<code>$1</code>')
+        .replace(/^[-•] (.+)$/gm,'<li>$1</li>')
+        .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
+        .replace(/((?:<li>[\s\S]*?<\/li>\n?)+)/g,'<ul>$1</ul>')
+        .replace(/\n{2,}/g,'</p><p>')
+        .replace(/^(?!<[hul])(.+)$/gm,'<p>$1</p>')
+        .replace(/<p><\/p>/g,'')
+        .replace(/<\/ul><ul>/g,'')
+        .replace(/<p>(<[hul])/g,'$1')
+        .replace(/(<\/[hul][^>]*>)<\/p>/g,'$1');
+    }
+
+    document.getElementById('followupBtn').addEventListener('click', sendFollowup);
+    document.getElementById('followupText').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) sendFollowup();
+    });
+
+    async function sendFollowup() {
+      const ta = document.getElementById('followupText');
+      const q = ta.value.trim();
+      if (!q) return;
+      const btn = document.getElementById('followupBtn');
+      btn.disabled = true;
+      ta.disabled = true;
+
+      // Add loading card
+      const thread = document.getElementById('followupThread');
+      const card = document.createElement('div');
+      card.className = 'fup-exchange';
+      card.innerHTML = `<div class="fup-q">${esc(q)}</div><div class="fup-loading"><div class="loading-dots" style="display:inline-flex"><span></span><span></span><span></span></div> Thinking…</div>`;
+      thread.appendChild(card);
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      const followupMessages = [..._history, { role: 'user', content: q }];
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ system: FOLLOWUP_SYSTEM, messages: followupMessages, max_tokens: 3000 })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'API request failed');
+        const answer = data.content[0].text;
+
+        // Update card with answer
+        card.innerHTML = `<div class="fup-q">${esc(q)}</div><div class="fup-a">${fupMdToHtml(answer)}</div>`;
+
+        // Extend history
+        _history.push({ role: 'user', content: q });
+        _history.push({ role: 'assistant', content: answer });
+
+        ta.value = '';
+      } catch(err) {
+        card.innerHTML = `<div class="fup-q">${esc(q)}</div><div class="fup-a"><div class="error-box">⚠ ${esc(err.message)}</div></div>`;
+      } finally {
+        btn.disabled = false;
+        ta.disabled = false;
+        ta.focus();
+      }
+    }
+    // ─────────────────────────────────────────────────────────────
   </script>
 </body>
 </html>
