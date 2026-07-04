@@ -334,7 +334,7 @@
       </div>
       <div class="input-footer">
         <span style="font-size:12px;color:var(--text-muted)">5-step adaptive loop — learner pulse, cohort intelligence, teaching adjustments, during-class guidance, end-of-class loop</span>
-        <button class="run-btn" id="runBtn" disabled>
+        <button class="run-btn" id="runBtn">
           <span>📊</span>
           <span>Analyse Survey</span>
         </button>
@@ -465,12 +465,7 @@ Output format:
 
     const FETCH_SEPARATOR = '=== PASTE RESPONSE DATA BELOW ===';
     function checkReady() {
-      const raw = dataEl.value.trim();
-      const url = document.getElementById('formsUrl').value.trim();
-      const hasUpload = Object.keys(_uploadedDocs||{}).length > 0 || (_uploadedImages||[]).length > 0;
-      const hasUrl = url.includes('docs.google.com/forms') || url.includes('docs.google.com/spreadsheets');
-      const hasData = raw.length > 30 || hasUpload || hasUrl;
-      runBtn.disabled = !hasData;
+      // Button is always enabled — no data gate needed
     }
     function onUrlInput() {
       const url = document.getElementById('formsUrl').value.trim();
@@ -587,6 +582,12 @@ Output format:
       const urlVal = document.getElementById('formsUrl').value.trim();
       const sheetsUrlVal = urlVal.includes('docs.google.com/spreadsheets') ? urlVal : '';
       const formsUrlVal  = urlVal.includes('docs.google.com/forms') ? urlVal : '';
+      const hasAnything = urlVal || dataEl.value.trim().length > 10 ||
+        Object.keys(_uploadedDocs||{}).length > 0 || (_uploadedImages||[]).length > 0;
+      if (!hasAnything) {
+        showUrlError('Please paste a Google Forms URL or survey response data to analyse.');
+        return;
+      }
       const message = [
         `Survey Title: ${titleEl.value.trim()}`,
         `Survey Purpose: ${purposeEl.value}`,
