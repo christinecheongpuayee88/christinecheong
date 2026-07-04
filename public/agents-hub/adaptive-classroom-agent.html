@@ -5,88 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Teaching Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Plus Jakarta Sans', system-ui, sans-serif; background:#F8FAFC; color:#111827; font-size:15px; line-height:1.65; }
 
-    /* NAV */
-    .nav { position:fixed; inset:0 0 auto; z-index:100; height:60px; display:flex; align-items:center; justify-content:space-between; padding:0 24px; background:#fff; border-bottom:1px solid #E5E7EB; }
-    .nav-left { display:flex; align-items:center; gap:14px; }
+    .nav { position:fixed; inset:0 0 auto; z-index:100; height:58px; display:flex; align-items:center; justify-content:space-between; padding:0 24px; background:#fff; border-bottom:1px solid #E5E7EB; }
     .back-link { font-size:0.8rem; font-weight:600; color:#6B7280; text-decoration:none; display:flex; align-items:center; gap:5px; padding:5px 10px; border:1px solid #E5E7EB; border-radius:7px; }
     .back-link:hover { color:#1E88C7; border-color:#1E88C7; }
-    .nav-title { font-family:'Fraunces',serif; font-weight:700; font-size:1.05rem; color:#111827; }
+    .nav-title { font-family:'Fraunces',serif; font-weight:700; font-size:1.05rem; color:#111827; margin-left:14px; }
     .nav-badge { background:#EDE9FE; color:#6D28D9; font-size:0.7rem; font-weight:700; padding:3px 10px; border-radius:20px; }
 
-    /* LAYOUT */
-    .page { margin-top:60px; display:flex; flex-direction:column; height:calc(100vh - 60px); max-width:860px; margin-left:auto; margin-right:auto; padding:0 20px; }
+    .page { margin-top:58px; max-width:820px; margin-left:auto; margin-right:auto; padding:28px 20px 60px; }
 
-    /* TABS */
-    .tabs { display:flex; gap:0; border-bottom:2px solid #E5E7EB; padding-top:20px; flex-shrink:0; }
-    .tab { padding:10px 22px; font-size:0.85rem; font-weight:600; color:#6B7280; cursor:pointer; border:none; background:none; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.15s; white-space:nowrap; }
-    .tab:hover { color:#111827; }
-    .tab.active { color:#6D28D9; border-bottom-color:#6D28D9; }
-
-    /* PANEL */
-    .panel { display:none; flex-direction:column; flex:1; overflow:hidden; }
-    .panel.active { display:flex; }
-
-    .panel-desc { font-size:0.83rem; color:#6B7280; padding:14px 0 12px; flex-shrink:0; border-bottom:1px solid #E5E7EB; margin-bottom:14px; }
-
-    /* INPUT AREA */
-    .input-wrap { display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
-    .input-top { display:flex; align-items:center; justify-content:space-between; }
-    .input-label { font-size:0.75rem; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.05em; }
-    .upload-btn { display:flex; align-items:center; gap:5px; font-size:0.75rem; font-weight:600; color:#1E88C7; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:6px; padding:4px 10px; cursor:pointer; }
-    .upload-btn svg { width:12px; height:12px; }
+    /* SURVEY BOX */
+    .survey-box { background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:20px; margin-bottom:24px; }
+    .box-title { font-weight:700; font-size:0.95rem; color:#111827; margin-bottom:4px; }
+    .box-sub { font-size:0.82rem; color:#6B7280; margin-bottom:14px; }
+    .input-row { display:flex; align-items:flex-start; gap:10px; }
+    textarea { flex:1; background:#F8FAFC; border:1px solid #D1D5DB; border-radius:10px; padding:12px 14px; font-family:inherit; font-size:0.86rem; color:#111827; resize:vertical; min-height:110px; transition:border-color 0.2s; line-height:1.6; }
+    textarea:focus { outline:none; border-color:#6D28D9; background:#fff; }
+    .upload-btn { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px; font-size:0.72rem; font-weight:600; color:#6B7280; background:#F3F4F6; border:1px dashed #D1D5DB; border-radius:8px; padding:10px 12px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+    .upload-btn:hover { border-color:#6D28D9; color:#6D28D9; }
+    .upload-btn svg { width:16px; height:16px; }
     .upload-btn input { display:none; }
-    textarea { width:100%; background:#fff; border:1px solid #D1D5DB; border-radius:10px; padding:12px 14px; font-family:inherit; font-size:0.88rem; color:#111827; resize:vertical; min-height:90px; max-height:220px; transition:border-color 0.2s; line-height:1.6; }
-    textarea:focus { outline:none; border-color:#6D28D9; }
-    .run-row { display:flex; justify-content:flex-end; gap:10px; align-items:center; margin-top:4px; }
-    .hint-text { font-size:0.75rem; color:#9CA3AF; }
-    .run-btn { display:flex; align-items:center; gap:7px; padding:10px 20px; border-radius:8px; font-size:0.88rem; font-weight:700; border:none; cursor:pointer; background:#6D28D9; color:#fff; transition:opacity 0.2s; }
-    .run-btn:hover { opacity:0.88; }
+
+    /* ACTIVITY CARDS */
+    .activity { background:#fff; border:1px solid #E5E7EB; border-radius:14px; margin-bottom:16px; overflow:hidden; }
+    .activity-head { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #E5E7EB; }
+    .activity-meta { display:flex; align-items:center; gap:10px; }
+    .activity-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; flex-shrink:0; }
+    .a1 .activity-num { background:#EDE9FE; color:#6D28D9; }
+    .a2 .activity-num { background:#E0F2FE; color:#0369A1; }
+    .a3 .activity-num { background:#D1FAE5; color:#065F46; }
+    .activity-name { font-weight:700; font-size:0.92rem; color:#111827; }
+    .activity-sub { font-size:0.78rem; color:#6B7280; margin-top:1px; }
+    .run-btn { display:flex; align-items:center; gap:7px; padding:9px 18px; border-radius:8px; font-size:0.84rem; font-weight:700; border:none; cursor:pointer; transition:opacity 0.2s; white-space:nowrap; }
     .run-btn:disabled { opacity:0.4; cursor:not-allowed; }
     .run-btn svg { width:14px; height:14px; }
+    .a1 .run-btn { background:#6D28D9; color:#fff; }
+    .a2 .run-btn { background:#0369A1; color:#fff; }
+    .a3 .run-btn { background:#065F46; color:#fff; }
+    .run-btn:not(:disabled):hover { opacity:0.85; }
 
-    /* DIVIDER */
-    .divider { height:1px; background:#E5E7EB; margin:14px 0; flex-shrink:0; }
+    .activity-output { padding:18px 20px; display:none; border-top:1px solid #F3F4F6; }
+    .activity-output.visible { display:block; }
 
-    /* OUTPUT */
-    .output { flex:1; overflow-y:auto; padding-bottom:20px; }
-    .empty { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:160px; color:#9CA3AF; text-align:center; gap:8px; }
-    .empty .icon { font-size:2rem; opacity:0.35; }
-    .empty p { font-size:0.85rem; max-width:320px; }
-
-    /* RESULT CARD */
-    .result { background:#fff; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; }
-    .result-head { padding:12px 18px; background:#F5F3FF; border-bottom:1px solid #E5E7EB; display:flex; align-items:center; gap:8px; }
-    .result-dot { width:8px; height:8px; border-radius:50%; background:#6D28D9; }
-    .result-label { font-size:0.72rem; font-weight:700; color:#6D28D9; text-transform:uppercase; letter-spacing:0.07em; }
-    .result-body { padding:18px 20px; font-size:0.88rem; line-height:1.75; color:#1F2937; white-space:pre-wrap; }
-
-    .loading-bar { height:3px; background:linear-gradient(90deg,transparent,#6D28D9,transparent); background-size:200%; animation:shimmer 1.4s infinite; border-radius:2px; margin-bottom:12px; }
-    @keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
-    .dots { display:flex; gap:5px; padding:10px 0; }
+    .loading-bar { height:3px; border-radius:2px; background:linear-gradient(90deg,transparent,currentColor,transparent); background-size:200%; animation:shimmer 1.4s infinite; margin-bottom:10px; }
+    .a1 .loading-bar { color:#6D28D9; }
+    .a2 .loading-bar { color:#0369A1; }
+    .a3 .loading-bar { color:#065F46; }
+    @keyframes shimmer { 0%{background-position:200%}100%{background-position:-200%} }
+    .dots { display:flex; gap:5px; padding:6px 0; }
     .dots span { width:6px; height:6px; border-radius:50%; background:#9CA3AF; animation:pulse 1.4s infinite; }
-    .dots span:nth-child(2) { animation-delay:.2s; }
-    .dots span:nth-child(3) { animation-delay:.4s; }
-    @keyframes pulse { 0%,80%,100%{opacity:.25;transform:scale(.9)} 40%{opacity:1;transform:scale(1.1)} }
+    .dots span:nth-child(2){animation-delay:.2s} .dots span:nth-child(3){animation-delay:.4s}
+    @keyframes pulse{0%,80%,100%{opacity:.25;transform:scale(.9)}40%{opacity:1;transform:scale(1.1)}}
 
-    .copy-row { text-align:right; margin-top:10px; }
-    .copy-btn { background:none; border:1px solid #E5E7EB; border-radius:6px; padding:6px 12px; font-size:0.75rem; font-weight:600; color:#6B7280; cursor:pointer; }
+    .result { font-size:0.87rem; line-height:1.8; color:#1F2937; white-space:pre-wrap; }
+    .copy-row { margin-top:12px; text-align:right; }
+    .copy-btn { background:none; border:1px solid #E5E7EB; border-radius:6px; padding:5px 12px; font-size:0.75rem; font-weight:600; color:#6B7280; cursor:pointer; }
     .copy-btn:hover { border-color:#6D28D9; color:#6D28D9; }
-
-    /* SURVEY CARRY-OVER BANNER */
-    .survey-banner { background:#1F2937; color:#fff; border-radius:8px; padding:10px 14px; margin-bottom:12px; font-size:0.78rem; display:none; }
-    .survey-banner .sb-label { font-size:0.65rem; font-weight:700; color:#93C5FD; text-transform:uppercase; letter-spacing:0.07em; margin-bottom:4px; }
-    .survey-banner .sb-text { color:#D1D5DB; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   </style>
 </head>
 <body>
 
 <nav class="nav">
-  <div class="nav-left">
+  <div style="display:flex;align-items:center;">
     <a href="/agents-hub" class="back-link">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M10 12L6 8l4-4"/></svg>
       Hub
@@ -97,94 +81,83 @@
 </nav>
 
 <div class="page">
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab(1)">1 · Learning Survey</button>
-    <button class="tab" onclick="switchTab(2)">2 · Teaching Orchestrator</button>
-    <button class="tab" onclick="switchTab(3)">3 · Post-Learning Activities</button>
-  </div>
 
-  <!-- ── TAB 1: LEARNING SURVEY ── -->
-  <div class="panel active" id="panel1">
-    <p class="panel-desc">Paste your pre-class learning survey responses. AI profiles the cohort and this carries into the next two activities.</p>
-    <div class="input-wrap">
-      <div class="input-top">
-        <span class="input-label">Survey Data</span>
-        <label class="upload-btn">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M4 6l4-4 4 4M2 12h12"/></svg>
-          Upload CSV
-          <input type="file" accept=".csv,.tsv,.txt" onchange="uploadCSV(this,1)">
-        </label>
-      </div>
-      <textarea id="t1" placeholder="Paste survey responses here — names, roles, organisations, experience levels, learning goals...
-
-e.g. 11 responses. Mix of analysts, managers, researchers. 5 sectors: Education, Healthcare, HDB, MINDEF, PSA. Avg experience 2.3/5. Main goals: forecasting, ML techniques, practical applications."></textarea>
-      <div class="run-row">
-        <span class="hint-text">Survey data will carry into all activities</span>
-        <button class="run-btn" id="btn1" onclick="run(1)">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
-          Analyse
-        </button>
-      </div>
-    </div>
-    <div class="divider"></div>
-    <div class="output" id="out1">
-      <div class="empty"><div class="icon">📋</div><p>Paste survey data and click Analyse. The cohort profile will carry into Teaching Orchestrator and Post-Learning Activities.</p></div>
+  <!-- SURVEY INPUT -->
+  <div class="survey-box">
+    <div class="box-title">Learning Survey</div>
+    <div class="box-sub">Paste your pre-class survey responses once — all three activities below will use this data automatically.</div>
+    <div class="input-row">
+      <textarea id="survey" placeholder="Paste survey responses here — names, roles, organisations, experience levels, learning goals...&#10;&#10;e.g. 11 responses · Mix of analysts, managers, researchers · 5 sectors: Education, Healthcare, HDB, MINDEF, PSA · Avg experience 2.3/5 · Main goals: forecasting, ML techniques, practical applications."></textarea>
+      <label class="upload-btn">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M4 6l4-4 4 4M2 12h12"/></svg>
+        Upload<br>CSV
+        <input type="file" accept=".csv,.tsv,.txt" onchange="uploadCSV(this)">
+      </label>
     </div>
   </div>
 
-  <!-- ── TAB 2: TEACHING ORCHESTRATOR ── -->
-  <div class="panel" id="panel2">
-    <p class="panel-desc">Generates a teaching brief for the instructor — cohort assessment, pacing adjustments, grouping strategy, recommended materials from your teaching library.</p>
-    <div class="survey-banner" id="banner2">
-      <div class="sb-label">Survey Loaded</div>
-      <div class="sb-text" id="banner2text"></div>
-    </div>
-    <div class="input-wrap">
-      <div class="input-top"><span class="input-label">Course or Topic (optional)</span></div>
-      <textarea id="t2" placeholder="Name the course or topic — e.g. 'Predictive Analytics with Logistic Regression', 'Customer Segmentation', 'Decision Intelligence' — or leave blank to get general recommendations." style="min-height:60px;max-height:100px;"></textarea>
-      <div class="run-row">
-        <button class="run-btn" id="btn2" onclick="run(2)">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
-          Generate Playbook
-        </button>
+  <!-- ACTIVITY 1: COHORT PROFILE -->
+  <div class="activity a1">
+    <div class="activity-head">
+      <div class="activity-meta">
+        <div class="activity-num">1</div>
+        <div>
+          <div class="activity-name">Cohort Profile</div>
+          <div class="activity-sub">Who is in the room — experience, sectors, goals, gaps</div>
+        </div>
       </div>
+      <button class="run-btn" id="btn1" onclick="run(1)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
+        Analyse
+      </button>
     </div>
-    <div class="divider"></div>
-    <div class="output" id="out2">
-      <div class="empty"><div class="icon">🗂️</div><p>Run the Learning Survey first, then generate your teaching playbook here.</p></div>
-    </div>
+    <div class="activity-output" id="out1"></div>
   </div>
 
-  <!-- ── TAB 3: POST-LEARNING ACTIVITIES ── -->
-  <div class="panel" id="panel3">
-    <p class="panel-desc">Proposes end-of-class reflection prompts, workplace application tasks, and instructor notes for the next delivery — tailored to this cohort.</p>
-    <div class="survey-banner" id="banner3">
-      <div class="sb-label">Survey Loaded</div>
-      <div class="sb-text" id="banner3text"></div>
-    </div>
-    <div class="input-wrap">
-      <div class="input-top"><span class="input-label">Any specific focus? (optional)</span></div>
-      <textarea id="t3" placeholder="e.g. 'focus on workplace transfer', 'include a 30-day challenge', 'add peer learning activities' — or leave blank for the full post-class set." style="min-height:60px;max-height:100px;"></textarea>
-      <div class="run-row">
-        <button class="run-btn" id="btn3" onclick="run(3)">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
-          Generate Activities
-        </button>
+  <!-- ACTIVITY 2: TEACHING ORCHESTRATOR -->
+  <div class="activity a2">
+    <div class="activity-head">
+      <div class="activity-meta">
+        <div class="activity-num">2</div>
+        <div>
+          <div class="activity-name">Teaching Orchestrator</div>
+          <div class="activity-sub">Pacing, groupings, examples, materials — adapted to this cohort</div>
+        </div>
       </div>
+      <button class="run-btn" id="btn2" onclick="run(2)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
+        Generate
+      </button>
     </div>
-    <div class="divider"></div>
-    <div class="output" id="out3">
-      <div class="empty"><div class="icon">🪞</div><p>Run the Learning Survey first, then generate post-learning activities here.</p></div>
+    <!-- optional course name -->
+    <div id="courseRow" style="padding:0 20px 14px; display:none;">
+      <input id="courseName" type="text" placeholder="Course or topic (optional) — e.g. Predictive Analytics, Customer Segmentation, Decision Intelligence" style="width:100%;padding:9px 13px;border:1px solid #D1D5DB;border-radius:8px;font-family:inherit;font-size:0.84rem;color:#111827;background:#F8FAFC;">
     </div>
+    <div class="activity-output" id="out2"></div>
   </div>
+
+  <!-- ACTIVITY 3: POST-LEARNING -->
+  <div class="activity a3">
+    <div class="activity-head">
+      <div class="activity-meta">
+        <div class="activity-num">3</div>
+        <div>
+          <div class="activity-name">Post-Learning Activities</div>
+          <div class="activity-sub">Reflection prompts, workplace tasks, instructor notes for next delivery</div>
+        </div>
+      </div>
+      <button class="run-btn" id="btn3" onclick="run(3)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 6l4 2-4 2V6z" fill="currentColor" stroke="none"/></svg>
+        Generate
+      </button>
+    </div>
+    <div class="activity-output" id="out3"></div>
+  </div>
+
 </div>
 
 <script>
-let survey = '';
-let outputs = { 1:'', 2:'', 3:'' };
-
-const MATERIALS = `
-CHRISTINE'S TEACHING LIBRARY (recommend from this list when relevant — include the full path):
+const MATERIALS = `TEACHING LIBRARY (recommend from this list when relevant — include full file path):
 
 PREDICTIVE ANALYTICS
 • 1.1 Introduction to Predictive Analytics (June 2026)_v3.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.1 Introduction to Predictive Analytics (June 2026)_v3.pdf
@@ -193,16 +166,16 @@ PREDICTIVE ANALYTICS
 • 1.1 Introduction to Predictive Analytics (Sept 2025)_v2.1.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.1 Introduction to Predictive Analytics (Sept 2025)_v2.1.pdf
 
 PYTHON WORKSHOPS & DATASETS
-• Diabetes Classification Workshop → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\4.Diabetes_workshop.ipynb (dataset: diabetes.csv — 768 rows, 9 features)
-• Credit Card Logistic Regression Workshop → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\2.CreditCard.ipynb (dataset: CreditCard.csv)
-• Coupon Campaign Workshop → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\3.Coupon_sub.ipynb (dataset: coupon_sub.csv)
-• Student Hours Linear Regression → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\1.Student_hours.ipynb (dataset: student_hours.csv)
+• Diabetes Classification Workshop → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\4.Diabetes_workshop.ipynb (dataset: diabetes.csv — 768 rows, healthcare/insurance context)
+• Credit Card Logistic Regression → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\2.CreditCard.ipynb (dataset: CreditCard.csv — financial context)
+• Coupon Campaign Workshop → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\3.Coupon_sub.ipynb (dataset: coupon_sub.csv — retail/marketing context)
+• Student Hours Linear Regression → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\Logreg_python_workshops\\1.Student_hours.ipynb (dataset: student_hours.csv — simple intro context)
 
 CUSTOMER ANALYTICS
 • 1.1 Introduction to Customer Analytics (Jan 2026)_v1.pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.1 Introduction to Customer Analytics (Jan 2026)_v1.pdf
 • 3.1 ACA Understanding and Determining CLV_V2 (Jan 2026).pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\3.1 ACA Understanding and Determining CLV_V2 (Jan 2026).pptx
 
-EXPLAINABLE AI (XAI)
+EXPLAINABLE AI
 • 1.1 XAI Machine Learning Explainability_Jan2026_v2 (final).pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.1 XAI Machine Learning Explainability_Jan2026_v2 (final).pdf
 • 1.2 XAI Explain black-box models_Jan2026_v2 (final).pdf → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\1.2 XAI Explain black-box models_Jan2026_v2 (final).pdf
 
@@ -211,120 +184,115 @@ CAUSAL INFERENCE
 
 CLUSTERING & SEGMENTATION
 • 3.1 Day 3 Clustering v1.15 DH.pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\3.1 Day 3 Clustering v1.15 DH.pptx
-• 3.2 Cluster Workshop 2025.pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\3.2 Cluster Workshop 2025.pptx
 
 DATA STORYTELLING
-• 01 Fundamentals of Data Storytelling_vB2 Upload.pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\01 Fundamentals of Data Storytelling_vB2 Upload.pptx
-`;
+• 01 Fundamentals of Data Storytelling_vB2 Upload.pptx → C:\\Users\\isscpu\\OneDrive - National University of Singapore\\Christine\\01 Fundamentals of Data Storytelling_vB2 Upload.pptx`;
 
 const PROMPTS = {
   1: `You are an AI Teaching Assistant analysing a pre-class learning survey for an instructor.
 
-Produce a concise cohort profile. Follow this structure exactly:
+Produce a concise cohort profile with these sections:
 
 PARTICIPANT PROFILE
-List total responses, role/background breakdown, sectors represented, experience level distribution (e.g. Level 1 / 2 / 3), and average experience score.
+Total responses, role/background breakdown, sectors represented, experience level distribution, average score.
 
 COHORT INTELLIGENCE
-Summarise the experience mix in plain language. Note dominant learning goals and common gaps. Highlight any outliers (e.g. one advanced practitioner among beginners).
+Experience mix in plain language. Dominant learning goals. Common gaps. Any outliers.
 
-KEY TAKEAWAY (2–3 sentences)
-One paragraph that captures who this cohort is and the single most important thing the instructor should know before class starts.
+KEY TAKEAWAY
+2–3 sentences: who this cohort is, and the one thing the instructor must know before class.
 
-Be specific with numbers. Use the actual names and organisations from the survey. Keep it tight.`,
+Use actual names and organisations from the survey. Be specific with numbers. Keep it tight.`,
 
-  2: `You are an AI Teaching Assistant generating a teaching playbook for an instructor based on a pre-class learning survey.
+  2: `You are an AI Teaching Assistant generating a teaching playbook for an instructor.
 
 ${MATERIALS}
+
+The instructor will provide the learning survey data and optionally the course/topic name.
 
 Produce a practical teaching brief with these sections:
 
 COHORT ASSESSMENT
-Brief: experience mix, sectors, dominant goals. Reference actual names and organisations.
+One short paragraph referencing actual names and sectors.
 
 TEACHING ADJUSTMENTS
-- Difficulty: what level to pitch at and why
-- Pacing: what to expand, what to compress
-- Groupings: how to pair or group learners and why (reference actual names)
-- Recommended examples: sector-specific examples tailored to THIS cohort (reference organisations in the survey)
+- Difficulty: what level to pitch, why
+- Pacing: what to expand or compress
+- Groupings: how to pair/group learners, naming specific participants
+- Recommended examples: sector-specific examples for THIS cohort (name the organisations)
 
 DURING-CLASS GUIDANCE
-- 3 discussion prompts designed for this cohort
-- 1–2 challenge questions for the more experienced participants
+3 discussion prompts tailored to this cohort.
+1–2 challenge questions for more experienced participants.
 
 RECOMMENDED TEACHING MATERIALS
-From the library above, recommend 2–5 files that fit the course topic and cohort profile. For each: name, why it fits, and the full file path.
+2–5 files from the library above that fit the course topic and cohort. For each: name, why it fits, full file path.
 
 INSTRUCTOR NOTES
 2–3 practical reminders for running this session well.
 
-Be specific. Reference actual participant names and organisations. No generic advice.`,
+Be specific. No generic advice.`,
 
-  3: `You are an AI Teaching Assistant designing post-learning activities for an instructor based on a pre-class learning survey.
+  3: `You are an AI Teaching Assistant designing post-learning activities for an instructor.
 
-Produce a practical end-of-class and follow-up plan with these sections:
+Produce a practical end-of-class plan with these sections:
 
-LEARNER REFLECTION PROMPTS (3 questions)
-Questions that connect today's learning to the learner's own workplace. Should work for the whole group but resonate with the sectors in this cohort.
+LEARNER REFLECTION PROMPTS
+3 questions that connect today's learning to each learner's workplace. Should resonate across the sectors in this cohort.
 
 WORKPLACE APPLICATION TASKS
-For each major sector/role group in this cohort, propose one specific 30-day workplace application task. Not generic — name the organisation and the realistic data or problem they would use.
+For each major sector/role group, one specific 30-day task. Name the organisation and the data or problem they would realistically use.
 
 PEER LEARNING SUGGESTIONS
-1–2 ways this cohort could continue learning together after class (e.g. a shared challenge, a follow-up session topic, a peer review exercise).
+1–2 ways this cohort could continue learning together after class.
 
 INSTRUCTOR NOTES FOR NEXT DELIVERY
-What to improve, what to source, what to design differently based on this cohort's profile.
+What to improve, what to source, what to design differently.
 
-KEY TAKEAWAY (for the learners — one sentence the instructor can say to close the class)
+CLOSING LINE
+One sentence the instructor can say to end class — grounded in this cohort's context.
 
-Be specific. Reference actual participant names and organisations from the survey.`
+Reference actual names and organisations from the survey.`
 };
 
-function switchTab(n) {
-  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === n - 1));
-  document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === n - 1));
-  updateBanners();
-}
+let outputs = {};
 
-function updateBanners() {
-  [2, 3].forEach(n => {
-    const b = document.getElementById('banner' + n);
-    const t = document.getElementById('banner' + n + 'text');
-    if (survey) {
-      b.style.display = 'block';
-      t.textContent = survey.substring(0, 120) + (survey.length > 120 ? '…' : '');
-    } else {
-      b.style.display = 'none';
-    }
-  });
-}
-
-function uploadCSV(input, tab) {
+function uploadCSV(input) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('t' + tab).value = e.target.result;
-  };
+  reader.onload = e => { document.getElementById('survey').value = e.target.result; };
   reader.readAsText(file);
 }
 
+// Show course name input when activity 2 output area becomes visible
+document.getElementById('btn2').addEventListener('click', () => {
+  document.getElementById('courseRow').style.display = 'block';
+}, { once: true });
+
 async function run(n) {
-  const inputEl = document.getElementById('t' + n);
+  const surveyText = document.getElementById('survey').value.trim();
+  if (!surveyText) {
+    const el = document.getElementById('survey');
+    el.style.borderColor = '#DC2626'; el.focus();
+    setTimeout(() => el.style.borderColor = '', 1500);
+    return;
+  }
+
   const outEl = document.getElementById('out' + n);
   const btnEl = document.getElementById('btn' + n);
 
-  let userMsg = '';
-  if (n === 1) {
-    userMsg = inputEl.value.trim();
-    if (!userMsg) { flash(inputEl); return; }
-  } else {
-    if (!survey) { alert('Please run the Learning Survey first (Tab 1).'); return; }
-    userMsg = `LEARNING SURVEY DATA:\n${survey}\n\n${inputEl.value.trim() ? 'ADDITIONAL CONTEXT:\n' + inputEl.value.trim() : ''}`;
+  // show course row for activity 2
+  if (n === 2) document.getElementById('courseRow').style.display = 'block';
+
+  let userMsg = `LEARNING SURVEY:\n${surveyText}`;
+  if (n === 2) {
+    const course = document.getElementById('courseName').value.trim();
+    if (course) userMsg += `\n\nCOURSE/TOPIC: ${course}`;
   }
 
   btnEl.disabled = true;
+  outEl.classList.add('visible');
   outEl.innerHTML = '<div class="loading-bar"></div><div class="dots"><span></span><span></span><span></span></div>';
 
   try {
@@ -346,44 +314,29 @@ async function run(n) {
       || data.content?.[0]?.text
       || (typeof data.content === 'string' ? data.content : '')
       || '';
-
     if (!text) throw new Error('Empty response');
 
-    if (n === 1) { survey = text; updateBanners(); }
     outputs[n] = text;
-    outEl.innerHTML = renderResult(text, n);
+    outEl.innerHTML = renderResult(text) + `<div class="copy-row"><button class="copy-btn" onclick="copyOut(${n},this)">Copy</button></div>`;
 
-  } catch (err) {
-    outEl.innerHTML = `<div class="result"><div class="result-body" style="color:#DC2626">Error: ${err.message}</div></div>`;
+  } catch(err) {
+    outEl.innerHTML = `<div class="result" style="color:#DC2626">Error: ${err.message}</div>`;
   }
   btnEl.disabled = false;
 }
 
-function renderResult(raw, n) {
-  const labels = { 1:'Cohort Profile', 2:'Teaching Playbook', 3:'Post-Learning Plan' };
-  const formatted = raw
+function renderResult(raw) {
+  const html = raw
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^(#{1,3})\s+(.+)$/gm, '<h4 style="font-weight:700;color:#111827;margin:16px 0 5px;font-size:0.9rem;">$2</h4>')
-    .replace(/^[-•]\s+(.+)$/gm, '<div style="display:flex;gap:7px;padding:2px 0;">• <span>$1</span></div>');
-
-  return `
-    <div class="result">
-      <div class="result-head"><div class="result-dot"></div><span class="result-label">${labels[n]}</span></div>
-      <div class="result-body" style="white-space:normal">${formatted}</div>
-    </div>
-    <div class="copy-row"><button class="copy-btn" onclick="copyOut(${n})">Copy</button></div>`;
+    .replace(/^(#{1,3})\s+(.+)$/gm, '<div style="font-weight:700;color:#111827;margin:16px 0 4px;font-size:0.9rem;">$2</div>')
+    .replace(/^[-•]\s+(.+)$/gm, '<div style="display:flex;gap:7px;padding:2px 0;font-size:0.86rem;">• <span>$1</span></div>');
+  return `<div class="result" style="white-space:normal">${html}</div>`;
 }
 
-function copyOut(n) {
+function copyOut(n, btn) {
   navigator.clipboard.writeText(outputs[n]);
-  event.target.textContent = 'Copied!';
-  setTimeout(() => event.target.textContent = 'Copy', 1500);
-}
-
-function flash(el) {
-  el.style.borderColor = '#DC2626';
-  el.focus();
-  setTimeout(() => el.style.borderColor = '', 1500);
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 1500);
 }
 </script>
 </body>
