@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Survey Analyser Agent </title>
-  <meta name="description" content="Turn raw survey responses into structured audience intelligence. Analyse Google Forms, training surveys, and feedback forms — per-question breakdowns, theme extraction, audience profiling, and actionable recommendations.">
+  <title>AI Adaptive Classroom Agent</title>
+  <meta name="description" content="Turn learner survey data into real-time teaching intelligence. The first 10 minutes configure the class — cohort profiling, teaching adjustments, during-class prompts, and end-of-class learning loop.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -226,44 +226,40 @@
   <section class="hero">
     <div class="hero-inner">
       <div>
-        <p class="hero-eyebrow">Process &amp; Operations</p>
-        <div class="hero-badge">Expert · 6-Step Workflow</div>
-        <h1 class="hero-h1">Survey Analyser <em>Agent</em></h1>
-        <p class="hero-sub">Turn raw survey responses into structured audience intelligence. Paste responses from any form — training surveys, feedback forms, needs assessments — and get per-question analysis, theme extraction, audience profiling, and concrete recommendations.</p>
+        <p class="hero-eyebrow">Teaching Innovation</p>
+        <div class="hero-badge">Expert · 5-Step Adaptive Loop</div>
+        <h1 class="hero-h1">AI Adaptive <em>Classroom</em></h1>
+        <p class="hero-sub">The first 10 minutes configure the class. Paste learner survey responses and get cohort intelligence, real-time teaching adjustments, during-class prompts, and an end-of-class learning loop — before, during, and after.</p>
         <div class="hero-pills">
-          <span class="hero-pill">Training Needs</span>
-          <span class="hero-pill">Audience Profiling</span>
-          <span class="hero-pill">Theme Extraction</span>
-          <span class="hero-pill">Feedback Analysis</span>
-          <span class="hero-pill">Course Design</span>
-          <span class="hero-pill">Insights Report</span>
+          <span class="hero-pill">Cohort Intelligence</span>
+          <span class="hero-pill">Teaching Adjustments</span>
+          <span class="hero-pill">Learner Pulse</span>
+          <span class="hero-pill">During-Class Prompts</span>
+          <span class="hero-pill">Learning Loop</span>
+          <span class="hero-pill">Instructor Notes</span>
         </div>
       </div>
       <div>
         <div class="workflow">
           <div class="wf-step">
             <div class="wf-num">1</div>
-            <div><div class="wf-name">Respondent Mapping</div><div class="wf-desc">Identify who filled the survey — roles, organisations, backgrounds</div></div>
+            <div><div class="wf-name">Learner Pulse</div><div class="wf-desc">Capture background, confidence, goals, interests and pain points</div></div>
           </div>
           <div class="wf-step">
             <div class="wf-num">2</div>
-            <div><div class="wf-name">Question-by-Question Analysis</div><div class="wf-desc">Summarise every question: ratings with distributions, verbatim open answers</div></div>
+            <div><div class="wf-name">Cohort Intelligence</div><div class="wf-desc">Who is in the room — common gaps, dominant goals, preferred contexts</div></div>
           </div>
           <div class="wf-step">
             <div class="wf-num">3</div>
-            <div><div class="wf-name">Theme Extraction</div><div class="wf-desc">Surface recurring patterns and themes across open-ended responses</div></div>
+            <div><div class="wf-name">Instructor Adapts</div><div class="wf-desc">Recommended examples, cases, difficulty level, groupings and activities</div></div>
           </div>
           <div class="wf-step">
             <div class="wf-num">4</div>
-            <div><div class="wf-name">Audience Profiling</div><div class="wf-desc">Synthesise experience level, sector mix, and motivation patterns</div></div>
+            <div><div class="wf-name">During-Class Guidance</div><div class="wf-desc">Discussion prompts, challenge questions and group-specific activities</div></div>
           </div>
           <div class="wf-step">
             <div class="wf-num">5</div>
-            <div><div class="wf-name">Insight Generation</div><div class="wf-desc">Derive actionable insights from patterns — what the data actually means</div></div>
-          </div>
-          <div class="wf-step">
-            <div class="wf-num">6</div>
-            <div><div class="wf-name">Recommendations</div><div class="wf-desc">Translate findings into specific next steps for course design or action</div></div>
+            <div><div class="wf-name">End-of-Class Loop</div><div class="wf-desc">Compare goals vs outcomes — reflections, workplace applications, instructor notes</div></div>
           </div>
         </div>
       </div>
@@ -309,11 +305,12 @@
         <div class="input-group" style="margin-bottom:0">
           <label class="input-label">Survey purpose</label>
           <select class="input-field" id="surveyPurpose">
+            <option value="learner_pulse">Learner Pulse — Start of Class</option>
             <option value="training_needs">Training Needs Assessment</option>
             <option value="course_feedback">Course / Post-Training Feedback</option>
+            <option value="end_of_class">End-of-Class Reflection</option>
             <option value="audience_profiling">Audience Profiling</option>
             <option value="event_feedback">Event or Workshop Feedback</option>
-            <option value="product_feedback">Product / Service Feedback</option>
             <option value="research">Research / Academic Survey</option>
             <option value="other">Other</option>
           </select>
@@ -336,7 +333,7 @@
         <div id="_attachList" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;"></div>
       </div>
       <div class="input-footer">
-        <span style="font-size:12px;color:var(--text-muted)">6-step workflow — respondent mapping, per-question analysis, theme extraction, audience profiling, insights, recommendations</span>
+        <span style="font-size:12px;color:var(--text-muted)">5-step adaptive loop — learner pulse, cohort intelligence, teaching adjustments, during-class guidance, end-of-class loop</span>
         <button class="run-btn" id="runBtn" disabled>
           <span>📊</span>
           <span>Analyse Survey</span>
@@ -376,7 +373,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <div>
-        <div class="footer-brand">Survey Analyser Agent</div>
+        <div class="footer-brand">AI Adaptive Classroom Agent</div>
         <div class="footer-sub">Agents Hub</div>
       </div>
       <ul class="footer-links">
@@ -387,15 +384,19 @@
   </footer>
 
   <script>
-    const SYSTEM = `You are a Survey Analyser Agent. Transform raw survey response data into structured audience intelligence. Output valid JSON only — no prose, no markdown fences.
+    const SYSTEM = `You are an AI Adaptive Classroom Agent. Transform learner survey responses into a before-during-after teaching intelligence report. Output valid JSON only — no prose, no markdown fences.
 
 RULES:
 - Count respondent_count as total number of individual form submissions (rows).
 - Count unique_participants as distinct names/individuals.
 - Extract industries as distinct list of sectors/industries mentioned.
-- For rating questions: calculate rating_avg (one decimal), rating_distribution (counts per level 1-5), score_range (e.g. "2 – 3"), and rating_summary (2-3 plain-English sentences interpreting what the scores mean for the audience).
+- For rating questions: calculate rating_avg (one decimal), rating_distribution (counts per level 1-5), score_range (e.g. "2 – 3"), and rating_summary (2-3 plain-English sentences interpreting what the scores mean).
 - For key_themes: count how many of the total respondent_count mentioned it, express as mention_count (number) and mention_label (e.g. "Mentioned by 3 of 5 responses").
-- instructor_takeaway: 2-3 paragraph plain-English summary starting with a one-sentence headline insight, then specific recommendations for course design/delivery grounded in the data.
+- cohort_intelligence: synthesise who is in the room — experience mix, dominant goals, common gaps, preferred contexts, likely discussion themes.
+- teaching_adjustments: concrete recommendations the instructor should apply immediately — which examples/cases to use, appropriate difficulty level, suggested groupings, activities to prioritise.
+- during_class: 3-5 ready-to-use discussion prompts, challenge questions tailored to this cohort, and group-specific activity ideas.
+- end_of_class_loop: compare stated starting goals with likely learning outcomes, generate 2-3 learner reflection prompts, 2-3 workplace application ideas, and instructor improvement notes for next delivery.
+- instructor_takeaway: 2-3 paragraph plain-English summary — headline insight, course design recommendations, practical suggestions.
 - Output valid JSON only.
 
 Output format:
@@ -424,6 +425,30 @@ Output format:
       "description": "What responses said and why this matters"
     }
   ],
+  "cohort_intelligence": {
+    "experience_mix": "1-2 sentences on the range of backgrounds and experience levels",
+    "dominant_goals": ["Goal 1", "Goal 2", "Goal 3"],
+    "common_gaps": ["Gap 1", "Gap 2"],
+    "preferred_contexts": ["Context 1", "Context 2"],
+    "likely_discussion_themes": ["Theme 1", "Theme 2", "Theme 3"]
+  },
+  "teaching_adjustments": {
+    "recommended_examples": ["Example or case study 1", "Example 2"],
+    "difficulty_level": "Recommended level and rationale in one sentence",
+    "suggested_groupings": "Grouping strategy based on cohort mix",
+    "priority_activities": ["Activity 1", "Activity 2"]
+  },
+  "during_class": {
+    "discussion_prompts": ["Prompt 1", "Prompt 2", "Prompt 3"],
+    "challenge_questions": ["Question 1", "Question 2"],
+    "group_activities": ["Activity tailored to cohort 1", "Activity 2"]
+  },
+  "end_of_class_loop": {
+    "goals_vs_outcomes": "1-2 sentences comparing what learners came wanting vs what they likely gained",
+    "learner_reflections": ["Reflection prompt 1", "Reflection prompt 2", "Reflection prompt 3"],
+    "workplace_applications": ["Application idea 1", "Application idea 2", "Application idea 3"],
+    "instructor_improvement_notes": "2-3 sentences on what to adjust for the next delivery"
+  },
   "instructor_takeaway": "Headline insight sentence.\n\nParagraph 2 with specific course design recommendations.\n\nParagraph 3 with practical suggestions."
 }`;
 
@@ -741,7 +766,7 @@ Output format:
     ${themes.map(t=>`<div style="margin-bottom:12px"><strong style="font-size:16px">${s(t.theme)}</strong>${t.mention_label?`<br><span style="font-size:12px;color:#6D28D9">${s(t.mention_label)}</span>`:''}<br><span style="font-size:14px;color:#4B5563">${s(t.description)}</span></div>`).join('')}` : ''}
     ${d.instructor_takeaway ? `<h2 style="color:#1E88C7;font-size:18px;margin:28px 0 10px;border-bottom:1px solid #E5E7EB;padding-bottom:6px">${idx++}. Key Takeaways for the Instructor</h2>
     <div style="padding:16px 20px;background:#FEF3C7;border-left:4px solid #B45309;border-radius:0 8px 8px 0">💡 ${d.instructor_takeaway.split('\n\n').filter(Boolean).map(p=>`<p style="margin:0 0 10px;font-size:14px;color:#78350F">${s(p)}</p>`).join('')}</div>` : ''}
-    <p style="margin:28px 0 0;font-size:11px;color:#9CA3AF;border-top:1px solid #E5E7EB;padding-top:16px">Generated by Agents Hub · Survey Analyser Agent</p>
+    <p style="margin:28px 0 0;font-size:11px;color:#9CA3AF;border-top:1px solid #E5E7EB;padding-top:16px">Generated by Agents Hub · AI Adaptive Classroom Agent</p>
   </div>
 </div>`;
     }
@@ -837,7 +862,57 @@ Output format:
             </div>`).join('')}
         </div>` : '';
 
-      // ── 5. Instructor takeaway ──────────────────────────────────
+      // ── 5. Cohort Intelligence ──────────────────────────────────
+      const ci = d.cohort_intelligence;
+      const cohortHTML = ci ? `
+        <div class="section-block">
+          <div class="section-label">${sectionIdx++}. Cohort Intelligence — Who Is in the Room</div>
+          ${ci.experience_mix ? `<div style="padding:14px 16px;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-size:14px;color:#1A3A5C;margin-bottom:14px">${esc(ci.experience_mix)}</div>` : ''}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            ${ci.dominant_goals?.length ? `<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px"><div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Dominant Goals</div>${ci.dominant_goals.map(g=>`<div style="font-size:13px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--surface)">→ ${esc(g)}</div>`).join('')}</div>` : ''}
+            ${ci.common_gaps?.length ? `<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px"><div style="font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Common Gaps</div>${ci.common_gaps.map(g=>`<div style="font-size:13px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--surface)">⚠ ${esc(g)}</div>`).join('')}</div>` : ''}
+            ${ci.preferred_contexts?.length ? `<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px"><div style="font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Preferred Contexts</div>${ci.preferred_contexts.map(c=>`<div style="font-size:13px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--surface)">◈ ${esc(c)}</div>`).join('')}</div>` : ''}
+            ${ci.likely_discussion_themes?.length ? `<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px"><div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Likely Discussion Themes</div>${ci.likely_discussion_themes.map(t=>`<div style="font-size:13px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--surface)">💬 ${esc(t)}</div>`).join('')}</div>` : ''}
+          </div>
+        </div>` : '';
+
+      // ── 6. Teaching Adjustments ─────────────────────────────────
+      const ta = d.teaching_adjustments;
+      const adjustHTML = ta ? `
+        <div class="section-block">
+          <div class="section-label">${sectionIdx++}. Teaching Adjustments — Adapt Now</div>
+          ${ta.difficulty_level ? `<div style="padding:12px 16px;background:var(--green-light);border-left:3px solid var(--green);border-radius:0 8px 8px 0;font-size:14px;color:#065F46;margin-bottom:14px"><strong>Difficulty:</strong> ${esc(ta.difficulty_level)}</div>` : ''}
+          ${ta.suggested_groupings ? `<div style="padding:12px 16px;background:var(--teal-light);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;font-size:14px;color:#134E4A;margin-bottom:14px"><strong>Groupings:</strong> ${esc(ta.suggested_groupings)}</div>` : ''}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            ${ta.recommended_examples?.length ? `<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px"><div style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Recommended Examples</div>${ta.recommended_examples.map(e=>`<div style="font-size:13px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--surface)">📌 ${esc(e)}</div>`).join('')}</div>` : ''}
+            ${ta.priority_activities?.length ? `<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px"><div style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Priority Activities</div>${ta.priority_activities.map(a=>`<div style="font-size:13px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--surface)">▶ ${esc(a)}</div>`).join('')}</div>` : ''}
+          </div>
+        </div>` : '';
+
+      // ── 7. During-Class Guidance ────────────────────────────────
+      const dc = d.during_class;
+      const duringHTML = dc ? `
+        <div class="section-block">
+          <div class="section-label">${sectionIdx++}. During-Class Guidance</div>
+          ${dc.discussion_prompts?.length ? `<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Discussion Prompts</div>${dc.discussion_prompts.map(p=>`<div style="padding:10px 14px;border:1px solid var(--blue-light);border-radius:8px;margin-bottom:6px;font-size:14px;color:var(--navy);background:var(--blue-light)">💬 ${esc(p)}</div>`).join('')}</div>` : ''}
+          ${dc.challenge_questions?.length ? `<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Challenge Questions</div>${dc.challenge_questions.map(q=>`<div style="padding:10px 14px;border:1px solid var(--amber-light);border-radius:8px;margin-bottom:6px;font-size:14px;color:#78350F;background:var(--amber-light)">🎯 ${esc(q)}</div>`).join('')}</div>` : ''}
+          ${dc.group_activities?.length ? `<div><div style="font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Group Activities</div>${dc.group_activities.map(a=>`<div style="padding:10px 14px;border:1px solid var(--teal-light);border-radius:8px;margin-bottom:6px;font-size:14px;color:#134E4A;background:var(--teal-light)">👥 ${esc(a)}</div>`).join('')}</div>` : ''}
+        </div>` : '';
+
+      // ── 8. End-of-Class Loop ─────────────────────────────────────
+      const ecl = d.end_of_class_loop;
+      const endLoopHTML = ecl ? `
+        <div class="section-block">
+          <div class="section-label">${sectionIdx++}. End-of-Class Loop — Close the Learning</div>
+          ${ecl.goals_vs_outcomes ? `<div style="padding:14px 16px;background:var(--purple-light);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;font-size:14px;color:#4C1D95;margin-bottom:14px"><strong>Goals vs Outcomes:</strong> ${esc(ecl.goals_vs_outcomes)}</div>` : ''}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            ${ecl.learner_reflections?.length ? `<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px"><div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Learner Reflections</div>${ecl.learner_reflections.map(r=>`<div style="font-size:13px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--surface)">🪞 ${esc(r)}</div>`).join('')}</div>` : ''}
+            ${ecl.workplace_applications?.length ? `<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px"><div style="font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Workplace Applications</div>${ecl.workplace_applications.map(a=>`<div style="font-size:13px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--surface)">🏢 ${esc(a)}</div>`).join('')}</div>` : ''}
+          </div>
+          ${ecl.instructor_improvement_notes ? `<div style="padding:14px 16px;background:var(--amber-light);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;font-size:14px;color:#78350F"><strong>Instructor Notes for Next Delivery:</strong> ${esc(ecl.instructor_improvement_notes)}</div>` : ''}
+        </div>` : '';
+
+      // ── 9. Instructor takeaway ──────────────────────────────────
       const takeawayHTML = d.instructor_takeaway ? `
         <div class="section-block">
           <div class="section-label">${sectionIdx++}. Key Takeaways for the Instructor</div>
@@ -848,7 +923,7 @@ Output format:
         </div>` : '';
 
       document.getElementById('outputContent').innerHTML =
-        headerHTML + statsHTML + ratingsHTML + themesHTML + takeawayHTML;
+        headerHTML + statsHTML + ratingsHTML + themesHTML + cohortHTML + adjustHTML + duringHTML + endLoopHTML + takeawayHTML;
       document.getElementById('outputTag').textContent =
         `${esc(d.survey_title||'Survey')} · ${totalCount} responses`;
       document.getElementById('outputPanel').classList.add('show');
