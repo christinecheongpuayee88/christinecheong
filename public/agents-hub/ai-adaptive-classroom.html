@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Adaptive Classroom — Christine Cheong</title>
+  <meta name="description" content="AI helps instructors adapt the whole learning experience to the learners in the room. A five-agent teaching workflow that turns learner surveys into adaptive teaching intelligence.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F2F2F2;
+      --navy:         #111827;
+      --navy-mid:     #1F3A5F;
+      --blue:         #1E88C7;
+      --blue-light:   #E8F4FB;
+      --amber:        #B45309;
+      --amber-light:  #FEF3C7;
+      --text:         #111827;
+      --text-muted:   #4B5563;
+      --border:       #DADADA;
+      --green:        #059669;
+      --green-light:  #D1FAE5;
+      --red:          #C0392B;
+      --red-light:    #FDEDEC;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+      --teal:         #0F766E;
+      --teal-light:   #CCFBF1;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
+      --nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 500; line-height: 1.65; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    h1,h2,h3,h4 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    /* NAV */
+    .nav { position:fixed; inset:0 0 auto; z-index:200; height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; padding:0 56px; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); box-shadow:0 1px 0 var(--border); }
+    .nav-brand { display:flex; flex-direction:column; gap:1px; }
+    .nav-brand-name { font-family:var(--font-display); font-weight:600; font-size:1rem; letter-spacing:-0.01em; color:var(--navy); }
+    .nav-brand-title { font-size:0.7rem; font-weight:500; color:var(--text-muted); letter-spacing:0.04em; text-transform:uppercase; }
+    .nav-back { display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; color:var(--text-muted); transition:color 0.2s; }
+    .nav-back:hover { color:var(--blue); }
+    .nav-back svg { width:16px; height:16px; }
+
+    /* HERO */
+    .hero { padding: calc(var(--nav-h) + 80px) 56px 72px; max-width: 900px; margin: 0 auto; }
+    .hero-badge { display:inline-flex; align-items:center; gap:8px; background:var(--blue-light); color:var(--blue); font-size:0.75rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; padding:6px 14px; border-radius:40px; margin-bottom:28px; }
+    .hero-badge::before { content:''; width:8px; height:8px; background:var(--blue); border-radius:50%; }
+    .hero-title { font-family:var(--font-display); font-size:clamp(2.2rem, 5vw, 3.4rem); font-weight:700; line-height:1.1; letter-spacing:-0.02em; color:var(--navy); margin-bottom:20px; }
+    .hero-title em { font-style:italic; color:var(--blue); }
+    .hero-pitch { font-size:1.2rem; font-weight:400; color:var(--text-muted); max-width:640px; line-height:1.6; margin-bottom:40px; }
+    .hero-config-callout { display:flex; align-items:flex-start; gap:16px; background:var(--amber-light); border:1px solid #FCD34D; border-radius:12px; padding:20px 24px; max-width:640px; }
+    .hero-config-callout .icon { font-size:1.5rem; flex-shrink:0; margin-top:2px; }
+    .hero-config-callout p { font-size:0.95rem; color:var(--amber); font-weight:600; line-height:1.5; }
+    .hero-config-callout p span { font-weight:400; color:#78350F; }
+
+    /* SECTION WRAPPER */
+    .section { max-width: 900px; margin: 0 auto; padding: 0 56px 80px; }
+    .section-label { font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--blue); margin-bottom:12px; }
+    .section-title { font-family:var(--font-display); font-size:1.75rem; font-weight:700; letter-spacing:-0.02em; color:var(--navy); margin-bottom:8px; }
+    .section-sub { font-size:0.95rem; color:var(--text-muted); margin-bottom:36px; max-width:560px; }
+
+    /* WHAT MAKES IT DIFFERENT */
+    .diff-table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+    .diff-table th { background:var(--navy); color:#fff; font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; padding:12px 20px; text-align:left; }
+    .diff-table th:first-child { border-radius:8px 0 0 0; }
+    .diff-table th:last-child { border-radius:0 8px 0 0; }
+    .diff-table td { padding:14px 20px; font-size:0.9rem; border-bottom:1px solid var(--border); }
+    .diff-table tr:last-child td { border-bottom:none; }
+    .diff-table tr:nth-child(odd) td { background:var(--surface); }
+    .diff-table .tag { display:inline-block; background:var(--blue); color:#fff; font-size:0.7rem; font-weight:700; letter-spacing:0.05em; padding:3px 8px; border-radius:4px; }
+
+    /* ADAPTS GRID */
+    .adapts-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:8px; }
+    .adapt-chip { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+    .adapt-chip .chip-icon { font-size:1.2rem; margin-bottom:8px; }
+    .adapt-chip .chip-label { font-size:0.82rem; font-weight:600; color:var(--navy); line-height:1.35; }
+
+    /* AGENT PIPELINE */
+    .pipeline { display:flex; flex-direction:column; gap:0; }
+    .pipeline-connector { display:flex; justify-content:center; align-items:center; height:28px; }
+    .pipeline-connector svg { color:var(--border); }
+    .agent-card { border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+    .agent-card-header { display:flex; align-items:center; gap:16px; padding:20px 24px; }
+    .agent-num { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; flex-shrink:0; }
+    .agent-card-header .agent-name { font-weight:700; font-size:1rem; color:var(--navy); }
+    .agent-card-header .agent-tagline { font-size:0.82rem; color:var(--text-muted); margin-top:2px; }
+    .agent-card-body { padding:0 24px 20px; }
+    .agent-outputs { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .agent-output-pill { background:var(--surface); border:1px solid var(--border); border-radius:20px; font-size:0.75rem; font-weight:600; padding:5px 12px; color:var(--text-muted); }
+    .agent-desc { font-size:0.88rem; color:var(--text-muted); line-height:1.6; }
+
+    /* Agent colour theming */
+    .a1 .agent-num { background:var(--blue-light); color:var(--blue); }
+    .a1 .agent-card-header { background:var(--blue-light); border-bottom:1px solid #BFDBFE; }
+    .a2 .agent-num { background:var(--purple-light); color:var(--purple); }
+    .a2 .agent-card-header { background:var(--purple-light); border-bottom:1px solid #DDD6FE; }
+    .a3 .agent-num { background:var(--amber-light); color:var(--amber); }
+    .a3 .agent-card-header { background:var(--amber-light); border-bottom:1px solid #FCD34D; }
+    .a4 .agent-num { background:var(--teal-light); color:var(--teal); }
+    .a4 .agent-card-header { background:var(--teal-light); border-bottom:1px solid #99F6E4; }
+    .a5 .agent-num { background:var(--green-light); color:var(--green); }
+    .a5 .agent-card-header { background:var(--green-light); border-bottom:1px solid #6EE7B7; }
+
+    /* EXAMPLE */
+    .example-box { background:var(--navy); color:#fff; border-radius:16px; padding:36px 40px; }
+    .example-box .example-label { font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#93C5FD; margin-bottom:8px; }
+    .example-box h3 { font-family:var(--font-display); font-size:1.4rem; font-weight:700; margin-bottom:6px; }
+    .example-box .example-sub { font-size:0.9rem; color:#9CA3AF; margin-bottom:28px; }
+    .example-trigger { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:16px 20px; margin-bottom:24px; }
+    .example-trigger .trigger-label { font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#93C5FD; margin-bottom:8px; }
+    .example-trigger p { font-size:0.88rem; color:#D1D5DB; line-height:1.6; }
+    .example-recs { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .example-rec { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:14px 16px; }
+    .example-rec .rec-agent { font-size:0.7rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#93C5FD; margin-bottom:6px; }
+    .example-rec ul { list-style:none; padding:0; }
+    .example-rec ul li { font-size:0.82rem; color:#E5E7EB; padding:3px 0; padding-left:14px; position:relative; }
+    .example-rec ul li::before { content:'→'; position:absolute; left:0; color:#60A5FA; font-size:0.75rem; }
+
+    /* POSITIONING */
+    .positioning { background:var(--surface); border-radius:16px; padding:36px 40px; }
+    .positioning h3 { font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:var(--navy); margin-bottom:20px; }
+    .not-vs { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    .not-box { border-radius:10px; padding:20px 22px; }
+    .not-box.no { background:var(--red-light); border:1px solid #FCA5A5; }
+    .not-box.yes { background:var(--green-light); border:1px solid #6EE7B7; }
+    .not-box .box-label { font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
+    .not-box.no .box-label { color:var(--red); }
+    .not-box.yes .box-label { color:var(--green); }
+    .not-box p { font-size:0.88rem; line-height:1.6; color:var(--text); }
+    .positioning-statement { margin-top:24px; padding:20px 22px; background:#fff; border:1px solid var(--border); border-radius:10px; font-size:0.9rem; color:var(--text-muted); line-height:1.7; }
+    .positioning-statement strong { color:var(--navy); }
+
+    /* TIMELINE */
+    .timeline { display:flex; align-items:flex-start; gap:0; margin:32px 0; }
+    .tl-item { flex:1; position:relative; }
+    .tl-item:not(:last-child)::after { content:''; position:absolute; top:20px; left:calc(50% + 20px); right:calc(-50% + 20px); height:2px; background:var(--border); z-index:0; }
+    .tl-dot { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; margin:0 auto 12px; position:relative; z-index:1; }
+    .tl-phase { font-size:0.7rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; text-align:center; margin-bottom:4px; }
+    .tl-label { font-size:0.8rem; color:var(--text-muted); text-align:center; line-height:1.4; }
+    .tl-before .tl-dot { background:var(--blue-light); color:var(--blue); }
+    .tl-before .tl-phase { color:var(--blue); }
+    .tl-during .tl-dot { background:var(--amber-light); color:var(--amber); }
+    .tl-during .tl-phase { color:var(--amber); }
+    .tl-after .tl-dot { background:var(--green-light); color:var(--green); }
+    .tl-after .tl-phase { color:var(--green); }
+
+    /* CTA */
+    .cta-section { max-width:900px; margin:0 auto; padding:0 56px 100px; }
+    .cta-box { background:linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); border-radius:20px; padding:52px 56px; display:flex; align-items:center; justify-content:space-between; gap:40px; }
+    .cta-box h2 { font-family:var(--font-display); font-size:1.8rem; font-weight:700; color:#fff; margin-bottom:10px; }
+    .cta-box p { font-size:0.9rem; color:#9CA3AF; max-width:400px; line-height:1.6; }
+    .cta-btns { display:flex; flex-direction:column; gap:12px; flex-shrink:0; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:13px 24px; border-radius:10px; font-size:0.9rem; font-weight:700; cursor:pointer; white-space:nowrap; transition:opacity 0.2s; text-decoration:none; }
+    .btn:hover { opacity:0.85; }
+    .btn-primary { background:var(--blue); color:#fff; }
+    .btn-ghost { background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .nav { padding: 0 20px; }
+      .hero, .section, .cta-section { padding-left: 20px; padding-right: 20px; }
+      .adapts-grid { grid-template-columns: repeat(2, 1fr); }
+      .example-recs { grid-template-columns: 1fr; }
+      .not-vs { grid-template-columns: 1fr; }
+      .cta-box { flex-direction: column; padding: 36px 28px; }
+      .timeline { flex-direction: column; gap: 16px; }
+      .tl-item::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <span class="nav-brand-name">Christine Cheong</span>
+      <span class="nav-brand-title">NUS-ISS · Teaching Portfolio</span>
+    </div>
+    <a href="/agents-hub" class="nav-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
+      Agents Hub
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">Concept Framework</div>
+    <h1 class="hero-title">AI Adaptive<br><em>Classroom</em></h1>
+    <p class="hero-pitch">
+      AI helps instructors adapt the whole learning experience to the learners in the room — before, during and after class.
+    </p>
+    <div class="hero-config-callout">
+      <div class="icon">⚙️</div>
+      <p>The first 10 minutes of class become the <strong>classroom configuration stage.</strong>
+        <span> Learners complete a short survey. AI converts their responses into teaching intelligence that helps the instructor adapt the session in real time.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- WHAT IT ADAPTS -->
+  <section class="section">
+    <div class="section-label">What AI Adapts</div>
+    <div class="section-title">One survey. Eight adaptations.</div>
+    <p class="section-sub">Survey responses feed into a five-agent pipeline that adjusts every layer of the teaching experience.</p>
+
+    <div class="adapts-grid">
+      <div class="adapt-chip"><div class="chip-icon">📌</div><div class="chip-label">Examples & cases</div></div>
+      <div class="adapt-chip"><div class="chip-icon">🎯</div><div class="chip-label">Difficulty level</div></div>
+      <div class="adapt-chip"><div class="chip-icon">👥</div><div class="chip-label">Group composition</div></div>
+      <div class="adapt-chip"><div class="chip-icon">💬</div><div class="chip-label">Discussion prompts</div></div>
+      <div class="adapt-chip"><div class="chip-icon">🤖</div><div class="chip-label">AI tools to use</div></div>
+      <div class="adapt-chip"><div class="chip-icon">🔄</div><div class="chip-label">Live pivot activities</div></div>
+      <div class="adapt-chip"><div class="chip-icon">🪞</div><div class="chip-label">Reflection tasks</div></div>
+      <div class="adapt-chip"><div class="chip-icon">🏢</div><div class="chip-label">Workplace application</div></div>
+    </div>
+  </section>
+
+  <!-- WHAT MAKES IT DIFFERENT -->
+  <section class="section">
+    <div class="section-label">Positioning</div>
+    <div class="section-title">What makes it different</div>
+    <p class="section-sub">Existing AI teaching tools focus on the learner or the content. This one focuses on the instructor's ability to adapt.</p>
+
+    <table class="diff-table">
+      <thead>
+        <tr><th>Concept</th><th>Main Focus</th><th>Who Benefits</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>AI Learning Coach</td>
+          <td>Supports individual learners through the content</td>
+          <td>Learner</td>
+        </tr>
+        <tr>
+          <td>AI Persona Perspectives</td>
+          <td>Broadens stakeholder viewpoints in case discussions</td>
+          <td>Learner</td>
+        </tr>
+        <tr>
+          <td><strong>AI Adaptive Classroom</strong> <span class="tag">This</span></td>
+          <td>Helps instructors adapt the <em>whole class experience</em> based on who is in the room</td>
+          <td><strong>Instructor + cohort</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- TEACHING TIMELINE -->
+  <section class="section">
+    <div class="section-label">Teaching Workflow</div>
+    <div class="section-title">Before · During · After</div>
+    <p class="section-sub">The five agents span the full teaching arc, not just the survey moment.</p>
+
+    <div class="timeline">
+      <div class="tl-item tl-before">
+        <div class="tl-dot">📋</div>
+        <div class="tl-phase">Before</div>
+        <div class="tl-label">Survey → Cohort Intelligence → Teaching Playbook</div>
+      </div>
+      <div class="tl-item tl-before">
+        <div class="tl-dot">🗂️</div>
+        <div class="tl-phase">Configure</div>
+        <div class="tl-label">Adapted examples, cases, groupings, activities</div>
+      </div>
+      <div class="tl-item tl-during">
+        <div class="tl-dot">🎓</div>
+        <div class="tl-phase">During</div>
+        <div class="tl-label">Live prompts, pivot support, alternative explanations</div>
+      </div>
+      <div class="tl-item tl-after">
+        <div class="tl-dot">🪞</div>
+        <div class="tl-phase">After</div>
+        <div class="tl-label">Reflection, transfer tasks, instructor improvement notes</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AGENT PIPELINE -->
+  <section class="section">
+    <div class="section-label">How It Works</div>
+    <div class="section-title">Five-agent pipeline</div>
+    <p class="section-sub">Each agent has a distinct role. Together they form a complete adaptive teaching workflow.</p>
+
+    <div class="pipeline">
+
+      <div class="agent-card a1">
+        <div class="agent-card-header">
+          <div class="agent-num">1</div>
+          <div>
+            <div class="agent-name">Learner Insights Agent</div>
+            <div class="agent-tagline">Who is in the room?</div>
+          </div>
+        </div>
+        <div class="agent-card-body">
+          <p class="agent-desc">Analyses survey responses to build a cohort profile — learner background, prior knowledge, confidence levels, goals, interests, sector context and common challenges. Produces the cohort intelligence brief that all downstream agents use.</p>
+          <div class="agent-outputs">
+            <span class="agent-output-pill">Experience mix</span>
+            <span class="agent-output-pill">Dominant goals</span>
+            <span class="agent-output-pill">Knowledge gaps</span>
+            <span class="agent-output-pill">Sector context</span>
+            <span class="agent-output-pill">Discussion themes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">
+        <svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0v20M4 14l6 8 6-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div class="agent-card a2">
+        <div class="agent-card-header">
+          <div class="agent-num">2</div>
+          <div>
+            <div class="agent-name">Teaching Orchestrator Agent</div>
+            <div class="agent-tagline">What to emphasise, simplify, skip or extend?</div>
+          </div>
+        </div>
+        <div class="agent-card-body">
+          <p class="agent-desc">Turns cohort intelligence into an adaptive teaching playbook. Recommends pacing changes, concept prioritisation, which slides to linger on versus skip, and how to sequence activities for this specific cohort. The instructor's session plan, rewritten for the room.</p>
+          <div class="agent-outputs">
+            <span class="agent-output-pill">Pacing recommendations</span>
+            <span class="agent-output-pill">Time reallocation</span>
+            <span class="agent-output-pill">Concept priority order</span>
+            <span class="agent-output-pill">Group strategy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">
+        <svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0v20M4 14l6 8 6-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div class="agent-card a3">
+        <div class="agent-card-header">
+          <div class="agent-num">3</div>
+          <div>
+            <div class="agent-name">Activity Adaptation Agent</div>
+            <div class="agent-tagline">Which cases, examples and datasets fit this cohort?</div>
+          </div>
+        </div>
+        <div class="agent-card-body">
+          <p class="agent-desc">Tailors the hands-on layer: which case study to lead with, which dataset feels most familiar, what sector-specific examples to substitute in, how to reframe exercises at different difficulty levels, and what stretch tasks to assign to advanced learners.</p>
+          <div class="agent-outputs">
+            <span class="agent-output-pill">Case assignments by group</span>
+            <span class="agent-output-pill">Sector-mapped examples</span>
+            <span class="agent-output-pill">Tiered exercise variants</span>
+            <span class="agent-output-pill">Dataset recommendations</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">
+        <svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0v20M4 14l6 8 6-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div class="agent-card a4">
+        <div class="agent-card-header">
+          <div class="agent-num">4</div>
+          <div>
+            <div class="agent-name">Classroom Support Agent</div>
+            <div class="agent-tagline">Live teaching support when the room needs a pivot.</div>
+          </div>
+        </div>
+        <div class="agent-card-body">
+          <p class="agent-desc">Provides in-the-moment guidance during class — alternative explanations for concepts that are landing poorly, group discussion prompts calibrated to the cohort's sector and experience, quick pivot activities when energy drops, and challenge questions for learners who are ahead.</p>
+          <div class="agent-outputs">
+            <span class="agent-output-pill">Discussion prompts</span>
+            <span class="agent-output-pill">Alternative explanations</span>
+            <span class="agent-output-pill">Pivot activities</span>
+            <span class="agent-output-pill">Challenge questions</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">
+        <svg width="20" height="28" viewBox="0 0 20 28" fill="none"><path d="M10 0v20M4 14l6 8 6-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div class="agent-card a5">
+        <div class="agent-card-header">
+          <div class="agent-num">5</div>
+          <div>
+            <div class="agent-name">Reflection & Transfer Agent</div>
+            <div class="agent-tagline">Closes the loop. What did learners actually take away?</div>
+          </div>
+        </div>
+        <div class="agent-card-body">
+          <p class="agent-desc">Generates personalised end-of-class reflection prompts, workplace application tasks matched to each learner's role and sector, and instructor improvement notes for the next cohort. Connects what was learned to what learners will actually do differently at work.</p>
+          <div class="agent-outputs">
+            <span class="agent-output-pill">Personalised reflections</span>
+            <span class="agent-output-pill">Workplace transfer tasks</span>
+            <span class="agent-output-pill">Goals vs outcomes check</span>
+            <span class="agent-output-pill">Instructor debrief notes</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EXAMPLE -->
+  <section class="section">
+    <div class="section-label">Worked Example</div>
+    <div class="section-title">Decision Intelligence course</div>
+    <p class="section-sub">The AI Adaptive Classroom generalises across courses. Here is how it would configure a Decision Intelligence session.</p>
+
+    <div class="example-box">
+      <div class="example-label">Survey Signal</div>
+      <h3>Cohort is mostly beginners who struggle with problem framing</h3>
+      <p class="example-sub">11 respondents · avg experience 2.3/5 · dominant gaps: structuring the decision, knowing what to predict</p>
+
+      <div class="example-trigger">
+        <div class="trigger-label">What the Learner Insights Agent found</div>
+        <p>Most learners can describe a business problem but cannot yet convert it into a predictive question. They know what decisions they make — they don't know how to frame data requirements around them.</p>
+      </div>
+
+      <div class="example-recs">
+        <div class="example-rec">
+          <div class="rec-agent">Teaching Orchestrator</div>
+          <ul>
+            <li>Spend more time on problem framing</li>
+            <li>Use simpler decision cases</li>
+            <li>Provide starter hypotheses for exercises</li>
+            <li>Slow down the analytics taxonomy slide</li>
+          </ul>
+        </div>
+        <div class="example-rec">
+          <div class="rec-agent">Activity Adaptation</div>
+          <ul>
+            <li>Lead with familiar sector datasets</li>
+            <li>Mix groups by experience level</li>
+            <li>Assign tiered notebook tasks per level</li>
+            <li>Replace generic cases with sector-mapped ones</li>
+          </ul>
+        </div>
+        <div class="example-rec">
+          <div class="rec-agent">Classroom Support</div>
+          <ul>
+            <li>Use Persona Perspectives during trade-off discussions</li>
+            <li>Checkpoint: "What is ONE thing your org forecasts by gut feel?"</li>
+            <li>Pivot activity if energy drops post-lunch</li>
+          </ul>
+        </div>
+        <div class="example-rec">
+          <div class="rec-agent">Reflection & Transfer</div>
+          <ul>
+            <li>Different prompts for students vs working professionals</li>
+            <li>30-day workplace action per participant</li>
+            <li>Instructor note: beginners need framing scaffold next time</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POSITIONING -->
+  <section class="section">
+    <div class="section-label">Final Positioning</div>
+    <div class="section-title">What this is — and is not</div>
+    <p class="section-sub">The distinction matters for how it is introduced to instructors and institutions.</p>
+
+    <div class="positioning">
+      <div class="not-vs">
+        <div class="not-box no">
+          <div class="box-label">Not this</div>
+          <p>A survey analyser that summarises responses into themes and averages. A tool that generates content based on a topic. An AI that coaches individual learners through material.</p>
+        </div>
+        <div class="not-box yes">
+          <div class="box-label">This</div>
+          <p>An AI-enabled teaching workflow that helps instructors understand the cohort, adapt the learning experience, and improve learning transfer — before, during and after class.</p>
+        </div>
+      </div>
+      <div class="positioning-statement">
+        <strong>AI Adaptive Classroom</strong> treats the instructor as the primary user. The survey is the input. The adapted teaching session is the output. The goal is not to describe learners — it is to help instructors <strong>teach better for this room, right now.</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-box">
+      <div>
+        <h2>Try Agent 1 — Learner Insights</h2>
+        <p>Paste your Google Form survey link and get a cohort intelligence report in under 60 seconds. The starting point of the full adaptive classroom workflow.</p>
+      </div>
+      <div class="cta-btns">
+        <a href="/agents-hub/survey-analyser-agent.html" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+          Launch Agent 1
+        </a>
+        <a href="/agents-hub" class="btn btn-ghost">
+          View all agents
+        </a>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
