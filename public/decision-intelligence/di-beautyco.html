@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeautyCo Case Hub — Decision Intelligence with AI</title>
+<meta name="description" content="The continuous case running through every template: a premium beauty retailer where traffic is growing but conversion, satisfaction and repeat purchase are declining.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --surface:#F2F2F2; --navy:#111827; --navy-mid:#1F3A5F;
+  --blue:#1E88C7; --blue-light:#E8F4FB;
+  --slate:#334155; --slate-light:#F1F5F9;
+  --amber:#B45309; --amber-light:#FEF3C7;
+  --green:#059669; --green-light:#D1FAE5;
+  --purple:#6D28D9; --purple-light:#EDE9FE;
+  --red:#C0392B; --red-light:#FDEDEC;
+  --indigo:#4338CA; --indigo-light:#EEF2FF;
+  --navymid2:#1F3A5F;
+  --text:#111827; --text-muted:#4B5563; --border:#DADADA;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','Consolas',monospace;
+  --nav-h:72px;
+  --accent: var(--navy-mid);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:500;line-height:1.65;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+h1,h2,h3,h4{text-wrap:balance;}
+p{text-wrap:pretty;}
+
+.nav{position:fixed;inset:0 0 auto;z-index:200;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:rgba(255,255,255,0.96);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--border);}
+.nav-brand{display:flex;flex-direction:column;gap:1px;}
+.nav-brand-sup{font-size:10px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);}
+.nav-brand-name{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--navy);letter-spacing:-0.01em;}
+.nav-links{display:flex;align-items:center;gap:30px;list-style:none;}
+.nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);transition:color 0.25s;}
+.nav-links a:hover,.nav-links a.active{color:var(--navy);}
+.nav-cta{font-size:11.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:10px 18px;border-radius:6px;background:var(--indigo);color:#fff!important;transition:all 0.25s;white-space:nowrap;}
+.nav-cta:hover{background:#372AA8;}
+@media(max-width:960px){.nav{padding:0 20px;}.nav-links{display:none;}}
+
+.hero{padding:calc(var(--nav-h) + 56px) 56px 40px;max-width:1180px;margin:0 auto;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+.hero-eyebrow::before{content:'';width:24px;height:2px;background:var(--accent);}
+.hero h1{font-family:var(--font-display);font-size:clamp(30px,4.4vw,46px);font-weight:700;letter-spacing:-0.02em;color:var(--navy);margin-bottom:14px;max-width:700px;}
+.hero p{font-size:15px;font-weight:300;color:var(--text-muted);max-width:640px;line-height:1.75;margin-bottom:20px;}
+.hero-facts{display:flex;flex-wrap:wrap;gap:10px;}
+.fact{font-size:12px;font-weight:600;padding:8px 14px;border-radius:100px;background:var(--slate-light);color:var(--slate);}
+
+.tabs{position:sticky;top:var(--nav-h);z-index:150;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 56px;display:flex;gap:4px;overflow-x:auto;max-width:1180px;margin:0 auto;}
+.tab-btn{font-size:13px;font-weight:600;padding:16px 20px;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;background:none;border-left:none;border-right:none;border-top:none;font-family:var(--font-body);}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--accent);}
+.tab-btn:hover{color:var(--navy);}
+
+.wrap{max-width:1180px;margin:0 auto;padding:48px 56px 100px;}
+.tabpanel{display:none;flex-direction:column;gap:28px;}
+.tabpanel.active{display:flex;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;}
+.card h3{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+.card p{font-size:13.5px;color:var(--text-muted);line-height:1.75;}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.card li{font-size:13px;color:var(--text-muted);padding-left:18px;position:relative;}
+.card li::before{content:'—';position:absolute;left:0;color:var(--border);}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:800px){.grid2{grid-template-columns:1fr;}}
+
+table.kpi{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg);border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+table.kpi th{text-align:left;padding:12px 16px;background:var(--navy);color:#fff;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;}
+table.kpi td{padding:11px 16px;border-top:1px solid var(--border);color:var(--navy);font-weight:600;}
+td.down{color:var(--red);} td.up{color:var(--green);}
+
+.storecard{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.store{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.store .nm{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.store .metric{font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between;}
+@media(max-width:760px){.storecard{grid-template-columns:1fr 1fr;}}
+
+.quote{background:var(--bg);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;padding:14px 18px;font-size:13px;font-style:italic;color:var(--navy);}
+
+.outputs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.output-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:22px;}
+.output-card .num{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--accent);margin-bottom:6px;}
+.output-card h4{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.output-card p{font-size:12px;color:var(--text-muted);margin-bottom:14px;}
+.output-card a{font-size:12px;font-weight:700;color:var(--accent);}
+@media(max-width:860px){.outputs-grid{grid-template-columns:1fr 1fr;}}
+
+.reveal-box{border:1px dashed var(--border);border-radius:12px;padding:16px 20px;}
+.reveal-box summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--navy);}
+
+.footer{background:var(--navy);color:#9CA3AF;padding:40px 56px 24px;}
+.footer-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:11.5px;}
+.footer a{color:#9CA3AF;}
+.footer a:hover{color:#fff;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="di-home.html" class="nav-brand">
+    <span class="nav-brand-sup">NUS-ISS Living Lab</span>
+    <span class="nav-brand-name">Decision Intelligence with AI</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="di-home.html">Home</a></li>
+    <li><a href="di-why.html">Why</a></li>
+    <li><a href="di-what.html">What</a></li>
+    <li><a href="di-how.html">How</a></li>
+    <li><a href="di-beautyco.html" class="active">BeautyCo</a></li>
+    <li><a href="di-playground.html">Playground</a></li>
+  </ul>
+  <a href="https://notebooklm.google.com/" target="_blank" rel="noopener" class="nav-cta">Open Course NotebookLM</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-eyebrow">The Continuous Case</div>
+  <h1>BeautyCo Case Hub</h1>
+  <p>A premium beauty and skincare retailer with 18 physical stores, an e-commerce platform, a loyalty programme and heavy investment in acquisition marketing. Traffic is growing strongly — but revenue is nearly flat, and conversion, satisfaction and repeat purchase are all declining. <strong style="color:var(--navy);">Why isn't increased traffic translating into stronger outcomes, and what should BeautyCo do next?</strong></p>
+  <div class="hero-facts">
+    <span class="fact">18 stores</span>
+    <span class="fact">E-commerce + loyalty</span>
+    <span class="fact">Traffic +28% YoY</span>
+    <span class="fact">Conversion 24%→18%</span>
+  </div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="tab-btn active" data-tab="background">1. Background</button>
+  <button class="tab-btn" data-tab="dashboard">2. Performance Dashboard</button>
+  <button class="tab-btn" data-tab="ops">3. Operational Evidence</button>
+  <button class="tab-btn" data-tab="customer">4. Customer Voice</button>
+  <button class="tab-btn" data-tab="external">5. External Intelligence</button>
+  <button class="tab-btn" data-tab="outputs">6. Your Outputs</button>
+</div>
+
+<div class="wrap">
+
+  <div class="tabpanel active" id="panel-background">
+    <div class="grid2">
+      <div class="card">
+        <h3>Company Overview</h3>
+        <p>BeautyCo is a premium beauty and skincare retailer operating across 18 physical stores plus an e-commerce platform.</p>
+        <ul>
+          <li>Active loyalty programme</li>
+          <li>Heavy investment in influencer marketing</li>
+          <li>Mall activations and customer-acquisition campaigns</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Leadership Concern</h3>
+        <p>Traffic is growing strongly, but:</p>
+        <ul>
+          <li>Revenue is nearly flat</li>
+          <li>Conversion is declining</li>
+          <li>Customer satisfaction is declining</li>
+          <li>Repeat purchase is declining</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Decision Challenge</h3>
+      <p style="font-size:15px;font-weight:600;color:var(--navy);font-style:italic;">"Why is increased traffic not translating into stronger business outcomes, and what should BeautyCo do next?"</p>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="panel-dashboard">
+    <div class="card">
+      <h3>Overall KPIs (2024 vs 2025)</h3>
+      <table class="kpi" style="margin-top:12px;">
+        <tr><th>KPI</th><th>2024</th><th>2025</th><th>Change</th></tr>
+        <tr><td>Footfall</td><td>220,000</td><td>282,000</td><td class="up">+28%</td></tr>
+        <tr><td>Revenue</td><td>$4.8M</td><td>$5.0M</td><td class="up">+4%</td></tr>
+        <tr><td>Conversion</td><td>24%</td><td>18%</td><td class="down">−6pp</td></tr>
+        <tr><td>CSAT</td><td>82</td><td>71</td><td class="down">−11</td></tr>
+        <tr><td>Repeat purchase</td><td>38%</td><td>29%</td><td class="down">−9pp</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Store-Level Performance (YoY)</h3>
+      <p style="margin-bottom:14px;">Performance is not uniform — this is the kind of variation Colab or Sheets analysis should surface in Templates 2 and 4.</p>
+      <table class="kpi">
+        <tr><th>Store</th><th>Traffic YoY</th><th>Revenue YoY</th><th>Conversion</th></tr>
+        <tr><td>Orchard</td><td class="up">+18%</td><td class="up">+3%</td><td>18%</td></tr>
+        <tr><td>Vivo</td><td class="up">+22%</td><td class="up">+5%</td><td>19%</td></tr>
+        <tr><td>Bugis</td><td class="up">+28%</td><td class="up">+2%</td><td>16%</td></tr>
+        <tr><td>Tampines</td><td class="up">+11%</td><td class="up">+10%</td><td>23%</td></tr>
+        <tr><td>Jurong</td><td class="up">+15%</td><td class="up">+8%</td><td>22%</td></tr>
+        <tr><td>Northpoint</td><td class="up">+9%</td><td class="up">+9%</td><td>24%</td></tr>
+      </table>
+      <p style="margin-top:12px;font-size:12.5px;font-style:italic;">The highest-traffic stores (Bugis, Vivo, Orchard) have the lowest conversion — traffic growth is not the constraint.</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <a href="https://colab.research.google.com/" target="_blank" rel="noopener" style="font-size:13px;font-weight:700;color:var(--accent);">📊 Analyse the full dataset in Google Colab →</a>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="panel-ops">
+    <div class="grid2">
+      <div class="card">
+        <h3>Stock-Out Rate by Store</h3>
+        <table class="kpi">
+          <tr><th>Store</th><th>Stock-Out Rate</th></tr>
+          <tr><td>Orchard</td><td class="down">14%</td></tr>
+          <tr><td>Vivo</td><td class="down">16%</td></tr>
+          <tr><td>Bugis</td><td class="down">17%</td></tr>
+          <tr><td>Tampines</td><td>8%</td></tr>
+          <tr><td>Jurong</td><td>9%</td></tr>
+          <tr><td>Northpoint</td><td>7%</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>CSAT by Store</h3>
+        <table class="kpi">
+          <tr><th>Store</th><th>CSAT</th></tr>
+          <tr><td>Orchard</td><td class="down">70</td></tr>
+          <tr><td>Vivo</td><td class="down">68</td></tr>
+          <tr><td>Bugis</td><td class="down">66</td></tr>
+          <tr><td>Tampines</td><td class="up">79</td></tr>
+          <tr><td>Jurong</td><td class="up">76</td></tr>
+          <tr><td>Northpoint</td><td class="up">80</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Reading the Pattern</h3>
+      <p>The same stores — Orchard, Vivo, Bugis — show the highest traffic growth, the lowest conversion, the highest stock-out rates, <em>and</em> the lowest CSAT. Tampines, Jurong and Northpoint (lower traffic growth) show the opposite pattern across all four metrics.</p>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="panel-customer">
+    <div class="card">
+      <h3>Voice of Customer — Mention Frequency</h3>
+      <table class="kpi">
+        <tr><th>Theme</th><th>Mentions</th></tr>
+        <tr><td>Product unavailable</td><td>312</td></tr>
+        <tr><td>Long waiting time</td><td>205</td></tr>
+        <tr><td>Poor consultation</td><td>184</td></tr>
+        <tr><td>Loyalty benefits weak</td><td>122</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Customer Comments</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
+        <div class="quote">"Product unavailable again."</div>
+        <div class="quote">"Queue too long."</div>
+        <div class="quote">"Staff overwhelmed."</div>
+        <div class="quote">"Loyalty not compelling."</div>
+        <div class="quote">"Competitor experience better."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="panel-external">
+    <div class="card">
+      <h3>Competitor Benchmark</h3>
+      <table class="kpi">
+        <tr><th>Competitor</th><th>Initiative</th><th>Result</th></tr>
+        <tr><td>GlowLab</td><td>AI Skin Diagnostics</td><td class="up">Conversion +29%</td></tr>
+        <tr><td>SkinStudio</td><td>Subscription Model</td><td class="up">Retention +24%</td></tr>
+        <tr><td>BeautyHub</td><td>Omnichannel Fulfilment</td><td class="up">Revenue +15%</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Market Intelligence — Consumer Trends</h3>
+      <table class="kpi">
+        <tr><th>Trend</th><th>2024</th><th>2025</th></tr>
+        <tr><td>Research before purchase</td><td>48%</td><td>69%</td></tr>
+        <tr><td>Expect personalization</td><td>55%</td><td>73%</td></tr>
+        <tr><td>Loyalty usage</td><td>46%</td><td>68%</td></tr>
+        <tr><td>Abandon due to stock-out</td><td>18%</td><td>35%</td></tr>
+      </table>
+      <div style="margin-top:16px;">
+        <a href="https://chat.openai.com/" target="_blank" rel="noopener" style="font-size:13px;font-weight:700;color:var(--accent);">🔎 Run Deep Research on current market trends →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="panel-outputs">
+    <div class="outputs-grid">
+      <div class="output-card"><div class="num">T1</div><h4>Decision Framing Brief</h4><p>What decision are we making?</p><a href="di-how.html#t1">Open Template 1 →</a></div>
+      <div class="output-card"><div class="num">T2</div><h4>Situation Assessment</h4><p>What is happening?</p><a href="di-how.html#t2">Open Template 2 →</a></div>
+      <div class="output-card"><div class="num">T3</div><h4>Root Cause Hypotheses</h4><p>Why might it be happening?</p><a href="di-how.html#t3">Open Template 3 →</a></div>
+      <div class="output-card"><div class="num">T4</div><h4>Prioritised Diagnosis</h4><p>Which explanation is best supported?</p><a href="di-how.html#t4">Open Template 4 →</a></div>
+      <div class="output-card"><div class="num">T5</div><h4>Recommended Option</h4><p>What could we do?</p><a href="di-how.html#t5">Open Template 5 →</a></div>
+      <div class="output-card"><div class="num">T6</div><h4>Executive Action Plan</h4><p>What will we do next?</p><a href="di-how.html#t6">Open Template 6 →</a></div>
+    </div>
+    <details class="reveal-box">
+      <summary>Suggested conclusion (keep collapsed until the workshop debrief)</summary>
+      <div style="margin-top:12px;font-size:13px;color:var(--text-muted);">
+        <p><strong style="color:var(--navy);">Diagnosis:</strong> Traffic generation is not the primary issue — conversion capability is. Three root causes are confirmed with high or medium confidence: Service Capacity Constraints (High), Inventory Availability Issues (High), Loyalty Programme Weakness (Medium).</p>
+        <p style="margin-top:10px;"><strong style="color:var(--navy);">Recommended option:</strong> Integrated Service + Inventory Improvement — fix conversion capability before driving more traffic.</p>
+        <p style="margin-top:10px;"><strong style="color:var(--navy);">90-day initiatives:</strong> Service Capacity (workforce scheduling, queue management, advisor training) · Inventory Availability (inventory forecasting, automated replenishment, stock visibility) · Loyalty Enhancement (personalized promotions, AI-assisted recommendations, tiered rewards).</p>
+        <p style="margin-top:10px;"><strong style="color:var(--navy);">Targets:</strong> Conversion 18%→22% · CSAT 71→80 · Repeat purchase 29%→35% · Stock-out rate 14%→&lt;8%.</p>
+        <p style="margin-top:10px;font-style:italic;">Final insight: Traffic was not the problem. Conversion capability was the problem.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span>&copy; 2025 National University of Singapore. All rights reserved.</span>
+    <span><a href="di-home.html">Decision Intelligence with AI</a> · Built by NUS-ISS Living Lab</span>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

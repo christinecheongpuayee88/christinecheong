@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Makes AI Decision-Ready? — Decision Intelligence with AI</title>
+<meta name="description" content="A slide deck on Decision Intelligence, the Evidence-Reasoning-Judgement model, guardrails, RGCTO context engineering, and the Discover-Diagnose-Decide & Deliver lifecycle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --surface:#F2F2F2; --navy:#111827; --navy-mid:#1F3A5F;
+  --blue:#1E88C7; --blue-light:#E8F4FB;
+  --slate:#334155; --slate-light:#F1F5F9;
+  --amber:#B45309; --amber-light:#FEF3C7;
+  --green:#059669; --green-light:#D1FAE5;
+  --purple:#6D28D9; --purple-light:#EDE9FE;
+  --red:#C0392B; --red-light:#FDEDEC;
+  --indigo:#4338CA; --indigo-light:#EEF2FF;
+  --text:#111827; --text-muted:#4B5563; --border:#DADADA;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','Consolas',monospace;
+  --ease-spring:cubic-bezier(0.16,1,0.3,1);
+  --nav-h:72px;
+  --accent: var(--purple); --accent-light: var(--purple-light);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--surface);color:var(--text);font-family:var(--font-body);font-weight:500;line-height:1.6;overflow-x:hidden;height:100vh;}
+a{color:inherit;text-decoration:none;}
+h1,h2,h3,h4{text-wrap:balance;}
+p{text-wrap:pretty;}
+button{font-family:var(--font-body);}
+
+.nav{position:fixed;inset:0 0 auto;z-index:200;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:rgba(255,255,255,0.96);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--border);}
+.nav-brand{display:flex;flex-direction:column;gap:1px;}
+.nav-brand-sup{font-size:10px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);}
+.nav-brand-name{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--navy);letter-spacing:-0.01em;}
+.nav-links{display:flex;align-items:center;gap:30px;list-style:none;}
+.nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);transition:color 0.25s;}
+.nav-links a:hover,.nav-links a.active{color:var(--navy);}
+.nav-cta{font-size:11.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:10px 18px;border-radius:6px;background:var(--indigo);color:#fff!important;transition:all 0.25s;white-space:nowrap;}
+.nav-cta:hover{background:#372AA8;}
+@media(max-width:960px){.nav{padding:0 20px;}.nav-links{display:none;}}
+
+.deck-shell{padding-top:var(--nav-h);height:100vh;display:flex;flex-direction:column;}
+.deck-topbar{padding:14px 40px;display:flex;align-items:center;gap:20px;background:var(--bg);border-bottom:1px solid var(--border);}
+.deck-module{font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);white-space:nowrap;}
+.progress-track{flex:1;height:5px;background:var(--surface);border-radius:100px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--accent);border-radius:100px;transition:width 0.4s var(--ease-spring);width:11%;}
+
+.deck{flex:1;overflow-y:auto;position:relative;padding-bottom:20px;background:var(--surface);}
+.slide{display:none;background:var(--bg);max-width:720px;margin:32px auto;padding:52px 48px 56px;border-radius:14px;box-shadow:0 4px 28px rgba(17,24,39,0.08);}
+.slide.active{display:block;animation:fadein 0.35s var(--ease-spring);}
+@keyframes fadein{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@media(max-width:800px){.slide{margin:16px;padding:36px 24px 40px;}}
+
+.slide-kicker{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.slide-kicker::before{content:'';width:24px;height:2px;background:var(--accent);}
+.slide h2{font-family:var(--font-display);font-size:clamp(24px,3.4vw,36px);font-weight:700;letter-spacing:-0.02em;color:var(--navy);margin-bottom:10px;}
+.slide-meta{font-size:12.5px;color:var(--text-muted);margin-bottom:28px;}
+
+.split2{display:grid;grid-template-columns:1fr;gap:20px;}
+.panel{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:26px;}
+.panel h3{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--navy);margin-bottom:14px;}
+.panel ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.panel li{font-size:13px;color:var(--text-muted);padding-left:18px;position:relative;line-height:1.6;}
+.panel li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;}
+.slide-quote{margin-top:28px;padding:18px 22px;background:var(--accent-light);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;font-size:13.5px;font-style:italic;color:var(--navy);}
+
+.content-block{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:26px;margin-bottom:18px;}
+.content-block p{font-size:13.5px;color:var(--text-muted);line-height:1.75;}
+.content-block p+p{margin-top:10px;}
+.blk-label{display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.blk-label .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+
+.visual{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin-top:6px;}
+.vchip{font-size:12.5px;font-weight:700;color:var(--navy);padding:9px 15px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;}
+.varrow{color:var(--text-muted);font-size:15px;}
+
+.two-col{display:grid;grid-template-columns:1fr;gap:14px;}
+.mini{background:var(--surface);border-radius:12px;padding:16px 18px;}
+.mini .lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:6px;}
+.mini p{font-size:13px;color:var(--navy);}
+
+.tool-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+.tool-btn{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:8px;border:1.5px solid var(--border);color:var(--navy);transition:all 0.2s;}
+.tool-btn:hover{border-color:var(--accent);background:var(--accent-light);color:var(--accent);}
+
+.reflect-box{border:1.5px dashed var(--border);border-radius:12px;padding:16px 20px;margin-top:16px;}
+.reflect-box p{font-style:italic;color:var(--navy);font-size:13.5px;}
+
+.rgcto-grid{display:grid;grid-template-columns:1fr 2fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.rgcto-grid .k,.rgcto-grid .v{background:var(--bg);padding:12px 16px;font-size:12.5px;}
+.rgcto-grid .k{font-weight:700;color:var(--accent);background:var(--accent-light);}
+.rgcto-grid .v{color:var(--text-muted);}
+
+.cards4{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.mini-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.mini-card .t{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.mini-card .q{font-size:11.5px;color:var(--text-muted);}
+
+.cards6{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+
+.lifecycle{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.lc-node{padding:14px 20px;border-radius:10px;font-size:13px;font-weight:700;color:#fff;text-align:center;}
+.lc-node:nth-child(1){background:var(--slate);}
+.lc-node:nth-child(2){background:var(--amber);}
+.lc-node:nth-child(3){background:var(--green);}
+.lc-arrow{display:flex;align-items:center;color:var(--text-muted);font-size:16px;}
+
+/* HANDS-ON ACTIVITY */
+.activity-shell{display:grid;grid-template-columns:1fr;gap:20px;}
+.activity-panel{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:26px;}
+.activity-panel h3{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.activity-panel .sub{font-size:12px;color:var(--text-muted);margin-bottom:18px;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field label{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);}
+.field input,.field textarea{font-family:var(--font-body);font-size:12.5px;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;outline:none;transition:border-color 0.2s;resize:vertical;}
+.field input:focus,.field textarea:focus{border-color:var(--accent);}
+.gen-btn{width:100%;margin-top:6px;padding:13px;border:none;border-radius:8px;background:var(--navy);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.gen-btn:hover{background:#000;}
+.output-panel{background:var(--navy);border-radius:16px;padding:26px;color:#E5E7EB;}
+.output-panel h3{color:#fff;font-family:var(--font-display);font-size:16px;margin-bottom:4px;}
+.output-panel .sub{font-size:12px;color:#9CA3AF;margin-bottom:16px;}
+.output-pre{font-family:var(--font-mono);font-size:12px;line-height:1.7;white-space:pre-wrap;min-height:180px;}
+.output-placeholder{color:#6B7280;font-style:italic;}
+
+.takeaway-grid{display:grid;grid-template-columns:1fr;gap:20px;}
+.takeaway-col{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:26px;}
+.takeaway-col.preview{background:var(--indigo-light);border-color:#C7D2FE;}
+.takeaway-col h3{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;}
+
+.gloss-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+.gloss-item{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.gloss-item .term{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.gloss-item .def{font-size:12.5px;color:var(--text-muted);line-height:1.6;}
+
+/* QUICK CHECK / REVEAL */
+.reveal-box{border:1.5px dashed var(--border);border-radius:12px;padding:14px 18px;margin-top:14px;}
+.reveal-box summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--navy);list-style:none;}
+.reveal-box summary::-webkit-details-marker{display:none;}
+.reveal-box summary::before{content:'▸ ';color:var(--accent);}
+.reveal-box[open] summary::before{content:'▾ ';}
+.reveal-box .inner{margin-top:10px;font-size:12.5px;color:var(--text-muted);line-height:1.7;}
+.reveal-box .inner strong{color:var(--navy);}
+
+/* QUIZ */
+.quiz-q{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:14px;transition:all 0.2s;}
+.quiz-q.correct{border-color:var(--green);background:var(--green-light);}
+.quiz-q.incorrect{border-color:var(--red);background:var(--red-light);}
+.quiz-q .qtext{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+.quiz-opt{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--text-muted);cursor:pointer;border-top:1px solid var(--border);}
+.quiz-opt:first-of-type{border-top:none;}
+.quiz-opt input{accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.quiz-submit{width:100%;padding:14px;border:none;border-radius:8px;background:var(--navy);color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;transition:background 0.2s;}
+.quiz-submit:hover{background:#000;}
+.quiz-result{margin-top:18px;padding:18px 22px;border-radius:12px;font-size:14px;font-weight:700;text-align:center;color:var(--navy);background:var(--accent-light);display:none;}
+.quiz-result.show{display:block;}
+
+/* CHECKLIST */
+.checklist-block .checklist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.checklist-block .check-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--navy);padding:9px 0;border-top:1px solid var(--border);cursor:pointer;}
+.checklist-block .check-item:first-of-type{border-top:none;}
+.checklist-block input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.checklist-counter{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-light);padding:3px 10px;border-radius:100px;}
+
+/* DECK NAV — floating, minimal */
+.nav-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:11px 22px;border-radius:8px;border:1.5px solid var(--border);color:var(--navy);cursor:pointer;background:var(--bg);transition:all 0.2s;}
+.nav-btn:hover:not(:disabled){border-color:var(--navy);background:var(--surface);}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed;}
+.nav-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy);}
+.nav-btn.primary:hover{background:#000;}
+.space-hint{font-size:12px;color:var(--text-muted);white-space:nowrap;opacity:0;transition:opacity 0.3s;}
+.space-hint.show{opacity:1;}
+
+.deck-counter{position:fixed;left:24px;bottom:16px;z-index:250;font-size:12px;color:var(--text-muted);font-weight:600;background:rgba(242,242,242,0.85);padding:4px 10px;border-radius:6px;}
+.deck-nav{position:fixed;right:24px;bottom:16px;z-index:250;display:flex;align-items:center;gap:8px;}
+.deck-nav-btn{background:var(--accent);border:none;padding:8px 18px;border-radius:100px;font-family:var(--font-body);font-size:12.5px;font-weight:700;color:#fff;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+.deck-nav-btn:hover:not(:disabled){filter:brightness(0.88);}
+.deck-nav-btn:disabled{opacity:0.35;cursor:not-allowed;}
+
+.print-btn{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:6px;border:1.5px solid var(--border);color:var(--navy);cursor:pointer;background:var(--bg);white-space:nowrap;transition:all 0.2s;}
+.print-btn:hover{border-color:var(--navy);background:var(--surface);}
+
+/* PRINT — one slide per portrait page */
+@media print{
+  @page{ size:portrait; margin:14mm; }
+  body{ background:#fff !important; height:auto !important; overflow:visible !important; }
+  .nav, .deck-topbar, .deck-nav, .deck-counter{ display:none !important; }
+  .deck-shell{ padding-top:0 !important; height:auto !important; display:block !important; }
+  .deck{ overflow:visible !important; padding-bottom:0 !important; background:#fff !important; height:auto !important; }
+  .slide{ display:block !important; box-shadow:none !important; border:1px solid #ddd; margin:0 auto; max-width:100%; page-break-after:always; break-after:page; }
+  .slide:last-child{ page-break-after:auto; break-after:auto; }
+  a[href]::after{ content:none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="di-home.html" class="nav-brand">
+    <span class="nav-brand-sup">NUS-ISS Living Lab</span>
+    <span class="nav-brand-name">Decision Intelligence with AI</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="di-home.html">Home</a></li>
+    <li><a href="di-why.html">Why</a></li>
+    <li><a href="di-what.html" class="active">What</a></li>
+    <li><a href="di-how.html">How</a></li>
+    <li><a href="di-beautyco.html">BeautyCo</a></li>
+    <li><a href="di-playground.html">Playground</a></li>
+  </ul>
+  <a href="https://notebooklm.google.com/" target="_blank" rel="noopener" class="nav-cta">Open Course NotebookLM</a>
+</nav>
+
+<div class="deck-shell">
+  <div class="deck-topbar">
+    <span class="deck-module">Module 2 · What</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="space-hint" id="spaceHint">→ Press space or right arrow to begin</span>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <a href="di-what-previous.html" class="print-btn" style="text-decoration:none;">🕓 Compare with previous version</a>
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- SLIDE 1 — TITLE / OBJECTIVES -->
+    <section class="slide active">
+      <div class="slide-kicker">Section 2 · What Makes AI Decision-Ready?</div>
+      <h2>What is Decision Intelligence?</h2>
+      <p class="slide-meta">Module 2 of 2 · 11 micro‑lessons · ~40 minutes</p>
+      <div class="split2">
+        <div class="panel">
+          <h3>Welcome</h3>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.75;">Now that you've seen why more information isn't enough, this module gives you every building block that makes AI genuinely decision-ready — evidence, reasoning, judgement, guardrails, context engineering, and the lifecycle behind every template you'll use next.</p>
+        </div>
+        <div class="panel">
+          <h3>Today's Objectives</h3>
+          <ul>
+            <li>Define Decision Intelligence in one clear model</li>
+            <li>Apply the Evidence → Reasoning → Judgement framework</li>
+            <li>Understand Guardrails and the four decision-ready capabilities</li>
+            <li>Learn the RGCTO context-engineering structure</li>
+            <li>Understand the Discover → Diagnose → Decide &amp; Deliver lifecycle</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-quote">"By the end of this module, you'll have every building block you need to begin the Decision Journey — starting with Template 1: Decision Framing."</div>
+    </section>
+
+    <!-- SLIDE 2 — LESSON 2.1 What Is Decision Intelligence? -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.1</div>
+      <h2>What Is Decision Intelligence?</h2>
+      <p class="slide-meta">~4 min · Learn → See</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Decision Intelligence combines: information, human judgment, data and evidence, AI-assisted reasoning, guardrails, and structured decision processes — to improve decision quality and business outcomes.</p>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>See</div>
+        <div class="visual">
+          <span class="vchip">Information</span><span class="varrow">→</span>
+          <span class="vchip">Insight</span><span class="varrow">→</span>
+          <span class="vchip" style="background:var(--indigo-light);border-color:#C7D2FE;color:var(--indigo);">Decision</span><span class="varrow">→</span>
+          <span class="vchip" style="background:var(--green-light);border-color:#A7E8D0;color:var(--green);">Outcome</span>
+        </div>
+      </div>
+      <div class="reflect-box"><p>"Decision Intelligence turns information into action."</p></div>
+    </section>
+
+    <!-- SLIDE 3 — LESSON 2.2 From Information to Decisions -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.2</div>
+      <h2>From Information to Decisions</h2>
+      <p class="slide-meta">~5 min · Learn → See → Reflect</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Good decisions require both evidence and reasoning. AI helps us gather evidence and structure reasoning. Humans apply judgment.</p>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>See</div>
+        <table class="strengths-table" style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <tr><th style="text-align:left;padding:10px 14px;background:var(--surface);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">AI Role</th><th style="text-align:left;padding:10px 14px;background:var(--surface);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Question</th><th style="text-align:left;padding:10px 14px;background:var(--surface);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Decision Value</th></tr>
+          <tr><td style="padding:9px 14px;border-top:1px solid var(--border);font-weight:700;color:var(--navy);">Information Partner</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">What do we know?</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">Gathers and organises evidence</td></tr>
+          <tr><td style="padding:9px 14px;border-top:1px solid var(--border);font-weight:700;color:var(--navy);">Thinking Partner</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">What does it mean?</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">Supports reasoning and evaluation</td></tr>
+          <tr><td style="padding:9px 14px;border-top:1px solid var(--border);font-weight:700;color:var(--navy);">Human Decision-Maker</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">What should we do?</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">Applies judgment and accountability</td></tr>
+        </table>
+      </div>
+      <div class="reflect-box"><p>Which of these three roles does your organisation lean on most heavily today?</p></div>
+    </section>
+
+    <!-- SLIDE 4 — LESSON 2.3 Evidence, Reasoning and Judgment -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.3</div>
+      <h2>Evidence, Reasoning and Judgment</h2>
+      <p class="slide-meta">~6 min · Learn → Try → Reflect</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <tr><th style="text-align:left;padding:10px 14px;background:var(--surface);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Layer</th><th style="text-align:left;padding:10px 14px;background:var(--surface);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Question</th><th style="text-align:left;padding:10px 14px;background:var(--surface);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Main Actor</th></tr>
+          <tr><td style="padding:9px 14px;border-top:1px solid var(--border);font-weight:700;color:var(--navy);">Evidence</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">What do we know?</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">AI as information partner</td></tr>
+          <tr><td style="padding:9px 14px;border-top:1px solid var(--border);font-weight:700;color:var(--navy);">Reasoning</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">What does it mean?</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">AI as thinking partner</td></tr>
+          <tr><td style="padding:9px 14px;border-top:1px solid var(--border);font-weight:700;color:var(--navy);">Judgment</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">What should we do?</td><td style="padding:9px 14px;border-top:1px solid var(--border);color:var(--text-muted);">Human decision-maker</td></tr>
+        </table>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Try</div>
+        <p>Classify: "Conversion fell from 24% to 18%" · "Staff are likely too stretched to close sales" · "We should hire two more floor associates per store." (Evidence, reasoning, or judgment?)</p>
+        <details class="reveal-box">
+          <summary>❓ Reveal answer</summary>
+          <div class="inner"><strong>"Conversion fell from 24% to 18%"</strong> — Evidence.<br><strong>"Staff are likely too stretched to close sales"</strong> — Reasoning.<br><strong>"We should hire two more floor associates per store"</strong> — Judgment.</div>
+        </details>
+      </div>
+      <div class="reflect-box"><p>"Evidence informs. Reasoning interprets. Judgment decides." Evidence + Reasoning + Judgment = Better Decisions.</p></div>
+    </section>
+
+    <!-- SLIDE 5 — LESSON 2.4 Guardrails Make AI Decision-Ready -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.4</div>
+      <h2>Guardrails Make AI Decision-Ready</h2>
+      <p class="slide-meta">~5 min · Learn → See</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>AI outputs must be challenged before being used for decisions. Decision-ready AI should check:</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:10px;">
+          <li style="font-size:12.5px;color:var(--navy);">— What is assumed?</li>
+          <li style="font-size:12.5px;color:var(--navy);">— What is unsupported?</li>
+          <li style="font-size:12.5px;color:var(--navy);">— What evidence contradicts this?</li>
+          <li style="font-size:12.5px;color:var(--navy);">— What bias may be present?</li>
+          <li style="font-size:12.5px;color:var(--navy);">— What could be hallucinated?</li>
+          <li style="font-size:12.5px;color:var(--navy);">— What needs human approval?</li>
+        </ul>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>See</div>
+        <div class="visual">
+          <span class="vchip">Critique</span><span class="varrow">→</span>
+          <span class="vchip">Validate</span><span class="varrow">→</span>
+          <span class="vchip" style="background:var(--indigo-light);border-color:#C7D2FE;color:var(--indigo);">Oversight</span>
+        </div>
+      </div>
+      <div class="reflect-box"><p>"Trustworthy AI decision support requires critique, validation and human oversight."</p></div>
+    </section>
+
+    <!-- SLIDE 6 — LESSON 2.5 What Makes AI Decision-Ready -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.5</div>
+      <h2>What Makes AI Decision-Ready?</h2>
+      <p class="slide-meta">~5 min · Learn → See</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>AI becomes a decision partner when four capabilities work together.</p>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>See</div>
+        <table class="strengths-table">
+          <tr><th>Capability</th><th>Purpose</th></tr>
+          <tr><td>Context</td><td>Helps AI understand the decision situation</td></tr>
+          <tr><td>Evidence</td><td>Grounds recommendations in data, research and documents</td></tr>
+          <tr><td>Reasoning</td><td>Connects facts to explanations, options and trade-offs</td></tr>
+          <tr><td>Guardrails</td><td>Checks assumptions, hallucinations, bias and risks</td></tr>
+        </table>
+      </div>
+      <div class="reflect-box"><p>"AI becomes decision-ready when supported by context, evidence, reasoning and guardrails."</p></div>
+    </section>
+
+    <!-- SLIDE 7 — LESSON 2.6 Evidence Powers Better Decisions -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.6</div>
+      <h2>Evidence Powers Better Decisions</h2>
+      <p class="slide-meta">~5 min · Learn → See</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Different decision questions require different evidence sources.</p>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>See</div>
+        <table class="strengths-table">
+          <tr><th>Evidence need</th><th>Best source</th></tr>
+          <tr><td>Concepts and definitions</td><td>Pretrained knowledge</td></tr>
+          <tr><td>Recent developments</td><td>Web search</td></tr>
+          <tr><td>Complex external investigation</td><td>Deep Research</td></tr>
+          <tr><td>Internal documents</td><td>NotebookLM / Projects</td></tr>
+          <tr><td>Business performance</td><td>Internal data / dashboards</td></tr>
+          <tr><td>Customer signals</td><td>Feedback, reviews, support tickets</td></tr>
+        </table>
+      </div>
+      <div class="reflect-box"><p>"Better evidence improves decision confidence."</p></div>
+    </section>
+
+    <!-- SLIDE 8 — LESSON 2.7 AI as Thinking Partner: From Possibilities to Decisions -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.7</div>
+      <h2>From Possibilities to Decisions</h2>
+      <p class="slide-meta">~5 min · Learn → See</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <table class="strengths-table">
+          <tr><th>AI Thinking Mode</th><th>Purpose</th><th>DI Use</th></tr>
+          <tr><td>Brainstorming</td><td>Expand possibilities</td><td>Generate causes and options</td></tr>
+          <tr><td>Reasoning</td><td>Evaluate possibilities</td><td>Test evidence and trade-offs</td></tr>
+          <tr><td>Judgement</td><td>Choose responsibly</td><td>Decide what to do</td></tr>
+        </table>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>See</div>
+        <div class="visual">
+          <span class="vchip">Evidence</span><span class="varrow">→</span>
+          <span class="vchip">Interpretation</span><span class="varrow">→</span>
+          <span class="vchip">Options</span><span class="varrow">→</span>
+          <span class="vchip">Trade-offs</span><span class="varrow">→</span>
+          <span class="vchip" style="background:var(--indigo-light);border-color:#C7D2FE;color:var(--indigo);">Recommendation</span>
+        </div>
+      </div>
+      <div class="reflect-box"><p>"AI becomes useful for decisions when it supports structured reasoning."</p></div>
+    </section>
+
+    <!-- SLIDE 9 — LESSON 2.8 Context Powers Better Decisions -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.8</div>
+      <h2>Context Powers Better Decisions</h2>
+      <p class="slide-meta">~5 min · Learn → See → Try</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Modern AI depends less on prompts and more on context.</p>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>See</div>
+        <div class="two-col">
+          <div class="mini"><div class="lbl">Poor context</div><p>"How do we improve sales?"</p></div>
+          <div class="mini"><div class="lbl">Better context</div><p>Traffic is increasing. Conversion is declining. CSAT is falling. Customer complaints mention waiting time and stock-outs. Budget is constrained.</p></div>
+        </div>
+      </div>
+      <div class="reflect-box"><p>"Better context produces better reasoning."</p></div>
+    </section>
+
+    <!-- SLIDE 10 — LESSON 2.9 Context Engineering with RGCTO -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.9</div>
+      <h2>Context Engineering with RGCTO</h2>
+      <p class="slide-meta">~6 min · Learn → Try → Use AI</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Prompting is how we ask. Context engineering is how we make AI decision-aware. RGCTO is the reusable structure used across every template in this course.</p>
+      </div>
+      <div class="rgcto-grid">
+        <div class="k">Role</div><div class="v">What lens should AI use?</div>
+        <div class="k">Goal</div><div class="v">What decision outcome is needed?</div>
+        <div class="k">Context</div><div class="v">What situation, constraints and evidence matter?</div>
+        <div class="k">Tasks</div><div class="v">What reasoning steps should AI perform?</div>
+        <div class="k">Output</div><div class="v">What decision deliverable is required?</div>
+      </div>
+      <div class="tool-row">
+        <a href="https://chat.openai.com/" target="_blank" rel="noopener" class="tool-btn">💬 Try in ChatGPT</a>
+        <a href="https://gemini.google.com/" target="_blank" rel="noopener" class="tool-btn">✦ Try in Gemini</a>
+      </div>
+    </section>
+
+    <!-- SLIDE 11 — LESSON 2.10 Decision Intelligence Lifecycle -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.10</div>
+      <h2>The Decision Intelligence Lifecycle</h2>
+      <p class="slide-meta">~5 min · Learn → See</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Every decision moves through three stages. This lifecycle is the backbone of the six templates you'll use next.</p>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>See</div>
+        <div class="lifecycle">
+          <div class="lc-node">Discover<br><span style="font-weight:400;font-size:11px;">Frame &amp; assess</span></div><div class="lc-arrow">→</div>
+          <div class="lc-node">Diagnose<br><span style="font-weight:400;font-size:11px;">Identify &amp; validate causes</span></div><div class="lc-arrow">→</div>
+          <div class="lc-node">Decide &amp; Deliver<br><span style="font-weight:400;font-size:11px;">Evaluate &amp; build the plan</span></div>
+        </div>
+      </div>
+      <div class="reflect-box"><p>"Decision Intelligence converts business questions into structured decision outputs."</p></div>
+    </section>
+
+    <!-- SLIDE 12 — LESSON 2.11 From Thinking Activities to Decision Templates -->
+    <section class="slide">
+      <div class="slide-kicker">Lesson 2.11</div>
+      <h2>From Thinking Activities to Decision Templates</h2>
+      <p class="slide-meta">~4 min · Learn</p>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>These templates teach AI how to think. Each template supports a different decision question — Frame → Assess → Explain → Review → Decide → Execute.</p>
+      </div>
+      <div class="cards6">
+        <div class="mini-card"><div class="t">1. Frame</div><div class="q">Decision Framing</div></div>
+        <div class="mini-card"><div class="t">2. Assess</div><div class="q">Situation Assessment</div></div>
+        <div class="mini-card"><div class="t">3. Explain</div><div class="q">Root Cause Analysis</div></div>
+        <div class="mini-card"><div class="t">4. Review</div><div class="q">Critical Review &amp; Evidence Validation</div></div>
+        <div class="mini-card"><div class="t">5. Decide</div><div class="q">Options Assessment</div></div>
+        <div class="mini-card"><div class="t">6. Execute</div><div class="q">Executive Action Plan</div></div>
+      </div>
+      <div class="content-block checklist-block" style="margin-top:20px;">
+        <div class="checklist-head"><div class="blk-label" style="margin-bottom:0;"><span class="dot"></span>Ready for the Decision Journey?</div><span class="checklist-counter">0/4</span></div>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> I can state the Evidence → Reasoning → Judgement model in my own words</label>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> I can name all five RGCTO elements</label>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> I know what Guardrails check for before trusting an AI output</label>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> I can name the six templates in order: Frame, Assess, Explain, Review, Decide, Execute</label>
+      </div>
+    </section>
+
+    <!-- SLIDE 13 — HANDS-ON ACTIVITY: RGCTO BUILDER -->
+    <section class="slide">
+      <div class="slide-kicker">Hands-on Activity</div>
+      <h2>Build an RGCTO Prompt</h2>
+      <p class="slide-meta">Time: 8 minutes · Apply the Role–Goal–Context–Tasks–Output structure to BeautyCo.</p>
+      <div class="activity-shell">
+        <div class="activity-panel">
+          <h3>Your Turn: Build the Prompt</h3>
+          <div class="sub">Fill in each field, then generate your RGCTO prompt.</div>
+          <div class="field"><label>Role</label><input id="f-role" type="text" placeholder="e.g. Experienced retail strategy advisor"></div>
+          <div class="field"><label>Goal</label><input id="f-goal" type="text" placeholder="e.g. Recommend how to improve conversion"></div>
+          <div class="field"><label>Context</label><textarea id="f-context" rows="2" placeholder="e.g. BeautyCo traffic +28%, conversion 24%→18%, CSAT declining"></textarea></div>
+          <div class="field"><label>Tasks</label><input id="f-tasks" type="text" placeholder="e.g. Identify 3 causes, evaluate each with evidence"></div>
+          <div class="field"><label>Output</label><input id="f-output" type="text" placeholder="e.g. A ranked list with rationale and confidence level"></div>
+          <button class="gen-btn" onclick="generatePrompt()">Generate RGCTO Prompt</button>
+        </div>
+        <div class="output-panel">
+          <h3>RGCTO Prompt</h3>
+          <div class="sub">Copy this into ChatGPT or Gemini and compare with an unstructured prompt</div>
+          <pre class="output-pre" id="promptOutput"><span class="output-placeholder">Fill in the fields on the left, then click "Generate RGCTO Prompt."</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14 — TAKEAWAYS + PREVIEW -->
+    <section class="slide">
+      <div class="slide-kicker">Wrap-Up</div>
+      <h2>Key Takeaways &amp; What's Next</h2>
+      <div class="takeaway-grid">
+        <div class="takeaway-col">
+          <h3>Key Takeaways from What</h3>
+          <ul class="panel" style="border:none;padding:0;">
+            <li>Decision Intelligence = judgement + evidence + AI reasoning + structured process</li>
+            <li>Every claim is Evidence, Reasoning, or Judgement — know which</li>
+            <li>Guardrails check assumptions, bias and hallucinations before you trust an output</li>
+            <li>RGCTO makes any prompt decision-aware, not just well-written</li>
+            <li>Every decision moves through Discover → Diagnose → Decide &amp; Deliver</li>
+          </ul>
+        </div>
+        <div class="takeaway-col preview">
+          <h3>Coming Up: The Decision Journey</h3>
+          <ul class="panel" style="border:none;padding:0;background:transparent;">
+            <li>Template 1: Decision Framing (ChatGPT/Gemini)</li>
+            <li>Template 2: Situation Assessment (NotebookLM + Colab)</li>
+            <li>Templates 3–4: Root Cause &amp; Evidence Validation</li>
+            <li>Template 5: Options Assessment (+ Google Sheets)</li>
+            <li>Template 6: Executive Action Plan</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15 — GLOSSARY -->
+    <section class="slide">
+      <div class="slide-kicker">Appendix</div>
+      <h2>Key Terms Made Simple</h2>
+      <p class="slide-meta">A plain-language glossary for Module 2</p>
+      <div class="gloss-grid">
+        <div class="gloss-item"><div class="term">RGCTO</div><div class="def">Role, Goal, Context, Tasks, Output — the five-part structure that turns a prompt into a decision-ready request.</div></div>
+        <div class="gloss-item"><div class="term">Evidence</div><div class="def">A verifiable fact — "conversion fell from 24% to 18%."</div></div>
+        <div class="gloss-item"><div class="term">Reasoning</div><div class="def">An interpretation of evidence — "this suggests understaffing," not yet proven.</div></div>
+        <div class="gloss-item"><div class="term">Judgement</div><div class="def">A decision or action based on evidence and reasoning — "we should hire two more associates."</div></div>
+        <div class="gloss-item"><div class="term">Guardrails</div><div class="def">Checks for assumptions, bias, hallucinations and risk before trusting an AI output.</div></div>
+        <div class="gloss-item"><div class="term">Lifecycle</div><div class="def">The three stages every decision passes through: Discover, Diagnose, Decide &amp; Deliver.</div></div>
+        <div class="gloss-item"><div class="term">Template</div><div class="def">A repeatable structure (prompt + evidence + tool) used to complete one stage of the lifecycle.</div></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16 — KNOWLEDGE CHECK QUIZ -->
+    <section class="slide">
+      <div class="slide-kicker">Knowledge Check</div>
+      <h2>Test Your Understanding</h2>
+      <p class="slide-meta">Covers Module 1 (Why) and Module 2 (What) · 6 questions · ~5 minutes</p>
+
+      <div class="quiz-q" id="q1-block">
+        <div class="qtext">1. What is the real gap Decision Intelligence addresses?</div>
+        <label class="quiz-opt"><input type="radio" name="q1" value="a"> A shortage of dashboards and reports</label>
+        <label class="quiz-opt"><input type="radio" name="q1" value="b"> The gap between having information and making a good decision</label>
+        <label class="quiz-opt"><input type="radio" name="q1" value="c"> A lack of AI tools in the organisation</label>
+        <label class="quiz-opt"><input type="radio" name="q1" value="d"> Slow internet connections</label>
+      </div>
+
+      <div class="quiz-q" id="q2-block">
+        <div class="qtext">2. Which AI role best describes NotebookLM in this course?</div>
+        <label class="quiz-opt"><input type="radio" name="q2" value="a"> Information partner — retrieves and organises what's already known</label>
+        <label class="quiz-opt"><input type="radio" name="q2" value="b"> Thinking partner — generates options and challenges assumptions</label>
+        <label class="quiz-opt"><input type="radio" name="q2" value="c"> Human decision-maker</label>
+        <label class="quiz-opt"><input type="radio" name="q2" value="d"> A guardrail mechanism</label>
+      </div>
+
+      <div class="quiz-q" id="q3-block">
+        <div class="qtext">3. "We should hire two more floor associates per store" is an example of:</div>
+        <label class="quiz-opt"><input type="radio" name="q3" value="a"> Evidence</label>
+        <label class="quiz-opt"><input type="radio" name="q3" value="b"> Reasoning</label>
+        <label class="quiz-opt"><input type="radio" name="q3" value="c"> Judgement</label>
+        <label class="quiz-opt"><input type="radio" name="q3" value="d"> Context</label>
+      </div>
+
+      <div class="quiz-q" id="q4-block">
+        <div class="qtext">4. In RGCTO, what does the "C" stand for?</div>
+        <label class="quiz-opt"><input type="radio" name="q4" value="a"> Critique</label>
+        <label class="quiz-opt"><input type="radio" name="q4" value="b"> Context</label>
+        <label class="quiz-opt"><input type="radio" name="q4" value="c"> Constraints only</label>
+        <label class="quiz-opt"><input type="radio" name="q4" value="d"> Confidence</label>
+      </div>
+
+      <div class="quiz-q" id="q5-block">
+        <div class="qtext">5. What is the main purpose of Guardrails?</div>
+        <label class="quiz-opt"><input type="radio" name="q5" value="a"> To make AI responses faster</label>
+        <label class="quiz-opt"><input type="radio" name="q5" value="b"> To check assumptions, bias, hallucinations and risk before trusting an output</label>
+        <label class="quiz-opt"><input type="radio" name="q5" value="c"> To replace human judgement entirely</label>
+        <label class="quiz-opt"><input type="radio" name="q5" value="d"> To generate more creative answers</label>
+      </div>
+
+      <div class="quiz-q" id="q6-block">
+        <div class="qtext">6. What are the three stages of the Decision Intelligence lifecycle, in order?</div>
+        <label class="quiz-opt"><input type="radio" name="q6" value="a"> Analyse, Report, Archive</label>
+        <label class="quiz-opt"><input type="radio" name="q6" value="b"> Discover, Diagnose, Decide &amp; Deliver</label>
+        <label class="quiz-opt"><input type="radio" name="q6" value="c"> Prompt, Context, Workflow</label>
+        <label class="quiz-opt"><input type="radio" name="q6" value="d"> Frame, Search, Present</label>
+      </div>
+
+      <button class="quiz-submit" onclick="submitQuiz()">Submit Quiz</button>
+      <div class="quiz-result" id="quizResult"></div>
+
+      <div style="text-align:center;margin-top:32px;">
+        <a href="di-how.html" class="nav-btn primary" style="display:inline-flex;">Begin the Decision Journey: Template 1 →</a>
+      </div>
+    </section>
+
+  </div>
+
+  <span class="deck-counter" id="deckCounter">Slide 1 of 16</span>
+  <div class="deck-nav">
+    <button class="deck-nav-btn" id="prevBtn" onclick="goTo(current-1)">Previous</button>
+    <button class="deck-nav-btn" id="nextBtn" onclick="goTo(current+1)">Next</button>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+function goTo(i){
+  if(i < 0 || i >= total) return;
+  slides[current].classList.remove('active');
+  current = i;
+  slides[current].classList.add('active');
+  document.getElementById('deck').scrollTop = 0;
+  document.getElementById('deckCounter').textContent = `Slide ${current+1} of ${total}`;
+  document.getElementById('progressFill').style.width = `${((current+1)/total)*100}%`;
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total-1;
+  document.getElementById('nextBtn').textContent = current === total-1 ? 'Done' : 'Next';
+  document.getElementById('spaceHint').classList.toggle('show', current === 0);
+}
+
+document.addEventListener('keydown', (e) => {
+  if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current+1); }
+  if(e.key === 'ArrowLeft') goTo(current-1);
+});
+
+goTo(0);
+
+function generatePrompt(){
+  const role = document.getElementById('f-role').value.trim() || '[role not provided]';
+  const goal = document.getElementById('f-goal').value.trim() || '[goal not provided]';
+  const context = document.getElementById('f-context').value.trim() || '[context not provided]';
+  const tasks = document.getElementById('f-tasks').value.trim() || '[tasks not provided]';
+  const output = document.getElementById('f-output').value.trim() || '[output not provided]';
+  const prompt = `Role:\n${role}\n\nGoal:\n${goal}\n\nContext:\n${context}\n\nTasks:\n${tasks}\n\nOutput:\n${output}`;
+  document.getElementById('promptOutput').textContent = prompt;
+}
+
+function updateChecklist(cb){
+  const block = cb.closest('.checklist-block');
+  const boxes = block.querySelectorAll('input[type=checkbox]');
+  const checked = block.querySelectorAll('input[type=checkbox]:checked').length;
+  block.querySelector('.checklist-counter').textContent = `${checked}/${boxes.length}`;
+}
+
+const quizAnswers = { q1:'b', q2:'a', q3:'c', q4:'b', q5:'b', q6:'b' };
+function submitQuiz(){
+  let score = 0;
+  const total = Object.keys(quizAnswers).length;
+  for (const q in quizAnswers) {
+    const selected = document.querySelector(`input[name="${q}"]:checked`);
+    const block = document.getElementById(q + '-block');
+    block.classList.remove('correct', 'incorrect');
+    if (selected && selected.value === quizAnswers[q]) {
+      score++;
+      block.classList.add('correct');
+    } else {
+      block.classList.add('incorrect');
+    }
+  }
+  const resultEl = document.getElementById('quizResult');
+  const msg = score === total
+    ? `Perfect score — ${score}/${total}! You're ready for the Decision Journey.`
+    : `You scored ${score}/${total}. Review the highlighted questions, then continue when ready.`;
+  resultEl.textContent = msg;
+  resultEl.classList.add('show');
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body>
+</html>

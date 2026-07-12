@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Playground — Decision Intelligence with AI</title>
+<meta name="description" content="Every AI tool used in the course, each answering one question: when should I use this? Plus downloads and further reading.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --surface:#F2F2F2; --navy:#111827; --navy-mid:#1F3A5F;
+  --blue:#1E88C7; --blue-light:#E8F4FB;
+  --slate:#334155; --slate-light:#F1F5F9;
+  --amber:#B45309; --amber-light:#FEF3C7;
+  --green:#059669; --green-light:#D1FAE5;
+  --purple:#6D28D9; --purple-light:#EDE9FE;
+  --red:#C0392B; --red-light:#FDEDEC;
+  --indigo:#4338CA; --indigo-light:#EEF2FF;
+  --text:#111827; --text-muted:#4B5563; --border:#DADADA;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','Consolas',monospace;
+  --nav-h:72px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:500;line-height:1.65;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+h1,h2,h3,h4{text-wrap:balance;}
+p{text-wrap:pretty;}
+
+.nav{position:fixed;inset:0 0 auto;z-index:200;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:rgba(255,255,255,0.96);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--border);}
+.nav-brand{display:flex;flex-direction:column;gap:1px;}
+.nav-brand-sup{font-size:10px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);}
+.nav-brand-name{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--navy);letter-spacing:-0.01em;}
+.nav-links{display:flex;align-items:center;gap:30px;list-style:none;}
+.nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);transition:color 0.25s;}
+.nav-links a:hover,.nav-links a.active{color:var(--navy);}
+.nav-cta{font-size:11.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:10px 18px;border-radius:6px;background:var(--indigo);color:#fff!important;transition:all 0.25s;white-space:nowrap;}
+.nav-cta:hover{background:#372AA8;}
+@media(max-width:960px){.nav{padding:0 20px;}.nav-links{display:none;}}
+
+.hero{padding:calc(var(--nav-h) + 56px) 56px 40px;max-width:1180px;margin:0 auto;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--indigo);margin-bottom:16px;}
+.hero-eyebrow::before{content:'';width:24px;height:2px;background:var(--indigo);}
+.hero h1{font-family:var(--font-display);font-size:clamp(30px,4.4vw,46px);font-weight:700;letter-spacing:-0.02em;color:var(--navy);margin-bottom:14px;max-width:700px;}
+.hero p{font-size:15px;font-weight:300;color:var(--text-muted);max-width:640px;line-height:1.75;}
+
+.section{max-width:1180px;margin:0 auto;padding:16px 56px 64px;}
+.section-h{font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:24px;}
+
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.tcard{background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:28px;transition:all 0.25s;}
+.tcard:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(17,24,39,0.08);}
+.tcard .ic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;}
+.tcard h3{font-family:var(--font-display);font-size:19px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.tcard .tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px;}
+.tcard .when{font-size:12.5px;color:var(--text-muted);margin-bottom:8px;}
+.tcard .when strong{color:var(--navy);display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;}
+.tcard .btn{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:8px;border:1.5px solid var(--border);color:var(--navy);}
+
+.notebooklm .ic{background:var(--blue-light);color:var(--blue);}
+.notebooklm .tag{background:var(--blue-light);color:var(--blue);}
+.notebooklm .btn:hover{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+
+.chatgpt .ic,.gemini .ic{background:var(--purple-light);color:var(--purple);}
+.chatgpt .tag,.gemini .tag{background:var(--purple-light);color:var(--purple);}
+.chatgpt .btn:hover,.gemini .btn:hover{border-color:var(--purple);background:var(--purple-light);color:var(--purple);}
+
+.colab .ic,.sheets .ic{background:var(--green-light);color:var(--green);}
+.colab .tag,.sheets .tag{background:var(--green-light);color:var(--green);}
+.colab .btn:hover,.sheets .btn:hover{border-color:var(--green);background:var(--green-light);color:var(--green);}
+
+.nearpod .ic{background:var(--amber-light);color:var(--amber);}
+.nearpod .tag{background:var(--amber-light);color:var(--amber);}
+.nearpod .btn:hover{border-color:var(--amber);background:var(--amber-light);color:var(--amber);}
+
+@media(max-width:960px){.tool-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.tool-grid{grid-template-columns:1fr;}}
+
+.dl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.dl-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;}
+.dl-card .nm{font-size:14px;font-weight:700;color:var(--navy);}
+.dl-card .desc{font-size:12px;color:var(--text-muted);}
+.dl-card .dlbtn{align-self:flex-start;font-size:12px;font-weight:700;padding:9px 16px;border-radius:8px;background:var(--navy);color:#fff;margin-top:6px;}
+.dl-card .status{font-size:10.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--amber);}
+@media(max-width:860px){.dl-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:560px){.dl-grid{grid-template-columns:1fr;}}
+
+.read-list{display:flex;flex-direction:column;gap:12px;}
+.read-item{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;font-size:13px;}
+.read-item .t{font-weight:700;color:var(--navy);}
+.read-item .s{font-size:11.5px;color:var(--text-muted);}
+
+table.stack{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--bg);border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+table.stack th{text-align:left;padding:11px 16px;background:var(--navy);color:#fff;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;}
+table.stack td{padding:10px 16px;border-top:1px solid var(--border);color:var(--navy);}
+table.stack a{color:var(--indigo);font-weight:700;}
+
+.footer{background:var(--navy);color:#9CA3AF;padding:40px 56px 24px;}
+.footer-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:11.5px;}
+.footer a{color:#9CA3AF;}
+.footer a:hover{color:#fff;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="di-home.html" class="nav-brand">
+    <span class="nav-brand-sup">NUS-ISS Living Lab</span>
+    <span class="nav-brand-name">Decision Intelligence with AI</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="di-home.html">Home</a></li>
+    <li><a href="di-why.html">Why</a></li>
+    <li><a href="di-what.html">What</a></li>
+    <li><a href="di-how.html">How</a></li>
+    <li><a href="di-beautyco.html">BeautyCo</a></li>
+    <li><a href="di-playground.html" class="active">Playground</a></li>
+  </ul>
+  <a href="https://notebooklm.google.com/" target="_blank" rel="noopener" class="nav-cta">Open Course NotebookLM</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-eyebrow">AI Playground</div>
+  <h1>Six tools. One question each: when should I use this?</h1>
+  <p>No feature tours. Every card below tells you the moment in the Decision Journey where that tool adds value — you'll meet each one again, in context, inside the templates.</p>
+</header>
+
+<section class="section">
+  <div class="section-h">The Tools</div>
+  <div class="tool-grid">
+
+    <a href="https://notebooklm.google.com/" target="_blank" rel="noopener" class="tcard notebooklm">
+      <div class="ic">📓</div>
+      <span class="tag">Information Partner</span>
+      <h3>NotebookLM</h3>
+      <div class="when"><strong>Use when</strong>You need answers grounded strictly in the course or case documents — not the open internet.</div>
+      <div class="when"><strong>Best in</strong>Why L1.3 · Situation Assessment (T2) · Root Cause evidence (T3) · Evidence Validation (T4) · Final plan check (T6)</div>
+      <span class="btn">Open Notebook →</span>
+    </a>
+
+    <a href="https://chat.openai.com/" target="_blank" rel="noopener" class="tcard chatgpt">
+      <div class="ic">💬</div>
+      <span class="tag">Thinking Partner</span>
+      <h3>ChatGPT</h3>
+      <div class="when"><strong>Use when</strong>You need to frame questions, generate explanations, critique reasoning, or plan action.</div>
+      <div class="when"><strong>Best in</strong>All six templates — the primary reasoning workspace throughout the course.</div>
+      <span class="btn">Open ChatGPT →</span>
+    </a>
+
+    <a href="https://gemini.google.com/" target="_blank" rel="noopener" class="tcard gemini">
+      <div class="ic">✦</div>
+      <span class="tag">Thinking Partner</span>
+      <h3>Gemini</h3>
+      <div class="when"><strong>Use when</strong>You want an alternative reasoning environment for writing, planning and brainstorming.</div>
+      <div class="when"><strong>Best in</strong>Interchangeable with ChatGPT across all six templates; also supports Deep Research with Google sources.</div>
+      <span class="btn">Open Gemini →</span>
+    </a>
+
+    <a href="https://colab.research.google.com/" target="_blank" rel="noopener" class="tcard colab">
+      <div class="ic">📊</div>
+      <span class="tag">Evidence Analysis</span>
+      <h3>Google Colab</h3>
+      <div class="when"><strong>Use when</strong>You need to calculate KPI trends, compare stores, or visualise evidence from numbers.</div>
+      <div class="when"><strong>Best in</strong>Situation Assessment (T2) · Root Cause testing (T3) · Evidence Validation (T4) — always via the prepared course notebook.</div>
+      <span class="btn">Open Colab →</span>
+    </a>
+
+    <a href="https://sheets.google.com/" target="_blank" rel="noopener" class="tcard sheets">
+      <div class="ic">📋</div>
+      <span class="tag">Simple Scoring</span>
+      <h3>Google Sheets</h3>
+      <div class="when"><strong>Use when</strong>You need no-code option scoring or an operational action tracker.</div>
+      <div class="when"><strong>Best in</strong>Options Assessment (T5) · Executive Action Plan (T6) action tracker.</div>
+      <span class="btn">Open Sheets →</span>
+    </a>
+
+    <a href="https://nearpod.com/" target="_blank" rel="noopener" class="tcard nearpod">
+      <div class="ic">🗳️</div>
+      <span class="tag">Participate &amp; Reflect</span>
+      <h3>Nearpod</h3>
+      <div class="when"><strong>Use when</strong>You want to make cohort thinking visible — polls, votes, open questions, collaborate boards.</div>
+      <div class="when"><strong>Best in</strong>Start, transitions and debriefs of every module — use the lesson code your instructor provides.</div>
+      <span class="btn">Join Lesson →</span>
+    </a>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-h">From Templates to Tool Stack</div>
+  <p style="font-size:13px;color:var(--text-muted);max-width:640px;margin-bottom:20px;">Tools should be selected based on the decision task, not introduced all at once. Start with the essential tool for each template — reach for the advanced tool or agent only once the basic workflow feels natural.</p>
+  <table class="stack">
+    <tr><th>Template</th><th>Starting Tool</th><th>Advanced Tool / Skill</th></tr>
+    <tr><td>1. Decision Framing</td><td>Chat</td><td>Context files, <a href="/agents-hub/product-discovery-agent.html">Product Discovery Agent</a></td></tr>
+    <tr><td>2. Situation Assessment</td><td>Chat + uploaded evidence</td><td>Deep Research, NotebookLM, <a href="/agents-hub/research-briefing-agent.html">Research Briefing Agent</a></td></tr>
+    <tr><td>3. Root Cause Analysis</td><td>Project</td><td><a href="/agents-hub/data-insight-agent.html">Data Insight Agent</a>, Behavioural Science Agent</td></tr>
+    <tr><td>4. Evidence Validation</td><td>NotebookLM / visuals</td><td><a href="/agents-hub/ai-council-agent.html">Imperial AI Council</a>, Data Insight Agent</td></tr>
+    <tr><td>5. Options Assessment</td><td>Chat + scoring table</td><td>Custom GPT, Claude Skill, Proposal Pitch Agent</td></tr>
+    <tr><td>6. Executive Action Plan</td><td>Chat + action table</td><td>Agent Mode, Planning Task Management Agent</td></tr>
+  </table>
+  <p style="margin-top:14px;font-size:12.5px;font-style:italic;color:var(--text-muted);">Do not start with agents. Start with better decision thinking, then choose the right tool.</p>
+</section>
+
+<section class="section">
+  <div class="section-h">Downloads</div>
+  <div class="dl-grid">
+    <div class="dl-card"><div class="nm">Six-Template Learner Workbook</div><div class="desc">Paste your outputs from each template as you progress through the journey.</div><span class="status">Coming soon</span></div>
+    <div class="dl-card"><div class="nm">Full Lecture Deck</div><div class="desc">The complete Decision Intelligence with AI slide deck — reference and instructor material.</div><span class="status">Coming soon</span></div>
+    <div class="dl-card"><div class="nm">BeautyCo Dataset</div><div class="desc">Store-level KPIs, staffing, stock-outs and customer comments behind the case.</div><span class="status">Coming soon</span></div>
+    <div class="dl-card"><div class="nm">Prompt Library</div><div class="desc">Every copyable prompt from the six templates in one document.</div><span class="status">Coming soon</span></div>
+    <div class="dl-card"><div class="nm">BeautyCo Colab Notebook</div><div class="desc">Prepared analysis notebook used in Templates 2–4.</div><span class="status">Coming soon</span></div>
+    <div class="dl-card"><div class="nm">Decision Canvas (1-pager)</div><div class="desc">A single-page printable summary of the Discover→Diagnose→Decide→Deliver framework.</div><span class="status">Coming soon</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-h">Bonus Resources</div>
+  <p style="font-size:13px;color:var(--text-muted);max-width:640px;margin-bottom:20px;">Optional materials for learners who want to go further before or after the workshop.</p>
+  <div class="dl-grid">
+    <div class="dl-card"><div class="nm">📁 Workshop Resources (Google Drive)</div><div class="desc">Slides, templates and datasets used in the live workshop sessions.</div><span class="status">Add your Drive folder link</span></div>
+    <div class="dl-card"><div class="nm">📋 Decision Intelligence Planning Questionnaire</div><div class="desc">A guided questionnaire to help you frame your own case before the workshop, mirroring Template 1's clarifying questions.</div><span class="status">Add your questionnaire link</span></div>
+    <div class="dl-card"><div class="nm">🎬 Demo Video: RGCTO in Action</div><div class="desc">A recorded walkthrough turning a weak prompt into a full RGCTO prompt on the BeautyCo case.</div><span class="status">Add your video link</span></div>
+    <div class="dl-card"><div class="nm">🎥 Watch Tutorial: NotebookLM + Colab Workflow</div><div class="desc">Step-by-step walkthrough of Template 2's grounded-evidence workflow, tool by tool.</div><span class="status">Add your video link</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-h">Further Reading &amp; Facilitator Notes</div>
+  <div class="read-list">
+    <div class="read-item"><span class="t">Decision Intelligence — foundational articles</span><span class="s">External reading list</span></div>
+    <div class="read-item"><span class="t">Prompting technique reference (Chain-of-Thought, Tree-of-Thought, ReAct)</span><span class="s">Facilitator notes — kept out of the learner journey</span></div>
+    <div class="read-item"><span class="t">From Templates to Workflows and Agents</span><span class="s">Advanced concepts — Version 2/3 roadmap</span></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span>&copy; 2025 National University of Singapore. All rights reserved.</span>
+    <span><a href="di-home.html">Decision Intelligence with AI</a> · Built by NUS-ISS Living Lab</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Decision Journey — Decision Intelligence with AI</title>
+<meta name="description" content="A slide deck of six decision templates across Discover, Diagnose, Decide and Deliver — each with the BeautyCo evidence, a copyable prompt, the right AI tool, and a reflection question.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --surface:#F2F2F2; --navy:#111827; --navy-mid:#1F3A5F;
+  --blue:#1E88C7; --blue-light:#E8F4FB;
+  --slate:#334155; --slate-light:#F1F5F9;
+  --amber:#B45309; --amber-light:#FEF3C7;
+  --green:#059669; --green-light:#D1FAE5;
+  --purple:#6D28D9; --purple-light:#EDE9FE;
+  --red:#C0392B; --red-light:#FDEDEC;
+  --indigo:#4338CA; --indigo-light:#EEF2FF;
+  --text:#111827; --text-muted:#4B5563; --border:#DADADA;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','Consolas',monospace;
+  --ease-spring:cubic-bezier(0.16,1,0.3,1);
+  --nav-h:72px;
+  --accent: var(--indigo); --accent-light: var(--indigo-light);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--surface);color:var(--text);font-family:var(--font-body);font-weight:500;line-height:1.6;overflow-x:hidden;height:100vh;}
+a{color:inherit;text-decoration:none;}
+h1,h2,h3,h4{text-wrap:balance;}
+p{text-wrap:pretty;}
+button{font-family:var(--font-body);}
+
+.nav{position:fixed;inset:0 0 auto;z-index:200;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:rgba(255,255,255,0.96);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--border);}
+.nav-brand{display:flex;flex-direction:column;gap:1px;}
+.nav-brand-sup{font-size:10px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);}
+.nav-brand-name{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--navy);letter-spacing:-0.01em;}
+.nav-links{display:flex;align-items:center;gap:30px;list-style:none;}
+.nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);transition:color 0.25s;}
+.nav-links a:hover,.nav-links a.active{color:var(--navy);}
+.nav-cta{font-size:11.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:10px 18px;border-radius:6px;background:var(--indigo);color:#fff!important;transition:all 0.25s;white-space:nowrap;}
+.nav-cta:hover{background:#372AA8;}
+@media(max-width:960px){.nav{padding:0 20px;}.nav-links{display:none;}}
+
+.deck-shell{padding-top:var(--nav-h);height:100vh;display:flex;flex-direction:column;}
+.deck-topbar{padding:14px 40px;display:flex;align-items:center;gap:20px;background:var(--bg);border-bottom:1px solid var(--border);}
+.deck-module{font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--indigo);white-space:nowrap;}
+.progress-track{flex:1;height:5px;background:var(--surface);border-radius:100px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--indigo);border-radius:100px;transition:width 0.4s var(--ease-spring);width:12%;}
+.deck-counter{font-size:12px;font-weight:600;color:var(--text-muted);white-space:nowrap;}
+
+.deck{flex:1;overflow-y:auto;position:relative;padding-bottom:20px;background:var(--surface);}
+.slide{display:none;background:var(--bg);max-width:720px;margin:32px auto;padding:52px 48px 56px;border-radius:14px;box-shadow:0 4px 28px rgba(17,24,39,0.08);}
+.slide.active{display:block;animation:fadein 0.35s var(--ease-spring);}
+@keyframes fadein{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@media(max-width:800px){.slide{margin:16px;padding:36px 24px 40px;}}
+
+/* per-phase accent overrides */
+.slide.discover{--accent:var(--slate);--accent-light:var(--slate-light);}
+.slide.diagnose{--accent:var(--amber);--accent-light:var(--amber-light);}
+.slide.decide{--accent:var(--green);--accent-light:var(--green-light);}
+.slide.deliver{--accent:var(--red);--accent-light:var(--red-light);}
+
+.slide-kicker{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.slide-kicker::before{content:'';width:24px;height:2px;background:var(--accent);}
+.slide h2{font-family:var(--font-display);font-size:clamp(24px,3.4vw,36px);font-weight:700;letter-spacing:-0.02em;color:var(--navy);margin-bottom:8px;}
+.slide-q{font-size:13px;font-style:italic;color:var(--text-muted);margin-bottom:8px;}
+.slide-meta{font-size:12px;color:var(--text-muted);margin-bottom:26px;display:flex;gap:10px;flex-wrap:wrap;}
+.tag{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:3px 9px;border-radius:100px;background:var(--surface);color:var(--text-muted);}
+
+.split2{display:grid;grid-template-columns:1fr;gap:20px;}
+.panel{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:26px;}
+.panel h3{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--navy);margin-bottom:14px;}
+.panel ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.panel li{font-size:13px;color:var(--text-muted);padding-left:18px;position:relative;line-height:1.6;}
+.panel li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;}
+.slide-quote{margin-top:28px;padding:18px 22px;background:var(--indigo-light);border-left:3px solid var(--indigo);border-radius:0 12px 12px 0;font-size:13.5px;font-style:italic;color:var(--navy);}
+
+.phase-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;}
+.phase-pill{font-size:12px;font-weight:700;padding:9px 18px;border-radius:100px;border:1.5px solid var(--border);cursor:pointer;background:var(--bg);color:var(--navy);transition:all 0.2s;}
+.phase-pill:hover{border-color:var(--navy);background:var(--surface);}
+
+.content-block{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:18px;}
+.content-block p{font-size:13px;color:var(--text-muted);line-height:1.7;}
+.content-block p+p{margin-top:8px;}
+.blk-label{display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.blk-label .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+
+table.kpi{width:100%;border-collapse:collapse;font-size:12px;}
+table.kpi th{text-align:left;padding:8px 12px;background:var(--surface);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);}
+table.kpi td{padding:7px 12px;border-top:1px solid var(--border);color:var(--navy);font-weight:600;}
+.ceo-note{margin-top:12px;padding:12px 16px;background:var(--red-light);border-left:3px solid var(--red);border-radius:0 10px 10px 0;font-size:12px;color:#7A2E23;font-style:italic;}
+
+.prompt-box{position:relative;background:var(--navy);border-radius:12px;padding:18px 20px;}
+.prompt-box pre{font-family:var(--font-mono);font-size:11.5px;line-height:1.65;color:#E5E7EB;white-space:pre-wrap;}
+.copy-btn{position:absolute;top:12px;right:12px;font-size:10.5px;font-weight:700;color:#111827;background:#fff;padding:5px 11px;border-radius:6px;border:none;cursor:pointer;letter-spacing:0.04em;}
+.copy-btn:hover{background:#E5E7EB;}
+
+.tool-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+.tool-btn{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;padding:9px 16px;border-radius:8px;border:1.5px solid var(--border);color:var(--navy);transition:all 0.2s;}
+.tool-btn:hover{border-color:var(--accent);background:var(--accent-light);color:var(--accent);}
+
+.workflow-mini{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;}
+.wf-chip{font-size:11.5px;font-weight:700;padding:9px 14px;border-radius:9px;background:var(--bg);border:1.5px solid var(--border);color:var(--navy);}
+.wf-arrow{color:var(--text-muted);}
+
+.step-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;}
+.step-num{width:22px;height:22px;border-radius:6px;background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-body{flex:1;}
+.step-title{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+
+.challenge-list{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.challenge-list li{font-size:12.5px;color:var(--navy);padding-left:18px;position:relative;}
+.challenge-list li::before{content:'?';position:absolute;left:0;font-weight:700;color:var(--text-muted);}
+
+.nearpod-box{border:1.5px dashed var(--border);border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px;}
+.nearpod-box p{font-style:italic;font-size:12.5px;color:var(--navy);}
+
+.save-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:12px;color:var(--text-muted);margin-top:14px;}
+.save-box strong{color:var(--navy);}
+
+.two-col{display:grid;grid-template-columns:1fr;gap:14px;}
+
+.takeaway-grid{display:grid;grid-template-columns:1fr;gap:20px;}
+.takeaway-col{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:26px;}
+.takeaway-col.preview{background:var(--indigo-light);border-color:#C7D2FE;}
+.takeaway-col h3{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;}
+
+.technique-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:7px 16px;border-radius:100px;background:var(--accent);color:#fff;margin-bottom:20px;}
+table.tool-layer{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px;}
+table.tool-layer th{text-align:left;padding:7px 10px;background:var(--surface);font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);}
+table.tool-layer td{padding:7px 10px;border-top:1px solid var(--border);color:var(--navy);}
+table.tool-layer a{color:var(--accent);font-weight:700;}
+.reveal-box{border:1px dashed var(--border);border-radius:12px;padding:14px 18px;margin-top:14px;}
+.reveal-box summary{cursor:pointer;font-size:12px;font-weight:700;color:var(--navy);}
+.reveal-box .inner{margin-top:10px;font-size:12.5px;color:var(--text-muted);line-height:1.7;}
+.reveal-box .inner strong{color:var(--navy);}
+.reveal-box table.kpi{margin-top:6px;}
+
+/* MISTAKE COMPARE */
+.mistake-compare{display:grid;grid-template-columns:1fr;gap:14px;margin-top:6px;}
+.mcard{border-radius:12px;padding:14px 16px;font-size:12.5px;line-height:1.6;}
+.mcard.bad{background:var(--red-light);color:#7A2E23;border:1px solid #F3C9C3;}
+.mcard.good{background:var(--green-light);color:#04543B;border:1px solid #A7E8D0;}
+.mcard .lbl{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;display:block;}
+
+/* CHECKLIST */
+.checklist-block .checklist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.checklist-block .check-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--navy);padding:9px 0;border-top:1px solid var(--border);cursor:pointer;}
+.checklist-block .check-item:first-of-type{border-top:none;}
+.checklist-block input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.checklist-counter{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-light);padding:3px 10px;border-radius:100px;}
+
+.nav-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:11px 22px;border-radius:8px;border:1.5px solid var(--border);color:var(--navy);cursor:pointer;background:var(--bg);transition:all 0.2s;}
+.nav-btn:hover:not(:disabled){border-color:var(--navy);background:var(--surface);}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed;}
+.nav-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy);}
+.nav-btn.primary:hover{background:#000;}
+.space-hint{font-size:12px;color:var(--text-muted);white-space:nowrap;opacity:0;transition:opacity 0.3s;}
+.space-hint.show{opacity:1;}
+
+/* FLOATING SLIDE NAV — no full-width bar, small corner controls only */
+.deck-counter{position:fixed;left:24px;bottom:16px;z-index:250;font-size:12px;color:var(--text-muted);font-weight:600;background:rgba(242,242,242,0.85);padding:4px 10px;border-radius:6px;}
+.deck-nav{position:fixed;right:24px;bottom:16px;z-index:250;display:flex;align-items:center;gap:8px;}
+.deck-nav-btn{background:var(--accent);border:none;padding:8px 18px;border-radius:100px;font-family:var(--font-body);font-size:12.5px;font-weight:700;color:#fff;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+.deck-nav-btn:hover:not(:disabled){filter:brightness(0.88);}
+.deck-nav-btn:disabled{opacity:0.35;cursor:not-allowed;}
+
+.print-btn{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:6px;border:1.5px solid var(--border);color:var(--navy);cursor:pointer;background:var(--bg);white-space:nowrap;transition:all 0.2s;}
+.print-btn:hover{border-color:var(--navy);background:var(--surface);}
+
+/* PRINT — one slide per portrait page */
+@media print{
+  @page{ size:portrait; margin:14mm; }
+  body{ background:#fff !important; height:auto !important; overflow:visible !important; }
+  .nav, .deck-topbar, .deck-nav, .deck-counter{ display:none !important; }
+  .deck-shell{ padding-top:0 !important; height:auto !important; display:block !important; }
+  .deck{ overflow:visible !important; padding-bottom:0 !important; background:#fff !important; height:auto !important; }
+  .slide{ display:block !important; box-shadow:none !important; border:1px solid #ddd; margin:0 auto; max-width:100%; page-break-after:always; break-after:page; }
+  .slide:last-child{ page-break-after:auto; break-after:auto; }
+  a[href]::after{ content:none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="di-home.html" class="nav-brand">
+    <span class="nav-brand-sup">NUS-ISS Living Lab</span>
+    <span class="nav-brand-name">Decision Intelligence with AI</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="di-home.html">Home</a></li>
+    <li><a href="di-why.html">Why</a></li>
+    <li><a href="di-what.html">What</a></li>
+    <li><a href="di-how.html" class="active">How</a></li>
+    <li><a href="di-beautyco.html">BeautyCo</a></li>
+    <li><a href="di-playground.html">Playground</a></li>
+  </ul>
+  <a href="https://notebooklm.google.com/" target="_blank" rel="noopener" class="nav-cta">Open Course NotebookLM</a>
+</nav>
+
+<div class="deck-shell">
+  <div class="deck-topbar">
+    <span class="deck-module">The Decision Journey</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="space-hint" id="spaceHint">→ Press space or right arrow to begin</span>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- SLIDE 1 — TITLE / OBJECTIVES -->
+    <section class="slide active">
+      <div class="slide-kicker">The Decision Journey</div>
+      <h2>Six templates. One case. The right AI tool at each step.</h2>
+      <p class="slide-meta">6 templates · ~2 hours · BeautyCo case throughout</p>
+      <div class="split2">
+        <div class="panel">
+          <h3>How this deck works</h3>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.75;">Each template follows the same rhythm: Learn, review the BeautyCo evidence, use a copyable prompt, open the right AI tool, challenge the output, save your work. Discover → Diagnose → Decide → Deliver.</p>
+        </div>
+        <div class="panel">
+          <h3>The Decision Challenge</h3>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.75;font-style:italic;">"Why is increased traffic not translating into stronger business outcomes, and what should BeautyCo do next?"</p>
+        </div>
+      </div>
+      <div class="phase-pills">
+        <button class="phase-pill" onclick="goTo(1)">① Discover — T1, T2</button>
+        <button class="phase-pill" onclick="goTo(3)">② Diagnose — T3, T4</button>
+        <button class="phase-pill" onclick="goTo(5)">③ Decide — T5</button>
+        <button class="phase-pill" onclick="goTo(6)">④ Deliver — T6</button>
+      </div>
+      <div class="slide-quote">"By the end of this deck, you'll have a complete BeautyCo decision workbook — ready to review at the BeautyCo Case Hub."</div>
+    </section>
+
+    <!-- SLIDE 2 — T1 -->
+    <section class="slide discover">
+      <div class="slide-kicker">Discover · Template 1</div>
+      <h2>Decision Framing</h2>
+      <div class="slide-q">"What decision are we making?"</div>
+      <div class="slide-meta"><span class="tag">~15 min</span><span class="tag">ChatGPT / Gemini</span></div>
+      <div class="technique-badge">🧠 Expert Perspective (RGCTO) · Ask Before Answer</div>
+
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Clarify the decision before analysing or recommending. Use AI as a thinking partner to ask clarification questions, formulate the decision question, identify objectives, expose assumptions, and define constraints.</p>
+        <div class="mistake-compare">
+          <div class="mcard bad"><span class="lbl">❌ Common mistake</span>Jumping straight to "improve staffing and inventory" before the decision question is even framed.</div>
+          <div class="mcard good"><span class="lbl">✅ Do this instead</span>Let AI ask up to 3 clarification questions first — a good frame surfaces assumptions before any recommendation.</div>
+        </div>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Review the evidence</div>
+        <table class="kpi">
+          <tr><th>KPI</th><th>2024</th><th>2025</th></tr>
+          <tr><td>Footfall</td><td>220,000</td><td>282,000</td></tr>
+          <tr><td>Revenue</td><td>$4.8M</td><td>$5.0M</td></tr>
+          <tr><td>Conversion</td><td>24%</td><td>18%</td></tr>
+          <tr><td>CSAT</td><td>82</td><td>71</td></tr>
+          <tr><td>Repeat purchase</td><td>38%</td><td>29%</td></tr>
+        </table>
+        <div class="ceo-note">CEO concern: "Traffic is increasing strongly, but business outcomes are not."</div>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Use the template</div>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          <pre>Role: You are an experienced strategy and decision-intelligence advisor.
+Goal: Clarify the decision that needs to be made.
+Context: BeautyCo is a premium beauty retailer. Traffic has increased,
+but revenue is almost flat. Conversion, CSAT and repeat purchase have declined.
+Before answering: Ask up to three clarification questions if the decision is unclear.
+Tasks: 1. Frame the decision question. 2. Identify the business objective.
+3. Identify key symptoms. 4. Surface initial assumptions.
+5. Identify information gaps. 6. Identify decision constraints.
+Output: A Decision Framing Brief — decision question, objective, symptoms,
+assumptions, information gaps, constraints.</pre>
+        </div>
+        <div class="tool-row">
+          <a href="https://chat.openai.com/" target="_blank" rel="noopener" class="tool-btn">💬 Use ChatGPT</a>
+          <a href="https://gemini.google.com/" target="_blank" rel="noopener" class="tool-btn">✦ Use Gemini</a>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="content-block" style="margin-bottom:0;">
+          <div class="blk-label"><span class="dot"></span>Challenge the output</div>
+          <ul class="challenge-list">
+            <li>What did AI assume too quickly?</li>
+            <li>Did it frame a decision or jump to a solution?</li>
+            <li>Which stakeholder is missing?</li>
+          </ul>
+        </div>
+        <div class="content-block" style="margin-bottom:0;">
+          <div class="blk-label"><span class="dot"></span>Reflect + Save</div>
+          <div class="nearpod-box" style="margin-top:0;"><p>"What assumption did AI make too quickly?"</p><a href="https://nearpod.com/" target="_blank" rel="noopener" class="tool-btn">🗳️ Nearpod</a></div>
+          <div class="save-box">Save your <strong>Decision Framing Brief</strong>.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3 — T2 -->
+    <section class="slide discover">
+      <div class="slide-kicker">Discover · Template 2</div>
+      <h2>Situation Assessment</h2>
+      <div class="slide-q">"What is happening?"</div>
+      <div class="slide-meta"><span class="tag">~25 min</span><span class="tag">NotebookLM + Colab + ChatGPT/Gemini</span></div>
+      <div class="technique-badge">🧠 Structured Analysis (Chain-of-Thought)</div>
+
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Build a complete picture before diagnosing. This is the first template where tools differentiate — NotebookLM grounds you in evidence, Colab analyses the numbers, ChatGPT/Gemini synthesizes it all.</p>
+      </div>
+      <div class="workflow-mini">
+        <span class="wf-chip">📓 NotebookLM — grounded sources</span><span class="wf-arrow">+</span>
+        <span class="wf-chip">📊 Colab — numerical patterns</span><span class="wf-arrow">→</span>
+        <span class="wf-chip">💬 ChatGPT/Gemini — synthesis</span>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Optional tool layer</div>
+        <table class="tool-layer">
+          <tr><th>Evidence need</th><th>Tool / Agent</th></tr>
+          <tr><td>Internal documents</td><td><a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> / Projects</td></tr>
+          <tr><td>External market evidence</td><td>Deep Research / <a href="/agents-hub/research-briefing-agent.html">Research Briefing Agent</a></td></tr>
+          <tr><td>Data patterns</td><td><a href="/agents-hub/data-insight-agent.html">Data Insight Agent</a></td></tr>
+        </table>
+      </div>
+      <div class="content-block">
+        <div class="step-row"><div class="step-num">1</div><div class="step-body"><div class="step-title">Review grounded sources</div>
+          <div class="prompt-box" style="margin-top:8px;"><button class="copy-btn" onclick="copyPrompt(this)">Copy</button><pre>Based only on the supplied sources:
+1. What direct evidence shows a conversion problem?
+2. Separate observations from interpretations.
+3. What customer complaints appear repeatedly?
+4. What external trends matter to the decision?
+5. What important evidence is still missing?</pre></div>
+          <div class="tool-row"><a href="https://notebooklm.google.com/" target="_blank" rel="noopener" class="tool-btn">📓 Open NotebookLM</a></div>
+        </div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-body"><div class="step-title">Analyse numerical evidence</div>
+          <p style="font-size:12.5px;color:var(--text-muted);margin:4px 0 8px;">Use the prepared BeautyCo Colab notebook — KPI trends, store comparisons, traffic vs. revenue, stock-outs vs. revenue, staffing vs. conversion.</p>
+          <div class="tool-row"><a href="https://colab.research.google.com/" target="_blank" rel="noopener" class="tool-btn">📊 Open BeautyCo Analysis Notebook</a></div>
+        </div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-body"><div class="step-title">Synthesize findings</div>
+          <div class="prompt-box" style="margin-top:8px;"><button class="copy-btn" onclick="copyPrompt(this)">Copy</button><pre>Assess the situation. Organise into: 1. Internal signals
+2. External signals 3. Customer/stakeholder signals
+4. Emerging themes 5. Risks and opportunities 6. Evidence gaps
+For every signal, separate: Observation / Interpretation / Decision implication.
+Do not identify final root causes yet.</pre></div>
+          <div class="tool-row">
+            <a href="https://chat.openai.com/" target="_blank" rel="noopener" class="tool-btn">💬 Use ChatGPT</a>
+            <a href="https://gemini.google.com/" target="_blank" rel="noopener" class="tool-btn">✦ Use Gemini</a>
+          </div>
+        </div></div>
+      </div>
+      <div class="save-box">Save your <strong>Situation Assessment</strong>, then continue to Diagnose.</div>
+    </section>
+
+    <!-- SLIDE 4 — T3 -->
+    <section class="slide diagnose">
+      <div class="slide-kicker">Diagnose · Template 3</div>
+      <h2>Root Cause Analysis</h2>
+      <div class="slide-q">"Why might it be happening?"</div>
+      <div class="slide-meta"><span class="tag">~20 min</span><span class="tag">ChatGPT/Gemini + NotebookLM + Colab</span></div>
+      <div class="technique-badge">🧠 Multiple Explanations (Tree-of-Thought)</div>
+
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Generate competing explanations before choosing one. Expand the hypothesis space across customer, product, people, process, technology and market causes — without ranking them yet.</p>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Use the template</div>
+        <div class="prompt-box"><button class="copy-btn" onclick="copyPrompt(this)">Copy</button><pre>Generate five distinct explanations for why BeautyCo's traffic
+is increasing while conversion, satisfaction and repeat purchase
+are declining. For each: state the cause, explain the logic,
+identify supporting evidence, identify contradicting evidence,
+identify additional data required.
+Group into: Customer / Product / Process / People / Technology / Market.
+Do not rank the explanations yet.</pre></div>
+        <div class="tool-row">
+          <a href="https://chat.openai.com/" target="_blank" rel="noopener" class="tool-btn">💬 Generate in ChatGPT</a>
+          <a href="https://gemini.google.com/" target="_blank" rel="noopener" class="tool-btn">✦ Generate in Gemini</a>
+        </div>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Evidence check</div>
+        <p style="margin-bottom:8px;">Use NotebookLM for qualitative evidence, Colab where numbers are relevant.</p>
+        <div class="tool-row">
+          <a href="https://notebooklm.google.com/" target="_blank" rel="noopener" class="tool-btn">📓 Check Case Sources</a>
+          <a href="https://colab.research.google.com/" target="_blank" rel="noopener" class="tool-btn">📊 Analysis Notebook</a>
+        </div>
+      </div>
+      <details class="reveal-box">
+        <summary>🧩 Pop quiz: which category does this belong to?</summary>
+        <div class="inner">"Customers abandon checkout when a promo code fails to apply." Is this a <strong>Product</strong>, <strong>Process</strong>, or <strong>Technology</strong> cause?<br><br><strong>Answer:</strong> Most teams call it a Technology bug — but it could just as easily be a Process gap (no fallback when a promo fails) or a Product issue (unclear promo terms). Good root-cause analysis holds more than one category open until evidence narrows it down.</div>
+      </details>
+      <div class="nearpod-box"><p>Collaborate Board: "Post one plausible cause other groups may have missed."</p><a href="https://nearpod.com/" target="_blank" rel="noopener" class="tool-btn">🗳️ Nearpod Board</a></div>
+      <details class="reveal-box">
+        <summary>Suggested output (keep collapsed until the debrief)</summary>
+        <div class="inner"><strong>Possible causes:</strong> Service Capacity Constraints (long queues, poor consultations) · Inventory Availability Issues (stock-outs, unavailable products) · Loyalty Experience Weakness (falling repeat purchases). Do not rank yet — Template 4 validates which are best supported.</div>
+      </details>
+      <div class="save-box">Save your <strong>Root Cause Hypotheses</strong>.</div>
+    </section>
+
+    <!-- SLIDE 5 — T4 -->
+    <section class="slide diagnose">
+      <div class="slide-kicker">Diagnose · Template 4</div>
+      <h2>Critical Review &amp; Evidence Validation</h2>
+      <div class="slide-q">"Which explanation is best supported?"</div>
+      <div class="slide-meta"><span class="tag">~25 min</span><span class="tag">NotebookLM + Colab + ChatGPT/Gemini</span></div>
+      <div class="technique-badge">🧠 Critical Review &amp; Evidence Validation (ReAct + Reflection)</div>
+
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>The strongest point of integration in the course. Ground claims in documents, inspect the numbers, then run an AI critique.</p>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Optional tool layer</div>
+        <table class="tool-layer">
+          <tr><th>Validation need</th><th>Tool / Agent</th></tr>
+          <tr><td>Internal evidence check</td><td><a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> / Projects</td></tr>
+          <tr><td>External benchmark</td><td>Deep Research</td></tr>
+          <tr><td>Data pattern check</td><td><a href="/agents-hub/data-insight-agent.html">Data Insight Agent</a></td></tr>
+          <tr><td>Structured critique</td><td><a href="/agents-hub/ai-council-agent.html">Imperial AI Council</a> / Reflection pattern</td></tr>
+        </table>
+      </div>
+      <div class="content-block">
+        <div class="step-row"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ground claims</div><p style="font-size:12.5px;color:var(--text-muted);margin:2px 0 8px;">What supports each hypothesis, what contradicts it, what is missing.</p><div class="tool-row"><a href="https://notebooklm.google.com/" target="_blank" rel="noopener" class="tool-btn">📓 Open NotebookLM</a></div></div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-body"><div class="step-title">Inspect numerical evidence</div><p style="font-size:12.5px;color:var(--text-muted);margin:2px 0 8px;">Staff capacity vs. conversion, stock-outs vs. sales growth, store-level outliers.</p><div class="tool-row"><a href="https://colab.research.google.com/" target="_blank" rel="noopener" class="tool-btn">📊 Open Colab</a></div></div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-body"><div class="step-title">Run an AI critique</div>
+          <div class="prompt-box" style="margin-top:8px;"><button class="copy-btn" onclick="copyPrompt(this)">Copy</button><pre>Evaluate the hypotheses from Template 3 objectively. For each:
+1. Supporting evidence 2. Contradictory evidence 3. Missing evidence
+4. Possible bias/assumption 5. Confidence: High/Medium/Low
+6. What evidence would change the conclusion.
+Prioritise by evidence strength. Do not treat correlation as causation.</pre></div>
+          <div class="tool-row">
+            <a href="https://chat.openai.com/" target="_blank" rel="noopener" class="tool-btn">💬 Critique in ChatGPT</a>
+            <a href="https://gemini.google.com/" target="_blank" rel="noopener" class="tool-btn">✦ Critique in Gemini</a>
+          </div>
+        </div></div>
+      </div>
+      <div class="nearpod-box"><p>"How confident are you that staffing is a primary cause?" High / Medium / Low / Insufficient evidence.</p><a href="https://nearpod.com/" target="_blank" rel="noopener" class="tool-btn">🗳️ Vote</a></div>
+      <details class="reveal-box">
+        <summary>Suggested output (keep collapsed until the debrief)</summary>
+        <div class="inner">
+          <table class="kpi">
+            <tr><th>Hypothesis</th><th>Confidence</th></tr>
+            <tr><td>Service Capacity Constraints</td><td>High</td></tr>
+            <tr><td>Inventory Availability Issues</td><td>High</td></tr>
+            <tr><td>Loyalty Programme Weakness</td><td>Medium</td></tr>
+            <tr><td>Traffic Quality Issues</td><td>Low</td></tr>
+          </table>
+          <p style="margin-top:8px;"><strong>Diagnosis statement:</strong> Traffic generation is not the primary issue. Conversion capability is.</p>
+        </div>
+      </details>
+      <div class="save-box">Save your <strong>Prioritised Diagnosis</strong>, then continue to Decide.</div>
+    </section>
+
+    <!-- SLIDE 6 — T5 -->
+    <section class="slide decide">
+      <div class="slide-kicker">Decide · Template 5</div>
+      <h2>Options Assessment</h2>
+      <div class="slide-q">"What could we do?"</div>
+      <div class="slide-meta"><span class="tag">~25 min</span><span class="tag">ChatGPT/Gemini + Google Sheets</span></div>
+      <div class="technique-badge">🧠 Trade-off Evaluation (Multi-Perspective Reasoning)</div>
+
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Generate broadly, then evaluate rigorously — in three rounds: generate options, score against criteria, then examine from multiple stakeholder perspectives.</p>
+      </div>
+      <div class="content-block">
+        <div class="step-row"><div class="step-num">1</div><div class="step-body"><div class="step-title">Generate options</div>
+          <div class="prompt-box" style="margin-top:8px;"><button class="copy-btn" onclick="copyPrompt(this)">Copy</button><pre>Generate six possible actions to address the prioritised
+BeautyCo diagnosis: low-cost quick wins, operational fixes,
+customer-experience improvements, process/technology
+improvements, longer-term strategic options. Do not recommend yet.</pre></div>
+        </div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-body"><div class="step-title">Evaluate options</div><p style="font-size:12.5px;color:var(--text-muted);margin:2px 0 8px;">Score: Impact · Feasibility · Cost · Risk · Evidence · Time-to-value.</p><div class="tool-row"><a href="https://sheets.google.com/" target="_blank" rel="noopener" class="tool-btn">📋 Options Scoring Sheet</a></div></div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-body"><div class="step-title">Multiple perspectives</div>
+          <div class="prompt-box" style="margin-top:8px;"><button class="copy-btn" onclick="copyPrompt(this)">Copy</button><pre>Evaluate each option from: Customer, Employees, Operations,
+Finance, Brand, Risk & compliance. State what they value, would
+support, concerns, trade-offs. Recommend a prioritised sequence.</pre></div>
+          <div class="tool-row">
+            <a href="https://chat.openai.com/" target="_blank" rel="noopener" class="tool-btn">💬 Assess in ChatGPT</a>
+            <a href="https://gemini.google.com/" target="_blank" rel="noopener" class="tool-btn">✦ Assess in Gemini</a>
+          </div>
+        </div></div>
+      </div>
+      <div class="nearpod-box"><p>"Which option should BeautyCo prioritise?" — vote before and after the evaluation.</p><a href="https://nearpod.com/" target="_blank" rel="noopener" class="tool-btn">🗳️ Run the Vote</a></div>
+      <details class="reveal-box">
+        <summary>Suggested output (keep collapsed until the debrief)</summary>
+        <div class="inner">
+          <table class="kpi">
+            <tr><th>Option</th><th>Impact</th><th>Feasibility</th></tr>
+            <tr><td>Increase Marketing Spend</td><td>Low</td><td>High</td></tr>
+            <tr><td>Improve Staffing</td><td>Medium</td><td>High</td></tr>
+            <tr><td>Improve Inventory Planning</td><td>Medium</td><td>Medium</td></tr>
+            <tr><td>Integrated Service + Inventory Improvement</td><td>High</td><td>Medium</td></tr>
+          </table>
+          <p style="margin-top:8px;"><strong>Recommended option:</strong> Integrated Service + Inventory Improvement — fix conversion capability before driving more traffic.</p>
+        </div>
+      </details>
+      <div class="save-box">Save your <strong>Recommended Option</strong>, then continue to Deliver.</div>
+    </section>
+
+    <!-- SLIDE 7 — T6 -->
+    <section class="slide deliver">
+      <div class="slide-kicker">Deliver · Template 6</div>
+      <h2>Executive Action Plan</h2>
+      <div class="slide-q">"What will we do next?"</div>
+      <div class="slide-meta"><span class="tag">~20 min</span><span class="tag">ChatGPT/Gemini + Google Sheets</span></div>
+      <div class="technique-badge">🧠 Action Planning (Plan-and-Solve / Prompt Chaining)</div>
+
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Learn</div>
+        <p>Translate the recommendation into coordinated execution using every previous output as context.</p>
+      </div>
+      <div class="workflow-mini">
+        <span class="wf-chip">Framing Brief</span><span class="wf-arrow">→</span>
+        <span class="wf-chip">Situation Assessment</span><span class="wf-arrow">→</span>
+        <span class="wf-chip">Root Cause</span><span class="wf-arrow">→</span>
+        <span class="wf-chip">Diagnosis</span><span class="wf-arrow">→</span>
+        <span class="wf-chip">Recommended Option</span><span class="wf-arrow">→</span>
+        <span class="wf-chip" style="background:var(--red-light);border-color:#F3C9C3;color:var(--red);">Action Plan</span>
+      </div>
+      <div class="content-block">
+        <div class="blk-label"><span class="dot"></span>Use the template</div>
+        <div class="prompt-box"><button class="copy-btn" onclick="copyPrompt(this)">Copy</button><pre>Use all five previous outputs as context. Create a 30/60/90-day
+executive action plan: recommended initiative, workstreams and
+actions, owners, timeline, KPIs and targets, risks and mitigation,
+dependencies, human approval points, stakeholder communication,
+monitoring cadence. Identify what can be AI-assisted vs. requires
+human judgement or approval.</pre></div>
+        <div class="tool-row">
+          <a href="https://chat.openai.com/" target="_blank" rel="noopener" class="tool-btn">💬 Build in ChatGPT</a>
+          <a href="https://gemini.google.com/" target="_blank" rel="noopener" class="tool-btn">✦ Build in Gemini</a>
+          <a href="https://sheets.google.com/" target="_blank" rel="noopener" class="tool-btn">📋 Action Plan Tracker</a>
+        </div>
+      </div>
+      <div class="nearpod-box"><p>Final reflection: strongest part of the plan, biggest unresolved risk, assumption to monitor.</p><a href="https://nearpod.com/" target="_blank" rel="noopener" class="tool-btn">🗳️ Final Reflection</a></div>
+      <details class="reveal-box">
+        <summary>Suggested output (keep collapsed until the debrief)</summary>
+        <div class="inner">
+          <p><strong>Key initiatives:</strong> Service Capacity — workforce scheduling, queue management, advisor training. Inventory Availability — inventory forecasting, automated replenishment, stock visibility. Loyalty Enhancement — personalized promotions, AI-assisted recommendations, tiered rewards.</p>
+          <table class="kpi" style="margin-top:8px;">
+            <tr><th>KPI</th><th>Current</th><th>Target</th></tr>
+            <tr><td>Conversion</td><td>18%</td><td>22%</td></tr>
+            <tr><td>CSAT</td><td>71</td><td>80</td></tr>
+            <tr><td>Repeat purchase</td><td>29%</td><td>35%</td></tr>
+            <tr><td>Stock-out rate</td><td>14%</td><td>&lt;8%</td></tr>
+          </table>
+        </div>
+      </details>
+      <div class="save-box">Save your <strong>Executive Action Plan</strong> — you've completed the full Decision Journey.</div>
+    </section>
+
+    <!-- SLIDE 8 — WRAP-UP -->
+    <section class="slide">
+      <div class="slide-kicker">Wrap-Up</div>
+      <h2>Key Takeaways &amp; What's Next</h2>
+      <div class="takeaway-grid">
+        <div class="takeaway-col">
+          <h3>Key Takeaways from the Decision Journey</h3>
+          <ul class="panel" style="border:none;padding:0;">
+            <li>Discover → Diagnose → Decide → Deliver maps directly onto six templates</li>
+            <li>NotebookLM grounds, Colab quantifies, ChatGPT/Gemini reasons — each at the right moment</li>
+            <li>Every template ends with a human challenge before saving the output</li>
+            <li>Each output becomes context for the next template</li>
+          </ul>
+        </div>
+        <div class="takeaway-col preview">
+          <h3>Coming Up</h3>
+          <ul class="panel" style="border:none;padding:0;background:transparent;">
+            <li>Review your full workbook at the BeautyCo Case Hub</li>
+            <li>Compare your recommendation with the suggested conclusion</li>
+            <li>Explore every tool used in the course at the AI Playground</li>
+          </ul>
+        </div>
+      </div>
+      <div class="content-block" style="margin-top:24px;">
+        <div class="blk-label"><span class="dot"></span>Embedded AI thinking patterns</div>
+        <table class="kpi">
+          <tr><th>Template</th><th>Thinking Pattern</th></tr>
+          <tr><td>1. Decision Framing</td><td>Expert Perspective (RGCTO)</td></tr>
+          <tr><td>2. Situation Assessment</td><td>Structured Analysis (Chain-of-Thought)</td></tr>
+          <tr><td>3. Root Cause Analysis</td><td>Multiple Explanations (Tree-of-Thought)</td></tr>
+          <tr><td>4. Evidence Validation</td><td>Critical Review &amp; Evidence Validation (ReAct + Reflection)</td></tr>
+          <tr><td>5. Options Assessment</td><td>Trade-off Evaluation (Multi-Perspective Reasoning)</td></tr>
+          <tr><td>6. Executive Action Plan</td><td>Action Planning (Plan-and-Solve / Prompt Chaining)</td></tr>
+        </table>
+        <p style="margin-top:10px;font-size:12px;font-style:italic;color:var(--text-muted);">AI thinking patterns are embedded naturally — the focus stays on Decision Intelligence, not prompt engineering.</p>
+      </div>
+      <div class="content-block checklist-block">
+        <div class="checklist-head"><div class="blk-label" style="margin-bottom:0;"><span class="dot"></span>Ready to present your workbook?</div><span class="checklist-counter">0/6</span></div>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> Decision Framing Brief saved</label>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> Situation Assessment saved</label>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> Root Cause Hypotheses saved</label>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> Prioritised Diagnosis saved</label>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> Recommended Option saved</label>
+        <label class="check-item"><input type="checkbox" onchange="updateChecklist(this)"> Executive Action Plan saved</label>
+      </div>
+      <div style="text-align:center;margin-top:32px;">
+        <a href="di-beautyco.html" class="nav-btn primary" style="display:inline-flex;">Review the Full BeautyCo Case Hub →</a>
+      </div>
+    </section>
+
+  </div>
+
+  <span class="deck-counter" id="deckCounter">Slide 1 of 8</span>
+  <div class="deck-nav">
+    <button class="deck-nav-btn" id="prevBtn" onclick="goTo(current-1)">Previous</button>
+    <button class="deck-nav-btn" id="nextBtn" onclick="goTo(current+1)">Next</button>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+function goTo(i){
+  if(i < 0 || i >= total) return;
+  slides[current].classList.remove('active');
+  current = i;
+  slides[current].classList.add('active');
+  document.getElementById('deck').scrollTop = 0;
+  document.getElementById('deckCounter').textContent = `Slide ${current+1} of ${total}`;
+  document.getElementById('progressFill').style.width = `${((current+1)/total)*100}%`;
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total-1;
+  document.getElementById('nextBtn').textContent = current === total-1 ? 'Done' : 'Next';
+  document.getElementById('spaceHint').classList.toggle('show', current === 0);
+}
+
+document.addEventListener('keydown', (e) => {
+  if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current+1); }
+  if(e.key === 'ArrowLeft') goTo(current-1);
+});
+
+const hashMap = { discover:1, t1:1, t2:2, diagnose:3, t3:3, t4:4, decide:5, t5:5, deliver:6, t6:6, wrapup:7 };
+const startHash = location.hash.replace('#','').toLowerCase();
+goTo(hashMap.hasOwnProperty(startHash) ? hashMap[startHash] : 0);
+
+function copyPrompt(btn){
+  const pre = btn.parentElement.querySelector('pre');
+  const text = pre.textContent;
+  const flash = (label) => {
+    const orig = btn.textContent;
+    btn.textContent = label;
+    setTimeout(()=>{ btn.textContent = orig; }, 1500);
+  };
+  const fallbackCopy = () => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) { ok = false; }
+    document.body.removeChild(ta);
+    flash(ok ? 'Copied!' : 'Select & copy manually');
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => flash('Copied!')).catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+}
+
+function updateChecklist(cb){
+  const block = cb.closest('.checklist-block');
+  const boxes = block.querySelectorAll('input[type=checkbox]');
+  const checked = block.querySelectorAll('input[type=checkbox]:checked').length;
+  block.querySelector('.checklist-counter').textContent = `${checked}/${boxes.length}`;
+}
+</script>
+</body>
+</html>
