@@ -135,7 +135,7 @@ Analyze the data and structure your response exactly as follows, professional, c
 ### 4. Recommendation — What to Emphasize Early
 * [1-2 concrete instructions for how to pitch the opening material given this specific cohort's stated goals and comfort level]
 
-Ensure the final output uses clear HTML formatting so it renders beautifully when emailed via Gmail.`;
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the first ## heading and end after the final bullet, with no other text before or after.`;
   }
 
   if (stage === 2) {
@@ -174,7 +174,7 @@ Analyze the data and structure your response exactly as follows, professional, c
 ### 4. Recommendation — What To Do Before ARIMAX
 * [1-2 concrete, immediately actionable instructions: what to re-explain right now, whether to slow down or move on, which specific example to revisit]
 
-Ensure the final output uses clear HTML formatting so it renders beautifully when emailed via Gmail.`;
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the first ## heading and end after the final bullet, with no other text before or after.`;
   }
 
   if (stage === 3) {
@@ -215,7 +215,7 @@ Analyze the data and structure your response exactly as follows, professional, c
 ### 4. Recommendation — What To Emphasize in the Time Remaining
 * [1-2 concrete instructions for the closing stretch of class: what to reinforce before wrap-up, what to deliberately leave for the reflection discussion]
 
-Ensure the final output uses clear HTML formatting so it renders beautifully when emailed via Gmail.`;
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the first ## heading and end after the final bullet, with no other text before or after.`;
   }
 
   // stage 4
@@ -253,7 +253,7 @@ Analyze the data and structure your response exactly as follows, professional, c
 ### 4. Recommendation — What to Change Next Time
 * [1-2 concrete changes to the workshop's content, pacing, or emphasis for the next cohort, grounded in where this specific group struggled]
 
-Ensure the final output uses clear HTML formatting so it renders beautifully when emailed via Gmail.`;
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the first ## heading and end after the final bullet, with no other text before or after.`;
 }
 
 export async function onRequestOptions() {
