@@ -110,10 +110,10 @@ function formatResponses(values) {
 }
 
 function buildPrompt(stage, rawData, priorReports) {
-  const styleNote = `Write like a sharp internal briefing to the instructor, not a formal report: short bullets of hard fact, then one synthesizing line — no padding, no filler, no restating the obvious. If there is only one respondent, state their specific answers directly instead of talking about "the cohort." If there are several, summarize the distribution and recurring patterns instead, keeping the same compact style.`;
+  const styleNote = `Write like a sharp internal analytics report to the instructor: numbered sections, each with hard bulleted facts. When there are multiple respondents, compute and state real aggregate statistics — averages, counts, and percentages of total responses — never just a vague "some" or "most." When there is only one respondent, state their specific answers directly instead of talking about "the cohort." No padding, no filler, no restating the obvious.`;
 
   if (stage === 1) {
-    return `You are an expert learning-analytics assistant embedded in a live workshop. Your task is to analyze the start-of-class intake responses and produce a tight baseline report for the instructor before any teaching happens today.
+    return `You are an expert learning-analytics assistant embedded in a live workshop. Your task is to analyze the start-of-class intake responses and produce a baseline report for the instructor before any teaching happens today.
 
 ${styleNote}
 
@@ -126,17 +126,21 @@ Structure your response exactly as follows:
 
 ## 📋 Beginning of Class Report
 
-n = [n]
+### 1. Participant Profile & Demographics
+* **Total Responses:** [n]
+* **Industries / Roles Represented:** [bulleted list of the distinct industries and job roles mentioned, grouping duplicates]
+* **Experience Levels:** [distribution of time series experience and programming experience across respondents, e.g. "Time series: 2 None, 3 Beginner, 1 Intermediate"]
 
-* **Industry / Role:** [industry — job role, or the spread across respondents]
-* **Experience:** [time series experience level(s) / programming experience level(s)]
-* **Confidence:** [x/5 — one-word read: low / moderate / high baseline]
-* **Learning goal:** [what they most want to learn, condensed]
-* **Business problem:** [the forecasting problem they're facing, condensed]
+### 2. Confidence Level (Scale 1-5)
+* **Average / Spread:** [average score, plus the full distribution: "1 = X respondents (Y%), 2 = ..., 3 = ..., 4 = ..., 5 = ...". One sentence characterizing where the cluster sits.]
 
-**Takeaway:** [1-2 sentences connecting confidence, experience, and stated goal/problem into one instructor-facing insight — what should they watch for or set up early because of this specific combination?]
+### 3. Learning Goals & Business Problems
+* [bulleted synthesis of the recurring learning goals and business problems the cohort described]
 
-Output plain text using exactly that Markdown structure (## heading, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the Takeaway line, with no other text before or after.`;
+### 4. Key Takeaways for the Instructor
+* [1-2 sentences of concrete recommendation for how to pitch the opening material, grounded in the specific mix of experience, confidence, and goals above]
+
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
 
   if (stage === 2) {
@@ -164,16 +168,20 @@ Structure your response exactly as follows:
 
 ## 📊 Checkpoint 1 Report — SARIMA
 
-n = [n] · Score: [avg]/6
+### 1. Checkpoint Snapshot
+* **Total Responses:** [n]
+* **Score Distribution:** [average out of 6, plus a distribution across score bands, e.g. "0-2 correct: X (Y%), 3-4 correct: ..., 5-6 correct: ..."]
 
-**Where struggling:**
-* For each question with a meaningful wrong answer, one line: [question topic]: picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions everyone got right as "✅ correct" instead of a bullet.
+### 2. Where the Cohort is Struggling
+* For each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions almost everyone got right as "✅ mostly correct" instead of a bullet.
 
-**Vs. the Beginning baseline:** [1-2 sentences comparing actual SARIMA performance against the confidence level and stated goal from the Beginning Report — over-confident, under-confident, or on track? Note whether the errors are conceptual or just notation/labeling confusion.]
+### 3. Progressive Cohort Assessment (vs. Beginning)
+* [Compare actual SARIMA performance against the confidence level and stated goals from the Beginning Report — is the cohort over-confident, under-confident, or on track relative to what they said coming in? Note whether the errors are conceptual or just notation/labeling confusion.]
 
-**Recommendation before ARIMAX:** [one crisp, concrete, immediately actionable sentence — not a list]
+### 4. Recommendation — What To Do Before ARIMAX
+* [1-2 concrete, immediately actionable instructions: what to re-explain right now, whether to slow down or move on, which specific example to revisit]
 
-Output plain text using exactly that Markdown structure (## heading, ** bold labels, * bullets). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the Recommendation line, with no other text before or after.`;
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
 
   if (stage === 3) {
@@ -203,16 +211,20 @@ Structure your response exactly as follows:
 
 ## 📊 Checkpoint 2 Report — ARIMAX
 
-n = [n] · Score: [avg]/5
+### 1. Checkpoint Snapshot
+* **Total Responses:** [n]
+* **Score Distribution:** [average out of 5, plus a distribution across score bands]
 
-**Where struggling:**
-* For each question with a meaningful wrong answer, one line: [question topic]: picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions everyone got right as "✅ correct" instead of a bullet.
+### 2. Where the Cohort is Struggling
+* For each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions almost everyone got right as "✅ mostly correct" instead of a bullet.
 
-**Trend since Checkpoint 1:** [state explicitly: improving / flat / declining, and whether the Checkpoint 1 recommendation appears to have landed — call out if the same error pattern recurs]
+### 3. Progressive Cohort Assessment (vs. Beginning & Checkpoint 1)
+* [State explicitly whether performance/confidence is improving, flat, or declining versus the SARIMA checkpoint, and against the confidence/goals from the Beginning Report — call out whether the Checkpoint 1 recommendation appears to have landed, and whether the same error pattern recurs]
 
-**Recommendation for time remaining:** [one crisp, concrete, immediately actionable sentence — not a list]
+### 4. Recommendation — What To Emphasize in the Time Remaining
+* [1-2 concrete instructions for the closing stretch of class: what to reinforce before wrap-up, what to deliberately leave for the reflection discussion]
 
-Output plain text using exactly that Markdown structure (## heading, ** bold labels, * bullets). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the Recommendation line, with no other text before or after.`;
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
 
   // stage 4
@@ -238,19 +250,21 @@ Structure your response exactly as follows:
 
 ## 📋 Final Learning Journey Report
 
-n = [n]
+### 1. Reflection Snapshot
+* **Total Responses:** [n]
+* **Confidence Now (Scale 1-5):** [average, plus distribution, plus how it compares to the average confidence reported in the Beginning Report — up, down, or unchanged]
+* **Where They'll Apply This:** [bulleted synthesis of where respondents said they'll use this]
 
-* **Biggest takeaway:** [what stuck with them, or the recurring theme across respondents]
-* **Confidence now:** [x/5 — vs. their self-rated confidence at the start, e.g. "up from 3/5 at the start" or "unchanged from a 3/5 start"]
-* **Will apply to:** [where they said they'll apply this]
+### 2. Progressive Cohort Assessment — The Full Journey
+* [2-3 sentences tracing the arc from the Beginning Report's stated goals and business problems, through both checkpoints' comprehension trend, to where the cohort landed by reflection — did the day deliver on what they came in hoping for? Be explicit about whether confidence and performance moved together or diverged.]
 
-**The journey, in one narrative:** [2-3 sentences connecting the stated goal/business problem from the Beginning Report → the comprehension arc across both checkpoints → where they landed by reflection — did the day deliver on what they came in hoping for?]
+### 3. What's Still Unclear
+* [Aggregate the recurring themes in "remaining questions" — call out anything that echoes a misconception flagged at either checkpoint and was never fully resolved]
 
-**What's still unclear:** [quote or closely paraphrase their remaining-questions answer; call out if it echoes a Beginning-of-class question or a checkpoint misconception that was never resolved]
+### 4. Recommendation — What to Change Next Time
+* [1-2 concrete changes to the workshop's content, pacing, or emphasis for the next cohort, grounded in where this specific group struggled and any suggestions they offered]
 
-**Recommendation for next time:** [one crisp, concrete, actionable sentence for the next cohort, incorporating any suggestions they offered]
-
-Output plain text using exactly that Markdown structure (## heading, ** bold labels, * bullets). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the Recommendation line, with no other text before or after.`;
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
 
 export async function onRequestOptions() {
