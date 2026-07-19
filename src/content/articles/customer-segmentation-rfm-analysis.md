@@ -9,31 +9,7 @@ Every business has customers — but not all customers are equal. Some buy frequ
 
 **RFM Analysis** is the framework that fixes this. It scores every customer on three behavioural dimensions — Recency, Frequency, and Monetary value — and uses those scores to group customers into actionable segments. No complex algorithms. No black boxes. Just a clear, systematic view of who your best customers are, who is slipping away, and who you've already lost.
 
-## Video Lecture
-
-<div class="video-wrap">
-  <video
-    controls
-    preload="metadata"
-    poster=""
-    style="width:100%;border-radius:8px;display:block;background:#0d1335;"
-  >
-    <source src="https://media.githubusercontent.com/media/christinecheongpuayee88/christinecheong/master/rfm-video/RFM_Analysis_2025_narrated.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
-</div>
-
-<style>
-  .video-wrap {
-    margin: 2rem 0 1.5rem;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    background: #0d1335;
-  }
-</style>
-
-## What this video covers
+## Key concepts
 
 **RFM stands for three behavioural dimensions:**
 
