@@ -113,7 +113,7 @@ function buildPrompt(stage, rawData, priorReports) {
   if (stage === 1) {
     return `You are an expert learning-analytics assistant embedded in a live workshop. Your task is to analyze the start-of-class intake responses and produce a baseline report for the instructor before any teaching happens today.
 
-### RAW BEGINNING-OF-CLASS DATA (Quiz 1 — current/intended use, closest problem, self-rated comfort 1-5 with ACF/PACF/AR/I/MA, and open question) ###
+### RAW BEGINNING-OF-CLASS DATA (Pre-Class Survey — name (optional), industry, job role, time series experience, programming experience, learning goals, self-rated confidence 1-5, and the business problem they're facing) ###
 ${rawData}
 
 #################
@@ -124,16 +124,16 @@ Analyze the data and structure your response exactly as follows, professional, c
 
 ### 1. Cohort Snapshot
 * **Responses analyzed:** [n]
-* **Average self-rated comfort (ACF/PACF/AR/I/MA):** [x / 5]
+* **Average self-rated confidence:** [x / 5]
 
-### 2. Use-Cases & Goals
-* [Summarize the recurring use-cases and the problem types the cohort said they want to solve]
+### 2. Who's in the Room
+* [Summarize the industries, job roles, and time series/programming experience levels — is this a technical or business-facing room, and how much prior exposure do they bring?]
 
-### 3. Starting Comfort Level
-* [Characterize the spread of comfort ratings — is the room mostly beginner, mixed, or already comfortable with the core terms?]
+### 3. Goals & Business Problems
+* [Summarize the recurring learning goals and the business problems the cohort said they're currently facing]
 
 ### 4. Recommendation — What to Emphasize Early
-* [1-2 concrete instructions for how to pitch the opening material given this specific cohort's stated goals and comfort level]
+* [1-2 concrete instructions for how to pitch the opening material given this specific cohort's stated goals, business problems, and confidence level]
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the first ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -221,7 +221,7 @@ Output plain text using exactly that Markdown structure (## and ### headings, * 
   // stage 4
   return `You are an expert learning-analytics assistant embedded in a live workshop. Your task is to synthesize the end-of-class reflection alongside the cohort's entire day — from stated expectations, through two comprehension checkpoints, to their own final reflection — into one closing report for the instructor.
 
-### RAW REFLECTION DATA (Quiz 4, open-ended + confidence rating) ###
+### RAW REFLECTION DATA (End-of-Class Reflection — biggest takeaway, self-rated confidence 1-5, where they'll apply time series forecasting, remaining questions, and optional suggestions) ###
 ${rawData}
 
 ### BEGINNING-OF-CLASS REPORT ###
@@ -241,17 +241,17 @@ Analyze the data and structure your response exactly as follows, professional, c
 
 ### 1. Reflection Snapshot
 * **Responses analyzed:** [n]
-* **Model reached for first:** [summarize which of ARIMA / SARIMA / ARIMAX learners now say they'd use first, and why]
-* **Confidence shift:** [self-rated confidence now vs. self-rated comfort at the start of class]
+* **Biggest takeaways:** [summarize the recurring themes in what stuck with people]
+* **Confidence shift:** [self-rated confidence now, from the Reflection, vs. self-rated confidence at the start of class, from the Beginning Report]
 
 ### 2. The Learning Journey, in One Narrative
-* [2-3 sentences connecting stated expectations → the comprehension arc across both checkpoints → where they landed by reflection — did the day deliver on what they came in hoping for?]
+* [2-3 sentences connecting stated goals and business problems from the Beginning Report → the comprehension arc across both checkpoints → where they landed by reflection, including where they say they'll apply this — did the day deliver on what they came in hoping for?]
 
 ### 3. What's Still Unclear
-* [Aggregate the recurring themes in "what's still unclear / want more practice on" — call out anything that echoes a misconception flagged at either checkpoint and was never fully resolved]
+* [Aggregate the recurring themes in "remaining questions" — call out anything that echoes a misconception flagged at either checkpoint and was never fully resolved]
 
 ### 4. Recommendation — What to Change Next Time
-* [1-2 concrete changes to the workshop's content, pacing, or emphasis for the next cohort, grounded in where this specific group struggled]
+* [1-2 concrete changes to the workshop's content, pacing, or emphasis for the next cohort, grounded in where this specific group struggled and any suggestions they offered]
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the first ## heading and end after the final bullet, with no other text before or after.`;
 }
