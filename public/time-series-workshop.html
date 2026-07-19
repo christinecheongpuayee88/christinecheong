@@ -118,34 +118,6 @@
   .quiz-explain.show { display: block; }
   .quiz-actions { display: flex; gap: 12px; margin-top: 8px; }
 
-  /* INSTRUCTOR TOOLS */
-  .instructor-panel {
-    border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 28px; background: var(--surface);
-    display: flex; flex-direction: column; gap: 18px;
-  }
-  .instructor-stages { display: flex; gap: 10px; flex-wrap: wrap; }
-  .stage-btn {
-    font-family: inherit; font-size: 13.5px; font-weight: 500;
-    color: var(--text); background: var(--bg); border: 1px solid var(--border);
-    padding: 10px 18px; border-radius: 100px; cursor: pointer; transition: all .15s;
-  }
-  .stage-btn:hover:not(:disabled) { border-color: var(--text); }
-  .stage-btn:disabled { opacity: .5; cursor: wait; }
-  .stage-btn.done { color: var(--good); border-color: var(--good); background: var(--good-bg); }
-  .report-status { font-size: 13.5px; color: var(--subtle); }
-  .report-status.error { color: var(--bad); }
-  .report-box {
-    display: none; border: 1px solid var(--border); border-radius: var(--radius);
-    background: var(--bg); padding: 24px; font-size: 14.5px; line-height: 1.7;
-  }
-  .report-box.show { display: block; }
-  .report-box h2 { font-size: 18px; margin-bottom: 14px; }
-  .report-box h3 { font-size: 15px; margin: 16px 0 8px; }
-  .report-box ul, .report-box ol { margin-left: 20px; margin-bottom: 8px; }
-  .report-actions { display: none; gap: 12px; }
-  .report-actions.show { display: flex; }
-
   /* FOOTER */
   footer { padding: 32px 40px; }
   .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
@@ -285,26 +257,6 @@
     <div class="form-card-actions">
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSfbeio-LF2idQlJ4o8Lc1ntZwEPDw-F34Y2TBJ9l-RhXW0wwQ/viewform" class="btn" id="quiz4link" target="_blank" rel="noopener">Open reflection</a>
       <span class="hint">Responses land in a Google Sheet linked to this form.</span>
-    </div>
-  </div>
-</section>
-
-<!-- INSTRUCTOR TOOLS: COHORT SENSING PIPELINE -->
-<section class="section" id="instructor-tools">
-  <p class="section-label">Instructor only</p>
-  <h2 class="section-title">Cohort sensing reports</h2>
-  <p class="section-desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read.</p>
-  <div class="instructor-panel">
-    <div class="instructor-stages">
-      <button class="stage-btn" id="stage-btn-1" onclick="runCohortStage(1)">1 · Beginning Report</button>
-      <button class="stage-btn" id="stage-btn-2" onclick="runCohortStage(2)">2 · Checkpoint 1 (SARIMA)</button>
-      <button class="stage-btn" id="stage-btn-3" onclick="runCohortStage(3)">3 · Checkpoint 2 (ARIMAX)</button>
-      <button class="stage-btn" id="stage-btn-4" onclick="runCohortStage(4)">4 · Final Report</button>
-    </div>
-    <div class="report-status" id="report-status"></div>
-    <div class="report-box" id="report-box"></div>
-    <div class="report-actions" id="report-actions">
-      <button class="btn" onclick="emailCurrentReport()">Email this report</button>
     </div>
   </div>
 </section>
@@ -468,87 +420,6 @@
 
   renderQuiz('quiz2');
   renderQuiz('quiz3');
-
-  // ---- Instructor: cohort sensing pipeline ----
-  let currentReport = null;
-
-  function inlineFormat(s) {
-    return s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  }
-
-  function formatReport(text) {
-    const lines = text.split('\n');
-    let html = '';
-    let inList = false;
-    for (const raw of lines) {
-      const line = raw.trim();
-      if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
-      if (line.startsWith('## ')) {
-        if (inList) { html += '</ul>'; inList = false; }
-        html += `<h2>${inlineFormat(line.slice(3))}</h2>`;
-      } else if (line.startsWith('### ')) {
-        if (inList) { html += '</ul>'; inList = false; }
-        html += `<h3>${inlineFormat(line.slice(4))}</h3>`;
-      } else if (line.startsWith('* ') || line.startsWith('- ')) {
-        if (!inList) { html += '<ul>'; inList = true; }
-        html += `<li>${inlineFormat(line.slice(2))}</li>`;
-      } else {
-        if (inList) { html += '</ul>'; inList = false; }
-        html += `<p>${inlineFormat(line)}</p>`;
-      }
-    }
-    if (inList) html += '</ul>';
-    return html;
-  }
-
-  function runCohortStage(stage) {
-    const btn = document.getElementById(`stage-btn-${stage}`);
-    const statusEl = document.getElementById('report-status');
-    const boxEl = document.getElementById('report-box');
-    const actionsEl = document.getElementById('report-actions');
-
-    btn.disabled = true;
-    statusEl.classList.remove('error');
-    statusEl.textContent = 'Running — reading responses, comparing against prior stages, generating report…';
-    boxEl.classList.remove('show');
-    actionsEl.classList.remove('show');
-
-    fetch('/api/cohort-report', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ stage }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        btn.disabled = false;
-        if (data.error) {
-          statusEl.classList.add('error');
-          statusEl.textContent = `Error: ${data.error}`;
-          return;
-        }
-        btn.classList.add('done');
-        statusEl.textContent = `${data.stageLabel} report generated and appended to the Cohort Log.`;
-        boxEl.innerHTML = formatReport(data.report);
-        boxEl.classList.add('show');
-        actionsEl.classList.add('show');
-        currentReport = { subject: data.subject, report: data.report };
-      })
-      .catch((err) => {
-        btn.disabled = false;
-        statusEl.classList.add('error');
-        statusEl.textContent = `Error: ${err.message}`;
-      });
-  }
-
-  function emailCurrentReport() {
-    if (!currentReport) return;
-    const plain = currentReport.report
-      .replace(/^#+\s*/gm, '')
-      .replace(/\*\*(.+?)\*\*/g, '$1')
-      .replace(/^\*\s+/gm, '• ');
-    const url = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(currentReport.subject)}&body=${encodeURIComponent(plain)}`;
-    window.open(url, '_blank');
-  }
 </script>
 
 </body>
