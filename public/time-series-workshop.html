@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time Series Forecasting Workshop — SARIMA &amp; ARIMAX</title>
+<meta name="description" content="Interactive companion for the Time Series Forecasting workshop: agenda, concept cheat-sheet, and mid-class checkpoint quizzes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #ffffff;
+    --surface:  #f6f6f5;
+    --border:   #e8e8e6;
+    --text:     #181816;
+    --muted:    #6b6b67;
+    --subtle:   #9b9b96;
+    --tag-bg:   #efefed;
+    --good:     #059669;
+    --good-bg:  #d1fae5;
+    --bad:      #dc2626;
+    --bad-bg:   #fee2e2;
+    --radius:   3px;
+    --nav-h:    56px;
+  }
+
+  html { font-size: 18px; scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 200;
+    height: var(--nav-h);
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto; padding: 0 40px; height: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .nav-brand { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+  .nav-back { font-size: 14px; font-weight: 500; color: var(--muted); transition: color .15s; }
+  .nav-back:hover { color: var(--text); }
+
+  /* HERO */
+  .hero { padding: 56px 40px 40px; border-bottom: 1px solid var(--border); }
+  .hero-inner { max-width: 1100px; margin: 0 auto; }
+  .hero-label { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--subtle); margin-bottom: 16px; }
+  .hero-h1 { font-size: clamp(30px, 4vw, 44px); font-weight: 600; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 14px; max-width: 700px; }
+  .hero-sub { font-size: 17px; color: var(--muted); max-width: 620px; line-height: 1.7; margin-bottom: 24px; }
+  .agenda-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill { font-size: 12px; font-weight: 500; color: var(--muted); background: var(--tag-bg); padding: 6px 12px; border-radius: 100px; }
+
+  /* SECTION */
+  .section { max-width: 1100px; margin: 0 auto; padding: 48px 40px; border-bottom: 1px solid var(--border); }
+  .section-label { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; }
+  .section-title { font-size: 26px; font-weight: 600; letter-spacing: -.02em; margin-bottom: 10px; }
+  .section-desc { font-size: 15px; color: var(--muted); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+
+  /* EXTERNAL QUIZ CARD (Quiz 1 / Quiz 4 — Google Form) */
+  .form-card {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px; background: var(--surface);
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .form-card-status { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--bad); }
+  .form-card-status.ready { color: var(--good); }
+  .form-questions { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--text); }
+  .form-questions li { margin-left: 18px; }
+  .form-card-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; font-family: inherit; font-size: 14px; font-weight: 500;
+    color: var(--bg); background: var(--text); padding: 10px 22px; border-radius: 100px;
+    border: none; cursor: pointer; transition: opacity .15s; text-decoration: none;
+  }
+  .btn:hover { opacity: .72; }
+  .btn.secondary { background: none; color: var(--text); border: 1px solid var(--border); }
+  .hint { font-size: 13px; color: var(--subtle); }
+
+  /* CONCEPT CARDS */
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .concept-card { background: var(--bg); padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .concept-name { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+  .concept-story { font-size: 13px; color: var(--subtle); font-style: italic; }
+  .concept-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* QUIZ (inline, self-check) */
+  .quiz-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .quiz-score { font-size: 14px; font-weight: 600; color: var(--muted); }
+  .quiz-score.done { color: var(--text); }
+  .quiz-q { border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 12px; }
+  .quiz-q-text { font-size: 15px; font-weight: 500; margin-bottom: 14px; }
+  .quiz-opt { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: var(--radius); cursor: pointer; transition: background .12s; }
+  .quiz-opt:hover { background: var(--surface); }
+  .quiz-opt input { margin-top: 3px; flex-shrink: 0; }
+  .quiz-opt-label { font-size: 14px; color: var(--text); }
+  .quiz-opt.correct { background: var(--good-bg); }
+  .quiz-opt.correct .quiz-opt-label { color: var(--good); font-weight: 600; }
+  .quiz-opt.incorrect { background: var(--bad-bg); }
+  .quiz-opt.incorrect .quiz-opt-label { color: var(--bad); font-weight: 600; }
+  .quiz-explain { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+  .quiz-explain.show { display: block; }
+  .quiz-actions { display: flex; gap: 12px; margin-top: 8px; }
+
+  /* INSTRUCTOR TOOLS */
+  .instructor-panel {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px; background: var(--surface);
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .instructor-stages { display: flex; gap: 10px; flex-wrap: wrap; }
+  .stage-btn {
+    font-family: inherit; font-size: 13.5px; font-weight: 500;
+    color: var(--text); background: var(--bg); border: 1px solid var(--border);
+    padding: 10px 18px; border-radius: 100px; cursor: pointer; transition: all .15s;
+  }
+  .stage-btn:hover:not(:disabled) { border-color: var(--text); }
+  .stage-btn:disabled { opacity: .5; cursor: wait; }
+  .stage-btn.done { color: var(--good); border-color: var(--good); background: var(--good-bg); }
+  .report-status { font-size: 13.5px; color: var(--subtle); }
+  .report-status.error { color: var(--bad); }
+  .report-box {
+    display: none; border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg); padding: 24px; font-size: 14.5px; line-height: 1.7;
+  }
+  .report-box.show { display: block; }
+  .report-box h2 { font-size: 18px; margin-bottom: 14px; }
+  .report-box h3 { font-size: 15px; margin: 16px 0 8px; }
+  .report-box ul, .report-box ol { margin-left: 20px; margin-bottom: 8px; }
+  .report-actions { display: none; gap: 12px; }
+  .report-actions.show { display: flex; }
+
+  /* FOOTER */
+  footer { padding: 32px 40px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-copy { font-size: 12px; color: var(--subtle); }
+
+  @media (max-width: 680px) {
+    .hero { padding: 40px 24px 32px; }
+    .section { padding: 36px 24px; }
+    .nav-inner { padding: 0 24px; }
+    footer { padding: 28px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="nav-brand">Time Series Forecasting Workshop</span>
+    <a href="https://christinecheong.com" class="nav-back">← christinecheong.com</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-label">SARIMA &amp; ARIMAX</p>
+    <h1 class="hero-h1">From univariate to multivariate forecasting, in one session.</h1>
+    <p class="hero-sub">Your companion page for today's workshop — the agenda, a concept cheat-sheet, and two checkpoint quizzes so you can self-check understanding as we go.</p>
+    <div class="agenda-pills">
+      <span class="pill">Workshop 1a · Airline (SARIMA)</span>
+      <span class="pill">Workshop 1b · Hotel Occupancy (SARIMA)</span>
+      <span class="pill">Workshop 2 · Sales &amp; Advertising (ARIMAX)</span>
+      <span class="pill">Workshop 3 · Platform Sales (ARIMAX)</span>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ 1 : START OF CLASS -->
+<section class="section" id="quiz1">
+  <p class="section-label">Before we start</p>
+  <h2 class="section-title">What do you want out of today?</h2>
+  <p class="section-desc">A 2-minute poll — helps set pacing and surfaces the forecasting problems you actually care about.</p>
+  <div class="form-card">
+    <span class="form-card-status ready">Live &mdash; Google Form</span>
+    <ol class="form-questions">
+      <li>How do you currently use (or want to use) forecasting in your work? <em>(Sales &amp; demand planning / Operations &amp; inventory / Marketing &amp; campaigns / Finance &amp; budgeting / Other)</em></li>
+      <li>Which problem is closest to one you'd like to solve today? <em>(seasonal demand, e.g. hotel occupancy or airline passengers / effect of a leading indicator, e.g. advertising spend on sales / other — write in)</em></li>
+      <li>Rate your comfort today with ACF, PACF, AR, MA, ARIMA <em>(1 = never heard of it, 5 = could explain it to a colleague)</em></li>
+      <li>Open text: "What's the one question about time series forecasting you most want answered by the end of today?"</li>
+    </ol>
+    <div class="form-card-actions">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeFtp0cf7bbkOw7LACyUe0cMWdiJzQsCWqLFSZlfIGiw9yAEQ/viewform" class="btn" id="quiz1link" target="_blank" rel="noopener">Open poll</a>
+      <span class="hint">Responses land in a Google Sheet linked to this form.</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPT CHEAT-SHEET -->
+<section class="section" id="concepts">
+  <p class="section-label">Cheat-sheet</p>
+  <h2 class="section-title">The model family, in plain business terms</h2>
+  <p class="section-desc">Keep this open during lecture — same framing as today's slides.</p>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="concept-name">AR — Autoregressive</div>
+      <div class="concept-story">"Brand momentum"</div>
+      <p class="concept-desc">Today's value depends on its own recent past. High sales last week → likely high this week. ACF decays gradually; PACF cuts off sharply.</p>
+    </div>
+    <div class="concept-card">
+      <div class="concept-name">MA — Moving Average</div>
+      <div class="concept-story">"Flash promo shock"</div>
+      <p class="concept-desc">A short-term shock fades over a few periods. ACF cuts off sharply after lag q; PACF decays gradually.</p>
+    </div>
+    <div class="concept-card">
+      <div class="concept-name">ARIMA</div>
+      <div class="concept-story">"Brand expansion"</div>
+      <p class="concept-desc">Handles a growing/declining trend by differencing (the "I") until the series is stationary, then applies AR + MA.</p>
+    </div>
+    <div class="concept-card">
+      <div class="concept-name">SARIMA</div>
+      <div class="concept-story">"Same pattern, every cycle"</div>
+      <p class="concept-desc">Adds a seasonal AR/I/MA block — ARIMA(p,d,q)(P,D,Q)ₛ — to capture patterns that repeat every s periods (12 = monthly).</p>
+    </div>
+    <div class="concept-card">
+      <div class="concept-name">ARIMAX</div>
+      <div class="concept-story">"Advertising drives sales"</div>
+      <p class="concept-desc">Adds an exogenous input X (a leading indicator) on top of Y's own history — often with lags, since the effect of X is delayed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ 2 : CHECKPOINT — SARIMA -->
+<section class="section" id="quiz2">
+  <p class="section-label">Checkpoint 1 — after SARIMA</p>
+  <h2 class="section-title">Quick check: SARIMA</h2>
+  <p class="section-desc">Instant self-check below — nothing is recorded. If you'd like your answer logged for the room (so pacing/understanding can be reviewed after class), submit the same quiz as a Google Form instead.</p>
+  <div class="quiz-meta">
+    <span class="quiz-score" id="score-quiz2">0 of 6 answered</span>
+  </div>
+  <div id="quiz2-questions"></div>
+  <div class="quiz-actions">
+    <button class="btn" onclick="gradeQuiz('quiz2')">Check my answers</button>
+    <button class="btn secondary" onclick="resetQuiz('quiz2')">Reset</button>
+    <a class="btn secondary" href="https://docs.google.com/forms/d/e/1FAIpQLSfz8210181lxdhI7eP31Tu24_Z7rZeou449vJ9EjyAeoMGvZg/viewform" target="_blank" rel="noopener">Submit as Google Form (graded)</a>
+  </div>
+</section>
+
+<!-- QUIZ 3 : CHECKPOINT — ARIMAX -->
+<section class="section" id="quiz3">
+  <p class="section-label">Checkpoint 2 — after ARIMAX</p>
+  <h2 class="section-title">Quick check: ARIMAX</h2>
+  <p class="section-desc">Instant self-check below — nothing is recorded. If you'd like your answer logged for the room, submit the same quiz as a Google Form instead.</p>
+  <div class="quiz-meta">
+    <span class="quiz-score" id="score-quiz3">0 of 5 answered</span>
+  </div>
+  <div id="quiz3-questions"></div>
+  <div class="quiz-actions">
+    <button class="btn" onclick="gradeQuiz('quiz3')">Check my answers</button>
+    <button class="btn secondary" onclick="resetQuiz('quiz3')">Reset</button>
+    <a class="btn secondary" href="https://docs.google.com/forms/d/e/1FAIpQLScMx3n1VsS8DgZKj0gfuUSQaANis9z7dDKv4SAq8esSBtryiA/viewform" target="_blank" rel="noopener">Submit as Google Form (graded)</a>
+  </div>
+</section>
+
+<!-- QUIZ 4 : END OF CLASS -->
+<section class="section" id="quiz4">
+  <p class="section-label">End of class</p>
+  <h2 class="section-title">Reflection</h2>
+  <p class="section-desc">5 minutes — what stuck, what didn't, and where you'll use this next.</p>
+  <div class="form-card">
+    <span class="form-card-status ready">Live &mdash; Google Form</span>
+    <ol class="form-questions">
+      <li>Which would you now reach for first — ARIMA, SARIMA, or ARIMAX — and why?</li>
+      <li>Rate your confidence (1–5) applying this to a real forecasting problem at work. How does it compare to your rating at the start?</li>
+      <li>Name one real dataset/problem at your organization you'd try this on.</li>
+      <li>What's still unclear, or what would you like more practice on?</li>
+      <li>Optional: feedback on pacing/content for future runs.</li>
+    </ol>
+    <div class="form-card-actions">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfbeio-LF2idQlJ4o8Lc1ntZwEPDw-F34Y2TBJ9l-RhXW0wwQ/viewform" class="btn" id="quiz4link" target="_blank" rel="noopener">Open reflection</a>
+      <span class="hint">Responses land in a Google Sheet linked to this form.</span>
+    </div>
+  </div>
+</section>
+
+<!-- INSTRUCTOR TOOLS: COHORT SENSING PIPELINE -->
+<section class="section" id="instructor-tools">
+  <p class="section-label">Instructor only</p>
+  <h2 class="section-title">Cohort sensing reports</h2>
+  <p class="section-desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read.</p>
+  <div class="instructor-panel">
+    <div class="instructor-stages">
+      <button class="stage-btn" id="stage-btn-1" onclick="runCohortStage(1)">1 · Beginning Report</button>
+      <button class="stage-btn" id="stage-btn-2" onclick="runCohortStage(2)">2 · Checkpoint 1 (SARIMA)</button>
+      <button class="stage-btn" id="stage-btn-3" onclick="runCohortStage(3)">3 · Checkpoint 2 (ARIMAX)</button>
+      <button class="stage-btn" id="stage-btn-4" onclick="runCohortStage(4)">4 · Final Report</button>
+    </div>
+    <div class="report-status" id="report-status"></div>
+    <div class="report-box" id="report-box"></div>
+    <div class="report-actions" id="report-actions">
+      <button class="btn" onclick="emailCurrentReport()">Email this report</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy">© 2026 Christine Cheong · Time Series Forecasting Workshop</span>
+  </div>
+</footer>
+
+<script>
+  // ---- Checkpoint quiz data ----
+  const QUIZ_DATA = {
+    quiz2: [
+      {
+        q: "In ARIMA(p,d,q), what does d represent?",
+        options: ["Number of autoregressive terms", "Order of differencing needed for stationarity", "Number of moving-average terms", "Number of periods per season"],
+        correct: 1,
+        explain: "d is the order of integration — how many times the series must be differenced to remove trend and become stationary."
+      },
+      {
+        q: "Which ACF/PACF pattern points to an AR(p) process rather than MA(q)?",
+        options: ["ACF cuts off sharply, PACF decays gradually", "ACF decays gradually, PACF cuts off after lag p", "Both cut off immediately", "Both decay gradually forever"],
+        correct: 1,
+        explain: "AR processes show a gradually decaying ACF with a PACF that cuts off sharply after lag p — the mirror image of MA behavior."
+      },
+      {
+        q: "In SARIMA(p,d,q)(P,D,Q)ₛ, what does s represent?",
+        options: ["Number of seasonal AR terms", "Significance level of the model", "Number of periods per season (e.g. 12 for monthly)", "Number of standard deviations"],
+        correct: 2,
+        explain: "s is the seasonal period — 12 for monthly data, 4 for quarterly, etc."
+      },
+      {
+        q: "Why do we need seasonal differencing in addition to regular differencing?",
+        options: [
+          "We don't — regular differencing removes seasonality too",
+          "Regular differencing removes trend; seasonal differencing removes the repeating s-period pattern",
+          "Seasonal differencing replaces the need for an AR term",
+          "It only matters for daily data"
+        ],
+        correct: 1,
+        explain: "Regular differencing handles trend/non-stationarity in the mean level. It does not remove a pattern that repeats every s periods — that needs seasonal differencing (Yt − Yt−s)."
+      },
+      {
+        q: "Between two candidate SARIMA models with white-noise residuals, which do you prefer?",
+        options: ["The one with more parameters", "The one with the lower AIC/BIC", "The one with the higher log-likelihood only", "It doesn't matter, pick either"],
+        correct: 1,
+        explain: "Lower AIC/BIC is preferred — it balances model fit against complexity, penalizing unnecessary parameters."
+      },
+      {
+        q: "True or False: a well-fitted SARIMA model should leave residuals that look like white noise.",
+        options: ["True", "False"],
+        correct: 0,
+        explain: "True. If residuals still show significant ACF/PACF spikes, the model hasn't captured all the structure in the data — diagnostic checks (e.g. Ljung-Box) test exactly this."
+      }
+    ],
+    quiz3: [
+      {
+        q: "What's the key difference between ARIMA and ARIMAX?",
+        options: [
+          "ARIMAX only works on daily data",
+          "ARIMAX adds an exogenous predictor (a leading indicator) on top of Y's own past",
+          "ARIMAX cannot handle seasonality",
+          "There's no difference, just different software"
+        ],
+        correct: 1,
+        explain: "ARIMAX extends ARIMA/SARIMA with one or more external (exogenous) input series that help explain/predict Y, e.g. advertising spend predicting sales."
+      },
+      {
+        q: "In the Advertising → Sales example, which is X and which is Y?",
+        options: ["X = Sales, Y = Advertising spend", "X = Advertising spend, Y = Sales", "X and Y are interchangeable", "Neither is exogenous"],
+        correct: 1,
+        explain: "X (advertising spend) is the exogenous input; Y (sales) is the output being forecast — a unidirectional Xt → Yt relationship."
+      },
+      {
+        q: "Why include lagged versions of the exogenous variable (AdvLag1, AdvLag2, …) instead of just its current value?",
+        options: [
+          "It's required by statsmodels syntax",
+          "The effect of X on Y is often delayed/distributed over time — a dynamic transfer-function relationship",
+          "Lags remove the need for differencing",
+          "It has no effect on model performance"
+        ],
+        correct: 1,
+        explain: "Like the shower-knob example: turning the knob (X) doesn't change the water temperature (Y) instantly — the effect is delayed and distributed, so lagged X terms let the model capture that."
+      },
+      {
+        q: "True or False: in the workshop notebooks, models were compared using MAPE on a held-out test set.",
+        options: ["True", "False"],
+        correct: 0,
+        explain: "True. Each notebook splits into training/test sets and reports Mean Absolute Percentage Error on the test set to compare candidate models."
+      },
+      {
+        q: "If adding more advertising lags doesn't improve (or worsens) out-of-sample MAPE, what should you do?",
+        options: [
+          "Add even more lags until it improves",
+          "Drop the less useful lags — more lags isn't automatically better; watch for overfitting",
+          "Switch to a pure MA model",
+          "Ignore MAPE and just look at AIC"
+        ],
+        correct: 1,
+        explain: "As seen in the workshop notebooks (e.g. narrowing from 5 lags to AdvLag3/4/5), a simpler, well-chosen lag set often outperforms a larger one — more parameters can overfit the training set."
+      }
+    ]
+  };
+
+  const answers = { quiz2: {}, quiz3: {} };
+
+  function renderQuiz(id) {
+    const container = document.getElementById(`${id}-questions`);
+    container.innerHTML = QUIZ_DATA[id].map((item, qi) => `
+      <div class="quiz-q" data-qi="${qi}">
+        <p class="quiz-q-text">${qi + 1}. ${item.q}</p>
+        ${item.options.map((opt, oi) => `
+          <label class="quiz-opt" data-oi="${oi}">
+            <input type="radio" name="${id}-q${qi}" value="${oi}" onchange="selectAnswer('${id}', ${qi}, ${oi})">
+            <span class="quiz-opt-label">${opt}</span>
+          </label>
+        `).join('')}
+        <div class="quiz-explain" id="${id}-explain-${qi}">${item.explain}</div>
+      </div>
+    `).join('');
+  }
+
+  function selectAnswer(id, qi, oi) {
+    answers[id][qi] = oi;
+    updateScoreLabel(id);
+  }
+
+  function updateScoreLabel(id) {
+    const total = QUIZ_DATA[id].length;
+    const answered = Object.keys(answers[id]).length;
+    document.getElementById(`score-${id}`).textContent = `${answered} of ${total} answered`;
+  }
+
+  function gradeQuiz(id) {
+    const data = QUIZ_DATA[id];
+    let correctCount = 0;
+    data.forEach((item, qi) => {
+      const qEl = document.querySelector(`#${id}-questions .quiz-q[data-qi="${qi}"]`);
+      const opts = qEl.querySelectorAll('.quiz-opt');
+      const chosen = answers[id][qi];
+      opts.forEach((optEl, oi) => {
+        optEl.classList.remove('correct', 'incorrect');
+        if (oi === item.correct) optEl.classList.add('correct');
+        else if (oi === chosen) optEl.classList.add('incorrect');
+      });
+      if (chosen === item.correct) correctCount++;
+      document.getElementById(`${id}-explain-${qi}`).classList.add('show');
+    });
+    const label = document.getElementById(`score-${id}`);
+    label.textContent = `${correctCount} of ${data.length} correct`;
+    label.classList.add('done');
+  }
+
+  function resetQuiz(id) {
+    answers[id] = {};
+    renderQuiz(id);
+    updateScoreLabel(id);
+    document.getElementById(`score-${id}`).classList.remove('done');
+  }
+
+  renderQuiz('quiz2');
+  renderQuiz('quiz3');
+
+  // ---- Instructor: cohort sensing pipeline ----
+  let currentReport = null;
+
+  function inlineFormat(s) {
+    return s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  function formatReport(text) {
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
+      if (line.startsWith('## ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<h2>${inlineFormat(line.slice(3))}</h2>`;
+      } else if (line.startsWith('### ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<h3>${inlineFormat(line.slice(4))}</h3>`;
+      } else if (line.startsWith('* ') || line.startsWith('- ')) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += `<li>${inlineFormat(line.slice(2))}</li>`;
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<p>${inlineFormat(line)}</p>`;
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  function runCohortStage(stage) {
+    const btn = document.getElementById(`stage-btn-${stage}`);
+    const statusEl = document.getElementById('report-status');
+    const boxEl = document.getElementById('report-box');
+    const actionsEl = document.getElementById('report-actions');
+
+    btn.disabled = true;
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Running — reading responses, comparing against prior stages, generating report…';
+    boxEl.classList.remove('show');
+    actionsEl.classList.remove('show');
+
+    fetch('/api/cohort-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ stage }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        btn.disabled = false;
+        if (data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error}`;
+          return;
+        }
+        btn.classList.add('done');
+        statusEl.textContent = `${data.stageLabel} report generated and appended to the Cohort Log.`;
+        boxEl.innerHTML = formatReport(data.report);
+        boxEl.classList.add('show');
+        actionsEl.classList.add('show');
+        currentReport = { subject: data.subject, report: data.report };
+      })
+      .catch((err) => {
+        btn.disabled = false;
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
+  }
+
+  function emailCurrentReport() {
+    if (!currentReport) return;
+    const plain = currentReport.report
+      .replace(/^#+\s*/gm, '')
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/^\*\s+/gm, '• ');
+    const url = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(currentReport.subject)}&body=${encodeURIComponent(plain)}`;
+    window.open(url, '_blank');
+  }
+</script>
+
+</body>
+</html>
