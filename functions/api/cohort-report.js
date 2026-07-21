@@ -185,13 +185,20 @@ Structure your response exactly as follows:
 
 ### 4. AI-Generated Teaching Recommendations
 
-> [One sentence of cohort evidence citing exact counts/percentages that justify the recommendations below, e.g. "X of Y respondents picked the wrong answer for what d represents, confusing it with autoregressive terms."]
+Consider all five possible teaching-decision categories below, then select ONLY the 3 most important and actionable for this specific cohort's actual data right now. Omit the other two entirely — never list all five.
 
-* **What to emphasise:** [the specific concept the wrong-answer pattern reveals needs re-explaining right now] {{Content}}
-* **How to teach it:** [a concrete delivery choice — e.g. compare two visual examples before returning to the equation] {{Pedagogy}}
-* **When to adapt:** [a specific timing decision — e.g. add N minutes before starting ARIMAX, or move on now] {{Facilitation}}
-* **Who needs support:** [which respondents/segment scored lowest and should get a refresher activity] {{Facilitation}}
-* **How to challenge:** [what to ask the respondents who scored well, so they're not idle during the re-explanation] {{Pedagogy}}
+Categories and the exact tag to use if you select that category:
+- What to emphasise → {{Content}}
+- How to teach it → {{Pedagogy}}
+- When to adapt → {{Facilitation}}
+- Who needs support → {{Facilitation}}
+- How to challenge → {{Pedagogy}}
+
+> [One sentence of cohort evidence citing exact counts/percentages that justifies the 3 recommendations below, e.g. "X of Y respondents picked the wrong answer for what d represents, confusing it with autoregressive terms."]
+
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -235,13 +242,20 @@ Structure your response exactly as follows:
 
 ### 4. AI-Generated Teaching Recommendations
 
-> [One sentence of cohort evidence citing exact counts/percentages that justify the recommendations below]
+Consider all five possible teaching-decision categories below, then select ONLY the 3 most important and actionable for this specific cohort's actual data right now. Omit the other two entirely — never list all five.
 
-* **What to emphasise:** [the specific concept the wrong-answer pattern reveals still needs reinforcing before class ends] {{Content}}
-* **How to teach it:** [a concrete delivery choice for the closing stretch] {{Pedagogy}}
-* **When to adapt:** [a specific timing decision — how many minutes to spend now vs. leave for the reflection discussion] {{Facilitation}}
-* **Who needs support:** [which respondents/segment is still struggling and should get direct follow-up] {{Facilitation}}
-* **How to challenge:** [what to ask the respondents who are on track, so the closing stretch isn't wasted for them] {{Pedagogy}}
+Categories and the exact tag to use if you select that category:
+- What to emphasise → {{Content}}
+- How to teach it → {{Pedagogy}}
+- When to adapt → {{Facilitation}}
+- Who needs support → {{Facilitation}}
+- How to challenge → {{Pedagogy}}
+
+> [One sentence of cohort evidence citing exact counts/percentages that justifies the 3 recommendations below]
+
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }

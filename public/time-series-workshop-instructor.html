@@ -22,6 +22,8 @@
     --good-bg:  #d1fae5;
     --bad:      #dc2626;
     --bad-bg:   #fee2e2;
+    --amber:    #b45309;
+    --amber-bg: #fef3c7;
     --radius:   3px;
   }
 
@@ -82,6 +84,49 @@
   }
   .btn:hover { opacity: .72; }
 
+  .section-title { font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin: 44px 0 6px; }
+  .section-desc { font-size: 14px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
+
+  .dash-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
+  .dash-expected { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dash-expected input {
+    width: 56px; font-family: inherit; font-size: 13.5px; padding: 6px 8px;
+    border: 1px solid var(--border); border-radius: var(--radius); text-align: center;
+  }
+
+  .dash-box { display: none; margin-top: 18px; }
+  .dash-box.show { display: block; }
+
+  .readiness-badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 100px;
+    font-size: 13.5px; font-weight: 600; margin-bottom: 18px;
+  }
+  .readiness-badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; }
+  .readiness-green { background: var(--good-bg); color: var(--good); }
+  .readiness-green::before { background: var(--good); }
+  .readiness-amber { background: var(--amber-bg); color: var(--amber); }
+  .readiness-amber::before { background: var(--amber); }
+  .readiness-red { background: var(--bad-bg); color: var(--bad); }
+  .readiness-red::before { background: var(--bad); }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-tile { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; background: var(--surface); }
+  .stat-tile .stat-value { font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
+  .stat-tile .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .stat-tile .stat-delta { font-size: 12px; font-weight: 600; margin-top: 6px; }
+  .stat-tile .stat-delta.up { color: var(--good); }
+  .stat-tile .stat-delta.down { color: var(--bad); }
+
+  .concept-list { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .concept-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg);
+  }
+  .concept-row:last-child { border-bottom: none; }
+  .concept-topic { font-size: 13.5px; font-weight: 500; }
+  .concept-misconception { font-size: 12px; color: var(--subtle); margin-top: 2px; }
+  .concept-percent { font-size: 15px; font-weight: 600; white-space: nowrap; }
+
   @media (max-width: 680px) {
     .wrap { padding: 36px 20px 72px; }
   }
@@ -93,8 +138,28 @@
   <a href="/time-series-workshop" class="back-link">← Time Series Workshop page</a>
   <p class="eyebrow">Instructor only · not linked from the workshop page</p>
   <h1>Cohort sensing reports</h1>
-  <p class="desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read.</p>
+  <p class="desc">Live stats and AI-generated teaching recommendations, computed from this cohort's actual responses.</p>
 
+  <p class="section-title">Live cohort dashboard</p>
+  <p class="section-desc">Instant stats computed directly from responses — no AI generation, refresh anytime during class.</p>
+  <div class="instructor-panel">
+    <div class="dash-controls">
+      <div class="instructor-stages">
+        <button class="stage-btn" id="dash-btn-1" onclick="runDashboardStage(1)">1 · Beginning</button>
+        <button class="stage-btn" id="dash-btn-2" onclick="runDashboardStage(2)">2 · Checkpoint 1 (SARIMA)</button>
+        <button class="stage-btn" id="dash-btn-3" onclick="runDashboardStage(3)">3 · Checkpoint 2 (ARIMAX)</button>
+        <button class="stage-btn" id="dash-btn-4" onclick="runDashboardStage(4)">4 · Final</button>
+      </div>
+      <label class="dash-expected">Expected cohort size
+        <input type="number" id="dash-expected" min="1" placeholder="—">
+      </label>
+    </div>
+    <div class="report-status" id="dash-status"></div>
+    <div class="dash-box" id="dash-box"></div>
+  </div>
+
+  <p class="section-title">AI-generated cohort reports</p>
+  <p class="section-desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read.</p>
   <div class="instructor-panel">
     <div class="instructor-stages">
       <button class="stage-btn" id="stage-btn-1" onclick="runCohortStage(1)">1 · Beginning Report</button>
@@ -145,6 +210,103 @@
     }
     if (inList) html += '</ul>';
     return html;
+  }
+
+  const expectedInput = document.getElementById('dash-expected');
+  expectedInput.value = localStorage.getItem('dashExpectedCohortSize') || '';
+  expectedInput.addEventListener('change', () => {
+    if (expectedInput.value) localStorage.setItem('dashExpectedCohortSize', expectedInput.value);
+  });
+
+  function statTile(value, label, deltaText) {
+    const deltaHtml = deltaText
+      ? `<div class="stat-delta ${deltaText.startsWith('+') ? 'up' : deltaText.startsWith('-') ? 'down' : ''}">${deltaText}</div>`
+      : '';
+    return `<div class="stat-tile"><div class="stat-value">${value}</div><div class="stat-label">${label}</div>${deltaHtml}</div>`;
+  }
+
+  function renderDashboard(data) {
+    let html = '';
+
+    if (data.readiness) {
+      html += `<div class="readiness-badge readiness-${data.readiness.level}">Overall readiness: ${data.readiness.label}</div>`;
+    }
+
+    const tiles = [];
+    const respLabel = data.completionRate != null
+      ? `${data.responseCount} of ${data.expectedCount} responded (${data.completionRate}%)`
+      : `${data.responseCount} response${data.responseCount === 1 ? '' : 's'}`;
+    tiles.push(statTile(data.responseCount, respLabel));
+
+    if (data.metricType === 'confidence' && data.confidence) {
+      let deltaText = null;
+      if (data.change) {
+        const sign = data.change.delta > 0 ? '+' : '';
+        deltaText = `${sign}${data.change.delta} vs ${data.change.previousLabel}`;
+      }
+      tiles.push(statTile(`${data.confidence.mean} / 5`, 'Mean confidence', deltaText));
+      tiles.push(statTile(data.confidence.median, 'Median confidence'));
+    }
+
+    if (data.metricType === 'accuracy' && data.accuracy) {
+      let deltaText = null;
+      if (data.change) {
+        const sign = data.change.delta > 0 ? '+' : '';
+        deltaText = `${sign}${data.change.delta}pp vs ${data.change.previousLabel}`;
+      }
+      tiles.push(statTile(`${data.accuracy.meanPercent}%`, 'Mean accuracy', deltaText));
+      tiles.push(statTile(`${data.accuracy.meanScore} / ${data.accuracy.maxScore}`, 'Mean score'));
+    }
+
+    html += `<div class="stat-grid">${tiles.join('')}</div>`;
+
+    if (data.accuracy && data.accuracy.byQuestion.length) {
+      const rows = data.accuracy.byQuestion.map((q) => {
+        if (q.correctPercent == null) {
+          return `<div class="concept-row"><div><div class="concept-topic">${q.topic}</div><div class="concept-misconception">Question column not found</div></div></div>`;
+        }
+        const misconception = q.topMisconception
+          ? `<div class="concept-misconception">Top miss: "${q.topMisconception.answer}" (${q.topMisconception.percent}%)</div>`
+          : '';
+        return `<div class="concept-row"><div><div class="concept-topic">${q.topic}</div>${misconception}</div><div class="concept-percent">${q.correctPercent}%</div></div>`;
+      }).join('');
+      html += `<div class="concept-list">${rows}</div>`;
+    }
+
+    return html;
+  }
+
+  function runDashboardStage(stage) {
+    const btn = document.getElementById(`dash-btn-${stage}`);
+    const statusEl = document.getElementById('dash-status');
+    const boxEl = document.getElementById('dash-box');
+
+    btn.disabled = true;
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Reading responses…';
+    boxEl.classList.remove('show');
+
+    const expected = expectedInput.value ? `&expected=${encodeURIComponent(expectedInput.value)}` : '';
+
+    fetch(`/api/cohort-stats?stage=${stage}${expected}`)
+      .then((res) => res.json())
+      .then((data) => {
+        btn.disabled = false;
+        if (data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error}`;
+          return;
+        }
+        btn.classList.add('done');
+        statusEl.textContent = `${data.stageLabel} — live, updated just now.`;
+        boxEl.innerHTML = renderDashboard(data);
+        boxEl.classList.add('show');
+      })
+      .catch((err) => {
+        btn.disabled = false;
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
   }
 
   function runCohortStage(stage) {
