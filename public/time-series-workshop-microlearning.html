@@ -85,15 +85,10 @@
   details.deeper[open] summary::before{content:"– "}
   details.deeper .deeper-body{margin-top:10px;color:var(--muted);font-size:.9rem}
 
-  .tree{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px}
-  .tree-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:10px}
-  .tree-row:last-child{margin-bottom:0}
-  .tree-q{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-weight:750;font-size:.88rem;color:var(--navy);flex:0 0 auto}
-  .tree-branches{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .tree-branch{font-size:.85rem;color:var(--muted)}
-  .tree-branch b{color:var(--ink)}
-  .tree-leaf{background:var(--pale);color:var(--blue);border-radius:8px;padding:5px 11px;font-weight:800;font-size:.82rem}
-  .tree-indent{margin-left:26px;border-left:2px solid var(--line);padding-left:18px}
+  .flowchart{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px;overflow-x:auto}
+  .flowchart .mermaid{display:flex;justify-content:center;min-width:520px}
+  .flowchart-note{border-left:4px solid var(--teal);background:#eaf7f6;padding:10px 16px;margin-top:-6px;margin-bottom:18px;border-radius:0 10px 10px 0;font-size:.88rem}
+  .flowchart-note b{color:var(--navy)}
 
   .block-output{background:linear-gradient(135deg,#f5fafc,#eef7f8);border:1px solid #cfe0eb;border-radius:16px;padding:26px 28px;margin-top:6px}
   .block-output .kicker{margin-bottom:8px}
@@ -107,7 +102,7 @@
   footer a{color:var(--muted);text-decoration:none}
   footer a:hover{color:var(--blue)}
 
-  @media(max-width:650px){main{padding:0 20px 80px}.unit{padding:20px}.tree-row{flex-direction:column}.tree-indent{margin-left:12px;padding-left:12px}}
+  @media(max-width:650px){main{padding:0 20px 80px}.unit{padding:20px}}
 </style>
 </head>
 <body>
@@ -161,23 +156,13 @@
       <div class="unit-label">Microlearning 1.2 · Identify the analytics intent</div>
       <p class="unit-q">"What will monthly hotel occupancy be over the coming year?" — which type of question is this?</p>
       <p class="unit-explain">Not every business question is a forecasting question. Match the question to the right analytics intent before choosing a method.</p>
-      <div class="tree">
-        <div class="tree-row"><div class="tree-q">What is the business question really asking?</div>
-          <div class="tree-branches">
-            <div class="tree-branch">Which cases will experience an outcome? → <span class="tree-leaf">Predictive</span></div>
-          </div>
-        </div>
-        <div class="tree-row"><div class="tree-q" style="visibility:hidden">What is the business question really asking?</div>
-          <div class="tree-branches">
-            <div class="tree-branch">How will a measure evolve over time? → <span class="tree-leaf">Forecasting</span></div>
-          </div>
-        </div>
-        <div class="tree-row"><div class="tree-q" style="visibility:hidden">What is the business question really asking?</div>
-          <div class="tree-branches">
-            <div class="tree-branch">What happens if we take an action? → <span class="tree-leaf">Causal</span></div>
-          </div>
-        </div>
-      </div>
+      <div class="flowchart"><pre class="mermaid">
+flowchart LR
+  A[Business decision] --> B{Analytics intent?}
+  B -->|Who or which case?| C[Predictive analytics]
+  B -->|How will values evolve?| D[Forecasting analytics]
+  B -->|What if we intervene?| E[Causal analytics]
+      </pre></div>
       <div class="unit-visual">
         <table>
           <tr><th>Analytics intent</th><th>Main question</th><th>Example</th></tr>
@@ -245,29 +230,19 @@
       <div class="unit-label">Microlearning 2.2 · Determine the forecast horizon</div>
       <p class="unit-q">Monthly occupancy, forecast 12 months out, to plan staffing and inventory — which horizon is this?</p>
       <p class="unit-explain">The horizon must be interpreted relative to the data frequency and decision cycle, not just the raw number of periods.</p>
-      <div class="tree">
-        <div class="tree-row"><div class="tree-q">How far ahead does the decision cycle require?</div>
-          <div class="tree-branches">
-            <div class="tree-branch">Just the next few periods → <span class="tree-leaf">Short</span> — staffing, replenishment</div>
-          </div>
-        </div>
-        <div class="tree-row"><div class="tree-q" style="visibility:hidden">How far ahead does the decision cycle require?</div>
-          <div class="tree-branches">
-            <div class="tree-branch">About one seasonal cycle → <span class="tree-leaf">Medium</span> — capacity, inventory, budgeting</div>
-          </div>
-        </div>
-        <div class="tree-row"><div class="tree-q" style="visibility:hidden">How far ahead does the decision cycle require?</div>
-          <div class="tree-branches">
-            <div class="tree-branch">Beyond one seasonal cycle → <span class="tree-leaf">Long</span> — investment, strategic planning</div>
-          </div>
-        </div>
-      </div>
+      <div class="flowchart"><pre class="mermaid">
+flowchart LR
+  A[Forecasting analytics] --> B{Forecast horizon?}
+  B -->|Short| C[Operational planning]
+  B -->|Medium| D[Tactical planning]
+  B -->|Long| E[Strategic scenarios]
+      </pre></div>
       <div class="unit-visual">
         <table>
           <tr><th>Horizon</th><th>Practical meaning</th><th>Typical decisions</th></tr>
-          <tr><td>Short</td><td>Next few periods</td><td>Staffing, replenishment</td></tr>
-          <tr><td>Medium</td><td>~ one seasonal cycle</td><td>Capacity, inventory, budgeting</td></tr>
-          <tr><td>Long</td><td>Beyond one seasonal cycle</td><td>Investment, strategic planning</td></tr>
+          <tr><td>Short</td><td>Next few periods — recent patterns and shocks</td><td>Staffing, replenishment</td></tr>
+          <tr><td>Medium</td><td>~ one seasonal cycle — seasonality and external drivers</td><td>Capacity, inventory, budgeting</td></tr>
+          <tr><td>Long</td><td>Beyond one seasonal cycle — structural assumptions, uncertainty and scenarios</td><td>Investment, strategic planning</td></tr>
         </table>
       </div>
       <div class="decision">
@@ -327,23 +302,19 @@
       <div class="unit-label">Microlearning 3.1 · Select the model family</div>
       <p class="unit-q">Given the forecast spec from Block 2, which model family fits?</p>
       <p class="unit-explain">Horizon influences model choice, but it doesn't determine it alone — external drivers and seasonality matter just as much.</p>
-      <div class="tree">
-        <div class="tree-row"><div class="tree-q">External drivers available at forecast time?</div>
-          <div class="tree-branches">
-            <div class="tree-branch">No →</div>
-            <div class="tree-branch">Clear seasonality? <b>No</b> → <span class="tree-leaf">ARIMA</span> · <b>Yes</b> → <span class="tree-leaf">SARIMA</span></div>
-          </div>
-        </div>
-        <div class="tree-row"><div class="tree-q" style="visibility:hidden">External drivers available at forecast time?</div>
-          <div class="tree-branches">
-            <div class="tree-branch">Yes →</div>
-            <div class="tree-branch">Relationships linear? <b>Yes</b> → <span class="tree-leaf">ARIMAX / SARIMAX</span> · <b>No</b> → Tree-based ML or LSTM, by data scale</div>
-          </div>
-        </div>
-        <div class="tree-row"><div class="tree-q">Long horizon with structural change?</div>
-          <div class="tree-branches"><div class="tree-branch"><b>Yes</b> → <span class="tree-leaf">Scenarios + structural models + judgement</span></div></div>
-        </div>
-      </div>
+      <div class="flowchart"><pre class="mermaid">
+flowchart TD
+  A[Short / medium / long horizon] --> B{External drivers available?}
+  B -->|No| C{Clear seasonality?}
+  C -->|No| D[ARIMA]
+  C -->|Yes| E[SARIMA]
+  B -->|Yes| F{Linear and interpretable?}
+  F -->|Yes| G[ARIMAX / SARIMAX]
+  F -->|No| H{Data scale?}
+  H -->|Moderate| I[Tree-based ML]
+  H -->|Large sequential data| J[LSTM / deep learning]
+      </pre></div>
+      <div class="flowchart-note">For a long horizon, add a side exit: <b>Is structural change likely?</b> → Yes → Scenario/structural modelling and judgement.</div>
       <div class="unit-visual"><span class="example">Model tendencies by horizon — Short generally favours ARIMA/SARIMA. Medium generally favours SARIMA/SARIMAX when seasonal patterns and drivers matter. Long generally requires structural assumptions, scenarios and judgement. ML and LSTM are not automatically better for longer horizons.</span></div>
       <div class="decision">
         <div class="decision-label">Hotel occupancy has seasonality and a usable external driver (tourist arrivals) with a roughly linear relationship. Which family fits?</div>
@@ -463,6 +434,24 @@
 
 <footer><div><b>Microlearning Preview</b><br>WHY · WHAT · HOW — draft, not yet published</div><a href="/time-series-workshop">← Time Series Workshop page</a></footer>
 
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#eaf3f8',
+      primaryTextColor: '#0b1f3a',
+      primaryBorderColor: '#1d5fa7',
+      lineColor: '#60728b',
+      secondaryColor: '#f6fafc',
+      tertiaryColor: '#f6fafc',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      fontSize: '14px'
+    },
+    flowchart: { curve: 'basis', padding: 12 }
+  });
+</script>
 <script>
   // Reused mini time-series chart (same generation pattern as the live workshop page)
   const grid = document.getElementById('ml-grid');
