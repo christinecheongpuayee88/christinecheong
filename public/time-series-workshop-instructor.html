@@ -71,6 +71,8 @@
   .report-box h2 { font-size: 18px; margin-bottom: 14px; }
   .report-box h3 { font-size: 15px; margin: 16px 0 8px; }
   .report-box ul, .report-box ol { margin-left: 20px; margin-bottom: 8px; }
+  .report-box blockquote { border-left: 3px solid var(--subtle); background: var(--surface); padding: 10px 16px; margin: 4px 0 16px; color: var(--muted); font-size: 14px; border-radius: 0 var(--radius) var(--radius) 0; }
+  .report-box .pill { display: inline-block; font-size: 10.5px; font-weight: 500; letter-spacing: .02em; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 2px 10px; margin-left: 8px; }
   .report-actions { display: none; gap: 12px; }
   .report-actions.show { display: flex; }
   .btn {
@@ -112,7 +114,9 @@
   let currentReport = null;
 
   function inlineFormat(s) {
-    return s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/\{\{(.+?)\}\}/g, '<span class="pill">$1</span>');
+    return s;
   }
 
   function formatReport(text) {
@@ -128,6 +132,9 @@
       } else if (line.startsWith('### ')) {
         if (inList) { html += '</ul>'; inList = false; }
         html += `<h3>${inlineFormat(line.slice(4))}</h3>`;
+      } else if (line.startsWith('> ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<blockquote>${inlineFormat(line.slice(2))}</blockquote>`;
       } else if (line.startsWith('* ') || line.startsWith('- ')) {
         if (!inList) { html += '<ul>'; inList = true; }
         html += `<li>${inlineFormat(line.slice(2))}</li>`;
@@ -183,7 +190,9 @@
     if (!currentReport) return;
     const plain = currentReport.report
       .replace(/^#+\s*/gm, '')
+      .replace(/^>\s*/gm, '')
       .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/\{\{(.+?)\}\}/g, '[$1]')
       .replace(/^\*\s+/gm, '• ');
     const url = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(currentReport.subject)}&body=${encodeURIComponent(plain)}`;
     window.open(url, '_blank');
