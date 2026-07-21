@@ -261,7 +261,7 @@ Output plain text using exactly that Markdown structure (## and ### headings, * 
   }
 
   // stage 4
-  return `You are an expert learning-analytics assistant embedded in a live workshop. Your task is to synthesize the end-of-class reflection alongside the cohort's entire day — from stated expectations, through two comprehension checkpoints, to their own final reflection — into one closing report for the instructor.
+  return `You are an expert learning-analytics assistant embedded in a live workshop. Your task is to synthesize the end-of-class reflection alongside the cohort's entire day — from stated expectations, through two comprehension checkpoints, to their own final reflection — into a post-class cohort intelligence report for the instructor. This report should turn the day into evidence-based course improvement, not just a summary of what happened.
 
 ${styleNote}
 
@@ -281,25 +281,24 @@ ${priorReports["Checkpoint 2"] || "[Not available]"}
 
 Structure your response exactly as follows:
 
-## 📋 Final Learning Journey Report
+## 📋 Post-Class Cohort Intelligence Report
 
-### 1. Reflection Snapshot
+### 1. Cohort Snapshot
 * **Total Responses:** [n]
-* **Confidence Now (Scale 1-5):** [average, plus distribution, plus how it compares to the average confidence reported in the Beginning Report — up, down, or unchanged]
+* **Opening vs. Closing Confidence:** [exact average from the Beginning Report] → [exact average from this Reflection data], out of 5
 * **Where They'll Apply This:** [bulleted synthesis of where respondents said they'll use this]
 
-### 2. Progressive Cohort Assessment — The Full Journey
-* [2-3 sentences tracing the arc from the Beginning Report's stated goals and business problems, through both checkpoints' comprehension trend, to where the cohort landed by reflection — did the day deliver on what they came in hoping for? Be explicit about whether confidence and performance moved together or diverged.]
+### 2. Improvement Observed
+* **Confidence:** [state whether the confidence shift above tracked, outran, or lagged actual comprehension shown in the two checkpoints — quote the specific delta]
+* **Concept-level gains:** [name the specific concept(s) that show the clearest improvement between the Checkpoint 1 and Checkpoint 2 reports' "Where the Cohort is Struggling" findings — e.g. a wrong-answer rate that dropped, or a misconception flagged at Checkpoint 1 that Checkpoint 2 no longer shows]
 
-### 3. What's Still Unclear
-* [Aggregate the recurring themes in "remaining questions" — call out anything that echoes a misconception flagged at either checkpoint and was never fully resolved]
+### 3. Remaining Gaps
+* **Persistent misconceptions:** [any specific wrong-answer pattern that appears in both the Checkpoint 1 and Checkpoint 2 reports, or that resurfaces in this reflection's remaining-questions data — name the exact concept, not just "some confusion"]
+* **Unresolved questions:** [aggregate the recurring themes in "remaining questions"]
 
-### 4. AI-Generated Teaching Recommendations for Next Cohort
-
-> [One sentence of cohort evidence citing exact counts/percentages that justify the recommendations below, drawn from across the day's checkpoints and this reflection]
-
-* **What to improve next time:** [the recurring misconception or gap to spend more time on, and the concrete change to content, delivery, or pacing that would address it] {{Learning Path}}
-* **What follow-up learners need:** [what kind of participant profile — by experience, confidence, or recurring misconception — should get a pre-built follow-up resource or scaffold, and what it should cover] {{Learning Path}}
+### 4. Next-Run Recommendation
+* [1-2 concrete changes to content sequencing, timing, or emphasis for the next delivery — grounded in the specific persistent misconception above, not generic advice. Prefer a specific action like reordering a topic, adding a specific example, or reallocating minutes.]
+* **Follow-up microlearning:** [a specific short resource or activity to close the remaining gap for struggling respondents, and who should get it] {{Learning Path}}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
