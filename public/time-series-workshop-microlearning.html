@@ -89,6 +89,20 @@
   .flowchart .mermaid{display:flex;justify-content:center;min-width:520px}
   .flowchart-note{border-left:4px solid var(--teal);background:#eaf7f6;padding:10px 16px;margin-top:-6px;margin-bottom:18px;border-radius:0 10px 10px 0;font-size:.88rem}
   .flowchart-note b{color:var(--navy)}
+  .node-highlight rect,.node-highlight polygon{fill:var(--blue) !important;stroke:var(--navy) !important;stroke-width:2.5px !important}
+  .node-highlight span,.node-highlight foreignObject div,.node-highlight text{color:#fff !important;font-weight:800 !important}
+
+  .unit.locked{position:relative;overflow:hidden}
+  .unit.locked>*:not(.lock-overlay){filter:blur(5px);pointer-events:none;user-select:none}
+  .lock-overlay{display:none}
+  .unit.locked .lock-overlay{display:flex;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,.85);border-radius:16px;text-align:center;padding:20px;z-index:2}
+  .lock-kicker{text-transform:uppercase;letter-spacing:.14em;color:var(--teal);font-size:.72rem;font-weight:850}
+  .lock-overlay p{color:var(--navy);font-weight:750;max-width:280px;margin:0}
+
+  .reasoning{margin:14px 0}
+  .reasoning label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:6px}
+  .reasoning textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;color:var(--ink);resize:vertical}
+  .reasoning textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
 
   .block-output{background:linear-gradient(135deg,#f5fafc,#eef7f8);border:1px solid #cfe0eb;border-radius:16px;padding:26px 28px;margin-top:6px}
   .block-output .kicker{margin-bottom:8px}
@@ -179,6 +193,7 @@ flowchart LR
           <label><input type="radio" name="u1-2" value="wrong"> Causal analytics</label>
         </div>
       </div>
+      <div class="reasoning"><label for="reason-u1-2">Explain your reasoning (optional) before checking</label><textarea id="reason-u1-2" placeholder="Why does this question belong to that intent?"></textarea></div>
       <button class="check-btn" onclick="checkMCQ('u1-2')">Check answer</button>
       <div class="feedback" id="fb-u1-2"><b>Correct pathway: Forecasting analytics.</b> The question asks how a measure (occupancy) evolves over time — the defining trait of a forecasting question, not a predictive (who?) or causal (what if?) one.</div>
       <div class="confidence" data-unit="u1-2"></div>
@@ -189,6 +204,16 @@ flowchart LR
       <div class="kicker">Block output</div>
       <p>A decision statement — the sentence you'll carry into Block 2.</p>
       <div class="duration">Duration: 10–15 minutes</div>
+    </div>
+
+    <div class="unit-visual" style="margin-top:22px">
+      <b style="color:var(--navy)">Before you continue — typical emphasis, not a fixed mapping.</b> It's tempting to read Predictive → operational, Forecasting → tactical, Causal → strategic as a rule. It isn't — all three analytics types can support all three decision levels.
+      <table style="margin-top:12px">
+        <tr><th></th><th>Operational</th><th>Tactical</th><th>Strategic</th></tr>
+        <tr><td><b>Predictive</b></td><td>Which customers need attention today?</td><td>Which segments may churn next quarter?</td><td>Which markets are likely to grow?</td></tr>
+        <tr><td><b>Forecasting</b></td><td>Tomorrow's demand</td><td>Next year's capacity</td><td>Five-year demand scenarios</td></tr>
+        <tr><td><b>Causal</b></td><td>Did today's promotion work?</td><td>Which programme improves retention?</td><td>What happens if policy changes?</td></tr>
+      </table>
     </div>
   </section>
 
@@ -226,7 +251,8 @@ flowchart LR
     </div>
 
     <!-- 2.2 -->
-    <div class="unit" id="u2-2">
+    <div class="unit locked" id="u2-2">
+      <div class="lock-overlay"><span class="lock-kicker">Locked</span><p>Answer Microlearning 1.2 above with "Forecasting analytics" to unlock this decision.</p></div>
       <div class="unit-label">Microlearning 2.2 · Determine the forecast horizon</div>
       <p class="unit-q">Monthly occupancy, forecast 12 months out, to plan staffing and inventory — which horizon is this?</p>
       <p class="unit-explain">The horizon must be interpreted relative to the data frequency and decision cycle, not just the raw number of periods.</p>
@@ -253,6 +279,7 @@ flowchart LR
           <label><input type="radio" name="u2-2" value="wrong"> Long</label>
         </div>
       </div>
+      <div class="reasoning"><label for="reason-u2-2">Explain your reasoning (optional) before checking</label><textarea id="reason-u2-2" placeholder="Why does this decision cycle map to that horizon?"></textarea></div>
       <button class="check-btn" onclick="checkMCQ('u2-2')">Check answer</button>
       <div class="feedback" id="fb-u2-2"><b>Medium horizon.</b> Twelve months of monthly data is roughly one full seasonal cycle — the regime where trend, seasonality, and known drivers matter most, and where SARIMA/SARIMAX-style models tend to earn their keep.</div>
       <div class="confidence" data-unit="u2-2"></div>
@@ -298,7 +325,8 @@ flowchart LR
     </div>
 
     <!-- 3.1 -->
-    <div class="unit" id="u3-1">
+    <div class="unit locked" id="u3-1">
+      <div class="lock-overlay"><span class="lock-kicker">Locked</span><p>Answer Microlearning 2.2 above with "Medium" to unlock the model-selection tree.</p></div>
       <div class="unit-label">Microlearning 3.1 · Select the model family</div>
       <p class="unit-q">Given the forecast spec from Block 2, which model family fits?</p>
       <p class="unit-explain">Horizon influences model choice, but it doesn't determine it alone — external drivers and seasonality matter just as much.</p>
@@ -325,6 +353,7 @@ flowchart TD
           <label><input type="radio" name="u3-1" value="wrong"> LSTM</label>
         </div>
       </div>
+      <div class="reasoning"><label for="reason-u3-1">Explain your reasoning (optional) before checking</label><textarea id="reason-u3-1" placeholder="Why does this combination of drivers and seasonality point there?"></textarea></div>
       <button class="check-btn" onclick="checkMCQ('u3-1')">Check answer</button>
       <div class="feedback" id="fb-u3-1"><b>ARIMAX / SARIMAX.</b> Seasonality alone would point to SARIMA — but a usable, roughly-linear external driver pushes the choice to SARIMAX, which adds the driver on top of SARIMA's seasonal structure.</div>
       <div class="confidence" data-unit="u3-1"></div>
@@ -459,18 +488,46 @@ flowchart TD
   const pts = Array.from({length:48},(_,i)=>({x:24+i*9.6,y:175-(18+i*.95+Math.sin(i*Math.PI/3)*(4+i*.1))*.95}));
   document.getElementById('ml-series').setAttribute('d', pts.map((p,i)=>`${i?'L':'M'}${p.x},${p.y}`).join(' '));
 
+  // The three chained flowchart decisions: on a correct answer, highlight that
+  // decision's own outcome node and unlock the next layer in the WHY -> WHAT -> HOW journey.
+  const FLOW_GATES = {
+    'u1-2': { correctNodeLabel: 'Forecasting analytics', unlocks: 'u2-2' },
+    'u2-2': { correctNodeLabel: 'Tactical planning', unlocks: 'u3-1' },
+    'u3-1': { correctNodeLabel: 'ARIMAX / SARIMAX', unlocks: null },
+  };
+
+  function highlightFlowchartNode(unitEl, labelText){
+    const svg = unitEl.querySelector('.flowchart svg');
+    if (!svg) return;
+    svg.querySelectorAll('.node').forEach(n=>{
+      if (n.textContent.trim() === labelText) n.classList.add('node-highlight');
+    });
+  }
+
+  function unlockUnit(unitId){
+    const el = document.getElementById(unitId);
+    if (el) el.classList.remove('locked');
+  }
+
   function checkMCQ(unitId){
     const group = document.getElementById(`opt-${unitId}`);
     const picked = group.querySelector('input:checked');
     group.querySelectorAll('label').forEach(l=>l.classList.remove('correct','picked-wrong'));
     if (!picked) return;
-    if (picked.value === 'correct') {
+    const isCorrect = picked.value === 'correct';
+    if (isCorrect) {
       picked.closest('label').classList.add('correct');
     } else {
       picked.closest('label').classList.add('picked-wrong');
       group.querySelector('input[value="correct"]').closest('label').classList.add('correct');
     }
     document.getElementById(`fb-${unitId}`).classList.add('show');
+
+    const gate = FLOW_GATES[unitId];
+    if (gate && isCorrect) {
+      highlightFlowchartNode(document.getElementById(unitId), gate.correctNodeLabel);
+      if (gate.unlocks) unlockUnit(gate.unlocks);
+    }
   }
 
   function revealFeedback(unitId){
