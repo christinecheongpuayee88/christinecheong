@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Microlearning Preview — WHY / WHAT / HOW</title>
+<meta name="description" content="Draft preview of the three-block microlearning structure (WHY, WHAT, HOW) for the Time Series Forecasting Workshop. Not yet linked from the live workshop page.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,850;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0b1f3a;--blue:#1d5fa7;--teal:#0b8d95;--ink:#18304d;--muted:#60728b;--line:#d9e3ec;--pale:#eaf3f8;--soft:#f6fafc;--shadow:0 18px 55px rgba(11,31,58,.09);--good:#0b8d5a;--good-bg:#e4f7ee}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
+
+  .draft-banner{background:var(--navy);color:#fff;text-align:center;padding:10px 16px;font-size:.85rem;font-weight:700;letter-spacing:.02em}
+  .draft-banner a{color:#9fd4d8}
+
+  header{position:sticky;top:0;z-index:20;background:#fffffff2;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+  nav{max-width:1400px;margin:auto;height:64px;padding:0 5vw;display:flex;align-items:center;gap:26px;overflow-x:auto}
+  .brand{margin-right:auto;font-weight:850;color:var(--navy);white-space:nowrap}
+  nav a{white-space:nowrap;color:var(--navy);font-weight:700;text-decoration:none;padding:8px 0;border-bottom:3px solid transparent}
+  nav a:hover{color:var(--blue);border-color:var(--blue)}
+
+  main{max-width:900px;margin:auto;padding:0 5vw 100px}
+
+  .intro{padding:60px 0 40px}
+  .kicker{text-transform:uppercase;letter-spacing:.18em;color:var(--teal);font-size:.78rem;font-weight:850}
+  .intro h1{font-size:clamp(2.2rem,4vw,3.2rem);line-height:1.05;letter-spacing:-.03em;color:var(--navy);margin:14px 0 14px}
+  .intro p{color:var(--muted);font-size:1.1rem;max-width:640px}
+  .journey{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .journey span{background:var(--pale);color:var(--blue);padding:8px 14px;border-radius:99px;font-weight:750;font-size:.88rem}
+  .journey .arrow{color:var(--line);font-weight:700;align-self:center}
+
+  .block{scroll-margin-top:80px;padding:56px 0;border-top:1px solid var(--line)}
+  .block-head{margin-bottom:34px}
+  .block-letter{display:inline-block;background:var(--navy);color:#fff;font-weight:850;font-size:.78rem;letter-spacing:.1em;padding:6px 14px;border-radius:99px;margin-bottom:14px}
+  .block h2{font-size:clamp(1.9rem,3.2vw,2.6rem);color:var(--navy);margin:0 0 10px;letter-spacing:-.02em}
+  .block .essential-q{color:var(--muted);font-size:1.05rem;max-width:640px}
+
+  .unit{border:1px solid var(--line);border-radius:16px;padding:28px;margin-bottom:22px;background:#fff}
+  .unit-label{color:var(--teal);font-weight:850;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .unit-q{font-size:1.25rem;font-weight:800;color:var(--navy);margin:0 0 12px;line-height:1.3}
+  .unit-explain{color:var(--muted);margin:0 0 18px}
+  .unit-visual{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px;font-size:.92rem}
+  .unit-visual table{width:100%;border-collapse:collapse;font-size:.88rem}
+  .unit-visual th{text-align:left;color:var(--navy);font-weight:800;padding:6px 10px 8px;border-bottom:1px solid var(--line)}
+  .unit-visual td{padding:8px 10px;border-bottom:1px solid var(--line);color:var(--ink)}
+  .unit-visual tr:last-child td{border-bottom:none}
+  .unit-visual .example{color:var(--muted);font-style:italic}
+
+  .decision{margin-bottom:14px}
+  .decision-label{font-weight:750;color:var(--navy);font-size:.92rem;margin-bottom:10px}
+  .options{display:flex;flex-direction:column;gap:8px}
+  .options label{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:11px 14px;cursor:pointer;transition:border-color .15s,background .15s}
+  .options label:hover{border-color:var(--blue)}
+  .options input{accent-color:var(--blue)}
+  .options label.correct{border-color:var(--good);background:var(--good-bg)}
+  .options label.picked-wrong{border-color:#c65b4a;background:#fdeeec}
+
+  textarea.free-response{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);resize:vertical;min-height:70px}
+  textarea.free-response:focus{outline:2px solid var(--blue);outline-offset:1px}
+
+  .check-btn{border:0;border-radius:9px;padding:10px 18px;background:var(--blue);color:#fff;font-weight:800;margin-top:12px}
+  .check-btn:hover{background:var(--navy)}
+  .reveal-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:9px;padding:10px 18px;font-weight:750;margin-top:12px}
+  .reveal-btn:hover{border-color:var(--blue)}
+
+  .feedback{display:none;margin-top:14px;border-left:4px solid var(--teal);background:#eaf7f6;padding:12px 16px;border-radius:0 10px 10px 0;font-size:.93rem}
+  .feedback.show{display:block}
+  .feedback b{color:var(--navy)}
+
+  .confidence{margin-top:20px;padding-top:18px;border-top:1px dashed var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .confidence-label{font-size:.85rem;color:var(--muted);font-weight:700}
+  .confidence-scale{display:flex;gap:6px}
+  .confidence-scale button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:750;font-size:.85rem}
+  .confidence-scale button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+  .confidence-note{font-size:.8rem;color:var(--teal);font-weight:700;display:none}
+  .confidence-note.show{display:inline}
+
+  details.deeper{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px}
+  details.deeper summary{cursor:pointer;font-weight:750;color:var(--blue);font-size:.9rem;list-style:none}
+  details.deeper summary::-webkit-details-marker{display:none}
+  details.deeper summary::before{content:"+ ";font-weight:850}
+  details.deeper[open] summary::before{content:"– "}
+  details.deeper .deeper-body{margin-top:10px;color:var(--muted);font-size:.9rem}
+
+  .tree{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px}
+  .tree-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:10px}
+  .tree-row:last-child{margin-bottom:0}
+  .tree-q{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-weight:750;font-size:.88rem;color:var(--navy);flex:0 0 auto}
+  .tree-branches{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .tree-branch{font-size:.85rem;color:var(--muted)}
+  .tree-branch b{color:var(--ink)}
+  .tree-leaf{background:var(--pale);color:var(--blue);border-radius:8px;padding:5px 11px;font-weight:800;font-size:.82rem}
+  .tree-indent{margin-left:26px;border-left:2px solid var(--line);padding-left:18px}
+
+  .block-output{background:linear-gradient(135deg,#f5fafc,#eef7f8);border:1px solid #cfe0eb;border-radius:16px;padding:26px 28px;margin-top:6px}
+  .block-output .kicker{margin-bottom:8px}
+  .block-output p{margin:8px 0 0;color:var(--ink);font-size:1.02rem}
+  .block-output .duration{color:var(--muted);font-size:.85rem;margin-top:12px}
+
+  .beyond{background:var(--pale);border-radius:12px;padding:16px 18px;margin-top:20px;font-size:.9rem;color:var(--ink)}
+  .beyond b{color:var(--blue)}
+
+  footer{border-top:1px solid var(--line);padding:30px 5vw;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:1400px;margin:auto}
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--blue)}
+
+  @media(max-width:650px){main{padding:0 20px 80px}.unit{padding:20px}.tree-row{flex-direction:column}.tree-indent{margin-left:12px;padding-left:12px}}
+</style>
+</head>
+<body>
+
+<div class="draft-banner">DRAFT PREVIEW — not linked from <a href="/time-series-workshop">the live workshop page</a> yet</div>
+
+<header><nav>
+  <span class="brand">Microlearning Preview</span>
+  <a href="#why">1 · WHY</a>
+  <a href="#what">2 · WHAT</a>
+  <a href="#how">3 · HOW</a>
+</nav></header>
+
+<main>
+  <section class="intro">
+    <div class="kicker">Runs right after the pre-class sensing pulse</div>
+    <h1>Why do we need a forecast? What must be forecast? How should we build and trust it?</h1>
+    <p>Three short blocks, eight guided decisions. Each step: a question, a quick explanation, a real example, your decision, and immediate feedback.</p>
+    <div class="journey">
+      <span>WHY</span><span class="arrow">→</span>
+      <span>WHAT</span><span class="arrow">→</span>
+      <span>HOW</span>
+    </div>
+  </section>
+
+  <!-- ================= BLOCK 1 — WHY ================= -->
+  <section class="block" id="why">
+    <div class="block-head">
+      <span class="block-letter">BLOCK 1 · WHY</span>
+      <h2>Clarify the decision</h2>
+      <p class="essential-q">Essential question: Why is analysis needed, and is forecasting the correct analytical intent?</p>
+    </div>
+
+    <!-- 1.1 -->
+    <div class="unit" id="u1-1">
+      <div class="unit-label">Microlearning 1.1 · Start with the business decision</div>
+      <p class="unit-q">What decision does this forecast actually need to support?</p>
+      <p class="unit-explain">Before touching any data, name the decision. Learners identify: what decision must be made, who will use the result, when action must be taken, and what over- or under-forecasting costs.</p>
+      <div class="unit-visual"><span class="example">Example — The hotel must decide how many part-time staff to schedule and how much inventory to order.</span></div>
+      <div class="decision">
+        <div class="decision-label">Your turn — complete the decision statement</div>
+        <textarea class="free-response" placeholder="We need the forecast to support ___ by ___."></textarea>
+      </div>
+      <button class="reveal-btn" onclick="revealFeedback('u1-1')">See a model answer</button>
+      <div class="feedback" id="fb-u1-1"><b>Model answer:</b> "We need the forecast to support staffing and inventory decisions by predicting monthly demand 12 months ahead." There's no single right answer — the test is whether your statement names a decision, an owner, and a timeframe.</div>
+      <div class="confidence" data-unit="u1-1"></div>
+    </div>
+
+    <!-- 1.2 -->
+    <div class="unit" id="u1-2">
+      <div class="unit-label">Microlearning 1.2 · Identify the analytics intent</div>
+      <p class="unit-q">"What will monthly hotel occupancy be over the coming year?" — which type of question is this?</p>
+      <p class="unit-explain">Not every business question is a forecasting question. Match the question to the right analytics intent before choosing a method.</p>
+      <div class="unit-visual">
+        <table>
+          <tr><th>Analytics intent</th><th>Main question</th><th>Example</th></tr>
+          <tr><td>Predictive</td><td>Which cases are likely to experience an outcome?</td><td>Which customers may churn?</td></tr>
+          <tr><td>Forecasting</td><td>How will a measure evolve over time?</td><td>What will monthly occupancy be?</td></tr>
+          <tr><td>Causal</td><td>What happens if we take an action?</td><td>Did the promotion increase sales?</td></tr>
+        </table>
+      </div>
+      <div class="decision">
+        <div class="decision-label">Which analytics intent fits?</div>
+        <div class="options" id="opt-u1-2">
+          <label><input type="radio" name="u1-2" value="wrong"> Predictive analytics</label>
+          <label><input type="radio" name="u1-2" value="correct"> Forecasting analytics</label>
+          <label><input type="radio" name="u1-2" value="wrong"> Causal analytics</label>
+        </div>
+      </div>
+      <button class="check-btn" onclick="checkMCQ('u1-2')">Check answer</button>
+      <div class="feedback" id="fb-u1-2"><b>Correct pathway: Forecasting analytics.</b> The question asks how a measure (occupancy) evolves over time — the defining trait of a forecasting question, not a predictive (who?) or causal (what if?) one.</div>
+      <div class="confidence" data-unit="u1-2"></div>
+      <details class="deeper"><summary>Go deeper</summary><div class="deeper-body">Pathway to hold onto for the rest of this workshop: Question → intuition → visual → learner decision → feedback. You'll repeat this loop in every unit ahead.</div></details>
+    </div>
+
+    <div class="block-output">
+      <div class="kicker">Block output</div>
+      <p>A decision statement — the sentence you'll carry into Block 2.</p>
+      <div class="duration">Duration: 10–15 minutes</div>
+    </div>
+  </section>
+
+  <!-- ================= BLOCK 2 — WHAT ================= -->
+  <section class="block" id="what">
+    <div class="block-head">
+      <span class="block-letter">BLOCK 2 · WHAT</span>
+      <h2>Define the forecast</h2>
+      <p class="essential-q">Essential question: What exactly must be forecast, over what horizon, and with what evidence?</p>
+    </div>
+
+    <!-- 2.1 -->
+    <div class="unit" id="u2-1">
+      <div class="unit-label">Microlearning 2.1 · Specify the forecast requirement</div>
+      <p class="unit-q">Can you name all five elements of a forecast requirement?</p>
+      <p class="unit-explain">Target, granularity, frequency, horizon, and decision — miss one and the forecast won't fit the decision it's meant to support.</p>
+      <div class="unit-visual">
+        <table>
+          <tr><th>Element</th><th>Question</th></tr>
+          <tr><td>1. Target</td><td>What measure?</td></tr>
+          <tr><td>2. Granularity</td><td>By product, store, market or total?</td></tr>
+          <tr><td>3. Frequency</td><td>Hourly, daily, weekly, monthly or quarterly?</td></tr>
+          <tr><td>4. Horizon</td><td>How far ahead?</td></tr>
+          <tr><td>5. Decision</td><td>What will change because of the forecast?</td></tr>
+        </table>
+        <p class="example" style="margin-top:10px">Example — Forecast monthly occupied hotel rooms by property for the next 12 months to support staffing and supply planning.</p>
+      </div>
+      <div class="decision">
+        <div class="decision-label">Your turn — specify your own forecast requirement</div>
+        <textarea class="free-response" placeholder="Target · Granularity · Frequency · Horizon · Decision"></textarea>
+      </div>
+      <button class="reveal-btn" onclick="revealFeedback('u2-1')">See the worked example again</button>
+      <div class="feedback" id="fb-u2-1"><b>Check yourself against the hotel example:</b> Target = occupied rooms, Granularity = by property, Frequency = monthly, Horizon = 12 months, Decision = staffing and supply planning. If any of your five is missing, the forecast will be hard to act on.</div>
+      <div class="confidence" data-unit="u2-1"></div>
+    </div>
+
+    <!-- 2.2 -->
+    <div class="unit" id="u2-2">
+      <div class="unit-label">Microlearning 2.2 · Determine the forecast horizon</div>
+      <p class="unit-q">Monthly occupancy, forecast 12 months out, to plan staffing and inventory — which horizon is this?</p>
+      <p class="unit-explain">The horizon must be interpreted relative to the data frequency and decision cycle, not just the raw number of periods.</p>
+      <div class="unit-visual">
+        <table>
+          <tr><th>Horizon</th><th>Practical meaning</th><th>Typical decisions</th></tr>
+          <tr><td>Short</td><td>Next few periods</td><td>Staffing, replenishment</td></tr>
+          <tr><td>Medium</td><td>~ one seasonal cycle</td><td>Capacity, inventory, budgeting</td></tr>
+          <tr><td>Long</td><td>Beyond one seasonal cycle</td><td>Investment, strategic planning</td></tr>
+        </table>
+      </div>
+      <div class="decision">
+        <div class="decision-label">Which horizon fits the hotel scenario?</div>
+        <div class="options" id="opt-u2-2">
+          <label><input type="radio" name="u2-2" value="wrong"> Short</label>
+          <label><input type="radio" name="u2-2" value="correct"> Medium</label>
+          <label><input type="radio" name="u2-2" value="wrong"> Long</label>
+        </div>
+      </div>
+      <button class="check-btn" onclick="checkMCQ('u2-2')">Check answer</button>
+      <div class="feedback" id="fb-u2-2"><b>Medium horizon.</b> Twelve months of monthly data is roughly one full seasonal cycle — the regime where trend, seasonality, and known drivers matter most, and where SARIMA/SARIMAX-style models tend to earn their keep.</div>
+      <div class="confidence" data-unit="u2-2"></div>
+    </div>
+
+    <!-- 2.3 -->
+    <div class="unit" id="u2-3">
+      <div class="unit-label">Microlearning 2.3 · Inspect the available evidence</div>
+      <p class="unit-q">Look at the series below. What does it tell you before you pick a model?</p>
+      <p class="unit-explain">Investigate trend, seasonality, persistence, temporary shocks, how much history you have, external drivers, and whether their future values will even be known.</p>
+      <div class="unit-visual">
+        <svg viewBox="0 0 500 200" style="width:100%;height:auto" aria-label="Upward trending seasonal time series">
+          <g id="ml-grid"></g>
+          <path id="ml-series" fill="none" stroke="#1d5fa7" stroke-width="2.5"></path>
+        </svg>
+      </div>
+      <div class="decision">
+        <div class="decision-label">Diagnose the series</div>
+        <div class="options">
+          <label><input type="checkbox" checked disabled> Trend — rising over time</label>
+          <label><input type="checkbox" checked disabled> Seasonality — repeats roughly every 12 periods</label>
+          <label><input type="checkbox" disabled> Shocks — appear temporary, not persistent</label>
+        </div>
+      </div>
+      <div class="feedback show"><b>Reading this series:</b> a clear upward trend plus a repeating annual pattern — exactly what the hotel occupancy example implies. If tourist-arrival data is available as a future-known driver, that's worth carrying into Block 3.</div>
+      <div class="confidence" data-unit="u2-3"></div>
+      <div class="confidence-label" style="margin-top:8px;font-weight:400;color:var(--muted)">↑ Rate how confident you are reading trend/seasonality off a raw chart — that rating doubles as this unit's "how confident are you?" check.</div>
+    </div>
+
+    <div class="block-output">
+      <div class="kicker">Block output</div>
+      <p>Forecast monthly hotel occupancy by property for the next 12 months, using historical occupancy, seasonal patterns and available tourist-arrival information.</p>
+      <div class="duration">Duration: 15–20 minutes</div>
+    </div>
+  </section>
+
+  <!-- ================= BLOCK 3 — HOW ================= -->
+  <section class="block" id="how">
+    <div class="block-head">
+      <span class="block-letter">BLOCK 3 · HOW</span>
+      <h2>Select, build and validate</h2>
+      <p class="essential-q">Essential question: Which forecasting method is appropriate, and can its forecast be trusted?</p>
+    </div>
+
+    <!-- 3.1 -->
+    <div class="unit" id="u3-1">
+      <div class="unit-label">Microlearning 3.1 · Select the model family</div>
+      <p class="unit-q">Given the forecast spec from Block 2, which model family fits?</p>
+      <p class="unit-explain">Horizon influences model choice, but it doesn't determine it alone — external drivers and seasonality matter just as much.</p>
+      <div class="tree">
+        <div class="tree-row"><div class="tree-q">External drivers available at forecast time?</div>
+          <div class="tree-branches">
+            <div class="tree-branch">No →</div>
+            <div class="tree-branch">Clear seasonality? <b>No</b> → <span class="tree-leaf">ARIMA</span> · <b>Yes</b> → <span class="tree-leaf">SARIMA</span></div>
+          </div>
+        </div>
+        <div class="tree-row"><div class="tree-q" style="visibility:hidden">External drivers available at forecast time?</div>
+          <div class="tree-branches">
+            <div class="tree-branch">Yes →</div>
+            <div class="tree-branch">Relationships linear? <b>Yes</b> → <span class="tree-leaf">ARIMAX / SARIMAX</span> · <b>No</b> → Tree-based ML or LSTM, by data scale</div>
+          </div>
+        </div>
+        <div class="tree-row"><div class="tree-q">Long horizon with structural change?</div>
+          <div class="tree-branches"><div class="tree-branch"><b>Yes</b> → <span class="tree-leaf">Scenarios + structural models + judgement</span></div></div>
+        </div>
+      </div>
+      <div class="unit-visual"><span class="example">Model tendencies by horizon — Short generally favours ARIMA/SARIMA. Medium generally favours SARIMA/SARIMAX when seasonal patterns and drivers matter. Long generally requires structural assumptions, scenarios and judgement. ML and LSTM are not automatically better for longer horizons.</span></div>
+      <div class="decision">
+        <div class="decision-label">Hotel occupancy has seasonality and a usable external driver (tourist arrivals) with a roughly linear relationship. Which family fits?</div>
+        <div class="options" id="opt-u3-1">
+          <label><input type="radio" name="u3-1" value="wrong"> ARIMA</label>
+          <label><input type="radio" name="u3-1" value="wrong"> SARIMA</label>
+          <label><input type="radio" name="u3-1" value="correct"> ARIMAX / SARIMAX</label>
+          <label><input type="radio" name="u3-1" value="wrong"> LSTM</label>
+        </div>
+      </div>
+      <button class="check-btn" onclick="checkMCQ('u3-1')">Check answer</button>
+      <div class="feedback" id="fb-u3-1"><b>ARIMAX / SARIMAX.</b> Seasonality alone would point to SARIMA — but a usable, roughly-linear external driver pushes the choice to SARIMAX, which adds the driver on top of SARIMA's seasonal structure.</div>
+      <div class="confidence" data-unit="u3-1"></div>
+      <div class="beyond"><b>Beyond this workshop:</b> when relationships are non-linear or the dataset is large and sequential, tree-based ML or LSTM/deep learning become the relevant branches — not covered here, but worth knowing they exist.</div>
+    </div>
+
+    <!-- 3.2 -->
+    <div class="unit" id="u3-2">
+      <div class="unit-label">Microlearning 3.2 · Prepare the series</div>
+      <p class="unit-q">A monthly series has a rising level and an annual repeating pattern. Which transformation(s) should you investigate?</p>
+      <p class="unit-explain">Decide whether the series needs no differencing, regular differencing, seasonal differencing, or both.</p>
+      <div class="decision">
+        <div class="options" id="opt-u3-2">
+          <label><input type="radio" name="u3-2" value="wrong"> No differencing</label>
+          <label><input type="radio" name="u3-2" value="wrong"> Regular differencing only</label>
+          <label><input type="radio" name="u3-2" value="wrong"> Seasonal differencing only</label>
+          <label><input type="radio" name="u3-2" value="correct"> Both regular and seasonal differencing</label>
+        </div>
+      </div>
+      <button class="check-btn" onclick="checkMCQ('u3-2')">Check answer</button>
+      <div class="feedback" id="fb-u3-2"><b>Both regular and seasonal differencing</b> — then validate. The rising level needs regular differencing to remove trend; the annual repeating pattern needs seasonal differencing on top of it.</div>
+      <div class="confidence" data-unit="u3-2"></div>
+    </div>
+
+    <!-- 3.3 -->
+    <div class="unit" id="u3-3">
+      <div class="unit-label">Microlearning 3.3 · Identify AR, MA and seasonal structure</div>
+      <p class="unit-q">Which diagnostic clue points to an AR(p) process rather than an MA(q) process?</p>
+      <p class="unit-explain">Read ACF/PACF plots with business intuition, not just memorised rules.</p>
+      <div class="unit-visual">
+        <table>
+          <tr><th>Component</th><th>Business interpretation</th><th>Diagnostic clue</th></tr>
+          <tr><td>AR</td><td>Persistence or momentum</td><td>PACF tends to cut off</td></tr>
+          <tr><td>MA</td><td>Temporary effects of shocks</td><td>ACF tends to cut off</td></tr>
+          <tr><td>Seasonal AR</td><td>Seasonal persistence</td><td>PACF spikes at seasonal lags</td></tr>
+          <tr><td>Seasonal MA</td><td>Seasonal shocks</td><td>ACF spikes at seasonal lags</td></tr>
+        </table>
+      </div>
+      <div class="decision">
+        <div class="options" id="opt-u3-3">
+          <label><input type="radio" name="u3-3" value="wrong"> ACF cuts off sharply, PACF decays gradually</label>
+          <label><input type="radio" name="u3-3" value="correct"> ACF decays gradually, PACF cuts off after lag p</label>
+          <label><input type="radio" name="u3-3" value="wrong"> Both cut off immediately</label>
+        </div>
+      </div>
+      <button class="check-btn" onclick="checkMCQ('u3-3')">Check answer</button>
+      <div class="feedback" id="fb-u3-3"><b>ACF decays gradually, PACF cuts off after lag p.</b> A sharp PACF cutoff is the signature of persistence (AR) rather than a temporary shock (MA).</div>
+      <div class="confidence" data-unit="u3-3"></div>
+    </div>
+
+    <!-- 3.4 -->
+    <div class="unit" id="u3-4">
+      <div class="unit-label">Microlearning 3.4 · Build the candidate model</div>
+      <p class="unit-q">SARIMA(p, d, q)(P, D, Q)ₛ — can you match each symbol to what it represents?</p>
+      <p class="unit-explain">Emphasise decisions over memorisation: d, D are transformations for stationarity; p, P are persistence at regular and seasonal lags; q, Q are temporary shocks at regular and seasonal lags; s is the length of the seasonal cycle.</p>
+      <div class="unit-visual">
+        <table>
+          <tr><th>Symbol</th><th>Meaning</th></tr>
+          <tr><td>d, D</td><td>Transformations needed for stationarity</td></tr>
+          <tr><td>p, P</td><td>Persistence at regular and seasonal lags</td></tr>
+          <tr><td>q, Q</td><td>Temporary shocks at regular and seasonal lags</td></tr>
+          <tr><td>s</td><td>Length of the seasonal cycle</td></tr>
+        </table>
+        <p class="example" style="margin-top:10px">For ARIMAX/SARIMAX, also decide: which external variables are useful, whether the response is immediate or delayed, whether future driver values will be available, and whether the driver improves out-of-sample forecasting.</p>
+      </div>
+      <div class="decision">
+        <div class="decision-label">For monthly data with a 12-month seasonal cycle, what should s be?</div>
+        <div class="options" id="opt-u3-4">
+          <label><input type="radio" name="u3-4" value="wrong"> 1</label>
+          <label><input type="radio" name="u3-4" value="wrong"> 4</label>
+          <label><input type="radio" name="u3-4" value="correct"> 12</label>
+        </div>
+      </div>
+      <button class="check-btn" onclick="checkMCQ('u3-4')">Check answer</button>
+      <div class="feedback" id="fb-u3-4"><b>s = 12.</b> s is the number of periods per season — 12 for monthly data with an annual cycle, 4 for quarterly data, and so on.</div>
+      <div class="confidence" data-unit="u3-4"></div>
+    </div>
+
+    <!-- 3.5 -->
+    <div class="unit" id="u3-5">
+      <div class="unit-label">Microlearning 3.5 · Validate and use the forecast</div>
+      <p class="unit-q">Model A has the lowest AIC but significant residual autocorrelation. Model B has slightly higher AIC but white-noise residuals and better validation accuracy. Which is more defensible?</p>
+      <p class="unit-explain">Evaluate out-of-sample accuracy, AIC/BIC, residual ACF, the Ljung–Box test, prediction intervals, stability, and business plausibility — not any single number in isolation.</p>
+      <div class="decision">
+        <div class="options" id="opt-u3-5">
+          <label><input type="radio" name="u3-5" value="wrong"> Model A — it has the lowest AIC</label>
+          <label><input type="radio" name="u3-5" value="correct"> Model B — better validation and clean residuals</label>
+        </div>
+      </div>
+      <button class="check-btn" onclick="checkMCQ('u3-5')">Check answer</button>
+      <div class="feedback" id="fb-u3-5"><b>Model B.</b> A lower AIC that leaves autocorrelated residuals means the model hasn't captured all the structure in the data — that unexplained pattern usually costs more in forecast accuracy than the AIC gap saves.</div>
+      <div class="confidence" data-unit="u3-5"></div>
+    </div>
+
+    <div class="block-output">
+      <div class="kicker">Block output</div>
+      <p>Use SARIMAX as the candidate model, benchmark it against SARIMA, validate it on a 12-month holdout period, and communicate both the forecast and the prediction interval.</p>
+      <div class="duration">Duration: approximately 60–90 minutes, including guided exercises</div>
+    </div>
+
+    <div class="beyond" style="margin-top:26px">
+      <b>Primary path for this workshop:</b> Forecasting analytics → short/medium horizon → seasonality and external drivers → ARIMA → SARIMA → ARIMAX/SARIMAX.<br>
+      ML, LSTM and long-term scenario methods appear only as contextual "beyond this workshop" branches.
+    </div>
+  </section>
+</main>
+
+<footer><div><b>Microlearning Preview</b><br>WHY · WHAT · HOW — draft, not yet published</div><a href="/time-series-workshop">← Time Series Workshop page</a></footer>
+
+<script>
+  // Reused mini time-series chart (same generation pattern as the live workshop page)
+  const grid = document.getElementById('ml-grid');
+  [40,80,120,160].forEach(y=>{grid.innerHTML+=`<line x1="20" y1="${y}" x2="480" y2="${y}" stroke="#dce5ec" stroke-dasharray="4 5"/>`});
+  const pts = Array.from({length:48},(_,i)=>({x:24+i*9.6,y:175-(18+i*.95+Math.sin(i*Math.PI/3)*(4+i*.1))*.95}));
+  document.getElementById('ml-series').setAttribute('d', pts.map((p,i)=>`${i?'L':'M'}${p.x},${p.y}`).join(' '));
+
+  function checkMCQ(unitId){
+    const group = document.getElementById(`opt-${unitId}`);
+    const picked = group.querySelector('input:checked');
+    group.querySelectorAll('label').forEach(l=>l.classList.remove('correct','picked-wrong'));
+    if (!picked) return;
+    if (picked.value === 'correct') {
+      picked.closest('label').classList.add('correct');
+    } else {
+      picked.closest('label').classList.add('picked-wrong');
+      group.querySelector('input[value="correct"]').closest('label').classList.add('correct');
+    }
+    document.getElementById(`fb-${unitId}`).classList.add('show');
+  }
+
+  function revealFeedback(unitId){
+    document.getElementById(`fb-${unitId}`).classList.add('show');
+  }
+
+  // Confidence rating widgets — 1-5, saved locally per unit, no backend
+  document.querySelectorAll('.confidence[data-unit]').forEach(el=>{
+    const unitId = el.dataset.unit;
+    const stored = localStorage.getItem(`mlConfidence_${unitId}`);
+    el.innerHTML = `<span class="confidence-label">How confident do you feel about this?</span>
+      <span class="confidence-scale">${[1,2,3,4,5].map(n=>`<button type="button" data-val="${n}">${n}</button>`).join('')}</span>
+      <span class="confidence-note">Saved</span>`;
+    const buttons = el.querySelectorAll('.confidence-scale button');
+    const note = el.querySelector('.confidence-note');
+    function setActive(val){
+      buttons.forEach(b=>b.classList.toggle('active', b.dataset.val === String(val)));
+    }
+    if (stored) setActive(stored);
+    buttons.forEach(b=>b.addEventListener('click', ()=>{
+      localStorage.setItem(`mlConfidence_${unitId}`, b.dataset.val);
+      setActive(b.dataset.val);
+      note.classList.add('show');
+    }));
+  });
+</script>
+
+</body>
+</html>
