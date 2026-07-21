@@ -161,6 +161,23 @@
       <div class="unit-label">Microlearning 1.2 · Identify the analytics intent</div>
       <p class="unit-q">"What will monthly hotel occupancy be over the coming year?" — which type of question is this?</p>
       <p class="unit-explain">Not every business question is a forecasting question. Match the question to the right analytics intent before choosing a method.</p>
+      <div class="tree">
+        <div class="tree-row"><div class="tree-q">What is the business question really asking?</div>
+          <div class="tree-branches">
+            <div class="tree-branch">Which cases will experience an outcome? → <span class="tree-leaf">Predictive</span></div>
+          </div>
+        </div>
+        <div class="tree-row"><div class="tree-q" style="visibility:hidden">What is the business question really asking?</div>
+          <div class="tree-branches">
+            <div class="tree-branch">How will a measure evolve over time? → <span class="tree-leaf">Forecasting</span></div>
+          </div>
+        </div>
+        <div class="tree-row"><div class="tree-q" style="visibility:hidden">What is the business question really asking?</div>
+          <div class="tree-branches">
+            <div class="tree-branch">What happens if we take an action? → <span class="tree-leaf">Causal</span></div>
+          </div>
+        </div>
+      </div>
       <div class="unit-visual">
         <table>
           <tr><th>Analytics intent</th><th>Main question</th><th>Example</th></tr>
@@ -228,6 +245,23 @@
       <div class="unit-label">Microlearning 2.2 · Determine the forecast horizon</div>
       <p class="unit-q">Monthly occupancy, forecast 12 months out, to plan staffing and inventory — which horizon is this?</p>
       <p class="unit-explain">The horizon must be interpreted relative to the data frequency and decision cycle, not just the raw number of periods.</p>
+      <div class="tree">
+        <div class="tree-row"><div class="tree-q">How far ahead does the decision cycle require?</div>
+          <div class="tree-branches">
+            <div class="tree-branch">Just the next few periods → <span class="tree-leaf">Short</span> — staffing, replenishment</div>
+          </div>
+        </div>
+        <div class="tree-row"><div class="tree-q" style="visibility:hidden">How far ahead does the decision cycle require?</div>
+          <div class="tree-branches">
+            <div class="tree-branch">About one seasonal cycle → <span class="tree-leaf">Medium</span> — capacity, inventory, budgeting</div>
+          </div>
+        </div>
+        <div class="tree-row"><div class="tree-q" style="visibility:hidden">How far ahead does the decision cycle require?</div>
+          <div class="tree-branches">
+            <div class="tree-branch">Beyond one seasonal cycle → <span class="tree-leaf">Long</span> — investment, strategic planning</div>
+          </div>
+        </div>
+      </div>
       <div class="unit-visual">
         <table>
           <tr><th>Horizon</th><th>Practical meaning</th><th>Typical decisions</th></tr>
