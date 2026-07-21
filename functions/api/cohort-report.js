@@ -137,8 +137,12 @@ Structure your response exactly as follows:
 ### 3. Learning Goals & Business Problems
 * [bulleted synthesis of the recurring learning goals and business problems the cohort described]
 
-### 4. Key Takeaways for the Instructor
-* [1-2 sentences of concrete recommendation for how to pitch the opening material, grounded in the specific mix of experience, confidence, and goals above]
+### 4. AI-Generated Teaching Recommendations
+* **What to emphasise:** [the concept, given this mix of experience/confidence, that needs the most grounding before diving into SARIMA/ARIMAX]
+* **How to teach it:** [a concrete delivery choice for the opening — e.g. lead with a business example vs. the equation, given who's in the room]
+* **When to adapt:** [a pacing decision for today's opening — spend extra time on X before moving to Y, or move quickly through Z]
+* **Who needs support:** [which respondents, by experience or confidence level, may need extra scaffolding early]
+* **How to challenge:** [what to ask of the more experienced or confident respondents so they stay engaged from the start]
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -178,8 +182,12 @@ Structure your response exactly as follows:
 ### 3. Progressive Cohort Assessment (vs. Beginning)
 * [Compare actual SARIMA performance against the confidence level and stated goals from the Beginning Report — is the cohort over-confident, under-confident, or on track relative to what they said coming in? Note whether the errors are conceptual or just notation/labeling confusion.]
 
-### 4. Recommendation — What To Do Before ARIMAX
-* [1-2 concrete, immediately actionable instructions: what to re-explain right now, whether to slow down or move on, which specific example to revisit]
+### 4. AI-Generated Teaching Recommendations
+* **What to emphasise:** [the specific concept the wrong-answer pattern reveals needs re-explaining right now]
+* **How to teach it:** [a concrete delivery choice — e.g. compare two visual examples before returning to the equation]
+* **When to adapt:** [a specific timing decision — e.g. add N minutes before starting ARIMAX, or move on now]
+* **Who needs support:** [which respondents/segment scored lowest and should get a refresher activity]
+* **How to challenge:** [what to ask the respondents who scored well, so they're not idle during the re-explanation]
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -221,8 +229,12 @@ Structure your response exactly as follows:
 ### 3. Progressive Cohort Assessment (vs. Beginning & Checkpoint 1)
 * [State explicitly whether performance/confidence is improving, flat, or declining versus the SARIMA checkpoint, and against the confidence/goals from the Beginning Report — call out whether the Checkpoint 1 recommendation appears to have landed, and whether the same error pattern recurs]
 
-### 4. Recommendation — What To Emphasize in the Time Remaining
-* [1-2 concrete instructions for the closing stretch of class: what to reinforce before wrap-up, what to deliberately leave for the reflection discussion]
+### 4. AI-Generated Teaching Recommendations
+* **What to emphasise:** [the specific concept the wrong-answer pattern reveals still needs reinforcing before class ends]
+* **How to teach it:** [a concrete delivery choice for the closing stretch]
+* **When to adapt:** [a specific timing decision — how many minutes to spend now vs. leave for the reflection discussion]
+* **Who needs support:** [which respondents/segment is still struggling and should get direct follow-up]
+* **How to challenge:** [what to ask the respondents who are on track, so the closing stretch isn't wasted for them]
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -261,8 +273,12 @@ Structure your response exactly as follows:
 ### 3. What's Still Unclear
 * [Aggregate the recurring themes in "remaining questions" — call out anything that echoes a misconception flagged at either checkpoint and was never fully resolved]
 
-### 4. Recommendation — What to Change Next Time
-* [1-2 concrete changes to the workshop's content, pacing, or emphasis for the next cohort, grounded in where this specific group struggled and any suggestions they offered]
+### 4. AI-Generated Teaching Recommendations for Next Cohort
+* **What to emphasise:** [the recurring misconception or gap to spend more time on next time]
+* **How to teach it:** [a concrete change to delivery — e.g. a different example, more visuals, earlier hands-on practice]
+* **When to adapt:** [a pacing change for the next cohort, grounded in where this cohort's timing worked or didn't]
+* **Who needs support:** [what kind of participant profile — by experience or confidence — should get a pre-built scaffold next time]
+* **How to challenge:** [how to stretch the more advanced participants next time, given what this cohort's advanced learners asked for]
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
