@@ -40,6 +40,10 @@ import Base from '../../layouts/Base.astro';
           <span class="tab-btn__icon">🔬</span>
           Cluster Analysis
         </button>
+        <button class="tab-btn" data-tab="workshop" id="tab-workshop">
+          <span class="tab-btn__icon">🌱</span>
+          AI Agent for Segmentation, Prediction and Personalization Workflow
+        </button>
       </div>
     </div>
   </div>
@@ -686,6 +690,197 @@ import Base from '../../layouts/Base.astro';
 
   </div><!-- /panel-cluster -->
 
+  <!-- ================================================================
+       WORKSHOP ACTIVITY TAB
+       ================================================================ -->
+  <div class="tab-panel tab-panel--hidden" id="panel-workshop">
+
+    <!-- 1 · Background -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">01</span>
+            <p class="eyebrow">Business Challenge</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">The Digital Sustainability Advisor</h2>
+            <p class="topic-lead">A hands-on CrewAI workshop that turns everything in this module &mdash; segmentation, clustering, regression &mdash; into a working multi-agent AI product.</p>
+
+            <div class="info-card info-card--wide">
+              <h3>Scenario</h3>
+              <p>A bank wants to help customers understand the environmental impact of their spending. But the bank must answer three questions:</p>
+              <ul class="benefit-list">
+                <li><strong>Identification</strong> &mdash; How do we identify sustainability behaviours across millions of customers?</li>
+                <li><strong>Estimation</strong> &mdash; How do we estimate carbon impact from spending?</li>
+                <li><strong>Personalisation</strong> &mdash; How do we personalise insights for each customer?</li>
+              </ul>
+            </div>
+
+            <div class="callout">
+              The <strong>Digital Sustainability Advisor</strong> is a specialised AI agent that helps customers optimise spending for a lower carbon footprint <em>and</em> better financial health. Rather than lecturing users to spend less, it runs what-if scenario analysis and nudges them toward smarter substitutions and re-allocations within their existing spending categories.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 2 · Framework -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">02</span>
+            <p class="eyebrow">Framework</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Insight &rarr; Foresight &rarr; Action</h2>
+            <p class="topic-lead">The same three-step pattern used across this course's agents, applied here to sustainable spending.</p>
+
+            <div class="step-list">
+              <div class="step">
+                <span class="step-num">1</span>
+                <div>
+                  <h3>Insight &mdash; Segment customers</h3>
+                  <p>K-Means clustering on five spend categories (restaurants, shopping, travel, groceries, entertainment) plus total spend and estimated CO2e. Optimal <em>k</em> is chosen automatically via the highest Silhouette Score &mdash; the same validation technique covered in the Cluster Analysis tab.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">2</span>
+                <div>
+                  <h3>Foresight &mdash; Predict carbon impact</h3>
+                  <p>An OLS regression predicts <code>estimated_co2e</code> from the five spend categories (R&sup2; = 0.896). Coefficients reveal which categories drive emissions the most &mdash; travel has by far the largest per-dollar impact.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">3</span>
+                <div>
+                  <h3>Action &mdash; Simulate &amp; recommend</h3>
+                  <p>A what-if simulator tests scenarios (e.g. &ldquo;reduce travel 20%&rdquo;, &ldquo;reduce travel/restaurants/shopping 15%&rdquo;) against the regression model, then a CrewAI crew turns the best scenario into a personalised, financially-framed email.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 3 · Multi-agent architecture -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">03</span>
+            <p class="eyebrow">Multi-Agent AI</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Meet the CrewAI Crew</h2>
+            <p class="topic-lead">Three agents, each with a narrow role, working sequentially so the final output stays grounded in the actual model outputs rather than a generic LLM guess.</p>
+
+            <div class="agent-trio">
+              <div class="info-card">
+                <span class="agent-tag">Agent 1</span>
+                <h3>Sustainability Insight Analyst</h3>
+                <p><strong>Goal:</strong> Explain customer sustainability segments in business language and flag which clusters carry the highest carbon impact.</p>
+              </div>
+              <div class="info-card">
+                <span class="agent-tag">Agent 2</span>
+                <h3>Carbon Impact Forecast Specialist</h3>
+                <p><strong>Goal:</strong> Interpret the regression output &mdash; model fit, statistical significance, and the top emissions drivers &mdash; for a non-technical reader.</p>
+              </div>
+              <div class="info-card">
+                <span class="agent-tag">Agent 3</span>
+                <h3>Sustainable Lifestyle Advisor</h3>
+                <p><strong>Goal:</strong> Turn the winning what-if scenario into a short, supportive email with three practical, re-allocation-based recommendations.</p>
+              </div>
+            </div>
+
+            <div class="callout callout--warn">
+              <strong>Prompt design matters:</strong> the Action agent's task explicitly instructs it to avoid &ldquo;reduce spending by X%&rdquo; as the headline message. Instead it must frame recommendations as smarter substitutions (e.g. &ldquo;explore sustainable travel alternatives&rdquo;) so the tone stays supportive, not guilt-inducing.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 4 · Worked example -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">04</span>
+            <p class="eyebrow">Worked Example</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">What-If Scenario Table</h2>
+            <p class="topic-lead">Sample output for one customer in the demo dataset &mdash; this is the exact table the Action agent reasons over.</p>
+
+            <div class="info-card info-card--wide">
+              <h3>Customer #50 &middot; Cluster 0 &middot; Baseline predicted CO2e: 689.61</h3>
+              <div class="table-scroll">
+                <table class="mini-table">
+                  <thead><tr><th>Scenario</th><th>Predicted CO2e</th><th>Reduction</th><th>Reduction %</th></tr></thead>
+                  <tbody>
+                    <tr><td>Baseline (no change)</td><td>689.61</td><td>&mdash;</td><td>&mdash;</td></tr>
+                    <tr><td>Reduce travel 20%</td><td>677.85</td><td>11.77</td><td>1.71%</td></tr>
+                    <tr><td>Reduce restaurants 20%</td><td>677.12</td><td>12.49</td><td>1.81%</td></tr>
+                    <tr><td>Reduce shopping 20%</td><td>683.76</td><td>5.86</td><td>0.85%</td></tr>
+                    <tr><td><strong>Reduce travel/restaurants/shopping 15%</strong></td><td><strong>667.03</strong></td><td><strong>22.59</strong></td><td><strong>3.28%</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p style="margin-top:var(--sp-3)">The best scenario spreads a smaller cut across three categories rather than a deep cut in one &mdash; exactly the kind of re-allocation insight the Action agent is asked to explain.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hr" />
+
+    <!-- 5 · Try it yourself -->
+    <section class="section--sm">
+      <div class="wrap">
+        <div class="topic-grid">
+          <div class="topic-meta">
+            <span class="topic-num">05</span>
+            <p class="eyebrow">Hands-On</p>
+          </div>
+          <div class="topic-body">
+            <h2 class="topic-h2">Try It Yourself</h2>
+            <p class="topic-lead">Run the full notebook in Google Colab &mdash; clustering, regression, what-if simulation, and the live CrewAI crew.</p>
+
+            <div class="info-card info-card--wide">
+              <h3>Before you run it</h3>
+              <ul class="benefit-list">
+                <li><strong>Dataset</strong> &mdash; Upload a <code>sustainable_customer_personas.csv</code> with columns for restaurant/shopping/travel/groceries/entertainment spend and an <code>estimated_co2e</code> target.</li>
+                <li><strong>API key</strong> &mdash; You'll need an OpenAI API key to run the CrewAI agents (set as <code>OPENAI_API_KEY</code>).</li>
+              </ul>
+            </div>
+
+            <div class="info-card info-card--wide">
+              <h3>Extend the activity</h3>
+              <ul class="benefit-list">
+                <li>Change the <code>chosen_customer_id</code> and re-run &mdash; how does the recommended scenario shift across clusters?</li>
+                <li>Edit the Action agent's <code>backstory</code> and email requirements &mdash; try a more playful tone, or add a loyalty-points incentive.</li>
+                <li>Add a fourth what-if scenario (e.g. reduce groceries or entertainment) and see if it ever beats the current best.</li>
+              </ul>
+            </div>
+
+            <a href="https://colab.research.google.com/github/christinecheongpuayee88/christinecheong/blob/master/public/notebooks/DigitalSustainabilityAdvisor_CrewAI.ipynb" target="_blank" rel="noopener" class="btn btn--primary">Open in Colab &nearr;</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /panel-workshop -->
+
   <!-- ── CTA ─────────────────────────────────────────────────── -->
   <section class="section--sm not-sure" style="background:var(--surface);border-top:1px solid var(--border);">
     <div class="wrap not-sure__inner">
@@ -752,6 +947,7 @@ import Base from '../../layouts/Base.astro';
   }
   .tab-bar__inner {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--sp-1);
   }
   .tab-btn {
@@ -984,6 +1180,26 @@ import Base from '../../layouts/Base.astro';
   .rfm-dim--f .rfm-letter { color: #16a34a; }
   .rfm-dim--m .rfm-letter { color: #d97706; }
 
+  /* ── Agent trio (Workshop tab) ───────────────────────── */
+  .agent-trio {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-5);
+  }
+  .agent-tag {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 100px;
+    display: inline-block;
+    margin-bottom: var(--sp-3);
+  }
+
   /* ── Steps ───────────────────────────────────────────── */
   .step-list {
     display: flex;
@@ -1045,6 +1261,7 @@ import Base from '../../layouts/Base.astro';
     .topic-num  { font-size: 28px; margin-bottom: 0; }
     .card-row   { grid-template-columns: 1fr; }
     .rfm-trio   { grid-template-columns: 1fr; }
+    .agent-trio { grid-template-columns: 1fr; }
     .not-sure__inner { flex-direction: column; text-align: center; align-items: flex-start; }
     .tab-btn { padding: 14px 16px; font-size: 14px; }
   }
