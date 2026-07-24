@@ -25,6 +25,12 @@ const SURVEY_QUESTIONS = {
     { match: /main concern|challenge/i, label: "Main Concern / Challenge", kind: "text" },
     { match: /forecasting problem|business problem/i, label: "Business Problem", kind: "text" },
   ],
+  2: [
+    { match: /further question/i, label: "Reflection — Further Questions", kind: "text" },
+  ],
+  3: [
+    { match: /further question/i, label: "Reflection — Further Questions", kind: "text" },
+  ],
   4: [
     { match: /takeaway/i, label: "Biggest Takeaway", kind: "text" },
     { match: /apply/i, label: "Where They'll Apply This", kind: "text" },
@@ -312,6 +318,7 @@ export async function onRequestGet(context) {
       result.responseCount = stats.responseCount;
       result.accuracy = stats.accuracy;
       result.readiness = stats.accuracy ? readinessFromPercent(stats.accuracy.meanPercent) : null;
+      result.questionSummary = summarizeQuestions(values, SURVEY_QUESTIONS[stage]);
 
       // Stage 3 (Checkpoint 2) shows change in accuracy vs Stage 2 (Checkpoint 1)
       if (stage === 3 && stats.accuracy) {

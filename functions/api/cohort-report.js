@@ -169,7 +169,7 @@ Output plain text using exactly that Markdown structure (## and ### headings, * 
 
 ${styleNote}
 
-### RAW CHECKPOINT 1 DATA (SARIMA, 6 questions, includes each respondent's selected answer and points scored) ###
+### RAW CHECKPOINT 1 DATA (SARIMA, 6 graded questions plus an optional ungraded reflection question — "Do you have any further questions?" — includes each respondent's selected answer and points scored) ###
 ${rawData}
 
 ### ANSWER KEY (for interpreting which wrong answers reveal which misconception) ###
@@ -224,7 +224,7 @@ Output plain text using exactly that Markdown structure (## and ### headings, * 
 
 ${styleNote}
 
-### RAW CHECKPOINT 2 DATA (ARIMAX, 5 questions, includes each respondent's selected answer and points scored) ###
+### RAW CHECKPOINT 2 DATA (ARIMAX, 5 graded questions plus an optional ungraded reflection question — "Do you have any further questions?" — includes each respondent's selected answer and points scored) ###
 ${rawData}
 
 ### ANSWER KEY (for interpreting which wrong answers reveal which misconception) ###
