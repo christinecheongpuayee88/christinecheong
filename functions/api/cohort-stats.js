@@ -22,6 +22,7 @@ const SURVEY_QUESTIONS = {
     { match: /time series experience/i, label: "Time Series Experience", kind: "categorical" },
     { match: /programming experience/i, label: "Programming Experience", kind: "categorical" },
     { match: /most like to learn|learning goal/i, label: "Learning Goals", kind: "text" },
+    { match: /main concern|challenge/i, label: "Main Concern / Challenge", kind: "text" },
     { match: /forecasting problem|business problem/i, label: "Business Problem", kind: "text" },
   ],
   4: [

@@ -117,7 +117,7 @@ function buildPrompt(stage, rawData, priorReports) {
 
 ${styleNote}
 
-### RAW BEGINNING-OF-CLASS DATA (Pre-Class Survey — name (optional), industry, job role, time series experience, programming experience, learning goals, self-rated confidence 1-5, and the business problem they're facing) ###
+### RAW BEGINNING-OF-CLASS DATA (Pre-Class Survey — name (optional), industry, job role, time series experience, programming experience, learning goals, their main concern or challenge in applying time series forecasting, self-rated confidence 1-5, and the business problem they're facing) ###
 ${rawData}
 
 #################
