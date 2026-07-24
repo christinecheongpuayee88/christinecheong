@@ -134,7 +134,12 @@ Structure your response exactly as follows:
 |---|---|---|
 [one row per respondent, in the order they appear in the raw data; if a respondent left name blank, use "Anonymous"]
 
-### 2. Confidence Level (Scale 1-5)
+### 2. Experience Level
+* **Time Series Experience:** [bulleted breakdown of each distinct level mentioned, with count and % of total]
+* **Programming Experience:** [bulleted breakdown of each distinct level mentioned, with count and % of total]
+* [One interpretive sentence on what this experience mix implies for pacing/depth today]
+
+### 3. Confidence Level (Scale 1-5)
 * **Average / Range:** [average score] / [lowest]–[highest]
 * **Level 1:** [n] response(s)
 * **Level 2:** [n] response(s)
@@ -143,17 +148,22 @@ Structure your response exactly as follows:
 * **Level 5:** [n] response(s)
 * [One interpretive sentence on where the cohort's confidence sits and what that implies for how today should be paced]
 
-### 3. Core Learning Objectives & Goals
+### 4. Core Learning Objectives & Goals
 * **[Short theme name]** — Mentioned by [X] of [n] responses. [1-2 sentences synthesizing what's behind this theme, referencing the actual variety of wording/contexts used]
 * **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
 [Group the stated learning goals into 2-4 themes that cover the full spread — do not list every individual response verbatim]
 
-### 4. Business Problems They Want to Solve
+### 5. Main Concerns & Challenges
+* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
+* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
+[Group the stated main concerns/challenges into 2-3 themes]
+
+### 6. Business Problems They Want to Solve
 * **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
 * **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
 [Group the stated business problems into 2-3 themes]
 
-### 5. AI-Generated Teaching Recommendations
+### 7. AI-Generated Teaching Recommendations
 
 > [One sentence of cohort evidence citing exact counts/percentages that justify the recommendations below, e.g. "X of Y respondents rated confidence at 3 or below despite Z having intermediate+ time series experience."]
 
