@@ -7,6 +7,52 @@ import Base from '../layouts/Base.astro';
   description=" teaches data science to university students and executive education participants — bridging the gap between theory and real-world decisions."
 >
 
+  <!-- ═══════════════════════════════════════════ PASSWORD GATE -->
+  <div id="pw-gate" class="pw-gate">
+    <div class="pw-gate__box">
+      <p class="eyebrow">Restricted Access</p>
+      <h2 class="pw-gate__title">Enter password to continue</h2>
+      <form id="pw-gate-form" class="pw-gate__form" autocomplete="off">
+        <input
+          type="password"
+          id="pw-gate-input"
+          class="pw-gate__input"
+          placeholder="Password"
+          autocomplete="off"
+          autofocus
+        />
+        <button type="submit" class="btn btn--primary">Enter</button>
+      </form>
+      <p id="pw-gate-error" class="pw-gate__error" hidden>Incorrect password. Try again.</p>
+    </div>
+  </div>
+
+  <script is:inline>
+    (function () {
+      var PASSWORD = "8888";
+      var gate = document.getElementById("pw-gate");
+      var form = document.getElementById("pw-gate-form");
+      var input = document.getElementById("pw-gate-input");
+      var error = document.getElementById("pw-gate-error");
+
+      if (sessionStorage.getItem("cc_site_unlocked") === "1") {
+        gate.style.display = "none";
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (input.value === PASSWORD) {
+          sessionStorage.setItem("cc_site_unlocked", "1");
+          gate.style.display = "none";
+        } else {
+          error.hidden = false;
+          input.value = "";
+          input.focus();
+        }
+      });
+    })();
+  </script>
+
   <!-- ═══════════════════════════════════════════ HERO -->
   <section class="hero">
     <div class="wrap hero__grid">
@@ -240,6 +286,54 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
+  /* ── Password gate ─────────────────────────────────────────── */
+  .pw-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+  }
+  .pw-gate__box {
+    width: 100%;
+    max-width: 360px;
+    padding: var(--sp-7) var(--sp-6);
+    text-align: center;
+  }
+  .pw-gate__title {
+    font-size: 26px;
+    margin: var(--sp-2) 0 var(--sp-6);
+  }
+  .pw-gate__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .pw-gate__input {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: var(--sans);
+    font-size: 17px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--r);
+    background: var(--white);
+    color: var(--text);
+    text-align: center;
+    letter-spacing: .1em;
+  }
+  .pw-gate__input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .pw-gate__form .btn { justify-content: center; }
+  .pw-gate__error {
+    margin-top: var(--sp-4);
+    font-size: 14px;
+    color: #B3261E;
+  }
+
   /* ── Hero ──────────────────────────────────────────────────── */
   .hero {
     min-height: calc(92svh - var(--nav-h));
