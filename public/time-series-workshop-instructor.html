@@ -73,6 +73,10 @@
   .report-box h2 { font-size: 18px; margin-bottom: 14px; }
   .report-box h3 { font-size: 15px; margin: 16px 0 8px; }
   .report-box ul, .report-box ol { margin-left: 20px; margin-bottom: 8px; }
+  .report-box table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; font-size: 13.5px; }
+  .report-box th { text-align: left; color: var(--text); font-weight: 600; padding: 6px 10px 8px; border-bottom: 1px solid var(--border); }
+  .report-box td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .report-box tr:last-child td { border-bottom: none; }
   .report-box blockquote { border-left: 3px solid var(--subtle); background: var(--surface); padding: 10px 16px; margin: 4px 0 16px; color: var(--muted); font-size: 14px; border-radius: 0 var(--radius) var(--radius) 0; }
   .report-box .pill { display: inline-block; font-size: 10.5px; font-weight: 500; letter-spacing: .02em; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 2px 10px; margin-left: 8px; }
   .report-actions { display: none; gap: 12px; }
@@ -126,6 +130,15 @@
   .concept-topic { font-size: 13.5px; font-weight: 500; }
   .concept-misconception { font-size: 12px; color: var(--subtle); margin-top: 2px; }
   .concept-percent { font-size: 15px; font-weight: 600; white-space: nowrap; }
+
+  .summary-heading { font-size: 15px; font-weight: 600; margin: 24px 0 12px; }
+  .question-block { margin-bottom: 18px; }
+  .question-block:last-child { margin-bottom: 0; }
+  .question-label { font-size: 13.5px; font-weight: 600; margin-bottom: 8px; }
+  .question-count { font-weight: 400; color: var(--subtle); }
+  .response-list { list-style: none; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .response-list li { padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--bg); font-size: 13.5px; }
+  .response-list li:last-child { border-bottom: none; }
 
   @media (max-width: 680px) {
     .wrap { padding: 36px 20px 72px; }
@@ -184,13 +197,19 @@
     return s;
   }
 
+  function parseTableRow(line) {
+    const trimmed = line.trim().replace(/^\|/, '').replace(/\|$/, '');
+    return trimmed.split('|').map((c) => c.trim());
+  }
+
   function formatReport(text) {
     const lines = text.split('\n');
     let html = '';
     let inList = false;
-    for (const raw of lines) {
-      const line = raw.trim();
-      if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i].trim();
+      if (!line) { if (inList) { html += '</ul>'; inList = false; } i++; continue; }
       if (line.startsWith('## ')) {
         if (inList) { html += '</ul>'; inList = false; }
         html += `<h2>${inlineFormat(line.slice(3))}</h2>`;
@@ -200,6 +219,23 @@
       } else if (line.startsWith('> ')) {
         if (inList) { html += '</ul>'; inList = false; }
         html += `<blockquote>${inlineFormat(line.slice(2))}</blockquote>`;
+      } else if (
+        line.startsWith('|') &&
+        lines[i + 1] &&
+        /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$/.test(lines[i + 1].trim())
+      ) {
+        if (inList) { html += '</ul>'; inList = false; }
+        const headerCells = parseTableRow(line);
+        i += 2;
+        const bodyRows = [];
+        while (i < lines.length && lines[i].trim().startsWith('|')) {
+          bodyRows.push(parseTableRow(lines[i]));
+          i++;
+        }
+        html += '<table><tr>' + headerCells.map((c) => `<th>${inlineFormat(c)}</th>`).join('') + '</tr>' +
+          bodyRows.map((r) => '<tr>' + r.map((c) => `<td>${inlineFormat(c)}</td>`).join('') + '</tr>').join('') +
+          '</table>';
+        continue;
       } else if (line.startsWith('* ') || line.startsWith('- ')) {
         if (!inList) { html += '<ul>'; inList = true; }
         html += `<li>${inlineFormat(line.slice(2))}</li>`;
@@ -207,6 +243,7 @@
         if (inList) { html += '</ul>'; inList = false; }
         html += `<p>${inlineFormat(line)}</p>`;
       }
+      i++;
     }
     if (inList) html += '</ul>';
     return html;
@@ -263,17 +300,35 @@
     if (data.accuracy && data.accuracy.byQuestion.length) {
       const rows = data.accuracy.byQuestion.map((q) => {
         if (q.correctPercent == null) {
-          return `<div class="concept-row"><div><div class="concept-topic">${q.topic}</div><div class="concept-misconception">Question column not found</div></div></div>`;
+          return `<div class="concept-row"><div><div class="concept-topic">${escapeHtml(q.topic)}</div><div class="concept-misconception">Question column not found</div></div></div>`;
         }
         const misconception = q.topMisconception
-          ? `<div class="concept-misconception">Top miss: "${q.topMisconception.answer}" (${q.topMisconception.percent}%)</div>`
+          ? `<div class="concept-misconception">Top miss: "${escapeHtml(q.topMisconception.answer)}" (${q.topMisconception.percent}%)</div>`
           : '';
-        return `<div class="concept-row"><div><div class="concept-topic">${q.topic}</div>${misconception}</div><div class="concept-percent">${q.correctPercent}%</div></div>`;
+        return `<div class="concept-row"><div><div class="concept-topic">${escapeHtml(q.topic)}</div>${misconception}</div><div class="concept-percent">${q.correctPercent}%</div></div>`;
       }).join('');
       html += `<div class="concept-list">${rows}</div>`;
     }
 
+    if (data.questionSummary && data.questionSummary.length) {
+      html += `<p class="summary-heading">Summary by question</p>`;
+      html += data.questionSummary.map((field) => {
+        if (field.kind === 'categorical') {
+          const rows = field.values.map((v) =>
+            `<div class="concept-row"><div class="concept-topic">${escapeHtml(v.value)}</div><div class="concept-percent">${v.count} (${v.percent}%)</div></div>`
+          ).join('');
+          return `<div class="question-block"><p class="question-label">${escapeHtml(field.label)}</p><div class="concept-list">${rows}</div></div>`;
+        }
+        const items = field.responses.map((r) => `<li>${escapeHtml(r)}</li>`).join('');
+        return `<div class="question-block"><p class="question-label">${escapeHtml(field.label)} <span class="question-count">(${field.responses.length} response${field.responses.length === 1 ? '' : 's'})</span></p><ul class="response-list">${items}</ul></div>`;
+      }).join('');
+    }
+
     return html;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   function runDashboardStage(stage) {

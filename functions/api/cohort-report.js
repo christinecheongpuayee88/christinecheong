@@ -128,16 +128,32 @@ Structure your response exactly as follows:
 
 ### 1. Participant Profile & Demographics
 * **Total Responses:** [n]
-* **Industries / Roles Represented:** [bulleted list of the distinct industries and job roles mentioned, grouping duplicates]
-* **Experience Levels:** [distribution of time series experience and programming experience across respondents, e.g. "Time series: 2 None, 3 Beginner, 1 Intermediate"]
+* **Industries Represented:** [bulleted list of the distinct industries mentioned, grouping duplicates, with counts where more than one respondent shares an industry]
+
+| Name | Job Title | Industry |
+|---|---|---|
+[one row per respondent, in the order they appear in the raw data; if a respondent left name blank, use "Anonymous"]
 
 ### 2. Confidence Level (Scale 1-5)
-* **Average / Spread:** [average score, plus the full distribution: "1 = X respondents (Y%), 2 = ..., 3 = ..., 4 = ..., 5 = ...". One sentence characterizing where the cluster sits.]
+* **Average / Range:** [average score] / [lowest]–[highest]
+* **Level 1:** [n] response(s)
+* **Level 2:** [n] response(s)
+* **Level 3:** [n] response(s)
+* **Level 4:** [n] response(s)
+* **Level 5:** [n] response(s)
+* [One interpretive sentence on where the cohort's confidence sits and what that implies for how today should be paced]
 
-### 3. Learning Goals & Business Problems
-* [bulleted synthesis of the recurring learning goals and business problems the cohort described]
+### 3. Core Learning Objectives & Goals
+* **[Short theme name]** — Mentioned by [X] of [n] responses. [1-2 sentences synthesizing what's behind this theme, referencing the actual variety of wording/contexts used]
+* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
+[Group the stated learning goals into 2-4 themes that cover the full spread — do not list every individual response verbatim]
 
-### 4. AI-Generated Teaching Recommendations
+### 4. Business Problems They Want to Solve
+* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
+* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
+[Group the stated business problems into 2-3 themes]
+
+### 5. AI-Generated Teaching Recommendations
 
 > [One sentence of cohort evidence citing exact counts/percentages that justify the recommendations below, e.g. "X of Y respondents rated confidence at 3 or below despite Z having intermediate+ time series experience."]
 
@@ -145,7 +161,7 @@ Structure your response exactly as follows:
 * **How to teach it:** [a concrete delivery choice for the opening — e.g. lead with a business example vs. the equation, given who's in the room] {{Pedagogy}}
 * **How to challenge:** [what to ask of the more experienced or confident respondents so they stay engaged from the start] {{Pedagogy}}
 
-Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**, and a Markdown pipe table with a header row and a --- separator row for the participant list). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
 
   if (stage === 2) {

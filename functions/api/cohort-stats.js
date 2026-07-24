@@ -15,6 +15,23 @@ const FORM_RANGE = "'Form Responses 1'!A1:Z1000";
 
 // Question headers are matched by a short, special-character-free prefix so
 // the exact Unicode punctuation in the live form (→, —, ₛ, …) can't break matching.
+const SURVEY_QUESTIONS = {
+  1: [
+    { match: /industry/i, label: "Industry", kind: "categorical" },
+    { match: /job role|job title/i, label: "Job Role", kind: "categorical" },
+    { match: /time series experience/i, label: "Time Series Experience", kind: "categorical" },
+    { match: /programming experience/i, label: "Programming Experience", kind: "categorical" },
+    { match: /learning goal/i, label: "Learning Goals", kind: "text" },
+    { match: /business problem/i, label: "Business Problem", kind: "text" },
+  ],
+  4: [
+    { match: /takeaway/i, label: "Biggest Takeaway", kind: "text" },
+    { match: /apply/i, label: "Where They'll Apply This", kind: "text" },
+    { match: /remaining question/i, label: "Remaining Questions", kind: "text" },
+    { match: /suggestion/i, label: "Suggestions", kind: "text" },
+  ],
+};
+
 const CHECKPOINT_QUESTIONS = {
   2: [
     { headerPrefix: "In ARIMA(p,d,q), what does d represent", topic: "Differencing (d)", correct: "Order of differencing needed for stationarity" },
@@ -133,6 +150,35 @@ function computeConfidenceStats(values) {
   };
 }
 
+function summarizeQuestions(values, fieldDefs) {
+  const [headers, ...rows] = values.length ? values : [[]];
+  if (!rows.length || !fieldDefs) return [];
+  const n = rows.length;
+
+  return fieldDefs
+    .map((field) => {
+      const colIdx = findColumnIndex(headers, (h) => field.match.test(h || ""));
+      if (colIdx === -1) return null;
+      const raw = rows.map((r) => (r[colIdx] || "").trim()).filter((v) => v);
+
+      if (field.kind === "categorical") {
+        const counts = {};
+        for (const v of raw) {
+          const key = normalize(v);
+          if (!counts[key]) counts[key] = { value: v, count: 0 };
+          counts[key].count += 1;
+        }
+        const values2 = Object.values(counts)
+          .map((c) => ({ value: c.value, count: c.count, percent: Math.round((c.count / n) * 1000) / 10 }))
+          .sort((a, b) => b.count - a.count);
+        return { label: field.label, kind: "categorical", values: values2 };
+      }
+
+      return { label: field.label, kind: "text", responses: raw };
+    })
+    .filter(Boolean);
+}
+
 function computeAccuracyStats(values, questionDefs) {
   const [headers, ...rows] = values.length ? values : [[]];
   if (!rows.length) return { responseCount: 0, accuracy: null };
@@ -237,12 +283,14 @@ export async function onRequestGet(context) {
       accuracy: null,
       readiness: null,
       change: null,
+      questionSummary: [],
     };
 
     if (metricType === "confidence") {
       const stats = computeConfidenceStats(values);
       result.responseCount = stats.responseCount;
       result.confidence = stats.confidence;
+      result.questionSummary = summarizeQuestions(values, SURVEY_QUESTIONS[stage]);
 
       // Stage 4 (Final) shows change in confidence vs Stage 1 (Beginning)
       if (stage === 4 && stats.confidence) {
