@@ -136,9 +136,7 @@
   .question-block:last-child { margin-bottom: 0; }
   .question-label { font-size: 13.5px; font-weight: 600; margin-bottom: 8px; }
   .question-count { font-weight: 400; color: var(--subtle); }
-  .response-list { list-style: none; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-  .response-list li { padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--bg); font-size: 13.5px; }
-  .response-list li:last-child { border-bottom: none; }
+  .text-summary { font-size: 13.5px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); margin: 0; }
 
   @media (max-width: 680px) {
     .wrap { padding: 36px 20px 72px; }
@@ -154,7 +152,7 @@
   <p class="desc">Live stats and AI-generated teaching recommendations, computed from this cohort's actual responses.</p>
 
   <p class="section-title">Live cohort dashboard</p>
-  <p class="section-desc">Instant stats computed directly from responses — no AI generation, refresh anytime during class.</p>
+  <p class="section-desc">Instant stats computed directly from responses — numeric stats are deterministic; open-ended answers are summarized by AI. Refresh anytime during class.</p>
   <div class="instructor-panel">
     <div class="dash-controls">
       <div class="instructor-stages">
@@ -319,8 +317,8 @@
           ).join('');
           return `<div class="question-block"><p class="question-label">${escapeHtml(field.label)}</p><div class="concept-list">${rows}</div></div>`;
         }
-        const items = field.responses.map((r) => `<li>${escapeHtml(r)}</li>`).join('');
-        return `<div class="question-block"><p class="question-label">${escapeHtml(field.label)} <span class="question-count">(${field.responses.length} response${field.responses.length === 1 ? '' : 's'})</span></p><ul class="response-list">${items}</ul></div>`;
+        const count = field.responseCount || 0;
+        return `<div class="question-block"><p class="question-label">${escapeHtml(field.label)} <span class="question-count">(${count} response${count === 1 ? '' : 's'})</span></p><p class="text-summary">${escapeHtml(field.summary || 'No responses yet.')}</p></div>`;
       }).join('');
     }
 

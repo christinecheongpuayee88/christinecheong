@@ -32,10 +32,8 @@ const SURVEY_QUESTIONS = {
     { match: /further question/i, label: "Reflection — Further Questions", kind: "text" },
   ],
   4: [
-    { match: /takeaway/i, label: "Biggest Takeaway", kind: "text" },
     { match: /apply/i, label: "Where They'll Apply This", kind: "text" },
     { match: /remaining question/i, label: "Remaining Questions", kind: "text" },
-    { match: /suggestion/i, label: "Suggestions", kind: "text" },
   ],
 };
 
@@ -184,6 +182,72 @@ function summarizeQuestions(values, fieldDefs) {
       return { label: field.label, kind: "text", responses: raw };
     })
     .filter(Boolean);
+}
+
+async function summarizeTextFields(questionSummary, apiKey) {
+  const textFields = questionSummary.filter((f) => f.kind === "text");
+  if (!textFields.length) return questionSummary;
+
+  const withResponses = textFields.filter((f) => f.responses.length > 0);
+
+  const fallback = (f) => ({
+    label: f.label,
+    kind: "text",
+    summary: f.responses.length ? `${f.responses.length} response(s) submitted.` : "No responses yet.",
+    responseCount: f.responses.length,
+  });
+
+  let summaryByLabel = {};
+  if (withResponses.length && apiKey) {
+    try {
+      const prompt = `Summarize each of the following open-ended survey questions' responses into ONE short sentence naming the recurring theme(s) actually present — never a vague phrase like "various responses". If responses diverge, name the 2 main themes briefly. Output exactly one line per question, in this exact format and nothing else:
+LABEL: summary sentence
+
+${withResponses
+        .map(
+          (f) =>
+            `### ${f.label} (${f.responses.length} response${f.responses.length === 1 ? "" : "s"})\n${f.responses
+              .map((r) => `- ${r}`)
+              .join("\n")}`
+        )
+        .join("\n\n")}`;
+
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          max_tokens: 400,
+          messages: [{ role: "user", content: prompt }],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || "OpenAI API error");
+      const text = data.choices[0].message.content;
+
+      for (const line of text.split("\n")) {
+        const m = line.match(/^([^:]+):\s*(.+)$/);
+        if (m) summaryByLabel[m[1].trim()] = m[2].trim();
+      }
+    } catch (err) {
+      summaryByLabel = {};
+    }
+  }
+
+  const summarizedText = textFields.map((f) => {
+    if (!f.responses.length) return fallback(f);
+    const summary = summaryByLabel[f.label];
+    return {
+      label: f.label,
+      kind: "text",
+      summary: summary || fallback(f).summary,
+      responseCount: f.responses.length,
+    };
+  });
+
+  const byLabel = {};
+  for (const f of summarizedText) byLabel[f.label] = f;
+  return questionSummary.map((f) => (f.kind === "text" ? byLabel[f.label] : f));
 }
 
 function computeAccuracyStats(values, questionDefs) {
@@ -335,6 +399,8 @@ export async function onRequestGet(context) {
         }
       }
     }
+
+    result.questionSummary = await summarizeTextFields(result.questionSummary, context.env.OPENAI_API_KEY);
 
     if (expectedCount) {
       result.completionRate = Math.round((result.responseCount / expectedCount) * 1000) / 10;
