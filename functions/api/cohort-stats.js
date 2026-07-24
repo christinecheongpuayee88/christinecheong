@@ -21,8 +21,8 @@ const SURVEY_QUESTIONS = {
     { match: /job role|job title/i, label: "Job Role", kind: "categorical" },
     { match: /time series experience/i, label: "Time Series Experience", kind: "categorical" },
     { match: /programming experience/i, label: "Programming Experience", kind: "categorical" },
-    { match: /learning goal/i, label: "Learning Goals", kind: "text" },
-    { match: /business problem/i, label: "Business Problem", kind: "text" },
+    { match: /most like to learn|learning goal/i, label: "Learning Goals", kind: "text" },
+    { match: /forecasting problem|business problem/i, label: "Business Problem", kind: "text" },
   ],
   4: [
     { match: /takeaway/i, label: "Biggest Takeaway", kind: "text" },
