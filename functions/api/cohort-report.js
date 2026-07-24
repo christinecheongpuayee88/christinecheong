@@ -117,7 +117,7 @@ function buildPrompt(stage, rawData, priorReports) {
 
 ${styleNote}
 
-### RAW BEGINNING-OF-CLASS DATA (Pre-Class Survey — name (optional), industry, job role, time series experience, programming experience, learning goals, their main concern or challenge in applying time series forecasting, self-rated confidence 1-5, and the business problem they're facing) ###
+### RAW BEGINNING-OF-CLASS DATA (Pre-Class Survey — name (optional), industry, job role, time series experience, confidence 1-5, their main concern or challenge in applying time series forecasting, the business problem they're facing, and learning goals) ###
 ${rawData}
 
 #################
@@ -136,7 +136,6 @@ Structure your response exactly as follows:
 
 ### 2. Experience Level
 * **Time Series Experience:** [bulleted breakdown of each distinct level mentioned, with count and % of total]
-* **Programming Experience:** [bulleted breakdown of each distinct level mentioned, with count and % of total]
 * [One interpretive sentence on what this experience mix implies for pacing/depth today]
 
 ### 3. Confidence Level (Scale 1-5)
