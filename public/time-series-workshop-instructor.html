@@ -24,6 +24,8 @@
     --bad-bg:   #fee2e2;
     --amber:    #b45309;
     --amber-bg: #fef3c7;
+    --info:     #2563eb;
+    --info-bg:  #dbeafe;
     --radius:   3px;
   }
 
@@ -131,6 +133,35 @@
   .concept-misconception { font-size: 12px; color: var(--subtle); margin-top: 2px; }
   .concept-percent { font-size: 15px; font-weight: 600; white-space: nowrap; }
 
+  .nav-callout { border-radius: var(--radius); padding: 16px 18px; margin-bottom: 18px; font-size: 13.5px; line-height: 1.6; }
+  .nav-callout.tier-red { background: var(--bad-bg); color: var(--bad); }
+  .nav-callout.tier-amber { background: var(--amber-bg); color: var(--amber); }
+  .nav-callout.tier-green { background: var(--good-bg); color: var(--good); }
+  .nav-callout .nav-callout-title { font-weight: 600; margin-bottom: 4px; }
+  .nav-callout .nav-callout-body { color: var(--text); }
+  .nav-list { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 8px; }
+  .nav-item { display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg); }
+  .nav-item:last-child { border-bottom: none; }
+  .nav-dot { flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; }
+  .nav-dot.tier-green { background: var(--good); }
+  .nav-dot.tier-amber { background: var(--amber); }
+  .nav-dot.tier-red { background: var(--bad); }
+  .nav-dot.tier-blue { background: var(--info); }
+  .nav-dot.tier-none { background: var(--border); }
+  .nav-body { flex: 1; min-width: 0; }
+  .nav-top-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .nav-topic { font-size: 13.5px; font-weight: 600; }
+  .nav-action { font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .nav-action.tier-green { color: var(--good); }
+  .nav-action.tier-amber { color: var(--amber); }
+  .nav-action.tier-red { color: var(--bad); }
+  .nav-action.tier-blue { color: var(--info); }
+  .nav-action.tier-none { color: var(--subtle); }
+  .nav-slides { font-size: 11.5px; color: var(--subtle); margin-top: 2px; }
+  .nav-evidence { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .nav-suggestion { font-size: 12px; color: var(--text); margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); }
+  .nav-suggestion b { font-weight: 600; }
+
   .summary-heading { font-size: 15px; font-weight: 600; margin: 24px 0 12px; }
   .question-block { margin-bottom: 18px; }
   .question-block:last-child { margin-bottom: 0; }
@@ -152,7 +183,7 @@
   <p class="desc">Live stats and AI-generated teaching recommendations, computed from this cohort's actual responses.</p>
 
   <p class="section-title">Live cohort dashboard</p>
-  <p class="section-desc">Instant stats computed directly from responses — numeric stats are deterministic; open-ended answers are summarized by AI. Refresh anytime during class.</p>
+  <p class="section-desc">Instant stats computed directly from responses — numeric stats are deterministic; open-ended answers are summarized by AI. Checkpoint stages also show a Teaching Navigator: cohort-level status per topic (🟢 ready · 🟠 quick recap · 🔴 revisit · 🔵 go deeper) mapped to the theory companion's slides. Refresh anytime during class.</p>
   <div class="instructor-panel">
     <div class="dash-controls">
       <div class="instructor-stages">
@@ -188,6 +219,109 @@
 
 <script>
   let currentReport = null;
+
+  // Maps each checkpoint quiz topic to the corresponding slides in the
+  // Time Series Theory Companion (time-series-theory.html), plus a
+  // rule-based recap suggestion referencing that slide's own example.
+  const TOPIC_NAV = {
+    'Differencing (d)': {
+      slides: '10, 20–21',
+      suggestion: 'Re-explain using the brand-ads growth example (slide 20) — the trend must be removed before AR/MA structure is visible.',
+    },
+    'AR/MA identification': {
+      slides: '16, 18',
+      suggestion: 'Revisit the AR (brand momentum) and MA (flash promo) stories side by side — contrast which one cuts off in the ACF vs the PACF.',
+    },
+    'Seasonal period (s)': {
+      slides: '23',
+      suggestion: 'Recap the ARIMA(p,d,q)(P,D,Q)s notation with a concrete monthly example (s = 12).',
+    },
+    'Seasonal differencing': {
+      slides: '24',
+      suggestion: 'Walk through the three seasonal-differencing formulas on the board with real numbers.',
+    },
+    'Model selection (AIC/BIC)': {
+      slides: '31',
+      suggestion: 'Recap: smaller AIC/BIC wins — pair with a live example comparing two candidate models.',
+    },
+    'Residual diagnostics': {
+      slides: '29–30',
+      suggestion: 'Re-run the Portmanteau/Ljung-Box logic: insignificant test → residuals look like white noise → model adequate.',
+    },
+    'ARIMA vs ARIMAX': {
+      slides: '32–33',
+      suggestion: "Restate the one-line distinction: ARIMAX adds an exogenous leading indicator on top of Y's own past.",
+    },
+    'Identifying X and Y': {
+      slides: '34',
+      suggestion: 'Redo the Advertising → Sales example, explicitly labeling which series is X and which is Y.',
+    },
+    'Lagged exogenous effects': {
+      slides: '35, 37',
+      suggestion: "Use the shower-knob dynamic transfer function story — the effect of X is delayed and distributed, not instant.",
+    },
+    'Model evaluation (MAPE)': {
+      slides: '40–42',
+      suggestion: "Walk through Workshop 2's Phase 2/3 auto-arima vs manual comparison, focusing on out-of-sample MAPE.",
+    },
+    'Overfitting / lag selection': {
+      slides: '37',
+      suggestion: 'Show the 3-tier lag complexity examples — more lags isn\'t automatically better; watch for overfitting.',
+    },
+  };
+
+  function navTierForPercent(pct) {
+    if (pct == null) return { tier: 'none', emoji: '⚪', label: 'No data yet', action: 'Awaiting responses' };
+    if (pct >= 90) return { tier: 'blue', emoji: '🔵', label: 'Extension opportunity', action: 'Go deeper' };
+    if (pct >= 70) return { tier: 'green', emoji: '🟢', label: 'Ready', action: 'Move on' };
+    if (pct >= 40) return { tier: 'amber', emoji: '🟠', label: 'Partial understanding', action: 'Quick recap' };
+    return { tier: 'red', emoji: '🔴', label: 'Learning gap', action: 'Revisit' };
+  }
+
+  function renderTeachingNavigator(byQuestion) {
+    const scored = byQuestion.filter((q) => q.correctPercent != null);
+    if (!scored.length) return '';
+
+    // Headline: the single worst-performing topic drives the top recommendation.
+    const worst = [...scored].sort((a, b) => a.correctPercent - b.correctPercent)[0];
+    const worstNav = TOPIC_NAV[worst.topic] || { slides: '—', suggestion: 'Revisit this topic with a fresh worked example.' };
+    const worstTier = navTierForPercent(worst.correctPercent);
+
+    let html = '';
+    if (worstTier.tier === 'red' || worstTier.tier === 'amber') {
+      const struggling = Math.round((100 - worst.correctPercent) * 10) / 10;
+      html += `<div class="nav-callout tier-${worstTier.tier}">
+        <div class="nav-callout-title">${worstTier.emoji} Recap recommended: Slides ${escapeHtml(worstNav.slides)}</div>
+        <div class="nav-callout-body">${struggling}% of learners are unclear about <strong>${escapeHtml(worst.topic)}</strong>${worst.topMisconception ? ` — most picked "${escapeHtml(worst.topMisconception.answer)}"` : ''}.<br>
+        <b>Suggested response:</b> ${escapeHtml(worstNav.suggestion)}</div>
+      </div>`;
+    }
+
+    const items = byQuestion.map((q) => {
+      const nav = TOPIC_NAV[q.topic] || { slides: '—', suggestion: '' };
+      const t = navTierForPercent(q.correctPercent);
+      const evidence = q.correctPercent == null
+        ? 'Question column not found'
+        : q.topMisconception
+        ? `${q.correctPercent}% correct — top miss: "${escapeHtml(q.topMisconception.answer)}" (${q.topMisconception.percent}%)`
+        : `${q.correctPercent}% correct`;
+      return `<div class="nav-item">
+        <div class="nav-dot tier-${t.tier}"></div>
+        <div class="nav-body">
+          <div class="nav-top-row">
+            <span class="nav-topic">${escapeHtml(q.topic)}</span>
+            <span class="nav-action tier-${t.tier}">${t.emoji} ${t.action}</span>
+          </div>
+          <div class="nav-slides">Theory companion — slides ${escapeHtml(nav.slides)}</div>
+          <div class="nav-evidence">${evidence}</div>
+          ${(t.tier === 'red' || t.tier === 'amber') && nav.suggestion ? `<div class="nav-suggestion"><b>Suggested action:</b> ${escapeHtml(nav.suggestion)}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    html += `<p class="summary-heading">Teaching navigator</p><div class="nav-list">${items}</div>`;
+    return html;
+  }
 
   function inlineFormat(s) {
     s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -296,16 +430,7 @@
     html += `<div class="stat-grid">${tiles.join('')}</div>`;
 
     if (data.accuracy && data.accuracy.byQuestion.length) {
-      const rows = data.accuracy.byQuestion.map((q) => {
-        if (q.correctPercent == null) {
-          return `<div class="concept-row"><div><div class="concept-topic">${escapeHtml(q.topic)}</div><div class="concept-misconception">Question column not found</div></div></div>`;
-        }
-        const misconception = q.topMisconception
-          ? `<div class="concept-misconception">Top miss: "${escapeHtml(q.topMisconception.answer)}" (${q.topMisconception.percent}%)</div>`
-          : '';
-        return `<div class="concept-row"><div><div class="concept-topic">${escapeHtml(q.topic)}</div>${misconception}</div><div class="concept-percent">${q.correctPercent}%</div></div>`;
-      }).join('');
-      html += `<div class="concept-list">${rows}</div>`;
+      html += renderTeachingNavigator(data.accuracy.byQuestion);
     }
 
     if (data.questionSummary && data.questionSummary.length) {
