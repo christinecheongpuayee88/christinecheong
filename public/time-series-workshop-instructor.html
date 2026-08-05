@@ -318,6 +318,12 @@
           return `<div class="question-block"><p class="question-label">${escapeHtml(field.label)}</p><div class="concept-list">${rows}</div></div>`;
         }
         const count = field.responseCount || 0;
+        if (field.themes && field.themes.length) {
+          const rows = field.themes.map((t) =>
+            `<div class="concept-row"><div><div class="concept-topic">${escapeHtml(t.name)}</div><div class="concept-misconception">${escapeHtml(t.description || '')}</div></div><div class="concept-percent">${t.count}</div></div>`
+          ).join('');
+          return `<div class="question-block"><p class="question-label">${escapeHtml(field.label)} <span class="question-count">(${count} response${count === 1 ? '' : 's'})</span></p><div class="concept-list">${rows}</div></div>`;
+        }
         return `<div class="question-block"><p class="question-label">${escapeHtml(field.label)} <span class="question-count">(${count} response${count === 1 ? '' : 's'})</span></p><p class="text-summary">${escapeHtml(field.summary || 'No responses yet.')}</p></div>`;
       }).join('');
     }

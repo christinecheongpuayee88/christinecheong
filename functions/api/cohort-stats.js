@@ -189,23 +189,30 @@ async function summarizeTextFields(questionSummary, apiKey) {
 
   const withResponses = textFields.filter((f) => f.responses.length > 0);
 
-  const fallback = (f) => ({
+  const fallback = (f, note) => ({
     label: f.label,
     kind: "text",
-    summary: f.responses.length ? `${f.responses.length} response(s) submitted.` : "No responses yet.",
+    themes: null,
+    summary: f.responses.length ? (note || `${f.responses.length} response(s) submitted.`) : "No responses yet.",
     responseCount: f.responses.length,
   });
 
-  let summaryByLabel = {};
+  // Asks for strict JSON (one entry per question, same order as sent) instead of a
+  // freeform "LABEL: sentence" line — that format was fragile to parse whenever the
+  // model added numbering/markdown, which silently dropped every summary to the
+  // generic fallback text.
+  let themesByIndex = null;
   if (withResponses.length && apiKey) {
     try {
-      const prompt = `Summarize each of the following open-ended survey questions' responses into ONE short sentence naming the recurring theme(s) actually present — never a vague phrase like "various responses". If responses diverge, name the 2 main themes briefly. Output exactly one line per question, in this exact format and nothing else:
-LABEL: summary sentence
+      const prompt = `For each of the following open-ended survey questions, group the responses into 2-4 recurring themes (fewer if responses are homogeneous). Never use a vague theme name like "various responses" — name what's actually being said, grounded in the actual response text. Each theme's count must be a genuine count of how many of that question's responses raised it, not a guess.
+
+Return ONLY JSON — no markdown, no code fences, no commentary — as: {"questions": [{"themes": [{"name": "short theme name", "count": 0, "description": "one sentence synthesizing what respondents said"}]}]}
+The "questions" array must have exactly one entry per question below, in the same order.
 
 ${withResponses
         .map(
-          (f) =>
-            `### ${f.label} (${f.responses.length} response${f.responses.length === 1 ? "" : "s"})\n${f.responses
+          (f, i) =>
+            `### Question ${i + 1}: ${f.label} (${f.responses.length} response${f.responses.length === 1 ? "" : "s"})\n${f.responses
               .map((r) => `- ${r}`)
               .join("\n")}`
         )
@@ -216,32 +223,37 @@ ${withResponses
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({
           model: "gpt-4o",
-          max_tokens: 400,
-          messages: [{ role: "user", content: prompt }],
+          max_tokens: 1200,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: "You output only a single JSON object, nothing else — no markdown, no code fences." },
+            { role: "user", content: prompt },
+          ],
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error?.message || "OpenAI API error");
-      const text = data.choices[0].message.content;
-
-      for (const line of text.split("\n")) {
-        const m = line.match(/^([^:]+):\s*(.+)$/);
-        if (m) summaryByLabel[m[1].trim()] = m[2].trim();
+      const parsed = JSON.parse(data.choices[0].message.content);
+      const arr = Array.isArray(parsed) ? parsed : parsed.questions;
+      if (Array.isArray(arr) && arr.length === withResponses.length) {
+        themesByIndex = arr;
       }
     } catch (err) {
-      summaryByLabel = {};
+      themesByIndex = null;
     }
   }
 
+  let idx = 0;
   const summarizedText = textFields.map((f) => {
     if (!f.responses.length) return fallback(f);
-    const summary = summaryByLabel[f.label];
-    return {
-      label: f.label,
-      kind: "text",
-      summary: summary || fallback(f).summary,
-      responseCount: f.responses.length,
-    };
+    const hasResponses = withResponses.includes(f);
+    const entry = hasResponses && themesByIndex ? themesByIndex[idx] : null;
+    if (hasResponses) idx++;
+    if (entry && Array.isArray(entry.themes) && entry.themes.length) {
+      const summaryLine = entry.themes.map((t) => `${t.name} (${t.count})`).join(" · ");
+      return { label: f.label, kind: "text", themes: entry.themes, summary: summaryLine, responseCount: f.responses.length };
+    }
+    return fallback(f, `${f.responses.length} response(s) submitted — theme summary unavailable this refresh.`);
   });
 
   const byLabel = {};
