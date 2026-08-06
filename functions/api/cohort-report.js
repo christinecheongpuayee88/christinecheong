@@ -109,6 +109,27 @@ function formatResponses(values) {
     .join("\n\n");
 }
 
+// Shared across all four stage reports so "AI-Generated Teaching Recommendations"
+// means the same thing everywhere, instead of each stage prompt drifting its own
+// slightly-different category list. The 6th category ({{Learning Path}}) activates
+// the 4th of the 4 adaptation levels (Content/Pedagogy/Facilitation/Learning Path) —
+// the first 5 categories' level-tags are unchanged from before, this only adds to them.
+const TEACHING_RECS_BLOCK = `Consider all six possible teaching-decision categories below, then select ONLY the 3 most important and actionable for this specific cohort's actual data right now. Omit the other three entirely — never list all six. Favor a spread across different categories rather than clustering all 3 picks under one.
+
+Categories and the exact tag to use if you select that category:
+- What to emphasise → {{Content}}
+- How to teach it → {{Pedagogy}}
+- When to adapt → {{Facilitation}}
+- Who needs support → {{Facilitation}}
+- How to challenge → {{Pedagogy}}
+- What to improve next time → {{Learning Path}}
+
+> [One sentence of cohort evidence citing exact counts/percentages from the data above that justifies the 3 recommendations below]
+
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}`;
+
 function buildPrompt(stage, rawData, priorReports) {
   const styleNote = `Write like a sharp internal analytics report to the instructor: numbered sections, each with hard bulleted facts. When there are multiple respondents, compute and state real aggregate statistics — averages, counts, and percentages of total responses — never just a vague "some" or "most." When there is only one respondent, state their specific answers directly instead of talking about "the cohort." No padding, no filler, no restating the obvious.`;
 
@@ -147,28 +168,11 @@ Structure your response exactly as follows:
 * **Level 5:** [n] response(s)
 * [One interpretive sentence on where the cohort's confidence sits and what that implies for how today should be paced]
 
-### 4. Core Learning Objectives & Goals
-* **[Short theme name]** — Mentioned by [X] of [n] responses. [1-2 sentences synthesizing what's behind this theme, referencing the actual variety of wording/contexts used]
-* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
-[Group the stated learning goals into 2-4 themes that cover the full spread — do not list every individual response verbatim]
+Do not add a section theming the learning goals, main concerns, or business problems from the raw data — those are already themed live on the instructor dashboard; base your recommendations below on them without restating them as their own section.
 
-### 5. Main Concerns & Challenges
-* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
-* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
-[Group the stated main concerns/challenges into 2-3 themes]
+### 4. AI-Generated Teaching Recommendations
 
-### 6. Business Problems They Want to Solve
-* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
-* **[Short theme name]** — Mentioned by [X] of [n] responses. [synthesis]
-[Group the stated business problems into 2-3 themes]
-
-### 7. AI-Generated Teaching Recommendations
-
-> [One sentence of cohort evidence citing exact counts/percentages that justify the recommendations below, e.g. "X of Y respondents rated confidence at 3 or below despite Z having intermediate+ time series experience."]
-
-* **What to emphasise:** [the concept, given this mix of experience/confidence, that needs the most grounding before diving into SARIMA/ARIMAX] {{Content}}
-* **How to teach it:** [a concrete delivery choice for the opening — e.g. lead with a business example vs. the equation, given who's in the room] {{Pedagogy}}
-* **How to challenge:** [what to ask of the more experienced or confident respondents so they stay engaged from the start] {{Pedagogy}}
+${TEACHING_RECS_BLOCK}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**, and a Markdown pipe table with a header row and a --- separator row for the participant list). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -210,20 +214,7 @@ Structure your response exactly as follows:
 
 ### 4. AI-Generated Teaching Recommendations
 
-Consider all five possible teaching-decision categories below, then select ONLY the 3 most important and actionable for this specific cohort's actual data right now. Omit the other two entirely — never list all five.
-
-Categories and the exact tag to use if you select that category:
-- What to emphasise → {{Content}}
-- How to teach it → {{Pedagogy}}
-- When to adapt → {{Facilitation}}
-- Who needs support → {{Facilitation}}
-- How to challenge → {{Pedagogy}}
-
-> [One sentence of cohort evidence citing exact counts/percentages that justifies the 3 recommendations below, e.g. "X of Y respondents picked the wrong answer for what d represents, confusing it with autoregressive terms."]
-
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+${TEACHING_RECS_BLOCK}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -267,20 +258,7 @@ Structure your response exactly as follows:
 
 ### 4. AI-Generated Teaching Recommendations
 
-Consider all five possible teaching-decision categories below, then select ONLY the 3 most important and actionable for this specific cohort's actual data right now. Omit the other two entirely — never list all five.
-
-Categories and the exact tag to use if you select that category:
-- What to emphasise → {{Content}}
-- How to teach it → {{Pedagogy}}
-- When to adapt → {{Facilitation}}
-- Who needs support → {{Facilitation}}
-- How to challenge → {{Pedagogy}}
-
-> [One sentence of cohort evidence citing exact counts/percentages that justifies the 3 recommendations below]
-
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+${TEACHING_RECS_BLOCK}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -290,7 +268,7 @@ Output plain text using exactly that Markdown structure (## and ### headings, * 
 
 ${styleNote}
 
-### RAW REFLECTION DATA (End-of-Class Reflection — biggest takeaway, self-rated confidence 1-5, where they'll apply time series forecasting, remaining questions, and optional suggestions) ###
+### RAW REFLECTION DATA (End-of-Class Reflection — self-rated confidence 1-5, where they'll apply time series forecasting, and remaining questions) ###
 ${rawData}
 
 ### BEGINNING-OF-CLASS REPORT ###
@@ -321,9 +299,9 @@ Structure your response exactly as follows:
 * **Persistent misconceptions:** [any specific wrong-answer pattern that appears in both the Checkpoint 1 and Checkpoint 2 reports, or that resurfaces in this reflection's remaining-questions data — name the exact concept, not just "some confusion"]
 * **Unresolved questions:** [aggregate the recurring themes in "remaining questions"]
 
-### 4. Next-Run Recommendation
-* [1-2 concrete changes to content sequencing, timing, or emphasis for the next delivery — grounded in the specific persistent misconception above, not generic advice. Prefer a specific action like reordering a topic, adding a specific example, or reallocating minutes.]
-* **Follow-up microlearning:** [a specific short resource or activity to close the remaining gap for struggling respondents, and who should get it] {{Learning Path}}
+### 4. AI-Generated Teaching Recommendations
+
+${TEACHING_RECS_BLOCK}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
