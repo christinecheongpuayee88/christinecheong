@@ -147,11 +147,12 @@ Structure your response exactly as follows:
 
 ## 📋 Beginning of Class Report
 
-### AI-Generated Teaching Recommendations
+### 1. Cohort Insights (from Live Sensing)
+* [2-4 bullets of genuine interpretive insight synthesizing the profile mix, confidence distribution, and stated concerns/goals into what it means for today — e.g. what kind of session this cohort needs, where the energy or anxiety is concentrated, what the industry/role mix implies about which examples will land. Insight, not a restated breakdown — do not list every industry, role, experience level, or confidence-level count; that's already charted live on the instructor dashboard.]
+
+### 2. AI-Generated Teaching Recommendations
 
 ${TEACHING_RECS_BLOCK}
-
-Do not add sections summarizing participant profile, industries, job titles, experience level, confidence distribution, learning goals, main concerns, or business problems — all of that is already shown live on the instructor dashboard (with charts for industry, job role, experience, and confidence). Use it only as evidence for the recommendations above, not as its own restated section.
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -185,8 +186,9 @@ Structure your response exactly as follows:
 * **Total Responses:** [n]
 * **Score Distribution:** [average out of 6, plus a distribution across score bands, e.g. "0-2 correct: X (Y%), 3-4 correct: ..., 5-6 correct: ..."]
 
-### 2. Where the Cohort is Struggling
-* For each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions almost everyone got right as "✅ mostly correct" instead of a bullet.
+### 2. What's Going Well & Where the Cohort is Struggling
+* **Going well:** [name the question(s)/topic(s) with the strongest correct-rate, citing the exact %, and what that confirms the cohort has already grasped]
+* **Struggling:** for each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions almost everyone got right as "✅ mostly correct" instead of a bullet.
 
 ### 3. Progressive Cohort Assessment (vs. Beginning)
 * [Compare actual SARIMA performance against the confidence level and stated goals from the Beginning Report — is the cohort over-confident, under-confident, or on track relative to what they said coming in? Note whether the errors are conceptual or just notation/labeling confusion.]
@@ -229,8 +231,9 @@ Structure your response exactly as follows:
 * **Total Responses:** [n]
 * **Score Distribution:** [average out of 5, plus a distribution across score bands]
 
-### 2. Where the Cohort is Struggling
-* For each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions almost everyone got right as "✅ mostly correct" instead of a bullet.
+### 2. What's Going Well & Where the Cohort is Struggling
+* **Going well:** [name the question(s)/topic(s) with the strongest correct-rate, citing the exact %, and what that confirms the cohort has already grasped]
+* **Struggling:** for each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions almost everyone got right as "✅ mostly correct" instead of a bullet.
 
 ### 3. Progressive Cohort Assessment (vs. Beginning & Checkpoint 1)
 * [State explicitly whether performance/confidence is improving, flat, or declining versus the SARIMA checkpoint, and against the confidence/goals from the Beginning Report — call out whether the Checkpoint 1 recommendation appears to have landed, and whether the same error pattern recurs]
