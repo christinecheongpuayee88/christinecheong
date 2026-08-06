@@ -31,7 +31,7 @@ const SURVEY_QUESTIONS = {
     { match: /further question/i, label: "Reflection — Further Questions", kind: "text" },
   ],
   4: [
-    { match: /apply/i, label: "Where They'll Apply This", kind: "text" },
+    { match: /where.*apply/i, label: "Where They'll Apply This", kind: "text" },
     { match: /remaining question/i, label: "Remaining Questions", kind: "text" },
   ],
 };

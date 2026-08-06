@@ -268,22 +268,19 @@ Structure your response exactly as follows:
 
 ## 📋 Post-Class Cohort Intelligence Report
 
-### 1. Cohort Snapshot
-* **Total Responses:** [n]
-* **Opening vs. Closing Confidence:** [exact average from the Beginning Report] → [exact average from this Reflection data], out of 5
-* **Where They'll Apply This:** [bulleted synthesis of where respondents said they'll use this]
+### 1. What Went Well
+* **Confidence:** [state the exact delta in average confidence from the Beginning Report to this Reflection data, e.g. "X → Y out of 5", and whether that shift tracked, outran, or lagged the actual comprehension gains shown across the two checkpoints]
+* **Concept-level gains:** [name the specific concept(s) that show the clearest improvement between the Checkpoint 1 and Checkpoint 2 reports' "What's Going Well & Where the Cohort is Struggling" findings — e.g. a wrong-answer rate that dropped, or a misconception flagged at Checkpoint 1 that Checkpoint 2 no longer shows]
 
-### 2. Improvement Observed
-* **Confidence:** [state whether the confidence shift above tracked, outran, or lagged actual comprehension shown in the two checkpoints — quote the specific delta]
-* **Concept-level gains:** [name the specific concept(s) that show the clearest improvement between the Checkpoint 1 and Checkpoint 2 reports' "Where the Cohort is Struggling" findings — e.g. a wrong-answer rate that dropped, or a misconception flagged at Checkpoint 1 that Checkpoint 2 no longer shows]
-
-### 3. Remaining Gaps
+### 2. Remaining Gaps
 * **Persistent misconceptions:** [any specific wrong-answer pattern that appears in both the Checkpoint 1 and Checkpoint 2 reports, or that resurfaces in this reflection's remaining-questions data — name the exact concept, not just "some confusion"]
 * **Unresolved questions:** [aggregate the recurring themes in "remaining questions"]
 
-### 4. AI-Generated Teaching Recommendations
+### 3. AI-Generated Teaching Recommendations
 
 ${TEACHING_RECS_BLOCK}
+
+Do not add a section restating total response counts or a bulleted list of where respondents said they'll apply this — both are already shown live on the instructor dashboard.
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
