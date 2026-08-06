@@ -17,8 +17,8 @@ const FORM_RANGE = "'Form Responses 1'!A1:Z1000";
 // the exact Unicode punctuation in the live form (→, —, ₛ, …) can't break matching.
 const SURVEY_QUESTIONS = {
   1: [
-    { match: /industry/i, label: "Industry", kind: "categorical" },
-    { match: /job role|job title/i, label: "Job Role", kind: "categorical" },
+    { match: /industry/i, label: "Industry", kind: "categorical", groupInto: 4 },
+    { match: /job role|job title/i, label: "Job Role", kind: "categorical", groupInto: 4 },
     { match: /time series experience/i, label: "Time Series Experience", kind: "categorical" },
     { match: /most like to learn|learning goal/i, label: "Learning Goals", kind: "text" },
     { match: /main concern|challenge/i, label: "Main Concern / Challenge", kind: "text" },
@@ -261,6 +261,78 @@ ${withResponses
   return questionSummary.map((f) => (f.kind === "text" ? byLabel[f.label] : f));
 }
 
+// Free-text-ish categorical fields (industry, job role) end up with as many groups as
+// there are respondents — barely more useful than the raw list. This clusters the
+// distinct raw values into a handful of broader, named groups via GPT-4o, capped per
+// field by `groupInto`. Falls back to the raw ungrouped list on any failure or mismatch,
+// same pattern as summarizeTextFields.
+async function groupCategoricalFields(questionSummary, apiKey, n) {
+  const groupable = questionSummary.filter((f) => f.kind === "categorical" && f.groupInto && f.values.length > f.groupInto);
+  if (!groupable.length || !apiKey || !n) return questionSummary;
+
+  try {
+    const prompt = `For each categorical survey field below, group its distinct raw values into broader named categories — at most the max stated for that field, fewer if the values naturally cluster into fewer groups. Every raw value must be assigned to exactly one group, and the exact raw value text must be copied verbatim into the group it's assigned to. Give each group a short, clear label (2-4 words) that describes what the assigned values have in common.
+
+Return ONLY JSON — no markdown, no commentary — as: {"fields": [{"groups": [{"name": "short group label", "values": ["exact raw value 1", "exact raw value 2"]}]}]}
+The "fields" array must have exactly one entry per field below, in the same order.
+
+${groupable
+        .map(
+          (f, i) =>
+            `### Field ${i + 1}: ${f.label} (max ${f.groupInto} groups)\n${f.values
+              .map((v) => `- "${v.value}" (${v.count} response${v.count === 1 ? "" : "s"})`)
+              .join("\n")}`
+        )
+        .join("\n\n")}`;
+
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        max_tokens: 800,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: "You output only a single JSON object, nothing else — no markdown, no code fences." },
+          { role: "user", content: prompt },
+        ],
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "OpenAI API error");
+    const parsed = JSON.parse(data.choices[0].message.content);
+    const arr = parsed.fields;
+    if (!Array.isArray(arr) || arr.length !== groupable.length) return questionSummary;
+
+    const byLabel = {};
+    groupable.forEach((f, i) => {
+      const groups = arr[i] && arr[i].groups;
+      if (!Array.isArray(groups) || !groups.length) return;
+
+      const countByRaw = {};
+      for (const v of f.values) countByRaw[normalize(v.value)] = v.count;
+
+      const newValues = groups
+        .map((g) => {
+          const count = (g.values || []).reduce((sum, raw) => sum + (countByRaw[normalize(raw)] || 0), 0);
+          return { value: g.name, count, percent: Math.round((count / n) * 1000) / 10 };
+        })
+        .filter((v) => v.count > 0)
+        .sort((a, b) => b.count - a.count);
+
+      const totalAssigned = newValues.reduce((s, v) => s + v.count, 0);
+      const totalOriginal = f.values.reduce((s, v) => s + v.count, 0);
+      if (totalAssigned === totalOriginal) {
+        byLabel[f.label] = { label: f.label, kind: "categorical", values: newValues };
+      }
+    });
+
+    return questionSummary.map((f) => byLabel[f.label] || f);
+  } catch (err) {
+    return questionSummary;
+  }
+}
+
 function computeAccuracyStats(values, questionDefs) {
   const [headers, ...rows] = values.length ? values : [[]];
   if (!rows.length) return { responseCount: 0, accuracy: null };
@@ -411,6 +483,7 @@ export async function onRequestGet(context) {
       }
     }
 
+    result.questionSummary = await groupCategoricalFields(result.questionSummary, context.env.OPENAI_API_KEY, result.responseCount);
     result.questionSummary = await summarizeTextFields(result.questionSummary, context.env.OPENAI_API_KEY);
 
     if (expectedCount) {

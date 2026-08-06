@@ -182,20 +182,18 @@ Structure your response exactly as follows:
 
 ## 📊 Checkpoint 1 Report — SARIMA
 
-### 1. Checkpoint Snapshot
-* **Total Responses:** [n]
-* **Score Distribution:** [average out of 6, plus a distribution across score bands, e.g. "0-2 correct: X (Y%), 3-4 correct: ..., 5-6 correct: ..."]
+### 1. Concepts Understood
+* [name the question(s)/topic(s) with the strongest correct-rate, citing the exact %, and what that confirms the cohort has already grasped. Mark near-universal-correct questions as "✅ mostly correct."]
 
-### 2. What's Going Well & Where the Cohort is Struggling
-* **Going well:** [name the question(s)/topic(s) with the strongest correct-rate, citing the exact %, and what that confirms the cohort has already grasped]
-* **Struggling:** for each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions almost everyone got right as "✅ mostly correct" instead of a bullet.
+### 2. Remaining Gaps
+* For each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]
+* **Trend vs Beginning:** [compare actual SARIMA performance against the confidence level and stated goals from the Beginning Report — is the cohort over-confident, under-confident, or on track relative to what they said coming in? Note whether the errors are conceptual or just notation/labeling confusion.]
 
-### 3. Progressive Cohort Assessment (vs. Beginning)
-* [Compare actual SARIMA performance against the confidence level and stated goals from the Beginning Report — is the cohort over-confident, under-confident, or on track relative to what they said coming in? Note whether the errors are conceptual or just notation/labeling confusion.]
-
-### 4. AI-Generated Teaching Recommendations
+### 3. AI-Generated Teaching Recommendations
 
 ${TEACHING_RECS_BLOCK}
+
+Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -227,20 +225,18 @@ Structure your response exactly as follows:
 
 ## 📊 Checkpoint 2 Report — ARIMAX
 
-### 1. Checkpoint Snapshot
-* **Total Responses:** [n]
-* **Score Distribution:** [average out of 5, plus a distribution across score bands]
+### 1. Concepts Understood
+* [name the question(s)/topic(s) with the strongest correct-rate, citing the exact %, and what that confirms the cohort has already grasped. Mark near-universal-correct questions as "✅ mostly correct."]
 
-### 2. What's Going Well & Where the Cohort is Struggling
-* **Going well:** [name the question(s)/topic(s) with the strongest correct-rate, citing the exact %, and what that confirms the cohort has already grasped]
-* **Struggling:** for each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]. Mark questions almost everyone got right as "✅ mostly correct" instead of a bullet.
+### 2. Remaining Gaps
+* For each question with meaningful wrong-answer clustering, one line: [question topic] — [X respondents / Y%] picked "[wrong answer]" → [the specific misconception this reveals]
+* **Trend vs Beginning & Checkpoint 1:** [state explicitly whether performance/confidence is improving, flat, or declining versus the SARIMA checkpoint, and against the confidence/goals from the Beginning Report — call out whether the Checkpoint 1 recommendation appears to have landed, and whether the same error pattern recurs]
 
-### 3. Progressive Cohort Assessment (vs. Beginning & Checkpoint 1)
-* [State explicitly whether performance/confidence is improving, flat, or declining versus the SARIMA checkpoint, and against the confidence/goals from the Beginning Report — call out whether the Checkpoint 1 recommendation appears to have landed, and whether the same error pattern recurs]
-
-### 4. AI-Generated Teaching Recommendations
+### 3. AI-Generated Teaching Recommendations
 
 ${TEACHING_RECS_BLOCK}
+
+Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
