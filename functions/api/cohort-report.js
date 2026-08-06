@@ -264,13 +264,11 @@ Structure your response exactly as follows:
 
 ## 📋 Post-Class Cohort Intelligence Report
 
-### 1. What Went Well
-* **Confidence:** [state the exact delta in average confidence from the Beginning Report to this Reflection data, e.g. "X → Y out of 5", and whether that shift tracked, outran, or lagged the actual comprehension gains shown across the two checkpoints]
-* **Concept-level gains:** [name the specific concept(s) that show the clearest improvement between the Checkpoint 1 and Checkpoint 2 reports' "What's Going Well & Where the Cohort is Struggling" findings — e.g. a wrong-answer rate that dropped, or a misconception flagged at Checkpoint 1 that Checkpoint 2 no longer shows]
+### 1. What Went Well (Across All Checkpoints)
+* [One bullet per concept/topic the cohort consistently understood well, pulled from the Checkpoint 1 and Checkpoint 2 reports' "Concepts Understood" sections — name the exact concept and cite which checkpoint(s) and %, e.g. "Order of differencing (ARIMA d) — 100% correct at Checkpoint 1". Cover both checkpoints; do not collapse them into one vague bullet.]
 
-### 2. Remaining Gaps
-* **Persistent misconceptions:** [any specific wrong-answer pattern that appears in both the Checkpoint 1 and Checkpoint 2 reports, or that resurfaces in this reflection's remaining-questions data — name the exact concept, not just "some confusion"]
-* **Unresolved questions:** [aggregate the recurring themes in "remaining questions"]
+### 2. Remaining Gaps (Across All Checkpoints)
+* [One bullet per concept/topic that showed up as a misconception in the Checkpoint 1 and/or Checkpoint 2 reports' "Remaining Gaps" sections, or that resurfaces in this reflection's remaining-questions data — name the exact concept and where it showed up (which checkpoint, or "still unresolved at reflection"), not just "some confusion". If the same concept persisted across both checkpoints, say so explicitly.]
 
 ### 3. AI-Generated Teaching Recommendations
 
