@@ -147,34 +147,13 @@ Structure your response exactly as follows:
 
 ## 📋 Beginning of Class Report
 
-### 1. Participant Profile & Demographics
-* **Total Responses:** [n]
-* **Industries Represented:** [bulleted list of the distinct industries mentioned, grouping duplicates, with counts where more than one respondent shares an industry]
-
-| Name | Job Title | Industry |
-|---|---|---|
-[one row per respondent, in the order they appear in the raw data; if a respondent left name blank, use "Anonymous"]
-
-### 2. Experience Level
-* **Time Series Experience:** [bulleted breakdown of each distinct level mentioned, with count and % of total]
-* [One interpretive sentence on what this experience mix implies for pacing/depth today]
-
-### 3. Confidence Level (Scale 1-5)
-* **Average / Range:** [average score] / [lowest]–[highest]
-* **Level 1:** [n] response(s)
-* **Level 2:** [n] response(s)
-* **Level 3:** [n] response(s)
-* **Level 4:** [n] response(s)
-* **Level 5:** [n] response(s)
-* [One interpretive sentence on where the cohort's confidence sits and what that implies for how today should be paced]
-
-Do not add a section theming the learning goals, main concerns, or business problems from the raw data — those are already themed live on the instructor dashboard; base your recommendations below on them without restating them as their own section.
-
-### 4. AI-Generated Teaching Recommendations
+### AI-Generated Teaching Recommendations
 
 ${TEACHING_RECS_BLOCK}
 
-Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**, and a Markdown pipe table with a header row and a --- separator row for the participant list). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
+Do not add sections summarizing participant profile, industries, job titles, experience level, confidence distribution, learning goals, main concerns, or business problems — all of that is already shown live on the instructor dashboard (with charts for industry, job role, experience, and confidence). Use it only as evidence for the recommendations above, not as its own restated section.
+
+Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
 
   if (stage === 2) {
