@@ -128,7 +128,9 @@ Categories and the exact tag to use if you select that category:
 
 * **[chosen category]:** [specific, concrete recommendation] {{tag}}
 * **[chosen category]:** [specific, concrete recommendation] {{tag}}
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}`;
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+
+The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.`;
 
 function buildPrompt(stage, rawData, priorReports) {
   const styleNote = `Write like a sharp internal analytics report to the instructor: numbered sections, each with hard bulleted facts. When there are multiple respondents, compute and state real aggregate statistics — averages, counts, and percentages of total responses — never just a vague "some" or "most." When there is only one respondent, state their specific answers directly instead of talking about "the cohort." No padding, no filler, no restating the obvious.`;
