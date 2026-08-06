@@ -175,7 +175,7 @@ function summarizeQuestions(values, fieldDefs) {
         const values2 = Object.values(counts)
           .map((c) => ({ value: c.value, count: c.count, percent: Math.round((c.count / n) * 1000) / 10 }))
           .sort((a, b) => b.count - a.count);
-        return { label: field.label, kind: "categorical", values: values2 };
+        return { label: field.label, kind: "categorical", values: values2, groupInto: field.groupInto };
       }
 
       return { label: field.label, kind: "text", responses: raw };
