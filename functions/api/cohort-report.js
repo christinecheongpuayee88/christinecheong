@@ -182,7 +182,7 @@ Structure your response exactly as follows:
 
 ## 📊 Checkpoint 1 Report — SARIMA
 
-### 1. Concepts Understood
+### 1. What Went Well
 * [One bullet per question/topic with a strong correct-rate — bold the concept name, then cite the exact % and what it confirms the cohort has grasped, e.g. "**Order of differencing (d):** 100% correct — the cohort has a solid grasp of stationarity." Mark near-universal-correct concepts as "✅ mostly correct" within the elaboration.]
 
 ### 2. Remaining Gaps
@@ -227,7 +227,7 @@ Structure your response exactly as follows:
 
 ## 📊 Checkpoint 2 Report — ARIMAX
 
-### 1. Concepts Understood (Across Checkpoints 1 & 2)
+### 1. What Went Well (Across Checkpoints 1 & 2)
 * [One bullet per concept/topic the cohort understood well, drawn from both this Checkpoint 2 (ARIMAX) result and the Checkpoint 1 (SARIMA) report above — bold the concept name, then cite which checkpoint(s) and the exact %, e.g. "**Model selection (AIC/BIC):** 100% correct at Checkpoint 1." Cover concepts from both checkpoints; do not collapse them into one vague bullet.]
 
 ### 2. Remaining Gaps (Across Checkpoints 1 & 2)
@@ -268,7 +268,7 @@ Structure your response exactly as follows:
 ## 📋 Post-Class Cohort Intelligence Report
 
 ### 1. What Went Well (Across All Checkpoints)
-* [One bullet per concept/topic the cohort consistently understood well, pulled from the Checkpoint 1 and Checkpoint 2 reports' "Concepts Understood" sections — bold the concept name, then cite which checkpoint(s) and %, e.g. "**Order of differencing (ARIMA d):** 100% correct at Checkpoint 1." Cover both checkpoints; do not collapse them into one vague bullet.]
+* [One bullet per concept/topic the cohort consistently understood well, pulled from the Checkpoint 1 and Checkpoint 2 reports' "What Went Well" sections — bold the concept name, then cite which checkpoint(s) and %, e.g. "**Order of differencing (ARIMA d):** 100% correct at Checkpoint 1." Cover both checkpoints; do not collapse them into one vague bullet.]
 
 ### 2. Remaining Gaps (Across All Checkpoints)
 * [One bullet per concept/topic that showed up as a misconception in the Checkpoint 1 and/or Checkpoint 2 reports' "Remaining Gaps" sections, or that resurfaces in this reflection's remaining-questions data — bold the concept name, then name the exact misconception and where it showed up (which checkpoint, or "still unresolved at reflection"), e.g. "**ARIMA vs ARIMAX:** 11.7% incorrect at Checkpoint 2 — believing ARIMAX cannot handle seasonality." If the same concept persisted across both checkpoints, say so explicitly.]
