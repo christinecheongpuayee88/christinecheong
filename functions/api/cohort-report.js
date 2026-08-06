@@ -148,7 +148,7 @@ Structure your response exactly as follows:
 ## 📋 Beginning of Class Report
 
 ### 1. Cohort Insights (from Live Sensing)
-* [2-4 bullets of genuine interpretive insight synthesizing the profile mix, confidence distribution, and stated concerns/goals into what it means for today — e.g. what kind of session this cohort needs, where the energy or anxiety is concentrated, what the industry/role mix implies about which examples will land. Insight, not a restated breakdown — do not list every industry, role, experience level, or confidence-level count; that's already charted live on the instructor dashboard.]
+* [2-4 bullets of genuine interpretive insight synthesizing the profile mix, confidence distribution, and stated concerns/goals into what it means for today. Bold a short topic header at the start of each bullet, then elaborate after a colon — e.g. "**Confidence Level:** the cohort is skewed low, so expect to spend extra time building comfort before moving fast." Cover different angles (confidence, experience/industry mix, stated concerns) across the bullets — don't repeat the same angle twice. Insight, not a restated breakdown — do not list every industry, role, experience level, or confidence-level count; that's already charted live on the instructor dashboard.]
 
 ### 2. AI-Generated Teaching Recommendations
 
@@ -188,6 +188,8 @@ Structure your response exactly as follows:
 ### 2. Remaining Gaps
 * [One bullet per question with meaningful wrong-answer clustering — bold the concept name, then state the misconception, e.g. "**ACF/PACF identification:** 3 respondents / 21.4% picked '...' → confusing decay vs. cutoff patterns."]
 * **Trend vs Beginning:** [compare actual SARIMA performance against the confidence level and stated goals from the Beginning Report — is the cohort over-confident, under-confident, or on track relative to what they said coming in? Note whether the errors are conceptual or just notation/labeling confusion.]
+
+Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
 
 ### 3. AI-Generated Teaching Recommendations
 
@@ -231,6 +233,8 @@ Structure your response exactly as follows:
 ### 2. Remaining Gaps (Across Checkpoints 1 & 2)
 * [One bullet per concept/topic that showed up as a misconception in this Checkpoint 2 result and/or the Checkpoint 1 report above — bold the concept name, then name the exact misconception and which checkpoint(s) it appeared in, e.g. "**ARIMA vs ARIMAX:** 11.7% incorrect at Checkpoint 2 — believing ARIMAX cannot handle seasonality." If the same concept persisted across both checkpoints, say so explicitly, and note whether the Checkpoint 1 recommendation appears to have landed.]
 
+Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
+
 ### 3. AI-Generated Teaching Recommendations
 
 ${TEACHING_RECS_BLOCK}
@@ -268,6 +272,8 @@ Structure your response exactly as follows:
 
 ### 2. Remaining Gaps (Across All Checkpoints)
 * [One bullet per concept/topic that showed up as a misconception in the Checkpoint 1 and/or Checkpoint 2 reports' "Remaining Gaps" sections, or that resurfaces in this reflection's remaining-questions data — bold the concept name, then name the exact misconception and where it showed up (which checkpoint, or "still unresolved at reflection"), e.g. "**ARIMA vs ARIMAX:** 11.7% incorrect at Checkpoint 2 — believing ARIMAX cannot handle seasonality." If the same concept persisted across both checkpoints, say so explicitly.]
+
+Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
 
 ### 3. AI-Generated Teaching Recommendations
 

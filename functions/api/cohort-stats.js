@@ -457,6 +457,8 @@ export async function onRequestGet(context) {
             previousValue: priorStats.confidence.mean,
             currentValue: stats.confidence.mean,
             delta: Math.round((stats.confidence.mean - priorStats.confidence.mean) * 100) / 100,
+            previousDistribution: priorStats.confidence.distribution,
+            previousResponseCount: priorStats.responseCount,
           };
         }
       }
