@@ -178,8 +178,8 @@ td.down{color:var(--red);} td.up{color:var(--green);}
         <tr><td>Footfall</td><td>220,000</td><td>282,000</td><td class="up">+28%</td></tr>
         <tr><td>Revenue</td><td>$4.8M</td><td>$5.0M</td><td class="up">+4%</td></tr>
         <tr><td>Conversion</td><td>24%</td><td>18%</td><td class="down">−6pp</td></tr>
-        <tr><td>CSAT</td><td>82</td><td>71</td><td class="down">−11</td></tr>
-        <tr><td>Repeat purchase</td><td>38%</td><td>29%</td><td class="down">−9pp</td></tr>
+        <tr><td>CSAT</td><td>82</td><td>73</td><td class="down">−9</td></tr>
+        <tr><td>Repeat purchase</td><td>38%</td><td>30%</td><td class="down">−8pp</td></tr>
       </table>
     </div>
     <div class="card">
@@ -195,6 +195,16 @@ td.down{color:var(--red);} td.up{color:var(--green);}
         <tr><td>Northpoint</td><td class="up">+9%</td><td class="up">+9%</td><td>24%</td></tr>
       </table>
       <p style="margin-top:12px;font-size:12.5px;font-style:italic;">The highest-traffic stores (Bugis, Vivo, Orchard) have the lowest conversion — traffic growth is not the constraint.</p>
+    </div>
+    <div class="card">
+      <h3>Performance by Product Category</h3>
+      <table class="kpi" style="margin-top:12px;">
+        <tr><th>Product Category</th><th>2024 Conversion</th><th>2025 Conversion</th><th>Change</th><th>2025 Revenue Growth</th></tr>
+        <tr><td>Skincare</td><td>24%</td><td>16%</td><td class="down">−8pp</td><td>0%</td></tr>
+        <tr><td>Cosmetics</td><td>24%</td><td>21%</td><td class="down">−3pp</td><td class="up">+5%</td></tr>
+        <tr><td>Personal care</td><td>23%</td><td>22%</td><td class="down">−1pp</td><td class="up">+7%</td></tr>
+      </table>
+      <p style="margin-top:12px;font-size:12.5px;font-style:italic;">Skincare shows the sharpest conversion decline and flat revenue growth — the category most worth investigating first.</p>
     </div>
     <div class="card" style="text-align:center;">
       <a href="https://colab.research.google.com/" target="_blank" rel="noopener" style="font-size:13px;font-weight:700;color:var(--accent);">📊 Analyse the full dataset in Google Colab →</a>
@@ -246,35 +256,40 @@ td.down{color:var(--red);} td.up{color:var(--green);}
       </table>
     </div>
     <div class="card">
-      <h3>Customer Comments</h3>
+      <h3>Skincare Customer Satisfaction</h3>
+      <table class="kpi" style="margin-top:12px;">
+        <tr><th>Skincare Experience Attribute</th><th>2024 Satisfied</th><th>2025 Satisfied</th><th>Change</th></tr>
+        <tr><td>Ease of identifying a suitable product</td><td>64%</td><td>43%</td><td class="down">−21pp</td></tr>
+        <tr><td>Clarity of product benefits</td><td>61%</td><td>42%</td><td class="down">−19pp</td></tr>
+        <tr><td>Availability of personalised advice</td><td>58%</td><td>39%</td><td class="down">−19pp</td></tr>
+        <tr><td>Overall value for money</td><td>57%</td><td>44%</td><td class="down">−13pp</td></tr>
+        <tr><td>Price competitiveness</td><td>65%</td><td>63%</td><td class="down">−2pp</td></tr>
+        <tr><td>Product quality</td><td>78%</td><td>76%</td><td class="down">−2pp</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Selected Customer Comments</h3>
       <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
-        <div class="quote">"Product unavailable again."</div>
-        <div class="quote">"Queue too long."</div>
-        <div class="quote">"Staff overwhelmed."</div>
-        <div class="quote">"Loyalty not compelling."</div>
-        <div class="quote">"Competitor experience better."</div>
+        <div class="quote">"There are many similar serums, but I cannot tell which one suits my skin concern."</div>
+        <div class="quote">"The descriptions list ingredients, but they do not clearly explain what results I should expect."</div>
+        <div class="quote">"The prices are similar elsewhere, but other retailers include samples or bundle benefits."</div>
+        <div class="quote">"I wanted advice, but no one was available when I visited."</div>
+        <div class="quote">"I discovered the product through BeautyCo's social media, then compared reviews and offers before purchasing."</div>
+        <div class="quote">"I have bought from BeautyCo before and find the products reliable."</div>
       </div>
     </div>
   </div>
 
   <div class="tabpanel" id="panel-external">
     <div class="card">
-      <h3>Competitor Benchmark</h3>
+      <h3>Competitor and Market Signals</h3>
       <table class="kpi">
-        <tr><th>Competitor</th><th>Initiative</th><th>Result</th></tr>
-        <tr><td>GlowLab</td><td>AI Skin Diagnostics</td><td class="up">Conversion +29%</td></tr>
-        <tr><td>SkinStudio</td><td>Subscription Model</td><td class="up">Retention +24%</td></tr>
-        <tr><td>BeautyHub</td><td>Omnichannel Fulfilment</td><td class="up">Revenue +15%</td></tr>
-      </table>
-    </div>
-    <div class="card">
-      <h3>Market Intelligence — Consumer Trends</h3>
-      <table class="kpi">
-        <tr><th>Trend</th><th>2024</th><th>2025</th></tr>
-        <tr><td>Research before purchase</td><td>48%</td><td>69%</td></tr>
-        <tr><td>Expect personalization</td><td>55%</td><td>73%</td></tr>
-        <tr><td>Loyalty usage</td><td>46%</td><td>68%</td></tr>
-        <tr><td>Abandon due to stock-out</td><td>18%</td><td>35%</td></tr>
+        <tr><th>Area</th><th>BeautyCo</th><th>Competitor or Market Signal</th></tr>
+        <tr><td>Headline skincare prices</td><td>Broadly comparable with major competitors</td><td>Limited change in market-level prices</td></tr>
+        <tr><td>Product information</td><td>Mainly ingredients, features and new-product information</td><td>Greater use of benefit explanations, routines and skin-concern guides</td></tr>
+        <tr><td>Skincare bundles</td><td>Available for selected products</td><td>Mix-and-match and routine-based bundles became more common</td></tr>
+        <tr><td>Samples and loyalty benefits</td><td>Selected samples and standard loyalty points</td><td>More frequent samples and bonus-point campaigns</td></tr>
+        <tr><td>Personalised advice</td><td>Available, but not consistently promoted or accessible</td><td>Short consultations and digital product finders increasingly promoted</td></tr>
       </table>
       <div style="margin-top:16px;">
         <a href="https://chat.openai.com/" target="_blank" rel="noopener" style="font-size:13px;font-weight:700;color:var(--accent);">🔎 Run Deep Research on current market trends →</a>
@@ -297,7 +312,7 @@ td.down{color:var(--red);} td.up{color:var(--green);}
         <p><strong style="color:var(--navy);">Diagnosis:</strong> Traffic generation is not the primary issue — conversion capability is. Three root causes are confirmed with high or medium confidence: Service Capacity Constraints (High), Inventory Availability Issues (High), Loyalty Programme Weakness (Medium).</p>
         <p style="margin-top:10px;"><strong style="color:var(--navy);">Recommended option:</strong> Integrated Service + Inventory Improvement — fix conversion capability before driving more traffic.</p>
         <p style="margin-top:10px;"><strong style="color:var(--navy);">90-day initiatives:</strong> Service Capacity (workforce scheduling, queue management, advisor training) · Inventory Availability (inventory forecasting, automated replenishment, stock visibility) · Loyalty Enhancement (personalized promotions, AI-assisted recommendations, tiered rewards).</p>
-        <p style="margin-top:10px;"><strong style="color:var(--navy);">Targets:</strong> Conversion 18%→22% · CSAT 71→80 · Repeat purchase 29%→35% · Stock-out rate 14%→&lt;8%.</p>
+        <p style="margin-top:10px;"><strong style="color:var(--navy);">Targets:</strong> Conversion 18%→22% · CSAT 73→80 · Repeat purchase 30%→35% · Stock-out rate 14%→&lt;8%.</p>
         <p style="margin-top:10px;font-style:italic;">Final insight: Traffic was not the problem. Conversion capability was the problem.</p>
       </div>
     </details>
