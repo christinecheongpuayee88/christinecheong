@@ -47,17 +47,34 @@
     .done-state.show{display:block}
     .score-badge{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;font-size:1.5rem;font-weight:850;color:#fff;background:var(--teal)}
     .done-state h2{color:var(--navy);font-size:1.4rem;margin:0 0 22px}
-    .results-list{text-align:left;margin-bottom:26px;display:flex;flex-direction:column;gap:10px}
-    .result-row{display:flex;gap:10px;padding:13px 15px;border-radius:10px}
-    .result-row.correct{background:var(--good-bg)}
-    .result-row.wrong{background:var(--bad-bg)}
-    .result-icon{font-weight:850;flex:0 0 auto}
-    .result-row.correct .result-icon{color:var(--teal)}
-    .result-row.wrong .result-icon{color:var(--bad)}
-    .result-text{font-size:.86rem}
-    .result-q{font-weight:700;color:var(--navy);display:block;margin-bottom:3px}
-    .result-your{color:var(--ink)}
-    .result-correct{color:var(--muted);display:block;margin-top:3px}
+    .results-list{text-align:left;margin-bottom:26px;display:flex;flex-direction:column;gap:22px}
+
+    .q-result{border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+    .q-result-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+    .q-result-icon{font-size:1.2rem;font-weight:850;flex:0 0 auto;line-height:1.4}
+    .q-result.wrong .q-result-icon{color:var(--bad)}
+    .q-result.correct .q-result-icon{color:var(--teal)}
+    .q-result-question{flex:1;font-weight:750;color:var(--navy);font-size:.95rem;line-height:1.4}
+    .q-result-score{flex:0 0 auto;color:var(--muted);font-weight:750;font-size:.88rem}
+
+    .q-options{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+    .q-option{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:9px;font-size:.88rem;color:var(--ink)}
+    .q-radio{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--muted);flex:0 0 auto}
+    .q-option.picked-wrong{background:var(--bad-bg)}
+    .q-option.picked-wrong .q-radio{border-color:var(--bad);background:var(--bad)}
+    .q-option.picked-correct{background:var(--good-bg)}
+    .q-option.picked-correct .q-radio{border-color:var(--teal);background:var(--teal)}
+    .q-option-mark{margin-left:auto;font-weight:850}
+    .q-option.picked-wrong .q-option-mark{color:var(--bad)}
+    .q-option.picked-correct .q-option-mark{color:var(--teal)}
+
+    .q-correct-label{font-size:.82rem;font-weight:750;color:var(--muted);margin:14px 0 8px}
+    .q-correct-answer .q-radio{border-color:var(--ink);background:var(--ink)}
+
+    .q-feedback{background:var(--soft);border-radius:10px;padding:14px 16px;margin-top:16px}
+    .q-feedback-label{font-weight:750;color:var(--navy);font-size:.86rem;margin-bottom:6px}
+    .q-feedback p{margin:0;font-size:.86rem;font-style:italic;color:var(--muted);line-height:1.6}
+
     #beginningForm.hide{display:none}
   </style>
 </head>
@@ -122,6 +139,24 @@
           <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="False">False</button>
         </div>
       </div>
+      <div class="field" data-q="6">
+        <span class="field-label"><span class="qnum">Q7.</span> Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why? *</span>
+        <div class="mc-group choice-group" data-name="q6">
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Model A, because it fits the training data best">Model A, because it fits the training data best</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Model B, because it generalizes better to unseen data">Model B, because it generalizes better to unseen data</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Either model — training and test performance don't matter for forecasting">Either model — training and test performance don't matter for forecasting</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Neither — you should always use a simpler baseline instead">Neither — you should always use a simpler baseline instead</button>
+        </div>
+      </div>
+      <div class="field" data-q="7">
+        <span class="field-label"><span class="qnum">Q8.</span> SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why? *</span>
+        <div class="mc-group choice-group" data-name="q7">
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Increase staffing and room availability to meet the anticipated peak demand">Increase staffing and room availability to meet the anticipated peak demand</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Reduce staffing since forecasts are often wrong">Reduce staffing since forecasts are often wrong</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Ignore the forecast since occupancy is inherently unpredictable">Ignore the forecast since occupancy is inherently unpredictable</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Cancel bookings near the peak to avoid overcrowding">Cancel bookings near the peak to avoid overcrowding</button>
+        </div>
+      </div>
       <label class="field">
         <span class="field-label">Reflection — do you have any further questions? <span class="optional">(optional)</span></span>
         <textarea name="reflection" rows="2"></textarea>
@@ -144,7 +179,7 @@
 
 <script>
 (function(){
-  var QUESTION_COUNT = 6;
+  var QUESTION_COUNT = 8;
   var form = document.getElementById('beginningForm');
   var statusEl = document.getElementById('beginningStatus');
   var submitBtn = document.getElementById('beginningSubmit');
@@ -219,11 +254,54 @@
     document.getElementById('scoreHeading').textContent = 'You scored ' + data.score + ' out of ' + data.total;
     var list = document.getElementById('resultsList');
     list.innerHTML = data.results.map(function(r, i){
-      var cls = r.correct ? 'correct' : 'wrong';
-      var icon = r.correct ? '✓' : '✗';
-      var correctLine = r.correct ? '' : '<span class="result-correct">Correct answer: ' + escapeHtml(r.correctAnswer) + '</span>';
-      return '<div class="result-row ' + cls + '"><span class="result-icon">' + icon + '</span><span class="result-text"><span class="result-q">Q' + (i + 1) + '. ' + escapeHtml(r.question) + '</span><span class="result-your">Your answer: ' + escapeHtml(r.yourAnswer) + '</span>' + correctLine + '</span></div>';
+      return renderQuestionResult(r, i);
     }).join('');
+  }
+
+  function renderQuestionResult(r, i){
+    var cls = r.correct ? 'correct' : 'wrong';
+    var icon = r.correct ? '✓' : '✗';
+    var html = '<div class="q-result ' + cls + '">';
+    html += '<div class="q-result-head">';
+    html += '<span class="q-result-icon">' + icon + '</span>';
+    html += '<span class="q-result-question">Q' + (i + 1) + '. ' + escapeHtml(r.question) + '</span>';
+    html += '<span class="q-result-score">' + (r.correct ? '1/1' : '0/1') + '</span>';
+    html += '</div>';
+
+    if (r.options && r.options.length) {
+      html += '<div class="q-options">';
+      html += r.options.map(function(opt){
+        var isPicked = normalizeAnswer(opt) === normalizeAnswer(r.yourAnswer);
+        var optCls = '';
+        var mark = '';
+        if (isPicked && r.correct) { optCls = ' picked-correct'; mark = '<span class="q-option-mark">✓</span>'; }
+        else if (isPicked && !r.correct) { optCls = ' picked-wrong'; mark = '<span class="q-option-mark">✕</span>'; }
+        return '<div class="q-option' + optCls + '"><span class="q-radio"></span>' + escapeHtml(opt) + mark + '</div>';
+      }).join('');
+      html += '</div>';
+
+      if (!r.correct) {
+        html += '<div class="q-correct-label">Correct answer</div>';
+        html += '<div class="q-options"><div class="q-option q-correct-answer"><span class="q-radio"></span>' + escapeHtml(r.correctAnswer) + '</div></div>';
+      }
+    } else {
+      html += '<div class="q-options"><div class="q-option' + (r.correct ? ' picked-correct' : ' picked-wrong') + '"><span class="q-radio"></span>Your answer: ' + escapeHtml(r.yourAnswer) + '</div></div>';
+      if (!r.correct) {
+        html += '<div class="q-correct-label">Correct answer</div>';
+        html += '<div class="q-options"><div class="q-option q-correct-answer"><span class="q-radio"></span>' + escapeHtml(r.correctAnswer) + '</div></div>';
+      }
+    }
+
+    if (r.feedback) {
+      html += '<div class="q-feedback"><div class="q-feedback-label">Feedback</div><p>' + escapeHtml(r.feedback) + '</p></div>';
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  function normalizeAnswer(s){
+    return (s || '').trim().replace(/\s+/g, ' ').toLowerCase();
   }
 
   function escapeHtml(s){

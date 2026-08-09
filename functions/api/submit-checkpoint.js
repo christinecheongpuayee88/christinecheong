@@ -14,37 +14,100 @@ const SHEETS = {
 
 // headerPrefix must match the same prefixes cohort-stats.js's CHECKPOINT_QUESTIONS
 // uses to find each question's column in the live Google Sheet — keep these in sync.
+// options/feedback are only used by this file (results rendering) — cohort-stats.js
+// doesn't need them, so they're not duplicated there.
 const QUESTIONS = {
   2: [
     {
       headerPrefix: "In ARIMA(p,d,q), what does d represent",
       question: "In ARIMA(p,d,q), what does d represent?",
+      options: [
+        "Number of autoregressive terms",
+        "Order of differencing needed for stationarity",
+        "Number of moving-average terms",
+        "Number of periods per season",
+      ],
       correct: "Order of differencing needed for stationarity",
+      feedback: "d is the order of integration — how many times the series must be differenced to remove trend and become stationary.",
     },
     {
       headerPrefix: "Which ACF/PACF pattern points to an AR(p)",
       question: "Which ACF/PACF pattern points to an AR(p) process rather than MA(q)?",
+      options: [
+        "ACF cuts off sharply, PACF decays gradually",
+        "ACF decays gradually, PACF cuts off after lag p",
+        "Both cut off immediately",
+        "Both decay gradually forever",
+      ],
       correct: "ACF decays gradually, PACF cuts off after lag p",
+      feedback: "Gradual ACF decay with a sharp PACF cutoff at lag p is the signature of an AR(p) process — the reverse pattern (sharp ACF cutoff, gradual PACF decay) points to MA(q) instead.",
     },
     {
       headerPrefix: "In SARIMA(p,d,q)(P,D,Q)",
       question: "In SARIMA(p,d,q)(P,D,Q)ₛ, what does s represent?",
+      options: [
+        "Number of seasonal AR terms",
+        "Significance level of the model",
+        "Number of periods per season (e.g. 12 for monthly)",
+        "Number of standard deviations",
+      ],
       correct: "Number of periods per season (e.g. 12 for monthly)",
+      feedback: "s is the seasonal period length — how many time steps make up one full seasonal cycle (e.g. 12 for monthly data with yearly seasonality).",
     },
     {
       headerPrefix: "Why do we need seasonal differencing",
       question: "Why do we need seasonal differencing in addition to regular differencing?",
+      options: [
+        "We don't — regular differencing removes seasonality too",
+        "Regular differencing removes trend; seasonal differencing removes the repeating s-period pattern",
+        "Seasonal differencing replaces the need for an AR term",
+        "It only matters for daily data",
+      ],
       correct: "Regular differencing removes trend; seasonal differencing removes the repeating s-period pattern",
+      feedback: "Regular differencing removes trend; seasonal differencing (at lag s) removes the repeating seasonal pattern — series with both trend and seasonality typically need both.",
     },
     {
       headerPrefix: "Between two candidate SARIMA models",
       question: "Between two candidate SARIMA models with white-noise residuals, which do you prefer?",
+      options: [
+        "The one with more parameters",
+        "The one with the lower AIC/BIC",
+        "The one with the higher log-likelihood only",
+        "It doesn't matter, pick either",
+      ],
       correct: "The one with the lower AIC/BIC",
+      feedback: "Once residuals are white noise for multiple candidates, AIC/BIC breaks the tie by penalizing unnecessary complexity — lower is better.",
     },
     {
       headerPrefix: "True or False: a well-fitted SARIMA model",
       question: "True or False: a well-fitted SARIMA model should leave residuals that look like white noise.",
+      options: ["True", "False"],
       correct: "True",
+      feedback: "If the model captured all the structure in the series, what's left over should be unpredictable — i.e. white noise. Leftover pattern means the model missed something.",
+    },
+    {
+      headerPrefix: "Model A performs better on the training",
+      question: "Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why?",
+      options: [
+        "Model A, because it fits the training data best",
+        "Model B, because it generalizes better to unseen data",
+        "Either model — training and test performance don't matter for forecasting",
+        "Neither — you should always use a simpler baseline instead",
+      ],
+      correct: "Model B, because it generalizes better to unseen data",
+      feedback: "Forecasting is about performance on data the model hasn't seen yet — test-set accuracy predicts real future performance, while a model that only looks good on training data (like Model A) is often just overfitting and won't carry that advantage into actual future occupancy.",
+    },
+    {
+      headerPrefix: "SARIMA forecasts hotel occupancy to peak",
+      question: "SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why?",
+      options: [
+        "Increase staffing and room availability to meet the anticipated peak demand",
+        "Reduce staffing since forecasts are often wrong",
+        "Ignore the forecast since occupancy is inherently unpredictable",
+        "Cancel bookings near the peak to avoid overcrowding",
+      ],
+      correct: "Increase staffing and room availability to meet the anticipated peak demand",
+      feedback: "A forecasted demand peak is only useful if it changes a decision — management should scale up staffing and room availability ahead of the peak so the business is actually prepared for it, rather than treating the forecast as just an interesting number.",
     },
   ],
   3: [
@@ -206,8 +269,20 @@ export async function onRequestPost(context) {
 
     let headerRows = await readSheetValues(accessToken, sheetId, `'${TAB_NAME}'!A1:Z1`);
     let headers = headerRows[0] || [];
+    // Append-only: any question not yet represented as a header gets added
+    // as a brand-new trailing column, never inserted before existing ones.
+    // Existing columns (and every already-submitted row's data) keep the
+    // exact same position — critical the first time this runs after adding
+    // Q7/Q8 to a sheet that already has real student responses under the
+    // old 6-question header row.
+    const missingQuestions = questions.filter(
+      (q) => !headers.some((h) => (h || "").startsWith(q.headerPrefix))
+    );
     if (!headers.length) {
       headers = ["Timestamp", ...questions.map((q) => q.question), REFLECTION_HEADER];
+      await writeSheetValues(accessToken, sheetId, `'${TAB_NAME}'!A1:${String.fromCharCode(64 + headers.length)}1`, [headers]);
+    } else if (missingQuestions.length) {
+      headers = [...headers, ...missingQuestions.map((q) => q.question)];
       await writeSheetValues(accessToken, sheetId, `'${TAB_NAME}'!A1:${String.fromCharCode(64 + headers.length)}1`, [headers]);
     }
 
@@ -222,9 +297,11 @@ export async function onRequestPost(context) {
 
     const results = questions.map((q, i) => ({
       question: q.question,
+      options: q.options || null,
       yourAnswer: answers[i],
       correctAnswer: q.correct,
       correct: normalize(answers[i]) === normalize(q.correct),
+      feedback: q.feedback || null,
     }));
     const score = results.filter((r) => r.correct).length;
 
