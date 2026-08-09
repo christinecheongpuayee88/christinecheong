@@ -373,19 +373,31 @@ export async function onRequestPost(context) {
 
     const synthesis = linkifySynthesis(llmData.choices[0].message.content);
 
-    // Persist a student-visible copy: just the "Emerging themes" bullets,
-    // nothing else. The heading/question/response-count are dropped since
-    // the student page already shows those separately, and the
-    // "Recommended move" section is dropped entirely — that's
-    // instructor-facing facilitation guidance, not meant for the cohort to
-    // see. The full synthesis (with the recommendation) is only ever
-    // returned here, to the instructor panel.
+    // Persist a student-visible copy: just the bold "count — label" part of
+    // each "Emerging themes" bullet, with the elaboration clause after it
+    // dropped — students see the summary, not the analysis. The heading/
+    // question/response-count are dropped too since the student page
+    // already shows those separately, and the "Recommended move" section
+    // is dropped entirely — that's instructor-facing facilitation guidance,
+    // not meant for the cohort to see. The full synthesis (with
+    // elaboration and the recommendation) is only ever returned here, to
+    // the instructor panel.
     const themesIdx = synthesis.indexOf("### Emerging themes");
     const recommendedIdx = synthesis.indexOf("### Recommended move");
-    const themesOnly =
+    const themesSection =
       themesIdx !== -1
         ? synthesis.slice(themesIdx, recommendedIdx !== -1 ? recommendedIdx : undefined).trim()
         : "";
+    const themesOnly = themesSection
+      .split("\n")
+      .map((line) => {
+        const trimmed = line.trim();
+        const bulletMatch = trimmed.match(/^([*-])\s+\*\*(.+?)\*\*/);
+        if (!bulletMatch) return line;
+        const label = bulletMatch[2].replace(/:\s*$/, "");
+        return `${bulletMatch[1]} **${label}**`;
+      })
+      .join("\n");
     if (themesOnly) {
       await appendRow(accessToken, spreadsheetId, "THEMES", themesOnly);
     }
