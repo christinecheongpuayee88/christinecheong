@@ -148,19 +148,19 @@ const CANVAS_WORKSHOP_URL = "https://canvas.nus.edu.sg/courses/98514/files/folde
 
 const TOPIC_LINKS = {
   2: {
-    "Differencing (d)": { clarifySlide: 10, exercise: "Workshop 1A — Airline passengers" },
-    "AR/MA identification": { clarifySlide: 22, exercise: "Workshop 1A — Airline passengers" },
-    "Seasonal period (s)": { clarifySlide: 23, exercise: "Workshop 1B — Hotel occupancy" },
-    "Seasonal differencing": { clarifySlide: 24, exercise: "Workshop 1B — Hotel occupancy" },
-    "Model selection (AIC/BIC)": { clarifySlide: 31, exercise: "Workshop 1A — Airline passengers" },
-    "Residual diagnostics": { clarifySlide: 30, exercise: "Workshop 1B — Hotel occupancy" },
+    "Differencing (d)": { clarifySlide: 10, clarifyLabel: "Achieving Stationarity — Differencing (slide 10)", exercise: "Workshop 1A — Airline passengers" },
+    "AR/MA identification": { clarifySlide: 22, clarifyLabel: "ACF/PACF Decay vs Cutoff Summary (slide 22)", exercise: "Workshop 1A — Airline passengers" },
+    "Seasonal period (s)": { clarifySlide: 23, clarifyLabel: "Seasonality and ARIMA Models (slide 23)", exercise: "Workshop 1B — Hotel occupancy" },
+    "Seasonal differencing": { clarifySlide: 24, clarifyLabel: "Seasonal Differencing Example (slide 24)", exercise: "Workshop 1B — Hotel occupancy" },
+    "Model selection (AIC/BIC)": { clarifySlide: 31, clarifyLabel: "Model Selection Criteria (slide 31)", exercise: "Workshop 1A — Airline passengers" },
+    "Residual diagnostics": { clarifySlide: 30, clarifyLabel: "Residuals — Portmanteau Test (slide 30)", exercise: "Workshop 1B — Hotel occupancy" },
   },
   3: {
-    "ARIMA vs ARIMAX": { clarifySlide: 33, exercise: "Workshop 2 — Sales and advertising" },
-    "Identifying X and Y": { clarifySlide: 34, exercise: "Workshop 3 — Platform sales" },
-    "Lagged exogenous effects": { clarifySlide: 37, exercise: "Workshop 3 — Platform sales" },
-    "Model evaluation (MAPE)": { clarifySlide: 42, exercise: "Workshop 2 — Sales and advertising" },
-    "Overfitting / lag selection": { clarifySlide: 42, exercise: "Workshop 3 — Platform sales" },
+    "ARIMA vs ARIMAX": { clarifySlide: 33, clarifyLabel: "Introduction to ARIMAX (slide 33)", exercise: "Workshop 2 — Sales and advertising" },
+    "Identifying X and Y": { clarifySlide: 34, clarifyLabel: "Advertising → Sales X/Y Example (slide 34)", exercise: "Workshop 3 — Platform sales" },
+    "Lagged exogenous effects": { clarifySlide: 37, clarifyLabel: "Lagged Relationship Examples (slide 37)", exercise: "Workshop 3 — Platform sales" },
+    "Model evaluation (MAPE)": { clarifySlide: 42, clarifyLabel: "ARIMAX Estimation & MAPE (slide 42)", exercise: "Workshop 2 — Sales and advertising" },
+    "Overfitting / lag selection": { clarifySlide: 42, clarifyLabel: "ARIMAX Lag Coefficients (slide 42)", exercise: "Workshop 3 — Platform sales" },
   },
 };
 
@@ -173,7 +173,7 @@ const CHALLENGE_LINKS = {
 
 function buildTopicLinksBlock(stage) {
   return Object.entries(TOPIC_LINKS[stage])
-    .map(([topic, l]) => `- "${topic}" — CLARIFY link: ${THEORY_URL}#slide-${l.clarifySlide} | APPLY link: ${CANVAS_WORKSHOP_URL} (link text must name "${l.exercise}")`)
+    .map(([topic, l]) => `- "${topic}" — CLARIFY link: ${THEORY_URL}#slide-${l.clarifySlide} (link text must be exactly "${l.clarifyLabel}") | APPLY link: ${CANVAS_WORKSHOP_URL} (link text must name "${l.exercise}")`)
     .join("\n");
 }
 
@@ -194,8 +194,8 @@ ${buildChallengeLinksBlock()}
 
 For each chosen topic, use exactly this format:
 
-* 🔴 **CLARIFY — [topic]:** [pick one: Visual explanation / Worked example / Quick concept recap, describe the specific action in one sentence, citing the % evidence]. [Recap: exact exercise/topic name](that topic's CLARIFY link)
-* 🟢 **APPLY — [topic]:** [pick one: Mini case / Guided exercise / Colab activity, describe the specific action tied to the named workshop exercise, citing the % evidence]. [Try: exact exercise name from the reference above](that topic's APPLY link)
+* 🔴 **CLARIFY — [topic]:** [pick one: Visual explanation / Worked example / Quick concept recap, describe the specific action in one sentence, citing the % evidence]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
+* 🟢 **APPLY — [topic]:** [pick one: Mini case / Guided exercise / Colab activity, describe the specific action tied to the named workshop exercise, citing the % evidence]. [Try: that topic's exact exercise name from the reference above](that topic's APPLY link)
 * 🔵 **CHALLENGE — [topic]:** [pick one: What-if question / Multiple perspectives / Practitioner critique — write the actual prompt to pose to the cohort, citing the % evidence]. If you picked Multiple perspectives or Practitioner critique, append [its link text](its exact CHALLENGE link) — if you picked What-if question, append no link at all.`;
 }
 
