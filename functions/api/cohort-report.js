@@ -199,6 +199,35 @@ For each chosen topic, use exactly this format:
 * 🔵 **CHALLENGE — [topic]:** [pick one: What-if question / Multiple perspectives / Practitioner critique — write the actual prompt to pose to the cohort, citing the % evidence]. If you picked Multiple perspectives or Practitioner critique, append [its link text](its exact CHALLENGE link) — if you picked What-if question, append no link at all.`;
 }
 
+// Safety net: the model doesn't reliably wrap the reference label in
+// [text](url) markdown even when the text itself is otherwise correct — it
+// sometimes drops the brackets and prints the label as plain trailing text.
+// Since every possible label+URL pair is already a fixed, known set (never
+// AI-invented), just check for each label appearing unlinked and wrap it
+// deterministically, rather than trusting the model's markdown compliance.
+function linkifyReport(text, stage) {
+  const topics = TOPIC_LINKS[stage];
+  if (!topics) return text;
+
+  const alreadyLinked = (label) => text.includes(`[${label}](`);
+
+  for (const l of Object.values(topics)) {
+    const clarifyUrl = `${THEORY_URL}#slide-${l.clarifySlide}`;
+    if (text.includes(l.clarifyLabel) && !alreadyLinked(l.clarifyLabel)) {
+      text = text.replace(l.clarifyLabel, `[${l.clarifyLabel}](${clarifyUrl})`);
+    }
+    if (text.includes(l.exercise) && !alreadyLinked(l.exercise)) {
+      text = text.replace(l.exercise, `[${l.exercise}](${CANVAS_WORKSHOP_URL})`);
+    }
+  }
+  for (const l of Object.values(CHALLENGE_LINKS)) {
+    if (text.includes(l.label) && !alreadyLinked(l.label)) {
+      text = text.replace(l.label, `[${l.label}](${l.url})`);
+    }
+  }
+  return text;
+}
+
 function buildPrompt(stage, rawData, priorReports) {
   const styleNote = `Write like a sharp internal analytics report to the instructor: numbered sections, each with hard bulleted facts. When there are multiple respondents, compute and state real aggregate statistics — averages, counts, and percentages of total responses — never just a vague "some" or "most." When there is only one respondent, state their specific answers directly instead of talking about "the cohort." No padding, no filler, no restating the obvious.`;
 
@@ -415,7 +444,7 @@ export async function onRequestPost(context) {
       });
     }
 
-    const report = llmData.choices[0].message.content;
+    const report = linkifyReport(llmData.choices[0].message.content, stage);
 
     await appendCohortLog(accessToken, stageLabel, report);
 
