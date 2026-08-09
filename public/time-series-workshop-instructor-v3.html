@@ -286,7 +286,7 @@
   </div>
 
   <p class="section-title">Live Discussion Pulse</p>
-  <p class="section-desc">Ask an ad-hoc question mid-workshop and see the cohort's reasoning, not just 2–3 vocal answers. Publish a question, share the student page link, then refresh to check responses and get an AI synthesis — themes plus one recommended 🔴 Clarify / 🟢 Apply / 🔵 Challenge move. AI only synthesizes for you here; it never replies to students.</p>
+  <p class="section-desc">Ask an ad-hoc question mid-workshop and see the cohort's reasoning, not just 2–3 vocal answers. Publish a question, share the student page link, then refresh to check responses and get an AI synthesis — themes plus one recommended 🔴 Clarify / 🟢 Apply / 🔵 Challenge move. "Publish" starts a fresh round (new responses only); "Edit current" fixes the question in place — e.g. a typo — without losing responses already collected. AI only synthesizes for you here; it never replies to students.</p>
   <div class="instructor-panel">
     <div class="pulse-grid">
       <div class="pulse-panel">
@@ -298,6 +298,7 @@
         <div class="pulse-row">
           <input type="text" id="pulse-question-1" placeholder="Type an ad-hoc question…">
           <button class="stage-btn" onclick="publishPulseQuestion(1)">Publish</button>
+          <button class="stage-btn" onclick="editPulseQuestion(1)">Edit current</button>
         </div>
         <div class="pulse-actions">
           <button class="stage-btn" onclick="refreshPulseState(1)">Refresh</button>
@@ -316,6 +317,7 @@
         <div class="pulse-row">
           <input type="text" id="pulse-question-2" placeholder="Type an ad-hoc question…">
           <button class="stage-btn" onclick="publishPulseQuestion(2)">Publish</button>
+          <button class="stage-btn" onclick="editPulseQuestion(2)">Edit current</button>
         </div>
         <div class="pulse-actions">
           <button class="stage-btn" onclick="refreshPulseState(2)">Refresh</button>
@@ -817,9 +819,11 @@
         if (data.question) {
           currentEl.classList.remove('waiting');
           currentEl.innerHTML = `<span class="pulse-current-label">Current question · ${data.responseCount} response${data.responseCount === 1 ? '' : 's'}</span>${escapeHtml(data.question)}`;
+          currentEl.dataset.questionText = data.question;
         } else {
           currentEl.classList.add('waiting');
           currentEl.innerHTML = `<span class="pulse-current-label">Current question</span>No question published yet.`;
+          currentEl.dataset.questionText = '';
         }
       })
       .catch((err) => {
@@ -851,6 +855,55 @@
         inputEl.value = '';
         statusEl.textContent = 'Question published.';
         document.getElementById(`pulse-box-${part}`).classList.remove('show');
+        refreshPulseState(part);
+      })
+      .catch((err) => {
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
+  }
+
+  // First click (empty input) loads the current question into the box for
+  // editing; second click (input has text) saves it in place — unlike
+  // Publish, this keeps responses already collected still counted, since
+  // the row's timestamp is untouched.
+  function editPulseQuestion(part) {
+    const inputEl = document.getElementById(`pulse-question-${part}`);
+    const statusEl = document.getElementById(`pulse-status-${part}`);
+    const currentEl = document.getElementById(`pulse-current-${part}`);
+
+    if (!inputEl.value.trim()) {
+      const currentText = currentEl.dataset.questionText || '';
+      if (!currentText) {
+        statusEl.classList.add('error');
+        statusEl.textContent = 'No question to edit yet — use Publish to start one.';
+        return;
+      }
+      inputEl.value = currentText;
+      inputEl.focus();
+      statusEl.classList.remove('error');
+      statusEl.textContent = 'Edit the text above, then click "Edit current" again to save.';
+      return;
+    }
+
+    const question = inputEl.value.trim();
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Saving edit…';
+
+    fetch('/api/live-pulse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ part, action: 'edit-question', question }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error}`;
+          return;
+        }
+        inputEl.value = '';
+        statusEl.textContent = 'Question updated — responses already collected are kept.';
         refreshPulseState(part);
       })
       .catch((err) => {

@@ -97,6 +97,24 @@ async function appendRow(accessToken, spreadsheetId, type, text) {
   if (!res.ok) throw new Error(data.error?.message || "Failed to append row");
 }
 
+// Overwrites just the text of one existing row in place (column C only —
+// type and timestamp untouched), used by "edit-question" to fix a question
+// without starting a new round. rowNumber is 1-based, matching the sheet's
+// actual row (data starts at row 1, no header row).
+async function updateRowText(accessToken, spreadsheetId, rowNumber, text) {
+  const range = `Sheet1!C${rowNumber}`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(
+    range
+  )}?valueInputOption=RAW`;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ values: [[text]] }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || "Failed to update row");
+}
+
 // The current question is the last QUESTION row; its responses are every
 // RESPONSE row timestamped after it. Responses submitted before any
 // question was ever published, or after a since-superseded one, are simply
@@ -115,6 +133,15 @@ function computeState(rows) {
     ? rows.filter((r) => r[0] === "RESPONSE" && r[1] > questionTimestamp).map((r) => r[2] || "")
     : [];
   return { question: questionText, responses };
+}
+
+// 1-based sheet row number of the last QUESTION row, or null if none exists
+// yet — used by "edit-question" to know which row to overwrite in place.
+function findLastQuestionRowNumber(rows) {
+  for (let i = rows.length - 1; i >= 0; i--) {
+    if (rows[i][0] === "QUESTION") return i + 1;
+  }
+  return null;
 }
 
 // Same 3x3 micro-intervention move library used in cohort-report.js,
@@ -251,7 +278,7 @@ export async function onRequestPost(context) {
     if (![1, 2].includes(part)) {
       return new Response(JSON.stringify({ error: "part must be 1 or 2" }), { status: 400, headers: CORS });
     }
-    if (!["publish-question", "get-state", "submit-response", "synthesize"].includes(action)) {
+    if (!["publish-question", "edit-question", "get-state", "submit-response", "synthesize"].includes(action)) {
       return new Response(JSON.stringify({ error: "invalid action" }), { status: 400, headers: CORS });
     }
 
@@ -264,6 +291,24 @@ export async function onRequestPost(context) {
         return new Response(JSON.stringify({ error: "question is required" }), { status: 400, headers: CORS });
       }
       await appendRow(accessToken, spreadsheetId, "QUESTION", question);
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: CORS });
+    }
+
+    // Fixes the current question's text in place (e.g. a typo) without
+    // starting a new round — unlike publish-question, this keeps every
+    // response already collected still counted, since the row's timestamp
+    // (what responses are compared against) is untouched.
+    if (action === "edit-question") {
+      const question = typeof body.question === "string" ? body.question.trim() : "";
+      if (!question) {
+        return new Response(JSON.stringify({ error: "question is required" }), { status: 400, headers: CORS });
+      }
+      const rows = await readRows(accessToken, spreadsheetId);
+      const rowNumber = findLastQuestionRowNumber(rows);
+      if (!rowNumber) {
+        return new Response(JSON.stringify({ error: "No question published yet for this part — use Publish instead." }), { status: 400, headers: CORS });
+      }
+      await updateRowText(accessToken, spreadsheetId, rowNumber, question);
       return new Response(JSON.stringify({ success: true }), { status: 200, headers: CORS });
     }
 
