@@ -83,6 +83,26 @@
   .report-box .pill { display: inline-block; font-size: 10.5px; font-weight: 500; letter-spacing: .02em; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 2px 10px; margin-left: 8px; }
   .report-box a { color: #2563eb; text-decoration: underline; text-underline-offset: 2px; }
   .report-box a:hover { color: #1d4ed8; }
+
+  .rubric-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12.5px; }
+  .rubric-table th { text-align: left; font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+  .rubric-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  .rubric-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .upload-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .upload-row input[type="file"] { font-size: 13px; font-family: inherit; }
+
+  .grade-summary { font-size: 13.5px; color: var(--muted); margin: 4px 0 18px; }
+  .score-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .score-table th { text-align: left; font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .score-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .score-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 100px; font-size: 11.5px; font-weight: 700; }
+  .score-pill.level-1 { background: var(--bad-bg); color: var(--bad); }
+  .score-pill.level-2 { background: var(--amber-bg); color: var(--amber); }
+  .score-pill.level-3 { background: var(--good-bg); color: var(--good); }
+  .score-evidence { font-size: 11.5px; color: var(--subtle); margin-top: 3px; max-width: 260px; }
+  .grade-warning { font-size: 12.5px; color: var(--amber); background: var(--amber-bg); border-radius: var(--radius); padding: 10px 14px; margin-top: 14px; }
+
   .report-actions { display: none; gap: 12px; }
   .report-actions.show { display: flex; }
   .btn {
@@ -226,6 +246,23 @@
     <div class="report-actions" id="report-actions">
       <button class="btn" onclick="emailCurrentReport()">Email this report</button>
     </div>
+  </div>
+
+  <p class="section-title">Assignments</p>
+  <p class="section-desc">Upload a zip of student notebook submissions (Canvas's bulk-download format — <code>.ipynb</code>/<code>.ipy</code> files named <code>student_id_submissionid_filename</code>). Each submission is graded individually against the 3-item rubric below, then synthesised into cohort-level findings with Clarify/Apply/Challenge recommendations. AI suggestions only — review and finalize grades yourself; nothing is written back to Canvas.</p>
+  <div class="instructor-panel">
+    <table class="rubric-table">
+      <tr><th>Dimension</th><th>1 — Developing</th><th>2 — Competent</th><th>3 — Strong</th></tr>
+      <tr><td>Model Application</td><td>Model/process is incomplete or inappropriate</td><td>Appropriate model is implemented reasonably</td><td>Model is implemented correctly with appropriate choices and checks</td></tr>
+      <tr><td>Interpretation &amp; Evaluation</td><td>Results mainly reported with little interpretation</td><td>Key results and model performance are interpreted</td><td>Models/results are critically compared and limitations considered</td></tr>
+      <tr><td>Decision Insight</td><td>Limited connection to the business problem</td><td>Findings translated into a reasonable conclusion</td><td>Findings translated into clear, evidence-based business implications</td></tr>
+    </table>
+    <div class="upload-row">
+      <input type="file" id="submissions-file" accept=".zip">
+      <button class="stage-btn" id="grade-btn" onclick="runGradeSubmissions()">Grade submissions</button>
+    </div>
+    <div class="report-status" id="grade-status"></div>
+    <div class="report-box" id="grade-box"></div>
   </div>
 </div>
 
@@ -580,6 +617,94 @@
       .replace(/^\*\s+/gm, '• ');
     const url = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(currentReport.subject)}&body=${encodeURIComponent(plain)}`;
     window.open(url, '_blank');
+  }
+
+  const RUBRIC_DIMENSIONS = [
+    { id: 'model_application', label: 'Model Application' },
+    { id: 'interpretation', label: 'Interpretation & Evaluation' },
+    { id: 'decision_insight', label: 'Decision Insight' },
+  ];
+
+  function runGradeSubmissions() {
+    const fileInput = document.getElementById('submissions-file');
+    const btn = document.getElementById('grade-btn');
+    const statusEl = document.getElementById('grade-status');
+    const boxEl = document.getElementById('grade-box');
+
+    const file = fileInput.files[0];
+    if (!file) {
+      statusEl.classList.add('error');
+      statusEl.textContent = 'Choose a .zip file first.';
+      return;
+    }
+
+    btn.disabled = true;
+    statusEl.classList.remove('error');
+    statusEl.textContent = `Unzipping and grading ${file.name} — this runs one AI call per submission, so it can take a minute…`;
+    boxEl.classList.remove('show');
+
+    const formData = new FormData();
+    formData.append('submissions', file);
+
+    fetch('/api/grade-submissions', { method: 'POST', body: formData })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        btn.disabled = false;
+        if (!ok || data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error || 'grading failed'}`;
+          return;
+        }
+        statusEl.textContent = `Graded ${data.gradedCount} of ${data.totalFilesInZip} file(s) in the zip.`;
+        boxEl.innerHTML = renderGradeResults(data);
+        boxEl.classList.add('show');
+      })
+      .catch((err) => {
+        btn.disabled = false;
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
+  }
+
+  function renderGradeResults(data) {
+    let html = '';
+
+    if (data.cohortSynthesis) {
+      html += `<p class="summary-heading">Cohort synthesis</p>`;
+      html += formatReport(data.cohortSynthesis);
+    }
+
+    const graded = data.perStudent.filter((r) => r.scores);
+    const failed = data.perStudent.filter((r) => !r.scores);
+
+    if (graded.length) {
+      html += `<p class="summary-heading">Per-student scores</p>`;
+      const rows = graded.map((r) => {
+        const cells = RUBRIC_DIMENSIONS.map((d) => {
+          const score = r.scores[d.id];
+          const evidence = (r.evidence && r.evidence[d.id]) || '';
+          return `<td><span class="score-pill level-${score}">${score}</span><div class="score-evidence">${escapeHtml(evidence)}</div></td>`;
+        }).join('');
+        return `<tr><td>${escapeHtml(r.studentKey)}</td>${cells}<td>${escapeHtml(r.overallFeedback || '')}</td></tr>`;
+      }).join('');
+      html += `<table class="score-table"><tr><th>Student</th><th>Model App.</th><th>Interpretation</th><th>Decision Insight</th><th>Feedback</th></tr>${rows}</table>`;
+    }
+
+    const warnings = [];
+    if (failed.length) {
+      warnings.push(`${failed.length} submission(s) could not be graded: ${failed.map((f) => escapeHtml(f.studentKey)).join(', ')}.`);
+    }
+    if (data.unparsable && data.unparsable.length) {
+      warnings.push(`${data.unparsable.length} file(s) were not valid/parsable notebooks: ${data.unparsable.map(escapeHtml).join(', ')}.`);
+    }
+    if (data.unsupportedFiles && data.unsupportedFiles.length) {
+      warnings.push(`${data.unsupportedFiles.length} file(s) in the zip were skipped (not .ipynb/.ipy): ${data.unsupportedFiles.map(escapeHtml).join(', ')}.`);
+    }
+    if (warnings.length) {
+      html += `<div class="grade-warning">${warnings.join('<br>')}</div>`;
+    }
+
+    return html;
   }
 </script>
 
