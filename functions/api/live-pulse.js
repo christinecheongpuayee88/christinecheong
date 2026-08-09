@@ -118,7 +118,11 @@ async function updateRowText(accessToken, spreadsheetId, rowNumber, text) {
 // The current question is the last QUESTION row; its responses are every
 // RESPONSE row timestamped after it. Responses submitted before any
 // question was ever published, or after a since-superseded one, are simply
-// excluded — no cleanup needed when a new question is published.
+// excluded — no cleanup needed when a new question is published. THEMES
+// rows work the same way: the latest one timestamped after the current
+// question is "the results for this question" — written once per
+// synthesize call (see onRequestPost), student-visible, recommendation
+// section stripped out before it's ever persisted.
 function computeState(rows) {
   let questionText = null;
   let questionTimestamp = null;
@@ -132,7 +136,16 @@ function computeState(rows) {
   const responses = questionTimestamp
     ? rows.filter((r) => r[0] === "RESPONSE" && r[1] > questionTimestamp).map((r) => r[2] || "")
     : [];
-  return { question: questionText, responses };
+  let themesText = null;
+  if (questionTimestamp) {
+    for (let i = rows.length - 1; i >= 0; i--) {
+      if (rows[i][0] === "THEMES" && rows[i][1] > questionTimestamp) {
+        themesText = rows[i][2] || "";
+        break;
+      }
+    }
+  }
+  return { question: questionText, responses, themesText };
 }
 
 // 1-based sheet row number of the last QUESTION row, or null if none exists
@@ -323,9 +336,9 @@ export async function onRequestPost(context) {
 
     if (action === "get-state") {
       const rows = await readRows(accessToken, spreadsheetId);
-      const { question, responses } = computeState(rows);
+      const { question, responses, themesText } = computeState(rows);
       return new Response(
-        JSON.stringify({ question, responseCount: responses.length }),
+        JSON.stringify({ question, responseCount: responses.length, themes: themesText }),
         { status: 200, headers: CORS }
       );
     }
@@ -359,6 +372,24 @@ export async function onRequestPost(context) {
     }
 
     const synthesis = linkifySynthesis(llmData.choices[0].message.content);
+
+    // Persist a student-visible copy: just the "Emerging themes" bullets,
+    // nothing else. The heading/question/response-count are dropped since
+    // the student page already shows those separately, and the
+    // "Recommended move" section is dropped entirely — that's
+    // instructor-facing facilitation guidance, not meant for the cohort to
+    // see. The full synthesis (with the recommendation) is only ever
+    // returned here, to the instructor panel.
+    const themesIdx = synthesis.indexOf("### Emerging themes");
+    const recommendedIdx = synthesis.indexOf("### Recommended move");
+    const themesOnly =
+      themesIdx !== -1
+        ? synthesis.slice(themesIdx, recommendedIdx !== -1 ? recommendedIdx : undefined).trim()
+        : "";
+    if (themesOnly) {
+      await appendRow(accessToken, spreadsheetId, "THEMES", themesOnly);
+    }
+
     return new Response(
       JSON.stringify({ question, responseCount: responses.length, synthesis }),
       { status: 200, headers: CORS }

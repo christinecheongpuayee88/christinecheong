@@ -77,6 +77,16 @@
   .status.error { color: #dc2626; }
 
   .refresh-row { text-align: center; margin-top: 24px; }
+
+  .results-card {
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--good-bg);
+    padding: 20px; margin-top: 28px;
+  }
+  .results-label { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--good); margin-bottom: 10px; }
+  .results-card h3 { display: none; }
+  .results-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .results-card li { font-size: 14px; line-height: 1.5; }
+  .results-card strong { color: var(--text); }
 </style>
 </head>
 <body>
@@ -96,6 +106,11 @@
     <button class="btn-ghost" onclick="loadState()">Refresh</button>
   </div>
   <div class="status" id="status"></div>
+
+  <div class="results-card" id="results-card" style="display:none">
+    <div class="results-label">Results so far</div>
+    <div id="results-content"></div>
+  </div>
 </div>
 
 <script>
@@ -106,6 +121,34 @@
   const submitBtn = document.getElementById('submit-btn');
   const statusEl = document.getElementById('status');
   const partLabelEl = document.getElementById('part-label');
+  const resultsCard = document.getElementById('results-card');
+  const resultsContent = document.getElementById('results-content');
+
+  function inlineFormat(s) {
+    return s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  function formatThemes(text) {
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
+      if (line.startsWith('### ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<h3>${inlineFormat(line.slice(4))}</h3>`;
+      } else if (line.startsWith('* ') || line.startsWith('- ')) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += `<li>${inlineFormat(line.slice(2))}</li>`;
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<p>${inlineFormat(line)}</p>`;
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
 
   if (![1, 2].includes(part)) {
     questionEl.textContent = 'Missing or invalid part — this link should include ?part=1 or ?part=2.';
@@ -137,6 +180,13 @@
         questionEl.classList.add('waiting');
         inputEl.disabled = true;
         submitBtn.disabled = true;
+      }
+
+      if (data.themes) {
+        resultsContent.innerHTML = formatThemes(data.themes);
+        resultsCard.style.display = '';
+      } else {
+        resultsCard.style.display = 'none';
       }
     } catch (err) {
       statusEl.textContent = err.message;
