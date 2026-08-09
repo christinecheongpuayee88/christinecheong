@@ -464,7 +464,12 @@ Structure your response exactly as follows:
 ## 📋 Post-Class Cohort Intelligence Report
 
 ### 1. Cohort Insights (from Live Sensing)
-* [2-4 bullets of genuine interpretive insight comparing the reflection data above against the Beginning-of-Class Report above — bold a short topic header at the start of each bullet, then elaborate after a colon, e.g. "**Confidence Growth:** average confidence rose from 2.4 to 4.1 over the day, the strongest jump among the beginner segment." Cover different angles across the bullets (confidence trend, whether stated Beginning concerns/goals were addressed, how application-ready the cohort now sounds vs. their Day-start goals) — don't repeat the same angle twice. Insight, not a restated breakdown — do not list raw confidence counts or the full distribution; that comparison is already charted live on the instructor dashboard.]
+* [2-4 bullets of genuine interpretive insight comparing the reflection data above against the Beginning-of-Class Report above — bold a short topic header at the start of each bullet, then elaborate after a colon, e.g. "**Confidence Growth:** average confidence rose from 2.4 to 4.1 over the day, the strongest jump among the beginner segment." Cover different angles across the bullets, drawn from the "remaining questions" free-text responses in the raw reflection data above as well as the confidence/goals comparison:
+  - **Confidence trend:** Beginning vs Final confidence, and whether stated Beginning concerns/goals were addressed by day's end.
+  - **Still needs clarifying:** name the specific concept(s)/model(s) that recur in the remaining-questions responses as genuinely unclear (e.g. a formula or distinction respondents are still asking about), not just "some confusion."
+  - **Ready to apply more:** name what respondents are asking for more hands-on practice with — where they want guided repetition, not new concepts.
+  - **Ready to be challenged:** name any advanced/curiosity-driven questions that go beyond today's material (e.g. asking about GARCH, RNNs, or other extensions) — signal for what the next cohort or a follow-up session could push further.
+  Only include a "Still needs clarifying" / "Ready to apply more" / "Ready to be challenged" bullet if the remaining-questions data actually supports it — don't force a bullet with no real evidence. Insight, not a restated breakdown — do not list raw confidence counts, the full remaining-questions category breakdown, or its response counts; those are already charted live on the instructor dashboard.]
 
 ### 2. AI-Generated Teaching Recommendations
 

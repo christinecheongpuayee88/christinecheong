@@ -57,6 +57,12 @@
     display: flex; flex-direction: column; gap: 18px;
   }
   .instructor-stages { display: flex; gap: 10px; flex-wrap: wrap; }
+  .sheet-links { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+  .sheet-link {
+    font-size: 12.5px; font-weight: 500; color: var(--muted); background: var(--surface);
+    border: 1px solid var(--border); padding: 6px 14px; border-radius: 100px; transition: all .15s;
+  }
+  .sheet-link:hover { border-color: var(--text); color: var(--text); }
   .stage-btn {
     font-family: inherit; font-size: 13.5px; font-weight: 500;
     color: var(--text); background: var(--bg); border: 1px solid var(--border);
@@ -213,6 +219,13 @@
   <p class="eyebrow">Instructor only · not linked from the workshop page · v3 with Clarify/Apply/Challenge reports</p>
   <h1>Cohort sensing reports</h1>
   <p class="desc">Live stats and AI-generated teaching recommendations, computed from this cohort's actual responses.</p>
+
+  <div class="sheet-links">
+    <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/15owxaxymBo6DLAAhQsaQkaCsnX-P-Szvfg45H9egB3o/edit" target="_blank" rel="noopener">📄 1 · Beginning sheet ↗</a>
+    <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1-RH_Zt7N0YLOHRL0DIxW3aLrX9m6YnlUgZC2kEdZ138/edit" target="_blank" rel="noopener">📄 2 · Checkpoint 1 sheet ↗</a>
+    <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1za_z495GBwSYSEEBW81bRWMTNUoXso1cqhRYvaaLP_g/edit" target="_blank" rel="noopener">📄 3 · Checkpoint 2 sheet ↗</a>
+    <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1eB2oPxMscUdh2uAN1ZKPYT-dI5k0_nJgdEWwneCIZZY/edit" target="_blank" rel="noopener">📄 4 · Final sheet ↗</a>
+  </div>
 
   <p class="section-title">Live cohort dashboard</p>
   <p class="section-desc">Instant stats computed directly from responses — numeric stats are deterministic; open-ended answers are summarized by AI. Checkpoint stages also show a Teaching Navigator (🟢 ready · 🟠 quick recap · 🔴 revisit · 🔵 go deeper). Refresh anytime during class.</p>
