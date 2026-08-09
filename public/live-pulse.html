@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Live Discussion Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #ffffff;
+    --surface:  #f6f6f5;
+    --border:   #e8e8e6;
+    --text:     #181816;
+    --muted:    #6b6b67;
+    --subtle:   #9b9b96;
+    --good:     #059669;
+    --good-bg:  #d1fae5;
+    --info:     #2563eb;
+    --info-bg:  #dbeafe;
+    --radius:   3px;
+  }
+
+  html { font-size: 18px; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .wrap { max-width: 460px; width: 100%; margin: 0 auto; padding: 40px 20px 60px; }
+
+  .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--subtle); margin-bottom: 8px; text-align: center; }
+  h1 { font-size: 22px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 28px; text-align: center; }
+
+  .question-card {
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
+    padding: 22px 20px; margin-bottom: 20px;
+  }
+  .question-label { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--info); margin-bottom: 8px; }
+  .question-text { font-size: 17px; font-weight: 500; line-height: 1.5; }
+  .question-text.waiting { color: var(--subtle); font-weight: 400; font-style: italic; }
+
+  textarea {
+    width: 100%; font-family: inherit; font-size: 15px; color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px;
+    resize: vertical; min-height: 90px; margin-bottom: 12px;
+  }
+  textarea:focus { outline: none; border-color: var(--info); }
+  textarea:disabled { background: var(--surface); color: var(--subtle); }
+
+  .row { display: flex; gap: 10px; align-items: center; }
+
+  button {
+    font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; border-radius: 100px;
+    padding: 10px 22px; border: none; transition: opacity .15s;
+  }
+  button:disabled { opacity: .5; cursor: wait; }
+  .btn-primary { background: var(--text); color: var(--bg); }
+  .btn-primary:hover:not(:disabled) { opacity: .8; }
+  .btn-ghost { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover:not(:disabled) { border-color: var(--text); color: var(--text); }
+
+  .status { font-size: 13px; color: var(--subtle); margin-top: 14px; text-align: center; }
+  .status.success { color: var(--good); }
+  .status.error { color: #dc2626; }
+
+  .refresh-row { text-align: center; margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="eyebrow" id="part-label">Live Discussion Pulse</p>
+  <h1>💬 Live Discussion Pulse</h1>
+
+  <div class="question-card">
+    <div class="question-label">Current question</div>
+    <div class="question-text waiting" id="question-text">Loading…</div>
+  </div>
+
+  <textarea id="response-input" placeholder="Type your response…" disabled></textarea>
+  <div class="row">
+    <button class="btn-primary" id="submit-btn" onclick="submitResponse()" disabled>Submit</button>
+    <button class="btn-ghost" onclick="loadState()">Refresh</button>
+  </div>
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const part = Number(params.get('part'));
+  const questionEl = document.getElementById('question-text');
+  const inputEl = document.getElementById('response-input');
+  const submitBtn = document.getElementById('submit-btn');
+  const statusEl = document.getElementById('status');
+  const partLabelEl = document.getElementById('part-label');
+
+  if (![1, 2].includes(part)) {
+    questionEl.textContent = 'Missing or invalid part — this link should include ?part=1 or ?part=2.';
+    partLabelEl.textContent = 'Live Discussion Pulse';
+  } else {
+    partLabelEl.textContent = 'Live Discussion Pulse · Part ' + part;
+  }
+
+  async function loadState() {
+    if (![1, 2].includes(part)) return;
+    statusEl.textContent = '';
+    statusEl.className = 'status';
+    try {
+      const res = await fetch('/api/live-pulse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ part, action: 'get-state' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load');
+
+      if (data.question) {
+        questionEl.textContent = data.question;
+        questionEl.classList.remove('waiting');
+        inputEl.disabled = false;
+        submitBtn.disabled = false;
+      } else {
+        questionEl.textContent = 'Waiting for the trainer to ask a question…';
+        questionEl.classList.add('waiting');
+        inputEl.disabled = true;
+        submitBtn.disabled = true;
+      }
+    } catch (err) {
+      statusEl.textContent = err.message;
+      statusEl.className = 'status error';
+    }
+  }
+
+  async function submitResponse() {
+    const response = inputEl.value.trim();
+    if (!response) return;
+    submitBtn.disabled = true;
+    statusEl.textContent = '';
+    statusEl.className = 'status';
+    try {
+      const res = await fetch('/api/live-pulse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ part, action: 'submit-response', response }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to submit');
+      inputEl.value = '';
+      statusEl.textContent = '✓ Response submitted';
+      statusEl.className = 'status success';
+    } catch (err) {
+      statusEl.textContent = err.message;
+      statusEl.className = 'status error';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  }
+
+  loadState();
+</script>
+
+</body>
+</html>

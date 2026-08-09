@@ -73,6 +73,30 @@
   .stage-btn.done { color: var(--good); border-color: var(--good); background: var(--good-bg); }
   .report-status { font-size: 13.5px; color: var(--subtle); }
   .report-status.error { color: var(--bad); }
+
+  .pulse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 700px) { .pulse-grid { grid-template-columns: 1fr; } }
+  .pulse-panel {
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg);
+    padding: 20px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .pulse-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .pulse-panel-title { font-size: 14.5px; font-weight: 600; }
+  .pulse-open-link { font-size: 12px; color: var(--info); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+  .pulse-current {
+    font-size: 13px; background: var(--surface); border-radius: var(--radius); padding: 10px 12px; color: var(--text);
+  }
+  .pulse-current .pulse-current-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--subtle); margin-bottom: 4px; }
+  .pulse-current.waiting { color: var(--subtle); font-style: italic; }
+  .pulse-row { display: flex; gap: 8px; }
+  .pulse-row input[type="text"] {
+    flex: 1; font-family: inherit; font-size: 13.5px; padding: 8px 12px;
+    border: 1px solid var(--border); border-radius: var(--radius); color: var(--text);
+  }
+  .pulse-row input[type="text"]:focus { outline: none; border-color: var(--info); }
+  .pulse-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pulse-status { font-size: 12.5px; color: var(--subtle); }
+  .pulse-status.error { color: var(--bad); }
   .report-box {
     display: none; border: 1px solid var(--border); border-radius: var(--radius);
     background: var(--bg); padding: 24px; font-size: 14.5px; line-height: 1.7;
@@ -258,6 +282,48 @@
     <div class="report-box" id="report-box"></div>
     <div class="report-actions" id="report-actions">
       <button class="btn" onclick="emailCurrentReport()">Email this report</button>
+    </div>
+  </div>
+
+  <p class="section-title">Live Discussion Pulse</p>
+  <p class="section-desc">Ask an ad-hoc question mid-workshop and see the cohort's reasoning, not just 2–3 vocal answers. Publish a question, share the student page link, then refresh to check responses and get an AI synthesis — themes plus one recommended 🔴 Clarify / 🟢 Apply / 🔵 Challenge move. AI only synthesizes for you here; it never replies to students.</p>
+  <div class="instructor-panel">
+    <div class="pulse-grid">
+      <div class="pulse-panel">
+        <div class="pulse-panel-head">
+          <span class="pulse-panel-title">Part 1 · SARIMA</span>
+          <a class="pulse-open-link" href="/live-pulse.html?part=1" target="_blank" rel="noopener">Open student page ↗</a>
+        </div>
+        <div class="pulse-current waiting" id="pulse-current-1">Loading…</div>
+        <div class="pulse-row">
+          <input type="text" id="pulse-question-1" placeholder="Type an ad-hoc question…">
+          <button class="stage-btn" onclick="publishPulseQuestion(1)">Publish</button>
+        </div>
+        <div class="pulse-actions">
+          <button class="stage-btn" onclick="refreshPulseState(1)">Refresh</button>
+          <button class="stage-btn" id="pulse-synth-btn-1" onclick="synthesizePulse(1)">Get AI synthesis</button>
+        </div>
+        <div class="pulse-status" id="pulse-status-1"></div>
+        <div class="report-box" id="pulse-box-1"></div>
+      </div>
+
+      <div class="pulse-panel">
+        <div class="pulse-panel-head">
+          <span class="pulse-panel-title">Part 2 · ARIMAX</span>
+          <a class="pulse-open-link" href="/live-pulse.html?part=2" target="_blank" rel="noopener">Open student page ↗</a>
+        </div>
+        <div class="pulse-current waiting" id="pulse-current-2">Loading…</div>
+        <div class="pulse-row">
+          <input type="text" id="pulse-question-2" placeholder="Type an ad-hoc question…">
+          <button class="stage-btn" onclick="publishPulseQuestion(2)">Publish</button>
+        </div>
+        <div class="pulse-actions">
+          <button class="stage-btn" onclick="refreshPulseState(2)">Refresh</button>
+          <button class="stage-btn" id="pulse-synth-btn-2" onclick="synthesizePulse(2)">Get AI synthesis</button>
+        </div>
+        <div class="pulse-status" id="pulse-status-2"></div>
+        <div class="report-box" id="pulse-box-2"></div>
+      </div>
     </div>
   </div>
 
@@ -729,6 +795,105 @@
 
     return html;
   }
+
+  function refreshPulseState(part) {
+    const currentEl = document.getElementById(`pulse-current-${part}`);
+    const statusEl = document.getElementById(`pulse-status-${part}`);
+    statusEl.classList.remove('error');
+    statusEl.textContent = '';
+
+    fetch('/api/live-pulse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ part, action: 'get-state' }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error}`;
+          return;
+        }
+        if (data.question) {
+          currentEl.classList.remove('waiting');
+          currentEl.innerHTML = `<span class="pulse-current-label">Current question · ${data.responseCount} response${data.responseCount === 1 ? '' : 's'}</span>${escapeHtml(data.question)}`;
+        } else {
+          currentEl.classList.add('waiting');
+          currentEl.innerHTML = `<span class="pulse-current-label">Current question</span>No question published yet.`;
+        }
+      })
+      .catch((err) => {
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
+  }
+
+  function publishPulseQuestion(part) {
+    const inputEl = document.getElementById(`pulse-question-${part}`);
+    const statusEl = document.getElementById(`pulse-status-${part}`);
+    const question = inputEl.value.trim();
+    if (!question) return;
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Publishing…';
+
+    fetch('/api/live-pulse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ part, action: 'publish-question', question }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error}`;
+          return;
+        }
+        inputEl.value = '';
+        statusEl.textContent = 'Question published.';
+        document.getElementById(`pulse-box-${part}`).classList.remove('show');
+        refreshPulseState(part);
+      })
+      .catch((err) => {
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
+  }
+
+  function synthesizePulse(part) {
+    const btn = document.getElementById(`pulse-synth-btn-${part}`);
+    const statusEl = document.getElementById(`pulse-status-${part}`);
+    const boxEl = document.getElementById(`pulse-box-${part}`);
+    btn.disabled = true;
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Synthesizing responses…';
+    boxEl.classList.remove('show');
+
+    fetch('/api/live-pulse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ part, action: 'synthesize' }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        btn.disabled = false;
+        if (data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error}`;
+          return;
+        }
+        statusEl.textContent = `Synthesized ${data.responseCount} response${data.responseCount === 1 ? '' : 's'}.`;
+        boxEl.innerHTML = formatReport(data.synthesis);
+        boxEl.classList.add('show');
+      })
+      .catch((err) => {
+        btn.disabled = false;
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
+  }
+
+  refreshPulseState(1);
+  refreshPulseState(2);
 </script>
 
 </body>
