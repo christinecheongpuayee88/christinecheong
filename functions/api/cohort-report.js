@@ -312,7 +312,11 @@ Structure your response exactly as follows:
 
 Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
 
-### 3. Top Teaching Moves Now
+### 3. AI-Generated Teaching Recommendations
+
+${TEACHING_RECS_BLOCK}
+
+### 4. Top Teaching Moves Now
 
 ${clarifyApplyChallengeBlock(2, "the topics above")}
 
@@ -356,7 +360,11 @@ Structure your response exactly as follows:
 
 Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
 
-### 3. Top Teaching Moves Now
+### 3. AI-Generated Teaching Recommendations
+
+${TEACHING_RECS_BLOCK}
+
+### 4. Top Teaching Moves Now
 
 ${clarifyApplyChallengeBlock(3, "the topics above")}
 
