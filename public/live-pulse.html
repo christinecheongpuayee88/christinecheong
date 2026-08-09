@@ -78,6 +78,13 @@
 
   .refresh-row { text-align: center; margin-top: 24px; }
 
+  .submitted-card {
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--info-bg);
+    padding: 16px 18px; margin-top: 16px;
+  }
+  .submitted-label { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--info); margin-bottom: 6px; }
+  .submitted-text { font-size: 14px; color: var(--text); line-height: 1.5; }
+
   .results-card {
     border: 1px solid var(--border); border-radius: var(--radius); background: var(--good-bg);
     padding: 20px; margin-top: 28px;
@@ -107,6 +114,11 @@
   </div>
   <div class="status" id="status"></div>
 
+  <div class="submitted-card" id="submitted-card" style="display:none">
+    <div class="submitted-label">You submitted</div>
+    <div class="submitted-text" id="submitted-text"></div>
+  </div>
+
   <div class="results-card" id="results-card" style="display:none">
     <div class="results-label">Results so far</div>
     <div id="results-content"></div>
@@ -123,6 +135,8 @@
   const partLabelEl = document.getElementById('part-label');
   const resultsCard = document.getElementById('results-card');
   const resultsContent = document.getElementById('results-content');
+  const submittedCard = document.getElementById('submitted-card');
+  const submittedTextEl = document.getElementById('submitted-text');
 
   function inlineFormat(s) {
     return s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -149,6 +163,8 @@
     if (inList) html += '</ul>';
     return html;
   }
+
+  let lastSubmittedForQuestion = null;
 
   if (![1, 2].includes(part)) {
     questionEl.textContent = 'Missing or invalid part — this link should include ?part=1 or ?part=2.';
@@ -182,6 +198,13 @@
         submitBtn.disabled = true;
       }
 
+      // Hide a leftover "You submitted" echo once the question has moved
+      // on (published or edited to something new) — it was an answer to a
+      // question that's no longer current.
+      if (data.question !== lastSubmittedForQuestion) {
+        submittedCard.style.display = 'none';
+      }
+
       if (data.themes) {
         resultsContent.innerHTML = formatThemes(data.themes);
         resultsCard.style.display = '';
@@ -211,6 +234,9 @@
       inputEl.value = '';
       statusEl.textContent = '✓ Response submitted';
       statusEl.className = 'status success';
+      submittedTextEl.textContent = response;
+      submittedCard.style.display = '';
+      lastSubmittedForQuestion = questionEl.textContent;
     } catch (err) {
       statusEl.textContent = err.message;
       statusEl.className = 'status error';
