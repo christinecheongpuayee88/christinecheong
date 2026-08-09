@@ -188,12 +188,41 @@ const TOPIC_LINKS = {
   },
 };
 
-// Real, live tools — not placeholders. "What-if question" has none; it's a
+// Real, live tools — not placeholders. "What-if scenario" has none; it's a
 // live discussion prompt with no resource to point to.
 const CHALLENGE_LINKS = {
   "Multiple perspectives": { url: "https://christinecheong.com/agents-hub/perspectives-agent.html", label: "Multiple Perspectives Agent" },
-  "Practitioner critique": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
+  "Challenge assumptions": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
 };
+
+// The 3×3 MVP micro-intervention library: each level's 3 fixed move types,
+// each deep-linking to its own placeholder card on micro-interventions.html
+// (public/micro-interventions.html) so an instructor who clicks the move
+// name sees exactly how to run it, in under a minute, without changing the
+// lesson plan. These are distinct from CHALLENGE_LINKS above, which are the
+// live interactive tools for two of the Challenge-level moves.
+const MICRO_INTERVENTIONS_URL = "https://christinecheong.com/micro-interventions";
+const CLARIFY_MOVES = {
+  "Quick quiz": `${MICRO_INTERVENTIONS_URL}#clarify-quick-quiz`,
+  "Misconception check": `${MICRO_INTERVENTIONS_URL}#clarify-misconception-check`,
+  "Worked example": `${MICRO_INTERVENTIONS_URL}#clarify-worked-example`,
+};
+const APPLY_MOVES = {
+  "Mini case": `${MICRO_INTERVENTIONS_URL}#apply-mini-case`,
+  "Think–Pair–Share": `${MICRO_INTERVENTIONS_URL}#apply-think-pair-share`,
+  "Different context": `${MICRO_INTERVENTIONS_URL}#apply-different-context`,
+};
+const CHALLENGE_MOVES = {
+  "What-if scenario": `${MICRO_INTERVENTIONS_URL}#challenge-what-if`,
+  "Multiple perspectives": `${MICRO_INTERVENTIONS_URL}#challenge-multiple-perspectives`,
+  "Challenge assumptions": `${MICRO_INTERVENTIONS_URL}#challenge-assumptions`,
+};
+
+function buildMoveLinksBlock(moves) {
+  return Object.entries(moves)
+    .map(([move, url]) => `- "${move}" → ${url} (link text must be exactly "${move}")`)
+    .join("\n");
+}
 
 // Fallback resources for the 6-category teaching recommendations, used when
 // a recommendation isn't about one specific checkpoint topic (e.g. a
@@ -252,14 +281,24 @@ function clarifyApplyChallengeBlock(stage, evidenceSource) {
 Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
 ${buildTopicLinksBlock(topics)}
 
-CHALLENGE reference links (only "Multiple perspectives" and "Practitioner critique" have one; "What-if question" has none — leave it as plain text with no link):
+MICRO-INTERVENTION MOVE reference links — for each bullet, pick exactly one move from the matching level below and link its name to this exact URL (these are separate from, and additional to, the topic reference links above):
+CLARIFY moves:
+${buildMoveLinksBlock(CLARIFY_MOVES)}
+APPLY moves:
+${buildMoveLinksBlock(APPLY_MOVES)}
+CHALLENGE moves:
+${buildMoveLinksBlock(CHALLENGE_MOVES)}
+
+CHALLENGE live-tool links (only "Multiple perspectives" and "Challenge assumptions" have one; "What-if scenario" has none — its move-name link above is enough, do not add a second link for it):
 ${buildChallengeLinksBlock()}
 
 For each chosen topic, use exactly this format:
 
-* 🔴 **CLARIFY — [topic]:** [pick one: Visual explanation / Worked example / Quick concept recap, describe the specific action in one sentence, ${evidenceNote}]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
-* 🟢 **APPLY — [topic]:** [pick one: Mini case / Guided exercise / Colab activity, describe the specific action tied to the named workshop exercise, ${evidenceNote}]. [Try: that topic's exact exercise name from the reference above](that topic's APPLY link)
-* 🔵 **CHALLENGE — [topic]:** [pick one: What-if question / Multiple perspectives / Practitioner critique — write the actual prompt to pose to the cohort, ${evidenceNote}]. If you picked Multiple perspectives or Practitioner critique, append [its link text](its exact CHALLENGE link) — if you picked What-if question, append no link at all.`;
+* 🔴 **CLARIFY — [topic]:** [chosen CLARIFY move's exact link text, verbatim](that move's URL from the MICRO-INTERVENTION reference above) — describe the specific action for that move in one sentence, ${evidenceNote}. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
+* 🟢 **APPLY — [topic]:** [chosen APPLY move's exact link text, verbatim](that move's URL from the MICRO-INTERVENTION reference above) — describe the specific action tied to the named workshop exercise, ${evidenceNote}. [Try: that topic's exact exercise name from the reference above](that topic's APPLY link)
+* 🔵 **CHALLENGE — [topic]:** [chosen CHALLENGE move's exact link text, verbatim](that move's URL from the MICRO-INTERVENTION reference above) — write the actual prompt to pose to the cohort, ${evidenceNote}. If you picked "Multiple perspectives" or "Challenge assumptions", also append [its live-tool link text](its exact CHALLENGE live-tool link) — if you picked "What-if scenario", append nothing further.
+
+Every bullet must have exactly two links: the move-name link, and the topic/live-tool link (except "What-if scenario", which only gets the move-name link) — never zero, never more.`;
 }
 
 // Safety net: the model doesn't reliably wrap the reference label in
@@ -303,6 +342,15 @@ function linkifyReport(text, stage) {
   for (const l of Object.values(GENERAL_RESOURCE_LINKS)) {
     if (text.includes(l.label) && !alreadyLinked(l.label)) {
       text = text.replace(l.label, `[${l.label}](${l.url})`);
+    }
+  }
+  // Micro-intervention move names (Quick quiz, Mini case, etc.) back the
+  // Clarify/Apply/Challenge section on every stage.
+  for (const moves of [CLARIFY_MOVES, APPLY_MOVES, CHALLENGE_MOVES]) {
+    for (const [label, url] of Object.entries(moves)) {
+      if (text.includes(label) && !alreadyLinked(label)) {
+        text = text.replace(label, `[${label}](${url})`);
+      }
     }
   }
   return text;
@@ -468,7 +516,7 @@ Exactly 3 bullets, one per reflection question below — never more, never fewer
 
 * **Confidence [state the actual trend vs the Beginning-of-Class Report above, e.g. "improved vs Beginning" / "held steady vs Beginning" / "dipped vs Beginning"]:** [one clause naming the direction and, if it adds real signal, roughly how much — e.g. "rising from a low starting point to solidly confident by the end."]
 * **[state the dominant theme(s) in "where they'll apply this," e.g. "Applications mostly tied to current work projects" / "Applications split between work and personal use"]:** [one clause naming what that theme actually is.]
-* **[state the dominant theme(s) in "remaining questions," e.g. "Remaining questions mainly about applications and examples" / "Remaining questions mainly about advanced models"]:** [one clause naming what that theme actually is.]
+* **[state the dominant theme(s) in "remaining questions," e.g. "Remaining questions mainly about applications and examples" / "Remaining questions mainly about advanced models"]:** [2 clauses, more detailed than the other two bullets since this is the most actionable signal for next steps — first name specifically what's still unclear (which model(s), formula, or step recurs), then a second clause naming what kind of follow-up would close the gap, e.g. "several respondents are still asking how to apply the models to new datasets and want worked examples with real numbers rather than more theory, suggesting the next session should open with a hands-on case."]
 
 ### 2. AI-Generated Teaching Recommendations
 
