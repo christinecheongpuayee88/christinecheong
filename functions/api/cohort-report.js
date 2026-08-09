@@ -205,11 +205,22 @@ For each chosen topic, use exactly this format:
 // Since every possible label+URL pair is already a fixed, known set (never
 // AI-invented), just check for each label appearing unlinked and wrap it
 // deterministically, rather than trusting the model's markdown compliance.
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function linkifyReport(text, stage) {
   const topics = TOPIC_LINKS[stage];
   if (!topics) return text;
 
-  const alreadyLinked = (label) => text.includes(`[${label}](`);
+  // A label counts as "already linked" if it appears anywhere inside a
+  // [...](...) span — not just as the exact bracket content — since the
+  // model sometimes correctly links it with an extra prefix, e.g.
+  // "[Try: Workshop 1B — Hotel occupancy](url)" rather than bare "[Workshop
+  // 1B — Hotel occupancy](url)". A naive exact-bracket check misses that
+  // and double-wraps it into broken nested links.
+  const alreadyLinked = (label) =>
+    new RegExp(`\\[[^\\]]*${escapeRegex(label)}[^\\]]*\\]\\([^)]*\\)`).test(text);
 
   for (const l of Object.values(topics)) {
     const clarifyUrl = `${THEORY_URL}#slide-${l.clarifySlide}`;
