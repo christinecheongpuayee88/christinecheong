@@ -158,6 +158,47 @@ function buildMovesReferenceBlock() {
   return lines.join("\n");
 }
 
+// Safety net for the same issue linkifyReport() fixes in cohort-report.js:
+// the model doesn't reliably wrap the chosen move name in [text](url)
+// markdown — it sometimes closes the bold before the URL and drops the
+// brackets entirely, e.g. "**Challenge assumptions**(url)" instead of
+// "**[Challenge assumptions](url)**". Since every label+URL pair is a fixed,
+// known set, deterministically fix it rather than trust model compliance.
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function linkifySynthesis(text) {
+  const allLabels = { ...ALL_MOVES.CLARIFY, ...ALL_MOVES.APPLY, ...ALL_MOVES.CHALLENGE };
+  for (const [label, url] of Object.entries(allLabels)) {
+    const escapedLabel = escapeRegex(label);
+    const escapedUrl = escapeRegex(url);
+    // Already-correct link: leave untouched.
+    if (new RegExp(`\\[[^\\]]*${escapedLabel}[^\\]]*\\]\\(${escapedUrl}\\)`).test(text)) continue;
+    // Malformed: label directly followed by (optional close-bold) then the
+    // bare "(url)" with no brackets — strip the stray "(url)" and wrap
+    // label+url together instead.
+    const malformed = new RegExp(`${escapedLabel}(\\*\\*)?\\(${escapedUrl}\\)`);
+    if (malformed.test(text)) {
+      text = text.replace(malformed, (_, boldClose) => `[${label}](${url})${boldClose || ""}`);
+      continue;
+    }
+    // Label present as plain text with no link at all anywhere nearby.
+    if (text.includes(label)) {
+      text = text.replace(label, `[${label}](${url})`);
+    }
+  }
+  for (const [label, l] of Object.entries(CHALLENGE_LIVE_TOOLS)) {
+    const escapedLabel = escapeRegex(l.label);
+    const escapedUrl = escapeRegex(l.url);
+    if (new RegExp(`\\[[^\\]]*${escapedLabel}[^\\]]*\\]\\(${escapedUrl}\\)`).test(text)) continue;
+    if (text.includes(l.label)) {
+      text = text.replace(l.label, `[${l.label}](${l.url})`);
+    }
+  }
+  return text;
+}
+
 function buildSynthesisPrompt(part, question, responses) {
   const partLabel = part === 1 ? "Part 1 — SARIMA" : "Part 2 — ARIMAX";
   const numbered = responses.map((r, i) => `${i + 1}. ${r}`).join("\n");
@@ -272,8 +313,9 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: llmData.error?.message || "OpenAI API error" }), { status: llmRes.status, headers: CORS });
     }
 
+    const synthesis = linkifySynthesis(llmData.choices[0].message.content);
     return new Response(
-      JSON.stringify({ question, responseCount: responses.length, synthesis: llmData.choices[0].message.content }),
+      JSON.stringify({ question, responseCount: responses.length, synthesis }),
       { status: 200, headers: CORS }
     );
   } catch (err) {
