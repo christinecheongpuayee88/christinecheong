@@ -132,6 +132,51 @@ Categories and the exact tag to use if you select that category:
 
 The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.`;
 
+// Checkpoints 1 & 2 use a different, simpler recommendation framework than
+// Beginning/Reflection: Clarify/Apply/Challenge instead of the 6-category
+// TEACHING_RECS_BLOCK above, with links resolved from this fixed table
+// (never left for the model to invent) so recommendations are immediately
+// clickable instead of generic advice.
+const THEORY_URL = "https://christinecheong.com/time-series-theory";
+const CANVAS_WORKSHOP_URL = "https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop";
+
+const TOPIC_LINKS = {
+  2: {
+    "Differencing (d)": { clarifySlide: 10, exercise: "Workshop 1A — Airline passengers" },
+    "AR/MA identification": { clarifySlide: 16, exercise: "Workshop 1A — Airline passengers" },
+    "Seasonal period (s)": { clarifySlide: 23, exercise: "Workshop 1B — Hotel occupancy" },
+    "Seasonal differencing": { clarifySlide: 24, exercise: "Workshop 1B — Hotel occupancy" },
+    "Model selection (AIC/BIC)": { clarifySlide: 31, exercise: "Workshop 1A — Airline passengers" },
+    "Residual diagnostics": { clarifySlide: 29, exercise: "Workshop 1B — Hotel occupancy" },
+  },
+  3: {
+    "ARIMA vs ARIMAX": { clarifySlide: 32, exercise: "Workshop 2 — Sales and advertising" },
+    "Identifying X and Y": { clarifySlide: 34, exercise: "Workshop 3 — Platform sales" },
+    "Lagged exogenous effects": { clarifySlide: 35, exercise: "Workshop 3 — Platform sales" },
+    "Model evaluation (MAPE)": { clarifySlide: 40, exercise: "Workshop 2 — Sales and advertising" },
+    "Overfitting / lag selection": { clarifySlide: 37, exercise: "Workshop 3 — Platform sales" },
+  },
+};
+
+function buildTopicLinksBlock(stage) {
+  return Object.entries(TOPIC_LINKS[stage])
+    .map(([topic, l]) => `- "${topic}" — CLARIFY link: ${THEORY_URL}#slide-${l.clarifySlide} | APPLY link: ${CANVAS_WORKSHOP_URL} (link text must name "${l.exercise}")`)
+    .join("\n");
+}
+
+function clarifyApplyChallengeBlock(stage) {
+  return `Classify up to 3 of the topics above into CLARIFY / APPLY / CHALLENGE based on this cohort's accuracy on each. Favor a spread across the three levels when the evidence supports it (one topic needing clarification, one solid topic ready to apply, one strong topic ready to be challenged) rather than clustering all 3 picks in one level. Only include a level if a topic's evidence genuinely fits it — omit a level rather than forcing a weak fit.
+
+Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
+${buildTopicLinksBlock(stage)}
+
+For each chosen topic, use exactly this format (CHALLENGE has no link — it's a discussion prompt to run live, not a resource):
+
+* 🔴 **CLARIFY — [topic]:** [pick one: Visual explanation / Worked example / Quick concept recap, describe the specific action in one sentence, citing the % evidence]. [Recap: exact exercise/topic name](that topic's CLARIFY link)
+* 🟢 **APPLY — [topic]:** [pick one: Mini case / Guided exercise / Colab activity, describe the specific action tied to the named workshop exercise, citing the % evidence]. [Try: exact exercise name from the reference above](that topic's APPLY link)
+* 🔵 **CHALLENGE — [topic]:** [pick one: What-if question / Multiple perspectives / Practitioner critique — write the actual prompt to pose to the cohort, citing the % evidence]`;
+}
+
 function buildPrompt(stage, rawData, priorReports) {
   const styleNote = `Write like a sharp internal analytics report to the instructor: numbered sections, each with hard bulleted facts. When there are multiple respondents, compute and state real aggregate statistics — averages, counts, and percentages of total responses — never just a vague "some" or "most." When there is only one respondent, state their specific answers directly instead of talking about "the cohort." No padding, no filler, no restating the obvious.`;
 
@@ -193,9 +238,9 @@ Structure your response exactly as follows:
 
 Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
 
-### 3. AI-Generated Teaching Recommendations
+### 3. Top Teaching Moves Now
 
-${TEACHING_RECS_BLOCK}
+${clarifyApplyChallengeBlock(2)}
 
 Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 
@@ -237,9 +282,9 @@ Structure your response exactly as follows:
 
 Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
 
-### 3. AI-Generated Teaching Recommendations
+### 3. Top Teaching Moves Now
 
-${TEACHING_RECS_BLOCK}
+${clarifyApplyChallengeBlock(3)}
 
 Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 

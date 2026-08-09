@@ -172,20 +172,6 @@
   .nav-suggestion { font-size: 12px; color: var(--text); margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); }
   .nav-suggestion b { font-weight: 600; }
 
-  .ttm-intro { font-size: 12px; color: var(--subtle); margin: 24px 0 10px; }
-  .ttm-list { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 8px; }
-  .ttm-row { padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--bg); }
-  .ttm-row:last-child { border-bottom: none; }
-  .ttm-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 100px; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 8px; }
-  .ttm-row.level-clarify .ttm-pill { background: var(--bad-bg); color: var(--bad); }
-  .ttm-row.level-apply .ttm-pill { background: var(--good-bg); color: var(--good); }
-  .ttm-row.level-challenge .ttm-pill { background: var(--info-bg); color: var(--info); }
-  .ttm-topic { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-  .ttm-move { font-size: 13px; color: var(--text); margin-bottom: 5px; line-height: 1.55; }
-  .ttm-move b { font-weight: 600; }
-  .ttm-evidence { font-size: 12px; color: var(--subtle); }
-  .ttm-empty { font-size: 13px; color: var(--subtle); padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; }
-
   .summary-heading { font-size: 15px; font-weight: 600; margin: 24px 0 12px; }
   .question-block { margin-bottom: 18px; }
   .question-block:last-child { margin-bottom: 0; }
@@ -202,12 +188,12 @@
 
 <div class="wrap">
   <a href="/time-series-workshop" class="back-link">← Time Series Workshop page</a>
-  <p class="eyebrow">Instructor only · not linked from the workshop page · v3 with Top Teaching Moves Now</p>
+  <p class="eyebrow">Instructor only · not linked from the workshop page · v3 with Clarify/Apply/Challenge reports</p>
   <h1>Cohort sensing reports</h1>
   <p class="desc">Live stats and AI-generated teaching recommendations, computed from this cohort's actual responses.</p>
 
   <p class="section-title">Live cohort dashboard</p>
-  <p class="section-desc">Instant stats computed directly from responses — numeric stats are deterministic; open-ended answers are summarized by AI. Checkpoint stages also show a Teaching Navigator (🟢 ready · 🟠 quick recap · 🔴 revisit · 🔵 go deeper) plus a "Top Teaching Moves Now" panel — up to 3 curated moves in a single Clarify / Apply / Challenge framework, tied to your actual workshop exercises. Refresh anytime during class.</p>
+  <p class="section-desc">Instant stats computed directly from responses — numeric stats are deterministic; open-ended answers are summarized by AI. Checkpoint stages also show a Teaching Navigator (🟢 ready · 🟠 quick recap · 🔴 revisit · 🔵 go deeper). Refresh anytime during class.</p>
   <div class="instructor-panel">
     <div class="dash-controls">
       <div class="instructor-stages">
@@ -225,7 +211,7 @@
   </div>
 
   <p class="section-title">AI-generated cohort reports</p>
-  <p class="section-desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read.</p>
+  <p class="section-desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read. Checkpoints 1 & 2 close with a "Top Teaching Moves Now" section — up to 3 recommendations in a 🔴 Clarify / 🟢 Apply / 🔵 Challenge framework, each linking to the theory recap slide or the matching workshop exercise.</p>
   <div class="instructor-panel">
     <div class="instructor-stages">
       <button class="stage-btn" id="stage-btn-1" onclick="runCohortStage(1)">1 · Beginning Report</button>
@@ -347,137 +333,8 @@
     return html;
   }
 
-  // A small curated library, not an open-ended generator: for each checkpoint
-  // topic, one concrete move per Clarify/Apply/Challenge level, each naming an
-  // actual workshop exercise so the recommendation is immediately executable
-  // rather than a generic "use a mini case."
-  const MOVES_LIBRARY = {
-    2: {
-      'Differencing (d)': {
-        clarify: { move: 'Worked example', time: 5, detail: 'Re-run the differencing step live on Workshop 1A (airline passengers) — show the series before/after, point out where it flattens.' },
-        apply: { move: 'Guided exercise', time: 7, detail: 'Open Workshop 1B (hotel occupancy) — have learners pick the differencing order themselves and justify it.' },
-        challenge: { move: 'What-if', time: 5, detail: 'Ask what would happen if you over-differenced. Have learners predict the effect on the ACF before checking.' },
-      },
-      'AR/MA identification': {
-        clarify: { move: 'Visual analogy', time: 5, detail: 'Put the ACF/PACF decay-vs-cutoff patterns side by side on screen and narrate what each one is telling you.' },
-        apply: { move: 'Guided exercise', time: 7, detail: "On Workshop 1A's ACF/PACF plot, have learners identify the AR order individually before revealing the answer." },
-        challenge: { move: 'Practitioner critique', time: 7, detail: 'Show an ambiguous ACF/PACF pair and ask learners to argue for AR vs MA, defending their read.' },
-      },
-      'Seasonal period (s)': {
-        clarify: { move: 'Concept recap', time: 5, detail: 'Revisit what s represents using the 12-month cycle visible in Workshop 1A (airline passengers).' },
-        apply: { move: 'Mini case', time: 5, detail: 'Ask learners to state s for Workshop 1B (hotel occupancy) before you confirm it together.' },
-      },
-      'Seasonal differencing': {
-        clarify: { move: 'Visual analogy', time: 5, detail: 'Show trend-removal vs seasonal-pattern-removal as two separate before/after charts on Workshop 1B.' },
-        apply: { move: 'Mini case', time: 7, detail: 'Open Workshop 1B — ask learners to connect the monthly seasonality to a staffing decision.' },
-        challenge: { move: 'What-if', time: 5, detail: 'Ask what breaks in the forecast if seasonal differencing is skipped entirely — predict, then check.' },
-      },
-      'Model selection (AIC/BIC)': {
-        apply: { move: 'Guided exercise', time: 7, detail: "Compare two candidate SARIMA fits on Workshop 1A by AIC/BIC and have learners pick one." },
-        challenge: { move: 'Practitioner critique', time: 7, detail: "Present a lower-AIC but harder-to-explain model vs a slightly higher-AIC simple one — ask which they'd actually deploy." },
-      },
-      'Residual diagnostics': {
-        apply: { move: 'Mini case', time: 5, detail: "Check the residual plot for Workshop 1B's chosen model together — is it white noise?" },
-        challenge: { move: 'What-if', time: 5, detail: 'Ask what a residual plot with leftover seasonal pattern would imply, and what they would change.' },
-      },
-    },
-    3: {
-      'ARIMA vs ARIMAX': {
-        clarify: { move: 'Worked example', time: 5, detail: 'Walk through Workshop 2 (sales & advertising) end-to-end, pointing out exactly where the exogenous term enters.' },
-        apply: { move: 'Mini case', time: 5, detail: 'Ask learners to name one exogenous variable that could improve their own forecast, using Workshop 2 as the template.' },
-      },
-      'Identifying X and Y': {
-        clarify: { move: 'Concept recap', time: 5, detail: 'Revisit exogenous vs endogenous with Workshop 2: Advertising = X, Sales = Y — say it out loud together.' },
-        apply: { move: 'Guided exercise', time: 5, detail: 'On Workshop 3 (platform sales), have learners identify X and Y themselves before confirming.' },
-      },
-      'Lagged exogenous effects': {
-        clarify: { move: 'Visual analogy', time: 5, detail: 'Show a lag-response chart for Workshop 3 — advertising today, sales lift over the following weeks.' },
-        apply: { move: 'Mini case', time: 7, detail: 'Open Workshop 3 — have learners test AdvLag1 vs AdvLag2 and compare fit.' },
-        challenge: { move: 'What-if', time: 5, detail: 'Ask how the model should change if the advertising effect became instant instead of delayed.' },
-      },
-      'Model evaluation (MAPE)': {
-        apply: { move: 'Guided exercise', time: 7, detail: 'Compute MAPE on a held-out window for two Workshop 2 candidate models and compare.' },
-        challenge: { move: 'Practitioner critique', time: 5, detail: "Ask when they'd trust AIC over MAPE (or vice versa) for a real deployment decision." },
-      },
-      'Overfitting / lag selection': {
-        apply: { move: 'Mini case', time: 7, detail: 'On Workshop 3, drop one lag and compare out-of-sample MAPE before and after.' },
-        challenge: { move: 'What-if', time: 7, detail: 'Ask what happens to the ARIMAX recommendation if advertising effects become delayed or unstable.' },
-      },
-    },
-  };
-
-  const LEVEL_META = {
-    clarify: { emoji: '🔴', label: 'Clarify' },
-    apply: { emoji: '🟢', label: 'Apply' },
-    challenge: { emoji: '🔵', label: 'Challenge' },
-  };
-
-  function classifyLevel(pct) {
-    if (pct == null) return null;
-    if (pct < 50) return 'clarify';
-    if (pct < 80) return 'apply';
-    return 'challenge';
-  }
-
-  // Picks up to 3 moves spread across Clarify/Apply/Challenge (one per level,
-  // most extreme evidence first) rather than always showing the 3 weakest
-  // topics — matches "just enough" over "everything ranked by severity."
-  function pickTopTeachingMoves(byQuestion, stage) {
-    const library = MOVES_LIBRARY[stage];
-    if (!library) return [];
-
-    const candidates = byQuestion
-      .map((q) => ({ ...q, level: classifyLevel(q.correctPercent) }))
-      .filter((q) => q.level && library[q.topic] && library[q.topic][q.level]);
-
-    const byLevel = { clarify: [], apply: [], challenge: [] };
-    candidates.forEach((c) => byLevel[c.level].push(c));
-    byLevel.clarify.sort((a, b) => a.correctPercent - b.correctPercent);
-    byLevel.apply.sort((a, b) => a.correctPercent - b.correctPercent);
-    byLevel.challenge.sort((a, b) => b.correctPercent - a.correctPercent);
-
-    const picks = [];
-    ['clarify', 'apply', 'challenge'].forEach((level) => {
-      if (byLevel[level].length) picks.push(byLevel[level][0]);
-    });
-
-    if (picks.length < 3) {
-      const used = new Set(picks.map((p) => p.topic));
-      const leftovers = candidates.filter((c) => !used.has(c.topic)).sort((a, b) => a.correctPercent - b.correctPercent);
-      while (picks.length < 3 && leftovers.length) picks.push(leftovers.shift());
-    }
-
-    return picks.slice(0, 3).map((c) => ({ ...c, moveDef: library[c.topic][c.level] }));
-  }
-
-  function renderTopTeachingMoves(byQuestion, stage) {
-    const picks = pickTopTeachingMoves(byQuestion, stage);
-    let html = '<p class="summary-heading">✨ Top teaching moves now</p>';
-    html += '<p class="ttm-intro">AI senses whether the cohort needs to clarify, apply or challenge, then recommends just enough moves for you to choose from.</p>';
-
-    if (!picks.length) {
-      html += '<div class="ttm-empty">No checkpoint data yet — run this stage\'s dashboard once responses come in.</div>';
-      return html;
-    }
-
-    const rows = picks.map((p) => {
-      const meta = LEVEL_META[p.level];
-      const evidence = p.topMisconception
-        ? `${p.correctPercent}% correct → most picked: "${escapeHtml(p.topMisconception.answer)}" (${p.topMisconception.percent}%)`
-        : `${p.correctPercent}% correct`;
-      return `<div class="ttm-row level-${p.level}">
-        <div class="ttm-pill">${meta.emoji} ${meta.label}</div>
-        <div class="ttm-topic">${escapeHtml(p.topic)}</div>
-        <div class="ttm-move">Recommended: <b>${escapeHtml(p.moveDef.move)}</b> · ${p.moveDef.time} min — ${escapeHtml(p.moveDef.detail)}</div>
-        <div class="ttm-evidence">${evidence}</div>
-      </div>`;
-    }).join('');
-
-    html += `<div class="ttm-list">${rows}</div>`;
-    return html;
-  }
-
   function inlineFormat(s) {
+    s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
     s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     s = s.replace(/\{\{(.+?)\}\}/g, '<span class="pill">$1</span>');
     return s;
@@ -612,9 +469,6 @@
 
     if (data.accuracy && data.accuracy.byQuestion.length) {
       html += renderTeachingNavigator(data.accuracy.byQuestion);
-      if (MOVES_LIBRARY[data.stage]) {
-        html += renderTopTeachingMoves(data.accuracy.byQuestion, data.stage);
-      }
     }
 
     if (data.questionSummary && data.questionSummary.length) {

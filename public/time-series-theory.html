@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Seasonal ARIMA &amp; ARIMAX — Slide Viewer</title>
+  <meta name="description" content="Full 44-slide viewer for the Seasonal ARIMA and ARIMAX lecture deck — original slides, one section per slide.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,850;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0b1f3a;--blue:#1d5fa7;--teal:#0b8d95;--ink:#18304d;--muted:#60728b;--line:#d9e3ec;--pale:#eaf3f8;--soft:#f6fafc;--sidebar-w:290px;--bar-h:64px}
+    *{box-sizing:border-box}html{height:100%}body{margin:0;height:100%;color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+    button{cursor:pointer;font:inherit}
+
+    .app{display:flex;height:100vh}
+
+    /* ── Sidebar ─────────────────────────────────────────── */
+    .side{width:var(--sidebar-w);flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;overflow-y:auto}
+    .side__head{padding:22px 20px 14px;border-bottom:1px solid var(--line)}
+    .side__brand{font-weight:850;color:var(--navy);font-size:1.05rem;margin:0 0 4px}
+    .side__sub{color:var(--muted);font-size:.82rem;margin:0}
+    .side__group{padding:16px 20px 6px;font-size:.72rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+    .side__list{list-style:none;margin:0;padding:0 10px 16px}
+    .side__item{border-radius:10px;margin-bottom:2px}
+    .side__item button{all:unset;display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:10px;cursor:pointer}
+    .side__item button:hover{background:var(--soft)}
+    .side__item.active button{background:var(--pale)}
+    .side__num{width:22px;height:22px;border-radius:50%;background:var(--line);color:var(--navy);font-size:.7rem;font-weight:800;display:grid;place-items:center;flex-shrink:0}
+    .side__item.active .side__num{background:var(--blue);color:#fff}
+    .side__item.done .side__num{background:var(--teal);color:#fff}
+    .side__text{display:flex;flex-direction:column;gap:1px;min-width:0}
+    .side__title{font-size:.85rem;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .side__time{font-size:.72rem;color:var(--muted)}
+    .side__foot{margin-top:auto;padding:16px 20px;border-top:1px solid var(--line)}
+    .side__foot a{color:var(--muted);font-size:.82rem;text-decoration:none}
+    .side__foot a:hover{color:var(--blue)}
+
+    /* ── Main column ─────────────────────────────────────── */
+    .main{flex:1;display:flex;flex-direction:column;min-width:0}
+    .stage{flex:1;overflow-y:auto;overflow-anchor:none;scroll-behavior:smooth;padding:36px 4vw 30px;display:flex}
+    .stage__inner{max-width:1100px;margin:auto;width:100%}
+    .page{display:none;width:100%}
+    .page.active{display:block;animation:fadeUp .25s ease both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .kicker{text-transform:uppercase;letter-spacing:.18em;color:var(--teal);font-size:.78rem;font-weight:850;text-align:center}
+    .page h2{color:var(--navy);font-size:1.4rem;font-weight:800;margin:4px 0 16px;text-align:center}
+    .slide-img{display:block;max-width:100%;height:auto;margin:0 auto;border:1px solid var(--line);border-radius:10px;box-shadow:0 18px 55px rgba(11,31,58,.12)}
+
+    .primary{border:0;border-radius:10px;padding:13px 20px;background:linear-gradient(135deg,var(--blue),#2474cb);color:#fff;font-weight:800;text-decoration:none;display:inline-block}
+    .intro{text-align:center;max-width:600px;margin:60px auto}
+    .intro .lead{color:var(--muted);font-size:1.05rem;margin:10px 0 22px}
+
+    /* ── Bottom pagination bar ───────────────────────────── */
+    .pagebar{height:var(--bar-h);border-top:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;gap:18px;flex-shrink:0}
+    .pagebar button{border:1px solid var(--line);background:#fff;border-radius:8px;width:36px;height:36px;display:grid;place-items:center;color:var(--navy);font-size:1rem}
+    .pagebar button:hover:not(:disabled){border-color:var(--blue);color:var(--blue)}
+    .pagebar button:disabled{opacity:.35;cursor:default}
+    .pagebar__count{font-size:.9rem;color:var(--muted);font-weight:700;min-width:64px;text-align:center}
+
+    .fs-btn{position:fixed;top:16px;right:16px;z-index:40;width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:8px;display:grid;place-items:center;color:var(--navy);font-size:1.1rem;box-shadow:0 4px 14px rgba(11,31,58,.1)}
+    .fs-btn:hover{border-color:var(--blue);color:var(--blue)}
+
+    .topbar{display:none}
+    #menuBtn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px 14px;color:var(--navy);font-weight:700;font-size:.9rem}
+    .side__backdrop{display:none}
+
+    @media(max-width:820px){
+      .side{position:fixed;inset:0 auto 0 0;transform:translateX(-100%);transition:transform .2s ease;z-index:30;box-shadow:0 0 40px rgba(0,0,0,.15)}
+      .side.open{transform:translateX(0)}
+      .topbar{display:flex;align-items:center;height:56px;padding:0 5vw;border-bottom:1px solid var(--line);flex-shrink:0}
+      .side__backdrop.open{display:block;position:fixed;inset:0;background:rgba(11,31,58,.35);z-index:25}
+      .stage{padding:20px 4vw 24px}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="side" id="side">
+    <div class="side__head">
+      <p class="side__brand">TS Theory Companion</p>
+      <p class="side__sub">Seasonal ARIMA &amp; ARIMAX — all 44 slides</p>
+    </div>
+    <p class="side__group">Slide by slide</p>
+    <ul class="side__list" id="sideList"></ul>
+    <div class="side__foot"><a href="/time-series-workshop">← Back to workshop exercises</a></div>
+  </aside>
+
+  <button id="fsBtn" class="fs-btn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+
+  <div class="main">
+    <div class="topbar" id="topbar">
+      <button id="menuBtn" aria-label="Open section list">☰ Slides</button>
+    </div>
+    <div class="side__backdrop" id="backdrop"></div>
+    <div class="stage"><div class="stage__inner" id="stage">
+      <section class="page" id="slide-1" data-time="1 min">
+        <div class="kicker">Slide 1 of 44</div>
+        <h2>Time Series Forecasting (Seasonal ARIMA and ARIMAX)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-01.jpg" alt="Slide 1: Time Series Forecasting (Seasonal ARIMA and ARIMAX)">
+      </section>
+
+      <section class="page" id="slide-2" data-time="1 min">
+        <div class="kicker">Slide 2 of 44</div>
+        <h2>Business Decisions and Analytics Intent</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-02.jpg" alt="Slide 2: Business Decisions and Analytics Intent">
+      </section>
+
+      <section class="page" id="slide-3" data-time="1 min">
+        <div class="kicker">Slide 3 of 44</div>
+        <h2>From Analytics to Insights to Decisions</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-03.jpg" alt="Slide 3: From Analytics to Insights to Decisions">
+      </section>
+
+      <section class="page" id="slide-4" data-time="2 min">
+        <div class="kicker">Slide 4 of 44</div>
+        <h2>Predictive, Forecasting and Causal Analytics</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-04.jpg" alt="Slide 4: Predictive, Forecasting and Causal Analytics">
+      </section>
+
+      <section class="page" id="slide-5" data-time="1 min">
+        <div class="kicker">Slide 5 of 44</div>
+        <h2>Business Decisions and Analytics Intent</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-05.jpg" alt="Slide 5: Business Decisions and Analytics Intent">
+      </section>
+
+      <section class="page" id="slide-6" data-time="1 min">
+        <div class="kicker">Slide 6 of 44</div>
+        <h2>Time Series Forecasting Topics</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-06.jpg" alt="Slide 6: Time Series Forecasting Topics">
+      </section>
+
+      <section class="page" id="slide-7" data-time="1 min">
+        <div class="kicker">Slide 7 of 44</div>
+        <h2>ARMA, ARIMA, SARIMA</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-07.jpg" alt="Slide 7: ARMA, ARIMA, SARIMA">
+      </section>
+
+      <section class="page" id="slide-8" data-time="2 min">
+        <div class="kicker">Slide 8 of 44</div>
+        <h2>ARIMA Models – Short Recap</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-08.jpg" alt="Slide 8: ARIMA Models – Short Recap">
+      </section>
+
+      <section class="page" id="slide-9" data-time="2 min">
+        <div class="kicker">Slide 9 of 44</div>
+        <h2>Summary Steps</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-09.jpg" alt="Slide 9: Summary Steps">
+      </section>
+
+      <section class="page" id="slide-10" data-time="2 min">
+        <div class="kicker">Slide 10 of 44</div>
+        <h2>Achieving Stationarity – Differencing</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-10.jpg" alt="Slide 10: Achieving Stationarity – Differencing">
+      </section>
+
+      <section class="page" id="slide-11" data-time="1 min">
+        <div class="kicker">Slide 11 of 44</div>
+        <h2>Autocorrelation</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-11.jpg" alt="Slide 11: Autocorrelation">
+      </section>
+
+      <section class="page" id="slide-12" data-time="1 min">
+        <div class="kicker">Slide 12 of 44</div>
+        <h2>Autocorrelation Function (ACF)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-12.jpg" alt="Slide 12: Autocorrelation Function (ACF)">
+      </section>
+
+      <section class="page" id="slide-13" data-time="2 min">
+        <div class="kicker">Slide 13 of 44</div>
+        <h2>Partial Autocorrelation Function (PACF)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-13.jpg" alt="Slide 13: Partial Autocorrelation Function (PACF)">
+      </section>
+
+      <section class="page" id="slide-14" data-time="1 min">
+        <div class="kicker">Slide 14 of 44</div>
+        <h2>AR Models – Example: Brand Momentum</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-14.jpg" alt="Slide 14: AR Models – Example: Brand Momentum">
+      </section>
+
+      <section class="page" id="slide-15" data-time="2 min">
+        <div class="kicker">Slide 15 of 44</div>
+        <h2>Autoregressive (AR) Models</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-15.jpg" alt="Slide 15: Autoregressive (AR) Models">
+      </section>
+
+      <section class="page" id="slide-16" data-time="2 min">
+        <div class="kicker">Slide 16 of 44</div>
+        <h2>Theoretical ACF and PACF for AR(p)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-16.jpg" alt="Slide 16: Theoretical ACF and PACF for AR(p)">
+      </section>
+
+      <section class="page" id="slide-17" data-time="1 min">
+        <div class="kicker">Slide 17 of 44</div>
+        <h2>MA Models – Example: Flash Promotion Shock</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-17.jpg" alt="Slide 17: MA Models – Example: Flash Promotion Shock">
+      </section>
+
+      <section class="page" id="slide-18" data-time="2 min">
+        <div class="kicker">Slide 18 of 44</div>
+        <h2>Moving Average (MA) Models</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-18.jpg" alt="Slide 18: Moving Average (MA) Models">
+      </section>
+
+      <section class="page" id="slide-19" data-time="1 min">
+        <div class="kicker">Slide 19 of 44</div>
+        <h2>Autoregressive Moving Average Models (ARMA)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-19.jpg" alt="Slide 19: Autoregressive Moving Average Models (ARMA)">
+      </section>
+
+      <section class="page" id="slide-20" data-time="1 min">
+        <div class="kicker">Slide 20 of 44</div>
+        <h2>ARIMA – Example: Brand Ads and Promotions</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-20.jpg" alt="Slide 20: ARIMA – Example: Brand Ads and Promotions">
+      </section>
+
+      <section class="page" id="slide-21" data-time="2 min">
+        <div class="kicker">Slide 21 of 44</div>
+        <h2>Autoregressive Integrated Moving Average Models (ARIMA)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-21.jpg" alt="Slide 21: Autoregressive Integrated Moving Average Models (ARIMA)">
+      </section>
+
+      <section class="page" id="slide-22" data-time="1 min">
+        <div class="kicker">Slide 22 of 44</div>
+        <h2>Summary of the Behaviors of ACF and PACF</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-22.jpg" alt="Slide 22: Summary of the Behaviors of ACF and PACF">
+      </section>
+
+      <section class="page" id="slide-23" data-time="1 min">
+        <div class="kicker">Slide 23 of 44</div>
+        <h2>Seasonality and ARIMA Models</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-23.jpg" alt="Slide 23: Seasonality and ARIMA Models">
+      </section>
+
+      <section class="page" id="slide-24" data-time="2 min">
+        <div class="kicker">Slide 24 of 44</div>
+        <h2>Non-Stationary → Stationary Seasonal Time Series</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-24.jpg" alt="Slide 24: Non-Stationary → Stationary Seasonal Time Series">
+      </section>
+
+      <section class="page" id="slide-25" data-time="2 min">
+        <div class="kicker">Slide 25 of 44</div>
+        <h2>Seasonal Time Series</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-25.jpg" alt="Slide 25: Seasonal Time Series">
+      </section>
+
+      <section class="page" id="slide-26" data-time="2 min">
+        <div class="kicker">Slide 26 of 44</div>
+        <h2>Seasonal ARIMA (SARIMA) Models</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-26.jpg" alt="Slide 26: Seasonal ARIMA (SARIMA) Models">
+      </section>
+
+      <section class="page" id="slide-27" data-time="1 min">
+        <div class="kicker">Slide 27 of 44</div>
+        <h2>Tentative Identification of Model</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-27.jpg" alt="Slide 27: Tentative Identification of Model">
+      </section>
+
+      <section class="page" id="slide-28" data-time="2 min">
+        <div class="kicker">Slide 28 of 44</div>
+        <h2>ACF/PACF Interpretation for Seasonal ARIMA</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-28.jpg" alt="Slide 28: ACF/PACF Interpretation for Seasonal ARIMA">
+      </section>
+
+      <section class="page" id="slide-29" data-time="1 min">
+        <div class="kicker">Slide 29 of 44</div>
+        <h2>Diagnostic Checks Revisit</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-29.jpg" alt="Slide 29: Diagnostic Checks Revisit">
+      </section>
+
+      <section class="page" id="slide-30" data-time="2 min">
+        <div class="kicker">Slide 30 of 44</div>
+        <h2>Residuals – Portmanteau Test</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-30.jpg" alt="Slide 30: Residuals – Portmanteau Test">
+      </section>
+
+      <section class="page" id="slide-31" data-time="2 min">
+        <div class="kicker">Slide 31 of 44</div>
+        <h2>Model Selection Criteria</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-31.jpg" alt="Slide 31: Model Selection Criteria">
+      </section>
+
+      <section class="page" id="slide-32" data-time="1 min">
+        <div class="kicker">Slide 32 of 44</div>
+        <h2>Time Series Approach Beyond Univariate (ARIMAX)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-32.jpg" alt="Slide 32: Time Series Approach Beyond Univariate (ARIMAX)">
+      </section>
+
+      <section class="page" id="slide-33" data-time="1 min">
+        <div class="kicker">Slide 33 of 44</div>
+        <h2>Introduction to ARIMAX</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-33.jpg" alt="Slide 33: Introduction to ARIMAX">
+      </section>
+
+      <section class="page" id="slide-34" data-time="1 min">
+        <div class="kicker">Slide 34 of 44</div>
+        <h2>Why Multivariate Time Series?</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-34.jpg" alt="Slide 34: Why Multivariate Time Series?">
+      </section>
+
+      <section class="page" id="slide-35" data-time="1 min">
+        <div class="kicker">Slide 35 of 44</div>
+        <h2>Why Multivariate Time Series? (contd.)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-35.jpg" alt="Slide 35: Why Multivariate Time Series? (contd.)">
+      </section>
+
+      <section class="page" id="slide-36" data-time="1 min">
+        <div class="kicker">Slide 36 of 44</div>
+        <h2>Applications of ARIMAX</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-36.jpg" alt="Slide 36: Applications of ARIMAX">
+      </section>
+
+      <section class="page" id="slide-37" data-time="1 min">
+        <div class="kicker">Slide 37 of 44</div>
+        <h2>Examples of Relationships Between X & Y</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-37.jpg" alt="Slide 37: Examples of Relationships Between X & Y">
+      </section>
+
+      <section class="page" id="slide-38" data-time="1 min">
+        <div class="kicker">Slide 38 of 44</div>
+        <h2>Workshop 1a – Airline Passenger Demand</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-38.jpg" alt="Slide 38: Workshop 1a – Airline Passenger Demand">
+      </section>
+
+      <section class="page" id="slide-39" data-time="2 min">
+        <div class="kicker">Slide 39 of 44</div>
+        <h2>Workshop 1b – Hotel Room Occupancy</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-39.jpg" alt="Slide 39: Workshop 1b – Hotel Room Occupancy">
+      </section>
+
+      <section class="page" id="slide-40" data-time="1 min">
+        <div class="kicker">Slide 40 of 44</div>
+        <h2>Workshop 2 – Advertising and Sales</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-40.jpg" alt="Slide 40: Workshop 2 – Advertising and Sales">
+      </section>
+
+      <section class="page" id="slide-41" data-time="1 min">
+        <div class="kicker">Slide 41 of 44</div>
+        <h2>Workshop 2 – Estimation and Forecast (ARIMA)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-41.jpg" alt="Slide 41: Workshop 2 – Estimation and Forecast (ARIMA)">
+      </section>
+
+      <section class="page" id="slide-42" data-time="1 min">
+        <div class="kicker">Slide 42 of 44</div>
+        <h2>Workshop 2 – Estimation and Forecast (ARIMAX)</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-42.jpg" alt="Slide 42: Workshop 2 – Estimation and Forecast (ARIMAX)">
+      </section>
+
+      <section class="page" id="slide-43" data-time="1 min">
+        <div class="kicker">Slide 43 of 44</div>
+        <h2>References</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-43.jpg" alt="Slide 43: References">
+      </section>
+
+      <section class="page" id="slide-44" data-time="1 min">
+        <div class="kicker">Slide 44 of 44</div>
+        <h2>Appendix – Guidelines for Tentative Identification</h2>
+        <img class="slide-img" src="ts-theory-slides/slide-44.jpg" alt="Slide 44: Appendix – Guidelines for Tentative Identification">
+      </section>
+
+    </div></div>
+
+    <div class="pagebar">
+      <button id="prevBtn" aria-label="Previous">‹</button>
+      <span class="pagebar__count" id="pageCount">1 / 44</span>
+      <button id="nextBtn" aria-label="Next">›</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const sideList = document.getElementById('sideList');
+  const pageCount = document.getElementById('pageCount');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let current = 0;
+
+  pages.forEach((p, i) => {
+    const title = p.querySelector('h2').textContent;
+    const li = document.createElement('li');
+    li.className = 'side__item';
+    li.innerHTML = `<button type="button">
+      <span class="side__num">${i + 1}</span>
+      <span class="side__text">
+        <span class="side__title">${title}</span>
+        <span class="side__time">${p.dataset.time}</span>
+      </span>
+    </button>`;
+    li.querySelector('button').addEventListener('click', () => { goTo(i); closeSide(); });
+    sideList.appendChild(li);
+  });
+
+  const sideItems = Array.from(sideList.children);
+
+  const side = document.getElementById('side');
+  const backdrop = document.getElementById('backdrop');
+  const menuBtn = document.getElementById('menuBtn');
+  function openSide() { side.classList.add('open'); backdrop.classList.add('open'); }
+  function closeSide() { side.classList.remove('open'); backdrop.classList.remove('open'); }
+  menuBtn.addEventListener('click', openSide);
+  backdrop.addEventListener('click', closeSide);
+
+  function goTo(i) {
+    pages[current].classList.remove('active');
+    sideItems[current].classList.remove('active');
+    sideItems[current].classList.add('done');
+    current = i;
+    pages[current].classList.add('active');
+    sideItems[current].classList.add('active');
+    pageCount.textContent = `${current + 1} / ${pages.length}`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === pages.length - 1;
+    document.querySelector('.stage').scrollTop = 0;
+    history.replaceState(null, '', `#slide-${current + 1}`);
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0) goTo(current - 1); });
+  nextBtn.addEventListener('click', () => { if (current < pages.length - 1) goTo(current + 1); });
+
+  // Deep-link support: /time-series-theory#slide-20 opens directly on slide 20,
+  // since .page is display:none until goTo() adds .active — a plain anchor
+  // jump alone wouldn't reveal anything.
+  function slideIndexFromHash() {
+    const m = location.hash.match(/^#slide-(\d+)$/);
+    if (!m) return null;
+    const i = Number(m[1]) - 1;
+    return i >= 0 && i < pages.length ? i : null;
+  }
+
+  const startIndex = slideIndexFromHash();
+  if (startIndex !== null) {
+    current = startIndex;
+  }
+  pages[current].classList.add('active');
+  sideItems[current].classList.add('active');
+  pageCount.textContent = `${current + 1} / ${pages.length}`;
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current === pages.length - 1;
+
+  window.addEventListener('hashchange', () => {
+    const i = slideIndexFromHash();
+    if (i !== null && i !== current) goTo(i);
+  });
+
+  const fsBtn = document.getElementById('fsBtn');
+  fsBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen();
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    fsBtn.textContent = document.fullscreenElement ? '⤢' : '⛶';
+    fsBtn.title = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' && current < pages.length - 1) goTo(current + 1);
+    if (e.key === 'ArrowLeft' && current > 0) goTo(current - 1);
+  });
+</script>
+</body>
+</html>
