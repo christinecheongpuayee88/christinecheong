@@ -208,6 +208,33 @@ function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+// Actively parses out just the theme bullets rather than slicing between
+// two heading strings — a missed exact-string match (e.g. the model titles
+// the section slightly differently) previously let the entire rest of the
+// synthesis, including the "Recommended move" section, leak into what gets
+// shown to students. Stops as soon as anything other than a genuine bullet
+// line is seen — a heading, an emoji-led recommendation line, or anything
+// else — so unrecognized content is excluded by default, not included.
+function extractThemesSummary(synthesis) {
+  const lines = synthesis.split("\n");
+  const themeLines = [];
+  let inThemes = false;
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (/^#{2,3}\s*Emerging themes/i.test(line)) {
+      inThemes = true;
+      continue;
+    }
+    if (!inThemes) continue;
+    if (!line) continue;
+    const bulletMatch = line.match(/^([*-])\s+\*\*(.+?)\*\*/);
+    if (!bulletMatch) break;
+    const label = bulletMatch[2].replace(/:\s*$/, "");
+    themeLines.push(`${bulletMatch[1]} **${label}**`);
+  }
+  return themeLines.length ? "### Emerging themes\n" + themeLines.join("\n") : "";
+}
+
 function linkifySynthesis(text) {
   const allLabels = { ...ALL_MOVES.CLARIFY, ...ALL_MOVES.APPLY, ...ALL_MOVES.CHALLENGE };
   for (const [label, url] of Object.entries(allLabels)) {
@@ -374,30 +401,15 @@ export async function onRequestPost(context) {
     const synthesis = linkifySynthesis(llmData.choices[0].message.content);
 
     // Persist a student-visible copy: just the bold "count — label" part of
-    // each "Emerging themes" bullet, with the elaboration clause after it
-    // dropped — students see the summary, not the analysis. The heading/
-    // question/response-count are dropped too since the student page
-    // already shows those separately, and the "Recommended move" section
-    // is dropped entirely — that's instructor-facing facilitation guidance,
-    // not meant for the cohort to see. The full synthesis (with
-    // elaboration and the recommendation) is only ever returned here, to
-    // the instructor panel.
-    const themesIdx = synthesis.indexOf("### Emerging themes");
-    const recommendedIdx = synthesis.indexOf("### Recommended move");
-    const themesSection =
-      themesIdx !== -1
-        ? synthesis.slice(themesIdx, recommendedIdx !== -1 ? recommendedIdx : undefined).trim()
-        : "";
-    const themesOnly = themesSection
-      .split("\n")
-      .map((line) => {
-        const trimmed = line.trim();
-        const bulletMatch = trimmed.match(/^([*-])\s+\*\*(.+?)\*\*/);
-        if (!bulletMatch) return line;
-        const label = bulletMatch[2].replace(/:\s*$/, "");
-        return `${bulletMatch[1]} **${label}**`;
-      })
-      .join("\n");
+    // each "Emerging themes" bullet, elaboration and the "Recommended move"
+    // section both dropped — students see the summary, never the analysis
+    // or the instructor-only facilitation guidance. Actively collects only
+    // genuine bullet lines and stops at the first heading or emoji-led
+    // recommendation line, rather than searching for one exact heading
+    // string — the model doesn't always title that section identically, and
+    // a missed match previously let the whole rest of the text (including
+    // the recommendation) leak through uncut.
+    const themesOnly = extractThemesSummary(synthesis);
     if (themesOnly) {
       await appendRow(accessToken, spreadsheetId, "THEMES", themesOnly);
     }
