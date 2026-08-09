@@ -137,30 +137,49 @@ The evidence line above must literally start with "> " (a Markdown blockquote) s
 // TEACHING_RECS_BLOCK above, with links resolved from this fixed table
 // (never left for the model to invent) so recommendations are immediately
 // clickable instead of generic advice.
+//
+// clarifySlide values were verified against the actual slide content (not
+// just titles) in ts-theory-slides/ — e.g. "AR/MA identification" points to
+// slide 22 ("Summary of the Behaviors of ACF and PACF", the exact
+// decay-vs-cutoff table the checkpoint question tests), not just the
+// nearest-sounding title.
 const THEORY_URL = "https://christinecheong.com/time-series-theory";
 const CANVAS_WORKSHOP_URL = "https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop";
 
 const TOPIC_LINKS = {
   2: {
     "Differencing (d)": { clarifySlide: 10, exercise: "Workshop 1A — Airline passengers" },
-    "AR/MA identification": { clarifySlide: 16, exercise: "Workshop 1A — Airline passengers" },
+    "AR/MA identification": { clarifySlide: 22, exercise: "Workshop 1A — Airline passengers" },
     "Seasonal period (s)": { clarifySlide: 23, exercise: "Workshop 1B — Hotel occupancy" },
     "Seasonal differencing": { clarifySlide: 24, exercise: "Workshop 1B — Hotel occupancy" },
     "Model selection (AIC/BIC)": { clarifySlide: 31, exercise: "Workshop 1A — Airline passengers" },
-    "Residual diagnostics": { clarifySlide: 29, exercise: "Workshop 1B — Hotel occupancy" },
+    "Residual diagnostics": { clarifySlide: 30, exercise: "Workshop 1B — Hotel occupancy" },
   },
   3: {
-    "ARIMA vs ARIMAX": { clarifySlide: 32, exercise: "Workshop 2 — Sales and advertising" },
+    "ARIMA vs ARIMAX": { clarifySlide: 33, exercise: "Workshop 2 — Sales and advertising" },
     "Identifying X and Y": { clarifySlide: 34, exercise: "Workshop 3 — Platform sales" },
-    "Lagged exogenous effects": { clarifySlide: 35, exercise: "Workshop 3 — Platform sales" },
-    "Model evaluation (MAPE)": { clarifySlide: 40, exercise: "Workshop 2 — Sales and advertising" },
-    "Overfitting / lag selection": { clarifySlide: 37, exercise: "Workshop 3 — Platform sales" },
+    "Lagged exogenous effects": { clarifySlide: 37, exercise: "Workshop 3 — Platform sales" },
+    "Model evaluation (MAPE)": { clarifySlide: 42, exercise: "Workshop 2 — Sales and advertising" },
+    "Overfitting / lag selection": { clarifySlide: 42, exercise: "Workshop 3 — Platform sales" },
   },
+};
+
+// Real, live tools — not placeholders. "What-if question" has none; it's a
+// live discussion prompt with no resource to point to.
+const CHALLENGE_LINKS = {
+  "Multiple perspectives": { url: "https://christinecheong.com/agents-hub/perspectives-agent.html", label: "Multiple Perspectives Agent" },
+  "Practitioner critique": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
 };
 
 function buildTopicLinksBlock(stage) {
   return Object.entries(TOPIC_LINKS[stage])
     .map(([topic, l]) => `- "${topic}" — CLARIFY link: ${THEORY_URL}#slide-${l.clarifySlide} | APPLY link: ${CANVAS_WORKSHOP_URL} (link text must name "${l.exercise}")`)
+    .join("\n");
+}
+
+function buildChallengeLinksBlock() {
+  return Object.entries(CHALLENGE_LINKS)
+    .map(([move, l]) => `- If you pick "${move}" → link: ${l.url} (link text must be "${l.label}")`)
     .join("\n");
 }
 
@@ -170,11 +189,14 @@ function clarifyApplyChallengeBlock(stage) {
 Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
 ${buildTopicLinksBlock(stage)}
 
-For each chosen topic, use exactly this format (CHALLENGE has no link — it's a discussion prompt to run live, not a resource):
+CHALLENGE reference links (only "Multiple perspectives" and "Practitioner critique" have one; "What-if question" has none — leave it as plain text with no link):
+${buildChallengeLinksBlock()}
+
+For each chosen topic, use exactly this format:
 
 * 🔴 **CLARIFY — [topic]:** [pick one: Visual explanation / Worked example / Quick concept recap, describe the specific action in one sentence, citing the % evidence]. [Recap: exact exercise/topic name](that topic's CLARIFY link)
 * 🟢 **APPLY — [topic]:** [pick one: Mini case / Guided exercise / Colab activity, describe the specific action tied to the named workshop exercise, citing the % evidence]. [Try: exact exercise name from the reference above](that topic's APPLY link)
-* 🔵 **CHALLENGE — [topic]:** [pick one: What-if question / Multiple perspectives / Practitioner critique — write the actual prompt to pose to the cohort, citing the % evidence]`;
+* 🔵 **CHALLENGE — [topic]:** [pick one: What-if question / Multiple perspectives / Practitioner critique — write the actual prompt to pose to the cohort, citing the % evidence]. If you picked Multiple perspectives or Practitioner critique, append [its link text](its exact CHALLENGE link) — if you picked What-if question, append no link at all.`;
 }
 
 function buildPrompt(stage, rawData, priorReports) {
