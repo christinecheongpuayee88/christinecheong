@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Checkpoint 2 — ARIMAX — Time Series Forecasting Workshop</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Checkpoint 2 comprehension check (ARIMAX) for the Time Series Forecasting workshop — scored automatically.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,850;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0b1f3a;--blue:#1d5fa7;--teal:#0b8d95;--ink:#18304d;--muted:#60728b;--line:#d9e3ec;--pale:#eaf3f8;--soft:#f6fafc;--shadow:0 18px 55px rgba(11,31,58,.09);--bad:#c0392b;--bad-bg:#fdecea;--good-bg:#e3f6f1}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--soft)}button,input,textarea{font:inherit}button{cursor:pointer}
+    header{position:sticky;top:0;z-index:20;background:#fffffff2;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}nav{max-width:900px;margin:auto;height:70px;padding:0 5vw;display:flex;align-items:center}
+    .back-link{color:var(--muted);font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px}.back-link:hover{color:var(--blue)}
+
+    main{max-width:760px;margin:0 auto;padding:44px 22px 80px}
+    .kicker{text-transform:uppercase;letter-spacing:.18em;color:var(--teal);font-size:.78rem;font-weight:850}
+    h1{color:var(--navy);font-size:2rem;font-weight:800;margin:8px 0 8px}
+    .lede{color:var(--muted);margin:0 0 28px;max-width:56ch}
+
+    .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:var(--shadow)}
+    .onsite-form{display:flex;flex-direction:column;gap:26px}
+    .field{display:flex;flex-direction:column;gap:9px}
+    .field-label{font-weight:750;color:var(--navy);font-size:.94rem}
+    .field-label .qnum{color:var(--teal)}
+    .field textarea{border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);background:#fff;resize:vertical;width:100%}
+    .field textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
+
+    .mc-group{display:flex;flex-direction:column;gap:8px}
+    .choice-btn{border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;background:#fff;color:var(--ink);font-weight:650;font-size:.92rem;transition:all .15s;text-align:left;width:100%}
+    .choice-btn:hover{border-color:var(--blue)}
+    .choice-btn:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+    .choice-btn.selected{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:750}
+
+    .form-status{font-size:.88rem;color:var(--muted);min-height:1.3em}
+    .form-status.error{color:var(--bad);font-weight:650}
+
+    .primary{border:0;border-radius:10px;padding:14px 20px;background:linear-gradient(135deg,var(--blue),#2474cb);color:#fff;font-weight:800;transition:transform .15s;align-self:flex-start;text-decoration:none;display:inline-block}
+    .primary:hover{transform:translateY(-2px)}.primary:disabled{opacity:.6;cursor:wait;transform:none}
+
+    .done-state{display:none;text-align:center}
+    .done-state.show{display:block}
+    .score-badge{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;font-size:1.5rem;font-weight:850;color:#fff;background:var(--teal)}
+    .done-state h2{color:var(--navy);font-size:1.4rem;margin:0 0 22px}
+    .results-list{text-align:left;margin-bottom:26px;display:flex;flex-direction:column;gap:10px}
+    .result-row{display:flex;gap:10px;padding:13px 15px;border-radius:10px}
+    .result-row.correct{background:var(--good-bg)}
+    .result-row.wrong{background:var(--bad-bg)}
+    .result-icon{font-weight:850;flex:0 0 auto}
+    .result-row.correct .result-icon{color:var(--teal)}
+    .result-row.wrong .result-icon{color:var(--bad)}
+    .result-text{font-size:.86rem}
+    .result-q{font-weight:700;color:var(--navy);display:block;margin-bottom:3px}
+    .result-your{color:var(--ink)}
+    .result-correct{color:var(--muted);display:block;margin-top:3px}
+    #beginningForm.hide{display:none}
+  </style>
+</head>
+<body>
+<header><nav><a class="back-link" href="/time-series-workshop-v2">← Back to workshop</a></nav></header>
+<main>
+  <div class="kicker">On-site form · Scored automatically</div>
+  <h1>Checkpoint 2 — ARIMAX</h1>
+  <p class="lede">Quick comprehension check after the ARIMAX section. Pick the best answer for each question.</p>
+
+  <div class="panel">
+    <form id="beginningForm" class="onsite-form" novalidate>
+      <div class="field" data-q="0">
+        <span class="field-label"><span class="qnum">Q1.</span> What's the key difference between ARIMA and ARIMAX? *</span>
+        <div class="mc-group choice-group" data-name="q0">
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="ARIMAX only works on daily data">ARIMAX only works on daily data</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="ARIMAX adds an exogenous predictor (a leading indicator) on top of Y's own past">ARIMAX adds an exogenous predictor (a leading indicator) on top of Y's own past</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="ARIMAX cannot handle seasonality">ARIMAX cannot handle seasonality</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="There's no difference, just different software">There's no difference, just different software</button>
+        </div>
+      </div>
+      <div class="field" data-q="1">
+        <span class="field-label"><span class="qnum">Q2.</span> In the Advertising → Sales example, which is X and which is Y? *</span>
+        <div class="mc-group choice-group" data-name="q1">
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="X = Sales, Y = Advertising spend">X = Sales, Y = Advertising spend</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="X = Advertising spend, Y = Sales">X = Advertising spend, Y = Sales</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="X and Y are interchangeable">X and Y are interchangeable</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Neither is exogenous">Neither is exogenous</button>
+        </div>
+      </div>
+      <div class="field" data-q="2">
+        <span class="field-label"><span class="qnum">Q3.</span> Why include lagged versions of the exogenous variable (AdvLag1, AdvLag2, …) instead of just its current value? *</span>
+        <div class="mc-group choice-group" data-name="q2">
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="It's required by statsmodels syntax">It's required by statsmodels syntax</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="The effect of X on Y is often delayed/distributed over time — a dynamic transfer-function relationship">The effect of X on Y is often delayed/distributed over time — a dynamic transfer-function relationship</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Lags remove the need for differencing">Lags remove the need for differencing</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="It has no effect on model performance">It has no effect on model performance</button>
+        </div>
+      </div>
+      <div class="field" data-q="3">
+        <span class="field-label"><span class="qnum">Q4.</span> True or False: in the workshop notebooks, models were compared using MAPE on a held-out test set. *</span>
+        <div class="mc-group choice-group" data-name="q3">
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="True">True</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="False">False</button>
+        </div>
+      </div>
+      <div class="field" data-q="4">
+        <span class="field-label"><span class="qnum">Q5.</span> If adding more advertising lags doesn't improve (or worsens) out-of-sample MAPE, what should you do? *</span>
+        <div class="mc-group choice-group" data-name="q4">
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Add even more lags until it improves">Add even more lags until it improves</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Drop the less useful lags — more lags isn't automatically better; watch for overfitting">Drop the less useful lags — more lags isn't automatically better; watch for overfitting</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Switch to a pure MA model">Switch to a pure MA model</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Ignore MAPE and just look at AIC">Ignore MAPE and just look at AIC</button>
+        </div>
+      </div>
+      <label class="field">
+        <span class="field-label">Reflection — do you have any further questions? <span class="optional">(optional)</span></span>
+        <textarea name="reflection" rows="2"></textarea>
+      </label>
+      <div class="form-status" id="beginningStatus" role="status" aria-live="polite"></div>
+      <button type="submit" class="primary" id="beginningSubmit">Submit ↗</button>
+    </form>
+
+    <div class="done-state" id="doneState">
+      <div class="score-badge" id="scoreBadge"></div>
+      <h2 id="scoreHeading"></h2>
+      <div class="results-list" id="resultsList"></div>
+      <a class="primary" href="/time-series-workshop-v2">Continue to workshop →</a>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var QUESTION_COUNT = 5;
+  var form = document.getElementById('beginningForm');
+  var statusEl = document.getElementById('beginningStatus');
+  var submitBtn = document.getElementById('beginningSubmit');
+  var doneState = document.getElementById('doneState');
+  var selections = {};
+
+  Array.prototype.forEach.call(form.querySelectorAll('.choice-group'), function(group){
+    var name = group.getAttribute('data-name');
+    Array.prototype.forEach.call(group.querySelectorAll('.choice-btn'), function(btn){
+      btn.addEventListener('click', function(){
+        Array.prototype.forEach.call(group.querySelectorAll('.choice-btn'), function(b){
+          b.classList.remove('selected');
+          b.setAttribute('aria-checked', 'false');
+        });
+        btn.classList.add('selected');
+        btn.setAttribute('aria-checked', 'true');
+        selections[name] = btn.getAttribute('data-value');
+        statusEl.textContent = '';
+        statusEl.className = 'form-status';
+      });
+    });
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var answers = [];
+    var missingCount = 0;
+    for (var i = 0; i < QUESTION_COUNT; i++) {
+      var v = selections['q' + i];
+      if (!v) missingCount++;
+      answers.push(v || '');
+    }
+    if (missingCount) {
+      statusEl.textContent = 'Please answer all questions (' + missingCount + ' remaining).';
+      statusEl.className = 'form-status error';
+      return;
+    }
+
+    var fd = new FormData(form);
+    var payload = { stage: 3, answers: answers, reflection: (fd.get('reflection') || '').trim() };
+
+    submitBtn.disabled = true;
+    statusEl.textContent = 'Submitting…';
+    statusEl.className = 'form-status';
+
+    fetch('/api/submit-checkpoint', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then(function(res){ return res.json().then(function(data){ return { ok: res.ok, data: data }; }); })
+      .then(function(r){
+        if (!r.ok || r.data.error) {
+          submitBtn.disabled = false;
+          statusEl.textContent = 'Error: ' + (r.data.error || 'submission failed — please try again.');
+          statusEl.className = 'form-status error';
+          return;
+        }
+        renderResults(r.data);
+        form.classList.add('hide');
+        doneState.classList.add('show');
+      })
+      .catch(function(err){
+        submitBtn.disabled = false;
+        statusEl.textContent = 'Error: ' + err.message;
+        statusEl.className = 'form-status error';
+      });
+  });
+
+  function renderResults(data){
+    document.getElementById('scoreBadge').textContent = data.score + '/' + data.total;
+    document.getElementById('scoreHeading').textContent = 'You scored ' + data.score + ' out of ' + data.total;
+    var list = document.getElementById('resultsList');
+    list.innerHTML = data.results.map(function(r, i){
+      var cls = r.correct ? 'correct' : 'wrong';
+      var icon = r.correct ? '✓' : '✗';
+      var correctLine = r.correct ? '' : '<span class="result-correct">Correct answer: ' + escapeHtml(r.correctAnswer) + '</span>';
+      return '<div class="result-row ' + cls + '"><span class="result-icon">' + icon + '</span><span class="result-text"><span class="result-q">Q' + (i + 1) + '. ' + escapeHtml(r.question) + '</span><span class="result-your">Your answer: ' + escapeHtml(r.yourAnswer) + '</span>' + correctLine + '</span></div>';
+    }).join('');
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+  }
+})();
+</script>
+</body>
+</html>
