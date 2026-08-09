@@ -233,7 +233,7 @@
   </div>
 
   <p class="section-title">AI-generated cohort reports</p>
-  <p class="section-desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read. Checkpoints 1 & 2 close with a "Top Teaching Moves Now" section — up to 3 recommendations in a 🔴 Clarify / 🟢 Apply / 🔵 Challenge framework, each linking to the theory recap slide or the matching workshop exercise.</p>
+  <p class="section-desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read. Checkpoints 1 & 2 close with a "Top Teaching Moves Now" section — up to 3 recommendations in a 🔴 Clarify / 🟢 Apply / 🔵 Challenge framework, each linking to the theory recap slide or the matching workshop exercise. If you've graded assignments below first, the Final Report also gets a rubric-informed Clarify/Apply/Challenge section appended after its existing recommendations.</p>
   <div class="instructor-panel">
     <div class="instructor-stages">
       <button class="stage-btn" id="stage-btn-1" onclick="runCohortStage(1)">1 · Beginning Report</button>
@@ -268,6 +268,9 @@
 
 <script>
   let currentReport = null;
+  // Populated by runGradeSubmissions() below — if set, gets appended (not
+  // used to replace anything) to the Final Report as a new section.
+  let currentRubricSynthesis = null;
 
   // Maps each checkpoint quiz topic to the corresponding slides in the
   // Time Series Theory Companion (time-series-theory.html), plus a
@@ -580,10 +583,15 @@
     boxEl.classList.remove('show');
     actionsEl.classList.remove('show');
 
+    const payload = { stage };
+    if (stage === 4 && currentRubricSynthesis) {
+      payload.rubricSynthesis = currentRubricSynthesis;
+    }
+
     fetch('/api/cohort-report', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ stage }),
+      body: JSON.stringify(payload),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -655,7 +663,9 @@
           statusEl.textContent = `Error: ${data.error || 'grading failed'}`;
           return;
         }
-        statusEl.textContent = `Graded ${data.gradedCount} of ${data.totalFilesInZip} file(s) in the zip.`;
+        currentRubricSynthesis = data.cohortSynthesis || null;
+        statusEl.textContent = `Graded ${data.gradedCount} of ${data.totalFilesInZip} file(s) in the zip.` +
+          (currentRubricSynthesis ? ' This will be appended to the Final Report when you generate it below.' : '');
         boxEl.innerHTML = renderGradeResults(data);
         boxEl.classList.add('show');
       })

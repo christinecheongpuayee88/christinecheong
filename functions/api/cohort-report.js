@@ -393,6 +393,16 @@ Do not add a section restating total response counts or a bulleted list of where
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
 
+// If the instructor already graded assignments (Assignments tab) before
+// generating the Final Report, its cohort synthesis — evidence from actual
+// graded work, already in Clarify/Apply/Challenge format — gets appended as
+// a new section 4, verbatim, rather than run through another OpenAI call.
+// This never touches section 3 above, which stays exactly as generated.
+function appendRubricSection(report, rubricSynthesis) {
+  if (!rubricSynthesis || !rubricSynthesis.trim()) return report;
+  return `${report}\n\n### 4. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
+}
+
 export async function onRequestOptions() {
   return new Response(null, { status: 204, headers: CORS });
 }
@@ -416,6 +426,9 @@ export async function onRequestPost(context) {
     if (![1, 2, 3, 4].includes(stage)) {
       return new Response(JSON.stringify({ error: "stage must be 1, 2, 3, or 4" }), { status: 400, headers: CORS });
     }
+    // Only meaningful for stage 4 — the frontend sends whatever the
+    // Assignments tab last produced, if the instructor ran it this session.
+    const rubricSynthesis = stage === 4 && typeof body.rubricSynthesis === "string" ? body.rubricSynthesis : null;
 
     const accessToken = await getGoogleAccessToken(serviceAccountKey);
 
@@ -455,7 +468,8 @@ export async function onRequestPost(context) {
       });
     }
 
-    const report = linkifyReport(llmData.choices[0].message.content, stage);
+    const linked = linkifyReport(llmData.choices[0].message.content, stage);
+    const report = appendRubricSection(linked, rubricSynthesis);
 
     await appendCohortLog(accessToken, stageLabel, report);
 
