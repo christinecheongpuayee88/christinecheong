@@ -132,11 +132,12 @@ Categories and the exact tag to use if you select that category:
 
 The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.`;
 
-// Checkpoints 1 & 2 use a different, simpler recommendation framework than
-// Beginning/Reflection: Clarify/Apply/Challenge instead of the 6-category
-// TEACHING_RECS_BLOCK above, with links resolved from this fixed table
-// (never left for the model to invent) so recommendations are immediately
-// clickable instead of generic advice.
+// Checkpoints 1, 2, and the Final report each get a Clarify/Apply/Challenge
+// section alongside (not replacing) the 6-category TEACHING_RECS_BLOCK
+// above — Beginning is the only stage without one, since there's no
+// checkpoint evidence yet at that point. Links are resolved from this fixed
+// table (never left for the model to invent) so recommendations are
+// immediately clickable instead of generic advice.
 //
 // clarifySlide values were verified against the actual slide content (not
 // just titles) in ts-theory-slides/ — e.g. "AR/MA identification" points to
@@ -171,8 +172,18 @@ const CHALLENGE_LINKS = {
   "Practitioner critique": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
 };
 
-function buildTopicLinksBlock(stage) {
-  return Object.entries(TOPIC_LINKS[stage])
+// Stages 2 and 3 each have their own topic set. Stage 4 has no topics of its
+// own — it reasons over the Checkpoint 1 + Checkpoint 2 reports already
+// embedded earlier in its prompt — so it gets the union of both, letting it
+// reference any of the 11 checkpoint topics the cumulative evidence covers.
+function mergedTopicLinks(stage) {
+  if (stage === 2 || stage === 3) return TOPIC_LINKS[stage];
+  if (stage === 4) return { ...TOPIC_LINKS[2], ...TOPIC_LINKS[3] };
+  return null;
+}
+
+function buildTopicLinksBlock(topics) {
+  return Object.entries(topics)
     .map(([topic, l]) => `- "${topic}" — CLARIFY link: ${THEORY_URL}#slide-${l.clarifySlide} (link text must be exactly "${l.clarifyLabel}") | APPLY link: ${CANVAS_WORKSHOP_URL} (link text must name "${l.exercise}")`)
     .join("\n");
 }
@@ -183,11 +194,12 @@ function buildChallengeLinksBlock() {
     .join("\n");
 }
 
-function clarifyApplyChallengeBlock(stage) {
-  return `Classify up to 3 of the topics above into CLARIFY / APPLY / CHALLENGE based on this cohort's accuracy on each. Favor a spread across the three levels when the evidence supports it (one topic needing clarification, one solid topic ready to apply, one strong topic ready to be challenged) rather than clustering all 3 picks in one level. Only include a level if a topic's evidence genuinely fits it — omit a level rather than forcing a weak fit.
+function clarifyApplyChallengeBlock(stage, evidenceSource) {
+  const topics = mergedTopicLinks(stage);
+  return `Classify up to 3 topics from ${evidenceSource} into CLARIFY / APPLY / CHALLENGE based on this cohort's demonstrated performance on each. Favor a spread across the three levels when the evidence supports it (one topic needing clarification, one solid topic ready to apply, one strong topic ready to be challenged) rather than clustering all 3 picks in one level. Only include a level if a topic's evidence genuinely fits it — omit a level rather than forcing a weak fit. Only choose topics from the reference list below — never a topic that isn't in it.
 
 Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
-${buildTopicLinksBlock(stage)}
+${buildTopicLinksBlock(topics)}
 
 CHALLENGE reference links (only "Multiple perspectives" and "Practitioner critique" have one; "What-if question" has none — leave it as plain text with no link):
 ${buildChallengeLinksBlock()}
@@ -210,7 +222,7 @@ function escapeRegex(s) {
 }
 
 function linkifyReport(text, stage) {
-  const topics = TOPIC_LINKS[stage];
+  const topics = mergedTopicLinks(stage);
   if (!topics) return text;
 
   // A label counts as "already linked" if it appears anywhere inside a
@@ -302,7 +314,7 @@ Every bullet in sections 1 and 2 must start with a **bolded concept name** follo
 
 ### 3. Top Teaching Moves Now
 
-${clarifyApplyChallengeBlock(2)}
+${clarifyApplyChallengeBlock(2, "the topics above")}
 
 Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 
@@ -346,7 +358,7 @@ Every bullet in sections 1 and 2 must start with a **bolded concept name** follo
 
 ### 3. Top Teaching Moves Now
 
-${clarifyApplyChallengeBlock(3)}
+${clarifyApplyChallengeBlock(3, "the topics above")}
 
 Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 
@@ -376,19 +388,15 @@ Structure your response exactly as follows:
 
 ## 📋 Post-Class Cohort Intelligence Report
 
-### 1. What Went Well (Across All Checkpoints)
-* [One bullet per concept/topic the cohort consistently understood well, pulled from the Checkpoint 1 and Checkpoint 2 reports' "What Went Well" sections — bold the concept name, then cite which checkpoint(s) and %, e.g. "**Order of differencing (ARIMA d):** 100% correct at Checkpoint 1." Cover both checkpoints; do not collapse them into one vague bullet.]
-
-### 2. Remaining Gaps (Across All Checkpoints)
-* [One bullet per concept/topic that showed up as a misconception in the Checkpoint 1 and/or Checkpoint 2 reports' "Remaining Gaps" sections, or that resurfaces in this reflection's remaining-questions data — bold the concept name, then name the exact misconception and where it showed up (which checkpoint, or "still unresolved at reflection"), e.g. "**ARIMA vs ARIMAX:** 11.7% incorrect at Checkpoint 2 — believing ARIMAX cannot handle seasonality." If the same concept persisted across both checkpoints, say so explicitly.]
-
-Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
-
-### 3. AI-Generated Teaching Recommendations
+### 1. AI-Generated Teaching Recommendations
 
 ${TEACHING_RECS_BLOCK}
 
-Do not add a section restating total response counts or a bulleted list of where respondents said they'll apply this — both are already shown live on the instructor dashboard.
+Do not add a section restating total response counts, a concept-by-concept breakdown of what went well or the remaining gaps, or a bulleted list of where respondents said they'll apply this — all of that is already shown live on the instructor dashboard (including a Beginning-vs-Final confidence comparison). Base the recommendations on that evidence without restating it as its own section — go straight from the raw data above to the recommendations.
+
+### 2. Top Teaching Moves for Next Cohort
+
+${clarifyApplyChallengeBlock(4, "the Checkpoint 1 and Checkpoint 2 reports above (both list per-topic accuracy) and this reflection's remaining-questions data")}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
@@ -397,10 +405,10 @@ Output plain text using exactly that Markdown structure (## and ### headings, * 
 // generating the Final Report, its cohort synthesis — evidence from actual
 // graded work, already in Clarify/Apply/Challenge format — gets appended as
 // a new section 4, verbatim, rather than run through another OpenAI call.
-// This never touches section 3 above, which stays exactly as generated.
+// This never touches sections 1-2 above, which stay exactly as generated.
 function appendRubricSection(report, rubricSynthesis) {
   if (!rubricSynthesis || !rubricSynthesis.trim()) return report;
-  return `${report}\n\n### 4. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
+  return `${report}\n\n### 3. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
 }
 
 export async function onRequestOptions() {
