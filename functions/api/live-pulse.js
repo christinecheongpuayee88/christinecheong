@@ -5,15 +5,18 @@ const CORS = {
   "Content-Type": "application/json",
 };
 
-// One backing Google Sheet per Part, self-provisioned on first use (found by
-// name via Drive, created via Sheets if missing) — the instructor never has
-// to create or share anything manually. Each sheet is a flat append-only
-// log of QUESTION and RESPONSE rows; "the current question" is just the
-// most recent QUESTION row, and "its responses" are every RESPONSE row that
-// came after it. No overwriting, no separate state table.
-const PART_SHEET_TITLES = {
-  1: "Live Discussion Pulse — Part 1 (SARIMA)",
-  2: "Live Discussion Pulse — Part 2 (ARIMAX)",
+// One backing Google Sheet per Part — a blank sheet the instructor creates
+// once and shares with the same service account used for every other sheet
+// in this system (self-provisioning via the Drive API was tried first, but
+// service accounts outside a Workspace/Shared Drive have no Drive storage
+// quota of their own and can't create files — a Google account limitation,
+// not fixable from here). Each sheet is a flat append-only log of QUESTION
+// and RESPONSE rows; "the current question" is just the most recent
+// QUESTION row, and "its responses" are every RESPONSE row that came after
+// it. No overwriting, no separate state table.
+const PART_SHEETS = {
+  1: { id: "1i-7un4_niRGQDnvUa-19OznB2Xso7i35yBxe3PGdolo", label: "Part 1 (SARIMA)" },
+  2: { id: "1Yd-awRPTq8po2PmPQx8D4o4_AGDB22_z0Z5N0_t2Cx0", label: "Part 2 (ARIMAX)" },
 };
 const DATA_RANGE = "Sheet1!A:C";
 
@@ -22,15 +25,13 @@ function b64url(bytes) {
   return btoa(str).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
-// drive.file scope (in addition to spreadsheets) so this credential can find
-// and create only the files it owns itself — never broader Drive access.
 async function getGoogleAccessToken(serviceAccountKeyJson) {
   const key = JSON.parse(serviceAccountKeyJson);
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: "RS256", typ: "JWT" };
   const claimSet = {
     iss: key.client_email,
-    scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file",
+    scope: "https://www.googleapis.com/auth/spreadsheets",
     aud: "https://oauth2.googleapis.com/token",
     exp: now + 3600,
     iat: now,
@@ -73,25 +74,6 @@ async function getGoogleAccessToken(serviceAccountKeyJson) {
     throw new Error(tokenData.error_description || "Failed to get Google access token");
   }
   return tokenData.access_token;
-}
-
-async function findOrCreateSheet(accessToken, title) {
-  const q = encodeURIComponent(`name='${title}' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false`);
-  const searchRes = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-  const searchData = await searchRes.json();
-  if (!searchRes.ok) throw new Error(searchData.error?.message || "Failed to search Drive");
-  if (searchData.files && searchData.files.length) return searchData.files[0].id;
-
-  const createRes = await fetch("https://sheets.googleapis.com/v4/spreadsheets", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ properties: { title } }),
-  });
-  const createData = await createRes.json();
-  if (!createRes.ok) throw new Error(createData.error?.message || "Failed to create sheet");
-  return createData.spreadsheetId;
 }
 
 async function readRows(accessToken, spreadsheetId) {
@@ -233,7 +215,7 @@ export async function onRequestPost(context) {
     }
 
     const accessToken = await getGoogleAccessToken(serviceAccountKey);
-    const spreadsheetId = await findOrCreateSheet(accessToken, PART_SHEET_TITLES[part]);
+    const spreadsheetId = PART_SHEETS[part].id;
 
     if (action === "publish-question") {
       const question = typeof body.question === "string" ? body.question.trim() : "";
