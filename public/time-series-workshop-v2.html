@@ -16,85 +16,12 @@
     .pulse,.section{scroll-margin-top:70px;max-width:1280px;margin:auto;padding:36px 22px}.pulse{background:linear-gradient(135deg,#f5fafc,#eef7f8);border:1px solid #cfe0eb;border-radius:16px;padding:22px;margin-bottom:22px}.pulse h2,.section h2,.pulse h3{color:var(--navy);font-size:1.8rem;font-weight:800;margin:4px 0 8px}.pulse p{color:var(--muted)}.exercise{border:1px solid var(--line);border-radius:15px;padding:20px;background:#fff;display:flex;flex-direction:column;align-items:flex-start;gap:10px}.exercise h3{color:var(--navy)}.exercise p{color:var(--muted);margin:0}.exercises{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0 22px}.tag{display:inline-block;border-radius:99px;background:var(--pale);color:var(--blue);padding:5px 10px;font-size:.78rem;font-weight:850}.alt{max-width:none;background:var(--soft)}.alt>*{max-width:1236px;margin-left:auto;margin-right:auto}
     .hint{color:var(--muted);font-size:.85rem;margin:14px 0 0}footer{border-top:1px solid var(--line);padding:30px 5vw;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}footer a{color:var(--muted);text-decoration:none}footer a:hover{color:var(--blue)}
     @media(max-width:650px){nav a{display:none}.pulse,.section{padding:24px 20px}.pulse{margin:16px}.exercises{grid-template-columns:1fr}}
-
-    .onsite-form{display:flex;flex-direction:column;gap:18px;margin-top:20px}
-    .field{display:flex;flex-direction:column;gap:7px}
-    .field-label{font-weight:750;color:var(--navy);font-size:.92rem}
-    .field-label .optional{font-weight:500;color:var(--muted)}
-    .field input[type=text],.field textarea{border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);background:#fff;resize:vertical;width:100%}
-    .field input:focus,.field textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
-    .choice-group{display:flex;gap:8px;flex-wrap:wrap}
-    .choice-btn{border:1.5px solid var(--line);border-radius:10px;padding:10px 16px;background:#fff;color:var(--ink);font-weight:700;font-size:.9rem;transition:all .15s}
-    .choice-btn:hover{border-color:var(--blue)}
-    .choice-btn:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
-    .choice-btn.selected{background:var(--blue);border-color:var(--blue);color:#fff}
-    .scale-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-    .scale-btn{width:46px;height:46px;padding:0;display:grid;place-items:center;border-radius:50%}
-    .scale-end{color:var(--muted);font-size:.8rem;font-weight:650}
-    .form-status{font-size:.88rem;color:var(--muted);min-height:1.3em}
-    .form-status.error{color:#c0392b;font-weight:650}
-    .form-status.success{color:var(--teal);font-weight:750}
   </style>
 </head>
 <body>
 <header><nav><span class="brand">TS Forecasting Workshop</span><a href="#sarima">Univariate</a><a href="#arimax">Multivariate</a><a href="#reflect">Reflection</a></nav></header>
 <main>
-  <section class="pulse" id="pulse">
-    <div class="kicker">On-site form · 2 minutes</div>
-    <h2>Opening learning pulse</h2>
-    <p>Share what you hope to learn, your confidence and the forecasting problem you want to solve.</p>
-    <form id="beginningForm" class="onsite-form" novalidate>
-      <label class="field">
-        <span class="field-label">Name <span class="optional">(optional)</span></span>
-        <input type="text" name="name" autocomplete="name">
-      </label>
-      <label class="field">
-        <span class="field-label">Industry *</span>
-        <input type="text" name="industry" required>
-      </label>
-      <label class="field">
-        <span class="field-label">Job role *</span>
-        <input type="text" name="jobRole" required>
-      </label>
-      <div class="field">
-        <span class="field-label">Time series experience *</span>
-        <div class="choice-group" data-name="experience">
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="None">None</button>
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Beginner">Beginner</button>
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Intermediate">Intermediate</button>
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Advanced">Advanced</button>
-        </div>
-      </div>
-      <div class="field">
-        <span class="field-label">Confidence — how confident do you feel about applying time series forecasting? *</span>
-        <div class="scale-row">
-          <span class="scale-end">Not at all confident</span>
-          <div class="choice-group scale" data-name="confidence">
-            <button type="button" class="choice-btn scale-btn" role="radio" aria-checked="false" data-value="1">1</button>
-            <button type="button" class="choice-btn scale-btn" role="radio" aria-checked="false" data-value="2">2</button>
-            <button type="button" class="choice-btn scale-btn" role="radio" aria-checked="false" data-value="3">3</button>
-            <button type="button" class="choice-btn scale-btn" role="radio" aria-checked="false" data-value="4">4</button>
-            <button type="button" class="choice-btn scale-btn" role="radio" aria-checked="false" data-value="5">5</button>
-          </div>
-          <span class="scale-end">Very confident</span>
-        </div>
-      </div>
-      <label class="field">
-        <span class="field-label">What is your main concern or challenge in applying time series forecasting? *</span>
-        <textarea name="concern" rows="2" required></textarea>
-      </label>
-      <label class="field">
-        <span class="field-label">What business problem would you like to address using time series forecasting? *</span>
-        <textarea name="businessProblem" rows="2" required></textarea>
-      </label>
-      <label class="field">
-        <span class="field-label">What would you most like to learn from this course? *</span>
-        <textarea name="learningGoals" rows="2" required></textarea>
-      </label>
-      <div class="form-status" id="beginningStatus" role="status" aria-live="polite"></div>
-      <button type="submit" class="primary" id="beginningSubmit">Submit ↗</button>
-    </form>
-  </section>
+  <section class="pulse" id="pulse"><div class="kicker">On-site form · 2 minutes</div><h2>Opening learning pulse</h2><p>Share what you hope to learn, your confidence and the forecasting problem you want to solve.</p><a class="primary" style="display:inline-block;text-decoration:none" href="/time-series-workshop-beginning-survey">Open learning pulse ↗</a></section>
 
   <section class="section" id="sarima"><h2>Part 1 · Univariate forecasting (SARIMA)</h2><div class="exercises"><article class="exercise"><span class="tag">SARIMA · Workshop 1A</span><h3>Airline passengers</h3><p>Forecast two years of monthly passenger demand for planning. Look for growth, a 12-month cycle and changing seasonal amplitude.</p><a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a></article><article class="exercise"><span class="tag">SARIMA · Workshop 1B</span><h3>Hotel occupancy</h3><p>Forecast occupied rooms to support staffing and supply decisions. Connect monthly seasonality to operational planning.</p><a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a></article></div><div class="pulse" id="sarimaQuiz"><div class="kicker">Google Forms · 2 minutes</div><h3>Checkpoint 1 — SARIMA</h3><p>Quick comprehension check after this section — scored automatically.</p><button class="primary" onclick="openConfigured(CHECKPOINT_FORM_URL.sarima)">Open SARIMA checkpoint ↗</button><p class="hint">Tip: "View score" opens in a new tab — switch back to this one to return to the workshop.</p></div></section>
 
@@ -109,87 +36,6 @@ const REFLECTION_FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLSfbeio-LF2id
 const CHECKPOINT_FORM_URL={sarima:"https://docs.google.com/forms/d/e/1FAIpQLSfz8210181lxdhI7eP31Tu24_Z7rZeou449vJ9EjyAeoMGvZg/viewform",arimax:"https://docs.google.com/forms/d/e/1FAIpQLScMx3n1VsS8DgZKj0gfuUSQaANis9z7dDKv4SAq8esSBtryiA/viewform"};
 
 function openConfigured(u){u?window.open(u,"_blank","noopener"):alert("This link has not yet been configured.")}
-
-(function(){
-  var form = document.getElementById('beginningForm');
-  if(!form) return;
-  var statusEl = document.getElementById('beginningStatus');
-  var submitBtn = document.getElementById('beginningSubmit');
-  var selections = {};
-
-  Array.prototype.forEach.call(form.querySelectorAll('.choice-group'), function(group){
-    var name = group.getAttribute('data-name');
-    Array.prototype.forEach.call(group.querySelectorAll('.choice-btn'), function(btn){
-      btn.addEventListener('click', function(){
-        Array.prototype.forEach.call(group.querySelectorAll('.choice-btn'), function(b){
-          b.classList.remove('selected');
-          b.setAttribute('aria-checked', 'false');
-        });
-        btn.classList.add('selected');
-        btn.setAttribute('aria-checked', 'true');
-        selections[name] = btn.getAttribute('data-value');
-        statusEl.textContent = '';
-        statusEl.className = 'form-status';
-      });
-    });
-  });
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    var fd = new FormData(form);
-    var payload = {
-      name: (fd.get('name') || '').trim(),
-      industry: (fd.get('industry') || '').trim(),
-      jobRole: (fd.get('jobRole') || '').trim(),
-      experience: selections.experience || '',
-      confidence: selections.confidence || '',
-      concern: (fd.get('concern') || '').trim(),
-      businessProblem: (fd.get('businessProblem') || '').trim(),
-      learningGoals: (fd.get('learningGoals') || '').trim(),
-    };
-    var missing = [];
-    if (!payload.industry) missing.push('Industry');
-    if (!payload.jobRole) missing.push('Job role');
-    if (!payload.experience) missing.push('Time series experience');
-    if (!payload.confidence) missing.push('Confidence');
-    if (!payload.concern) missing.push('Main concern / challenge');
-    if (!payload.businessProblem) missing.push('Business problem');
-    if (!payload.learningGoals) missing.push('Learning goals');
-    if (missing.length) {
-      statusEl.textContent = 'Please fill in: ' + missing.join(', ');
-      statusEl.className = 'form-status error';
-      return;
-    }
-
-    submitBtn.disabled = true;
-    statusEl.textContent = 'Submitting…';
-    statusEl.className = 'form-status';
-
-    fetch('/api/submit-beginning', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-      .then(function(res){ return res.json().then(function(data){ return { ok: res.ok, data: data }; }); })
-      .then(function(r){
-        if (!r.ok || r.data.error) {
-          submitBtn.disabled = false;
-          statusEl.textContent = 'Error: ' + (r.data.error || 'submission failed — please try again.');
-          statusEl.className = 'form-status error';
-          return;
-        }
-        Array.prototype.forEach.call(form.querySelectorAll('input,textarea,button'), function(el){ el.disabled = true; });
-        submitBtn.style.display = 'none';
-        statusEl.textContent = 'Thanks — your response has been recorded.';
-        statusEl.className = 'form-status success';
-      })
-      .catch(function(err){
-        submitBtn.disabled = false;
-        statusEl.textContent = 'Error: ' + err.message;
-        statusEl.className = 'form-status error';
-      });
-  });
-})();
 </script>
 </body>
 </html>
