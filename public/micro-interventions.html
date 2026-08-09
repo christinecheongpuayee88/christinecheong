@@ -103,6 +103,34 @@
   }
   .move-tool-link:hover { color: #1d4ed8; }
 
+  .quiz-bank { margin-top: 4px; }
+  .quiz-group + .quiz-group { margin-top: 18px; }
+  .quiz-group-label {
+    font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--subtle); margin-bottom: 8px;
+  }
+  .quiz-item {
+    scroll-margin-top: 24px;
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
+    margin-bottom: 8px; overflow: hidden;
+  }
+  .quiz-item:target { box-shadow: 0 0 0 1px var(--bad); }
+  .quiz-item summary {
+    cursor: pointer; padding: 12px 16px; font-size: 13.5px; font-weight: 500; color: var(--text);
+    list-style: none; display: flex; align-items: baseline; gap: 8px;
+  }
+  .quiz-item summary::-webkit-details-marker { display: none; }
+  .quiz-item summary::before { content: "▸"; color: var(--subtle); font-size: 11px; transition: transform .15s; flex-shrink: 0; }
+  .quiz-item[open] summary::before { transform: rotate(90deg); }
+  .quiz-item summary .quiz-topic { font-size: 11px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; color: var(--bad); flex-shrink: 0; }
+  .quiz-body { padding: 0 16px 16px; }
+  .quiz-options { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .quiz-option { font-size: 13px; color: var(--muted); padding: 7px 10px; border-radius: var(--radius); background: var(--bg); border: 1px solid var(--border); }
+  .quiz-option.correct { color: var(--good); border-color: var(--good); background: var(--good-bg); font-weight: 500; }
+  .quiz-option .opt-letter { font-weight: 600; margin-right: 6px; }
+  .quiz-explain { font-size: 13px; color: var(--text); line-height: 1.6; padding-top: 4px; border-top: 1px dashed var(--border); }
+  .quiz-explain .explain-label { font-weight: 600; color: var(--bad); }
+
   .stretch-note {
     border: 1px dashed var(--border); border-radius: var(--radius); padding: 16px 20px;
     font-size: 13.5px; color: var(--muted); line-height: 1.7; margin-top: 8px;
@@ -150,11 +178,159 @@
 
     <div class="move-card" id="clarify-quick-quiz">
       <div class="move-head"><span class="move-name">Quick quiz</span><span class="move-time">2–3 min</span></div>
-      <p class="move-purpose">One AI-generated multiple-choice question on the concept the cohort is weakest on, with a short explanation revealed after the answer.</p>
-      <div class="move-example">
-        <span class="example-label">Ready-to-run example</span>
-        <div class="example-title">Quick Check · 3 min</div>
-        <p>Which statement best explains seasonal differencing? A–D choices → reveal answer → short AI explanation.</p>
+      <p class="move-purpose">Curated one-question multiple-choice checks, one per checkpoint topic — trainer-triggered on demand. Pick whichever topic the live checkpoint data flags as weakest, project it, take answers, then click to reveal.</p>
+
+      <div class="quiz-bank">
+        <div class="quiz-group">
+          <div class="quiz-group-label">SARIMA — Checkpoint 1 topics</div>
+
+          <details class="quiz-item" id="quiz-differencing-d">
+            <summary><span class="quiz-topic">Differencing (d)</span> In ARIMA(p,d,q), what does d represent?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> The number of autoregressive terms</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> The order of differencing needed to make the series stationary</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> The number of moving average terms</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> The number of seasonal periods</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> d counts how many times you difference the series to remove trend and reach stationarity — it says nothing about AR or MA terms.</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-ar-ma-identification">
+            <summary><span class="quiz-topic">AR/MA identification</span> A series' ACF decays gradually while its PACF cuts off sharply after lag 2. What process does this suggest?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> MA(2)</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> AR(2)</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> ARMA(2,2)</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> White noise</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> Gradual ACF decay with a sharp PACF cutoff at lag p is the signature of an AR(p) process — the reverse pattern (sharp ACF cutoff, gradual PACF decay) points to MA(q) instead.</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-seasonal-period-s">
+            <summary><span class="quiz-topic">Seasonal period (s)</span> In SARIMA(p,d,q)(P,D,Q)s, what does s represent?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> The number of seasonal AR terms</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> The number of periods per season (e.g. 12 for monthly data with yearly seasonality)</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> The seasonal differencing order</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> The total number of observations</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> s is the seasonal period length — easy to confuse with P (seasonal AR order), but s just tells the model how many steps make up one full seasonal cycle.</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-seasonal-differencing">
+            <summary><span class="quiz-topic">Seasonal differencing</span> Why do we need seasonal differencing in addition to regular differencing?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> Regular differencing already removes seasonal patterns</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> Seasonal differencing removes the repeating s-period pattern that regular differencing leaves behind</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> Seasonal differencing replaces the need for an MA term</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> It's only needed when d &gt; 1</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> Regular differencing removes trend; seasonal differencing (at lag s) removes the repeating seasonal pattern — series with both trend and seasonality typically need both.</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-model-selection-aic-bic">
+            <summary><span class="quiz-topic">Model selection (AIC/BIC)</span> Two candidate SARIMA models both have white-noise residuals. Which should you prefer?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> The one with more parameters, since it fits the data more closely</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> The one with the lower AIC/BIC</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> The one with the higher R²</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> Either — residual whiteness is the only thing that matters</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> Once residuals are white noise for multiple candidates, AIC/BIC breaks the tie by penalizing unnecessary complexity — lower is better.</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-residual-diagnostics">
+            <summary><span class="quiz-topic">Residual diagnostics</span> True or False — a well-fitted SARIMA model should leave residuals that look like white noise.</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option correct"><span class="opt-letter">A.</span> True</li>
+                <li class="quiz-option"><span class="opt-letter">B.</span> False — residuals should show a strong seasonal pattern</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> False — residuals should trend upward</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> False — residual behavior doesn't matter if AIC is low</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> If the model captured all the structure in the series, what's left over should be unpredictable — i.e. white noise. Leftover pattern means the model missed something.</p>
+            </div>
+          </details>
+        </div>
+
+        <div class="quiz-group">
+          <div class="quiz-group-label">ARIMAX — Checkpoint 2 topics</div>
+
+          <details class="quiz-item" id="quiz-arima-vs-arimax">
+            <summary><span class="quiz-topic">ARIMA vs ARIMAX</span> What's the key difference between ARIMA and ARIMAX?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> ARIMAX can only be used for seasonal data</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> ARIMAX adds an exogenous predictor on top of Y's own past</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> ARIMAX doesn't require differencing</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> ARIMAX is only for classification problems</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> ARIMA models Y using only Y's own history; ARIMAX adds one or more external (exogenous) variables — like advertising spend — as extra predictors.</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-identifying-x-and-y">
+            <summary><span class="quiz-topic">Identifying X and Y</span> In the Advertising → Sales ARIMAX example, which variable is X and which is Y?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> X = Sales, Y = Advertising</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> X = Advertising spend, Y = Sales</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> Both are treated as Y</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> Neither — ARIMAX doesn't distinguish X and Y</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> Y is the variable you're forecasting (Sales); X is the exogenous predictor believed to lead or influence it (Advertising spend).</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-lagged-exogenous-effects">
+            <summary><span class="quiz-topic">Lagged exogenous effects</span> Why include lagged versions of the exogenous variable instead of just its current value?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> Lags are required by the software regardless of the data</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> The effect of X on Y is often delayed or distributed over time</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> Lagged values are always more accurate than current values</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> It removes the need for differencing</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> Advertising today might not move sales until next week — lagged X terms let the model capture that delayed, distributed effect (a dynamic transfer-function relationship).</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-model-evaluation-mape">
+            <summary><span class="quiz-topic">Model evaluation (MAPE)</span> True or False — models were compared using MAPE on a held-out test set.</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option correct"><span class="opt-letter">A.</span> True</li>
+                <li class="quiz-option"><span class="opt-letter">B.</span> False — models were compared using training-set R² only</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> False — models were compared by residual count</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> False — no quantitative comparison was used</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> MAPE (Mean Absolute Percentage Error) on data the model hasn't seen checks whether it actually generalizes, not just fits the training data.</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-overfitting-lag-selection">
+            <summary><span class="quiz-topic">Overfitting / lag selection</span> Adding more advertising lags worsens out-of-sample MAPE. What should you do?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> Add even more lags to compensate</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> Drop the less useful lags — more lags isn't automatically better</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> Switch to a pure ARIMA model with no exogenous variable</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> Ignore out-of-sample MAPE and trust the training fit</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> Worsening out-of-sample performance despite more lags is a classic overfitting signal — the extra lags are fitting noise, not signal. Prune back to the lags that actually help.</p>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
 
