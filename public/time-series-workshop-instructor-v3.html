@@ -286,7 +286,7 @@
   </div>
 
   <p class="section-title">Live Discussion Pulse</p>
-  <p class="section-desc">Ask an ad-hoc question mid-workshop and see the cohort's reasoning, not just 2–3 vocal answers. Publish a question, share the student page link, then refresh to check responses and get an AI synthesis — themes plus one recommended 🔴 Clarify / 🟢 Apply / 🔵 Challenge move. "Publish" starts a fresh round (new responses only); "Edit current" fixes the question in place — e.g. a typo — without losing responses already collected. Running "Get AI synthesis" also posts the emerging themes (not the recommended move) back to the student page as "Results so far" — AI only ever recommends a facilitation move to you; it never replies to students.</p>
+  <p class="section-desc">Ask an ad-hoc question mid-workshop and see the cohort's reasoning, not just 2–3 vocal answers. Publish a question, share the student page link, then refresh to check responses and get an AI synthesis — themes plus one recommended 🔴 Clarify / 🟢 Apply / 🔵 Challenge move. "Publish" starts a fresh round (new responses only); "Edit current" fixes the question in place — e.g. a typo — without losing responses already collected. Running "Get AI synthesis" also posts the emerging themes (not the recommended move) back to the student page as "Results so far" — AI only ever recommends a facilitation move to you; it never replies to students. "Clear results" resets the count and synthesis shown on this panel only — every response stays in the Google Sheet and students still see everything as normal.</p>
   <div class="instructor-panel">
     <div class="pulse-grid">
       <div class="pulse-panel">
@@ -303,6 +303,7 @@
         <div class="pulse-actions">
           <button class="stage-btn" onclick="refreshPulseState(1)">Refresh</button>
           <button class="stage-btn" id="pulse-synth-btn-1" onclick="synthesizePulse(1)">Get AI synthesis</button>
+          <button class="stage-btn" onclick="clearPulseResults(1)">Clear results</button>
         </div>
         <div class="pulse-status" id="pulse-status-1"></div>
         <div class="report-box" id="pulse-box-1"></div>
@@ -322,6 +323,7 @@
         <div class="pulse-actions">
           <button class="stage-btn" onclick="refreshPulseState(2)">Refresh</button>
           <button class="stage-btn" id="pulse-synth-btn-2" onclick="synthesizePulse(2)">Get AI synthesis</button>
+          <button class="stage-btn" onclick="clearPulseResults(2)">Clear results</button>
         </div>
         <div class="pulse-status" id="pulse-status-2"></div>
         <div class="report-box" id="pulse-box-2"></div>
@@ -798,6 +800,18 @@
     return html;
   }
 
+  // "Clear results" is a purely client-side view reset — instructor panel
+  // only, per the design decision here: nothing is deleted server-side, so
+  // students (who read the same get-state endpoint) keep seeing the real
+  // count and results. The offset is how many responses existed at the
+  // moment of the last clear; the panel always displays (real count -
+  // offset). Stored in localStorage so it survives an accidental page
+  // reload mid-class. Reset to 0 whenever a genuinely new question is
+  // published, since that's already a fresh count at the data level too.
+  function pulseOffsetKey(part) { return `pulseClearOffset_part${part}`; }
+  function getPulseOffset(part) { return Number(localStorage.getItem(pulseOffsetKey(part))) || 0; }
+  function setPulseOffset(part, value) { localStorage.setItem(pulseOffsetKey(part), String(value)); }
+
   function refreshPulseState(part) {
     const currentEl = document.getElementById(`pulse-current-${part}`);
     const statusEl = document.getElementById(`pulse-status-${part}`);
@@ -818,18 +832,34 @@
         }
         if (data.question) {
           currentEl.classList.remove('waiting');
-          currentEl.innerHTML = `<span class="pulse-current-label">Current question · ${data.responseCount} response${data.responseCount === 1 ? '' : 's'}</span>${escapeHtml(data.question)}`;
+          const displayCount = Math.max(0, data.responseCount - getPulseOffset(part));
+          currentEl.innerHTML = `<span class="pulse-current-label">Current question · ${displayCount} response${displayCount === 1 ? '' : 's'}</span>${escapeHtml(data.question)}`;
           currentEl.dataset.questionText = data.question;
+          currentEl.dataset.rawResponseCount = data.responseCount;
         } else {
           currentEl.classList.add('waiting');
           currentEl.innerHTML = `<span class="pulse-current-label">Current question</span>No question published yet.`;
           currentEl.dataset.questionText = '';
+          currentEl.dataset.rawResponseCount = '0';
         }
       })
       .catch((err) => {
         statusEl.classList.add('error');
         statusEl.textContent = `Error: ${err.message}`;
       });
+  }
+
+  function clearPulseResults(part) {
+    const currentEl = document.getElementById(`pulse-current-${part}`);
+    const statusEl = document.getElementById(`pulse-status-${part}`);
+    const boxEl = document.getElementById(`pulse-box-${part}`);
+    const rawCount = Number(currentEl.dataset.rawResponseCount || 0);
+    setPulseOffset(part, rawCount);
+    boxEl.classList.remove('show');
+    boxEl.innerHTML = '';
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Cleared on this panel — every response is still saved in the sheet, and students still see the real count and results.';
+    refreshPulseState(part);
   }
 
   function publishPulseQuestion(part) {
@@ -854,6 +884,7 @@
         }
         inputEl.value = '';
         statusEl.textContent = 'Question published.';
+        setPulseOffset(part, 0);
         document.getElementById(`pulse-box-${part}`).classList.remove('show');
         refreshPulseState(part);
       })
