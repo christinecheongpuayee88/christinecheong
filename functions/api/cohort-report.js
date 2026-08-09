@@ -114,7 +114,23 @@ function formatResponses(values) {
 // slightly-different category list. The 6th category ({{Learning Path}}) activates
 // the 4th of the 4 adaptation levels (Content/Pedagogy/Facilitation/Learning Path) —
 // the first 5 categories' level-tags are unchanged from before, this only adds to them.
-const TEACHING_RECS_BLOCK = `Consider all six possible teaching-decision categories below, then select ONLY the 3 most important and actionable for this specific cohort's actual data right now. Omit the other three entirely — never list all six. Favor a spread across different categories rather than clustering all 3 picks under one.
+//
+// buildTeachingRecsBlock(stage) is a function (not a static string) so each
+// recommendation can end with a real clickable link: stages 2/3/4 get the
+// checkpoint-topic reference table (same links used by Clarify/Apply/
+// Challenge), stage 1 only gets the three general resources since there's no
+// topic-level evidence yet. linkifyReport() below is the deterministic
+// backend safety net that catches cases where the model names the link text
+// but drops the markdown brackets.
+function buildTeachingRecsBlock(stage) {
+  const topics = mergedTopicLinks(stage);
+  const topicRefs = topics
+    ? Object.entries(topics)
+        .map(([topic, l]) => `- "${topic}" → ${THEORY_URL}#slide-${l.clarifySlide} (link text must be exactly "${l.clarifyLabel}")`)
+        .join("\n")
+    : null;
+
+  return `Consider all six possible teaching-decision categories below, then select ONLY the 3 most important and actionable for this specific cohort's actual data right now. Omit the other three entirely — never list all six. Favor a spread across different categories rather than clustering all 3 picks under one.
 
 Categories and the exact tag to use if you select that category:
 - What to emphasise → {{Content}}
@@ -126,11 +142,16 @@ Categories and the exact tag to use if you select that category:
 
 > [One sentence of cohort evidence citing exact counts/percentages from the data above that justifies the 3 recommendations below]
 
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}. [link text](url)
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}. [link text](url)
+* **[chosen category]:** [specific, concrete recommendation] {{tag}}. [link text](url)
+
+Every one of the 3 recommendations must end with one clickable resource link, chosen from the reference list below — never invent a URL or link text, and never leave a recommendation without a link.
+${topicRefs ? `If the recommendation is about one of these specific topics, use its link:\n${topicRefs}\n\nOtherwise use` : "Use"} whichever general resource below fits best:
+${buildGeneralLinksBlock()}
 
 The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.`;
+}
 
 // Checkpoints 1, 2, and the Final report each get a Clarify/Apply/Challenge
 // section alongside (not replacing) the 6-category TEACHING_RECS_BLOCK
@@ -171,6 +192,22 @@ const CHALLENGE_LINKS = {
   "Multiple perspectives": { url: "https://christinecheong.com/agents-hub/perspectives-agent.html", label: "Multiple Perspectives Agent" },
   "Practitioner critique": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
 };
+
+// Fallback resources for the 6-category teaching recommendations, used when
+// a recommendation isn't about one specific checkpoint topic (e.g. a
+// facilitation or pacing tip) — and the only links available at all for
+// Stage 1, which has no topic-level evidence yet.
+const GENERAL_RESOURCE_LINKS = {
+  Theory: { url: THEORY_URL, label: "Time Series Theory Companion" },
+  Workshop: { url: CANVAS_WORKSHOP_URL, label: "Canvas Workshop Folder" },
+  AgentsHub: { url: "https://christinecheong.com/agents-hub/", label: "AI Agents Hub" },
+};
+
+function buildGeneralLinksBlock() {
+  return Object.values(GENERAL_RESOURCE_LINKS)
+    .map((l) => `- ${l.url} (link text must be exactly "${l.label}")`)
+    .join("\n");
+}
 
 // Stages 2 and 3 each have their own topic set. Stage 4 has no topics of its
 // own — it reasons over the Checkpoint 1 + Checkpoint 2 reports already
@@ -222,8 +259,7 @@ function escapeRegex(s) {
 }
 
 function linkifyReport(text, stage) {
-  const topics = mergedTopicLinks(stage);
-  if (!topics) return text;
+  const topics = mergedTopicLinks(stage) || {};
 
   // A label counts as "already linked" if it appears anywhere inside a
   // [...](...) span — not just as the exact bracket content — since the
@@ -244,6 +280,13 @@ function linkifyReport(text, stage) {
     }
   }
   for (const l of Object.values(CHALLENGE_LINKS)) {
+    if (text.includes(l.label) && !alreadyLinked(l.label)) {
+      text = text.replace(l.label, `[${l.label}](${l.url})`);
+    }
+  }
+  // General resource links back the 6-category teaching recommendations on
+  // every stage, including Stage 1 which has no checkpoint topics at all.
+  for (const l of Object.values(GENERAL_RESOURCE_LINKS)) {
     if (text.includes(l.label) && !alreadyLinked(l.label)) {
       text = text.replace(l.label, `[${l.label}](${l.url})`);
     }
@@ -273,7 +316,7 @@ Structure your response exactly as follows:
 
 ### 2. AI-Generated Teaching Recommendations
 
-${TEACHING_RECS_BLOCK}
+${buildTeachingRecsBlock(1)}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
@@ -314,7 +357,7 @@ Every bullet in sections 1 and 2 must start with a **bolded concept name** follo
 
 ### 3. AI-Generated Teaching Recommendations
 
-${TEACHING_RECS_BLOCK}
+${buildTeachingRecsBlock(2)}
 
 ### 4. Top Teaching Moves Now
 
@@ -362,7 +405,7 @@ Every bullet in sections 1 and 2 must start with a **bolded concept name** follo
 
 ### 3. AI-Generated Teaching Recommendations
 
-${TEACHING_RECS_BLOCK}
+${buildTeachingRecsBlock(3)}
 
 ### 4. Top Teaching Moves Now
 
@@ -396,13 +439,16 @@ Structure your response exactly as follows:
 
 ## 📋 Post-Class Cohort Intelligence Report
 
-### 1. AI-Generated Teaching Recommendations
+### 1. Cohort Insights (from Live Sensing)
+* [2-4 bullets of genuine interpretive insight comparing the reflection data above against the Beginning-of-Class Report above — bold a short topic header at the start of each bullet, then elaborate after a colon, e.g. "**Confidence Growth:** average confidence rose from 2.4 to 4.1 over the day, the strongest jump among the beginner segment." Cover different angles across the bullets (confidence trend, whether stated Beginning concerns/goals were addressed, how application-ready the cohort now sounds vs. their Day-start goals) — don't repeat the same angle twice. Insight, not a restated breakdown — do not list raw confidence counts or the full distribution; that comparison is already charted live on the instructor dashboard.]
 
-${TEACHING_RECS_BLOCK}
+### 2. AI-Generated Teaching Recommendations
+
+${buildTeachingRecsBlock(4)}
 
 Do not add a section restating total response counts, a concept-by-concept breakdown of what went well or the remaining gaps, or a bulleted list of where respondents said they'll apply this — all of that is already shown live on the instructor dashboard (including a Beginning-vs-Final confidence comparison). Base the recommendations on that evidence without restating it as its own section — go straight from the raw data above to the recommendations.
 
-### 2. Top Teaching Moves for Next Cohort
+### 3. Top Teaching Moves for Next Cohort
 
 ${clarifyApplyChallengeBlock(4, "the Checkpoint 1 and Checkpoint 2 reports above (both list per-topic accuracy) and this reflection's remaining-questions data")}
 
@@ -413,10 +459,10 @@ Output plain text using exactly that Markdown structure (## and ### headings, * 
 // generating the Final Report, its cohort synthesis — evidence from actual
 // graded work, already in Clarify/Apply/Challenge format — gets appended as
 // a new section 4, verbatim, rather than run through another OpenAI call.
-// This never touches sections 1-2 above, which stay exactly as generated.
+// This never touches sections 1-3 above, which stay exactly as generated.
 function appendRubricSection(report, rubricSynthesis) {
   if (!rubricSynthesis || !rubricSynthesis.trim()) return report;
-  return `${report}\n\n### 3. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
+  return `${report}\n\n### 4. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
 }
 
 export async function onRequestOptions() {
