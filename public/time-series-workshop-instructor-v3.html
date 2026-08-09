@@ -812,13 +812,13 @@
   function getPulseOffset(part) { return Number(localStorage.getItem(pulseOffsetKey(part))) || 0; }
   function setPulseOffset(part, value) { localStorage.setItem(pulseOffsetKey(part), String(value)); }
 
-  function refreshPulseState(part) {
+  function refreshPulseState(part, statusMessage) {
     const currentEl = document.getElementById(`pulse-current-${part}`);
     const statusEl = document.getElementById(`pulse-status-${part}`);
     statusEl.classList.remove('error');
     statusEl.textContent = '';
 
-    fetch('/api/live-pulse', {
+    return fetch('/api/live-pulse', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ part, action: 'get-state' }),
@@ -842,6 +842,11 @@
           currentEl.dataset.questionText = '';
           currentEl.dataset.rawResponseCount = '0';
         }
+        // Set after the fetch resolves, not before — refreshPulseState
+        // clears the status text itself at the start of every call, so a
+        // message set by the caller beforehand would be wiped before it's
+        // ever seen.
+        if (statusMessage) statusEl.textContent = statusMessage;
       })
       .catch((err) => {
         statusEl.classList.add('error');
@@ -851,15 +856,12 @@
 
   function clearPulseResults(part) {
     const currentEl = document.getElementById(`pulse-current-${part}`);
-    const statusEl = document.getElementById(`pulse-status-${part}`);
     const boxEl = document.getElementById(`pulse-box-${part}`);
     const rawCount = Number(currentEl.dataset.rawResponseCount || 0);
     setPulseOffset(part, rawCount);
     boxEl.classList.remove('show');
     boxEl.innerHTML = '';
-    statusEl.classList.remove('error');
-    statusEl.textContent = 'Cleared on this panel — every response is still saved in the sheet, and students still see the real count and results.';
-    refreshPulseState(part);
+    refreshPulseState(part, 'Cleared on this panel — every response is still saved in the sheet, and students still see the real count and results.');
   }
 
   function publishPulseQuestion(part) {
