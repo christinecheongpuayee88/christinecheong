@@ -153,11 +153,13 @@ ${buildGeneralLinksBlock()}
 The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.`;
 }
 
-// Checkpoints 1, 2, and the Final report each get a Clarify/Apply/Challenge
-// section alongside (not replacing) the 6-category TEACHING_RECS_BLOCK
-// above — Beginning is the only stage without one, since there's no
-// checkpoint evidence yet at that point. Links are resolved from this fixed
-// table (never left for the model to invent) so recommendations are
+// All four stages get a Clarify/Apply/Challenge section alongside (not
+// replacing) the 6-category TEACHING_RECS_BLOCK above. Beginning has no quiz
+// performance yet, so its version is forward-looking — anchored on the
+// upcoming SARIMA topic set (TOPIC_LINKS[2]) and classified from stated
+// confidence/concerns/goals instead of accuracy — see the isForwardLooking
+// branch in clarifyApplyChallengeBlock() below. Links are resolved from this
+// fixed table (never left for the model to invent) so recommendations are
 // immediately clickable instead of generic advice.
 //
 // clarifySlide values were verified against the actual slide content (not
@@ -213,7 +215,11 @@ function buildGeneralLinksBlock() {
 // own — it reasons over the Checkpoint 1 + Checkpoint 2 reports already
 // embedded earlier in its prompt — so it gets the union of both, letting it
 // reference any of the 11 checkpoint topics the cumulative evidence covers.
+// Stage 1 has no quiz data at all yet, so it anchors on the SARIMA topic set
+// (TOPIC_LINKS[2]) — the material about to be taught first — for its
+// forward-looking Clarify/Apply/Challenge picks.
 function mergedTopicLinks(stage) {
+  if (stage === 1) return TOPIC_LINKS[2];
   if (stage === 2 || stage === 3) return TOPIC_LINKS[stage];
   if (stage === 4) return { ...TOPIC_LINKS[2], ...TOPIC_LINKS[3] };
   return null;
@@ -233,7 +239,15 @@ function buildChallengeLinksBlock() {
 
 function clarifyApplyChallengeBlock(stage, evidenceSource) {
   const topics = mergedTopicLinks(stage);
-  return `Classify up to 3 topics from ${evidenceSource} into CLARIFY / APPLY / CHALLENGE based on this cohort's demonstrated performance on each. Favor a spread across the three levels when the evidence supports it (one topic needing clarification, one solid topic ready to apply, one strong topic ready to be challenged) rather than clustering all 3 picks in one level. Only include a level if a topic's evidence genuinely fits it — omit a level rather than forcing a weak fit. Only choose topics from the reference list below — never a topic that isn't in it.
+  const isForwardLooking = stage === 1;
+  const basis = isForwardLooking
+    ? "this cohort's stated confidence, experience level, and named concerns/goals in the intake survey above (there is no quiz performance yet to base this on — no one has been taught or tested)"
+    : "this cohort's demonstrated performance on each";
+  const evidenceNote = isForwardLooking
+    ? "citing the specific stated confidence, concern, or goal that justifies it"
+    : "citing the % evidence";
+
+  return `Classify up to 3 topics from ${evidenceSource} into CLARIFY / APPLY / CHALLENGE based on ${basis}. Favor a spread across the three levels when the evidence supports it (one topic needing clarification, one solid topic ready to apply, one strong topic ready to be challenged) rather than clustering all 3 picks in one level. Only include a level if a topic's evidence genuinely fits it — omit a level rather than forcing a weak fit. Only choose topics from the reference list below — never a topic that isn't in it.
 
 Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
 ${buildTopicLinksBlock(topics)}
@@ -243,9 +257,9 @@ ${buildChallengeLinksBlock()}
 
 For each chosen topic, use exactly this format:
 
-* 🔴 **CLARIFY — [topic]:** [pick one: Visual explanation / Worked example / Quick concept recap, describe the specific action in one sentence, citing the % evidence]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
-* 🟢 **APPLY — [topic]:** [pick one: Mini case / Guided exercise / Colab activity, describe the specific action tied to the named workshop exercise, citing the % evidence]. [Try: that topic's exact exercise name from the reference above](that topic's APPLY link)
-* 🔵 **CHALLENGE — [topic]:** [pick one: What-if question / Multiple perspectives / Practitioner critique — write the actual prompt to pose to the cohort, citing the % evidence]. If you picked Multiple perspectives or Practitioner critique, append [its link text](its exact CHALLENGE link) — if you picked What-if question, append no link at all.`;
+* 🔴 **CLARIFY — [topic]:** [pick one: Visual explanation / Worked example / Quick concept recap, describe the specific action in one sentence, ${evidenceNote}]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
+* 🟢 **APPLY — [topic]:** [pick one: Mini case / Guided exercise / Colab activity, describe the specific action tied to the named workshop exercise, ${evidenceNote}]. [Try: that topic's exact exercise name from the reference above](that topic's APPLY link)
+* 🔵 **CHALLENGE — [topic]:** [pick one: What-if question / Multiple perspectives / Practitioner critique — write the actual prompt to pose to the cohort, ${evidenceNote}]. If you picked Multiple perspectives or Practitioner critique, append [its link text](its exact CHALLENGE link) — if you picked What-if question, append no link at all.`;
 }
 
 // Safety net: the model doesn't reliably wrap the reference label in
@@ -318,6 +332,10 @@ Structure your response exactly as follows:
 
 ${buildTeachingRecsBlock(1)}
 
+### 3. Top Teaching Moves Today
+
+${clarifyApplyChallengeBlock(1, "the intake survey data above")}
+
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
 
@@ -346,20 +364,23 @@ Structure your response exactly as follows:
 
 ## 📊 Checkpoint 1 Report — SARIMA
 
-### 1. What Went Well
+### 1. Cohort Insights (from Live Sensing)
+* [2-4 bullets of genuine interpretive insight synthesizing this checkpoint's live signals into what it means right now — bold a short topic header at the start of each bullet, then elaborate after a colon, e.g. "**Confidence vs Performance:** the cohort entered with average confidence of 2.4/5 but is already scoring 92% on differencing — performance is outpacing stated confidence." Cover different angles across the bullets: (1) how actual SARIMA performance compares to the confidence level/concerns stated in the Beginning-of-Class Report, and (2) any recurring theme in the optional "Do you have any further questions?" responses. Don't repeat the same angle twice, and don't restate individual question-by-question accuracy — that's covered in the sections below.]
+
+### 2. What Went Well
 * [One bullet per question/topic with a strong correct-rate — bold the concept name, then cite the exact % and what it confirms the cohort has grasped, e.g. "**Order of differencing (d):** 100% correct — the cohort has a solid grasp of stationarity." Mark near-universal-correct concepts as "✅ mostly correct" within the elaboration.]
 
-### 2. Remaining Gaps
+### 3. Remaining Gaps
 * [One bullet per question with meaningful wrong-answer clustering — bold the concept name, then state the misconception, e.g. "**ACF/PACF identification:** 3 respondents / 21.4% picked '...' → confusing decay vs. cutoff patterns."]
 * **Trend vs Beginning:** [compare actual SARIMA performance against the confidence level and stated goals from the Beginning Report — is the cohort over-confident, under-confident, or on track relative to what they said coming in? Note whether the errors are conceptual or just notation/labeling confusion.]
 
-Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
+Every bullet in sections 2 and 3 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
 
-### 3. AI-Generated Teaching Recommendations
+### 4. AI-Generated Teaching Recommendations
 
 ${buildTeachingRecsBlock(2)}
 
-### 4. Top Teaching Moves Now
+### 5. Top Teaching Moves Now
 
 ${clarifyApplyChallengeBlock(2, "the topics above")}
 
@@ -395,19 +416,22 @@ Structure your response exactly as follows:
 
 ## 📊 Checkpoint 2 Report — ARIMAX
 
-### 1. What Went Well (Across Checkpoints 1 & 2)
+### 1. Cohort Insights (from Live Sensing)
+* [2-4 bullets of genuine interpretive insight synthesizing this checkpoint's live signals into what it means for the rest of class — bold a short topic header at the start of each bullet, then elaborate after a colon. Cover different angles across the bullets: (1) how actual ARIMAX performance compares to the confidence level/concerns stated in the Beginning-of-Class Report and the trajectory since Checkpoint 1, and (2) any recurring theme in the optional "Do you have any further questions?" responses. Don't repeat the same angle twice, and don't restate individual question-by-question accuracy — that's covered in the sections below.]
+
+### 2. What Went Well (Across Checkpoints 1 & 2)
 * [One bullet per concept/topic the cohort understood well, drawn from both this Checkpoint 2 (ARIMAX) result and the Checkpoint 1 (SARIMA) report above — bold the concept name, then cite which checkpoint(s) and the exact %, e.g. "**Model selection (AIC/BIC):** 100% correct at Checkpoint 1." Cover concepts from both checkpoints; do not collapse them into one vague bullet.]
 
-### 2. Remaining Gaps (Across Checkpoints 1 & 2)
+### 3. Remaining Gaps (Across Checkpoints 1 & 2)
 * [One bullet per concept/topic that showed up as a misconception in this Checkpoint 2 result and/or the Checkpoint 1 report above — bold the concept name, then name the exact misconception and which checkpoint(s) it appeared in, e.g. "**ARIMA vs ARIMAX:** 11.7% incorrect at Checkpoint 2 — believing ARIMAX cannot handle seasonality." If the same concept persisted across both checkpoints, say so explicitly, and note whether the Checkpoint 1 recommendation appears to have landed.]
 
-Every bullet in sections 1 and 2 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
+Every bullet in sections 2 and 3 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
 
-### 3. AI-Generated Teaching Recommendations
+### 4. AI-Generated Teaching Recommendations
 
 ${buildTeachingRecsBlock(3)}
 
-### 4. Top Teaching Moves Now
+### 5. Top Teaching Moves Now
 
 ${clarifyApplyChallengeBlock(3, "the topics above")}
 
