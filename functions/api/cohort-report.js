@@ -301,16 +301,19 @@ For each chosen topic, use exactly this format:
 Every bullet must have exactly two links: the move-name link, and the topic/live-tool link (except "What-if scenario", which only gets the move-name link) — never zero, never more.`;
 }
 
-// A comparison-friendly synthesis of the two sections above — never a
-// standalone re-analysis. Exactly 3 bullets, one per action area, each
-// reusing a topic already named in "AI-Generated Teaching Recommendations"
-// or "Top Teaching Moves" rather than introducing a new one. Distinct from
-// Top Teaching Moves in what it links: Application links to a Micro-
-// Interventions Apply move (a genuinely different activity idea) rather
-// than repeating the same workshop-exercise link already shown above.
+// Stage 1 (Beginning) has no performance data yet, so it still synthesizes
+// from "AI-Generated Teaching Recommendations" and "Top Teaching Moves"
+// above, same as before. Stages 2-4 (the two checkpoints and the final
+// reflection) instead read straight off that stage's own "Cohort Insights"
+// section (section 1) — its named gap topic drives Clarification, that same
+// gap topic (tied to the cohort's stated profile) drives Application, and
+// its named mastered topic drives Challenge — so this section is a direct
+// extension of the insights above it, not a second independent analysis.
 function combinedFocusBlock(stage) {
   const topics = mergedTopicLinks(stage);
-  return `Combine what you already recommended in the "AI-Generated Teaching Recommendations" and "Top Teaching Moves" sections above into exactly 3 bullets below — one per action area — so the instructor can compare all three side by side in one place. Every topic named here must already have been named in one of the two sections above; never introduce a new topic in this section.
+
+  if (stage === 1) {
+    return `Combine what you already recommended in the "AI-Generated Teaching Recommendations" and "Top Teaching Moves" sections above into exactly 3 bullets below — one per action area — so the instructor can compare all three side by side in one place. Every topic named here must already have been named in one of the two sections above; never introduce a new topic in this section.
 
 Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
 ${buildTopicLinksBlock(topics)}
@@ -327,6 +330,32 @@ Use exactly this format:
 1. **Clarification — [topic already named above]:** [name the specific section of the teaching materials to revisit and why]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
 2. **Application — [topic already named above]:** [name one additional hands-on exercise or quiz that would be relevant]. [chosen APPLY move's exact link text, verbatim](that move's URL from the reference above)
 3. **Challenge — [topic already named above]:** [pose the actual challenge question, exercise, or activity]. [chosen CHALLENGE option's exact link text, verbatim](its URL from the reference above)
+
+If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.`;
+  }
+
+  const insightsBasis =
+    stage === 4
+      ? `the "Cohort Insights" section above (section 1): its "remaining questions" bullet for Clarification, its "where they'll apply this" bullet for Application, and — since the final Cohort Insights bullets don't themselves name a mastered topic — the topic named as most solidly mastered in the Checkpoint 1 and/or Checkpoint 2 reports referenced earlier in this prompt for Challenge`
+      : `the "Cohort Insights" section above (section 1): its bullet naming the biggest remaining gap or misconception for Clarification, and its bullet naming the concept mastered most solidly for Challenge`;
+
+  return `Base this section directly on the specific findings already stated in ${insightsBasis}. Never pull a fresh topic from "AI-Generated Teaching Recommendations" or "Top Teaching Moves" instead, and never introduce a topic that wasn't already named in Cohort Insights${stage === 4 ? " or the Checkpoint reports referenced above" : ""}.
+
+Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
+${buildTopicLinksBlock(topics)}
+
+APPLY moves (pick one that fits a hands-on example or extra practice on the gap area):
+${buildMoveLinksBlock(APPLY_MOVES)}
+
+CHALLENGE options (pick one):
+${buildMoveLinksBlock(CHALLENGE_MOVES)}
+${buildChallengeLinksBlock()}
+
+Use exactly this format:
+
+1. **Clarification — [the exact gap/misconception topic named in Cohort Insights above]:** [name specifically what's still unclear about it and what part of the teaching materials to revisit]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
+2. **Application — [the same gap topic, or another topic this cohort still needs more practice on]:** [suggest one additional hands-on example or exercise tailored to this cohort's stated industries, roles, or business problems from the Beginning-of-Class Report above, so it's relevant to who they actually are rather than generic]. [chosen APPLY move's exact link text, verbatim](that move's URL from the reference above)
+3. **Challenge — [the exact topic named in Cohort Insights above (or, for the final report, in the Checkpoint reports above) as most solidly mastered]:** [pose a genuine challenge question, exercise, or activity that pushes their thinking further, since this concept is already solid]. [chosen CHALLENGE option's exact link text, verbatim](its URL from the reference above)
 
 If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.`;
 }
