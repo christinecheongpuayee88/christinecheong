@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Time Series Forecasting Workshop — SARIMA &amp; ARIMAX</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Interactive companion for the Time Series Forecasting workshop, organized by stage: start of class, in-class checkpoints, and reflection.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,850;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0b1f3a;--blue:#1d5fa7;--teal:#0b8d95;--ink:#18304d;--muted:#60728b;--line:#d9e3ec;--pale:#eaf3f8;--soft:#f6fafc;--shadow:0 18px 55px rgba(11,31,58,.09)}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff}
+    button,input,textarea{font:inherit}button{cursor:pointer}
+
+    .layout{max-width:1160px;margin:0 auto;padding:44px 22px 80px;display:flex;gap:48px;align-items:flex-start}
+
+    /* Left panel — persistent stage signpost */
+    .sidebar{flex:0 0 280px;width:280px;position:sticky;top:40px}
+    .sidebar-title{color:var(--navy);font-size:1.32rem;font-weight:850;letter-spacing:-.01em;margin-bottom:6px}
+    .sidebar-label{text-transform:uppercase;letter-spacing:.15em;color:var(--teal);font-size:.72rem;font-weight:850;margin-bottom:26px}
+    .stage-list{display:flex;flex-direction:column;gap:4px;list-style:none}
+    .stage-item{display:block;width:100%}
+    .stage-link{display:flex;gap:14px;align-items:flex-start;width:100%;padding:14px;border-radius:14px;border:1px solid transparent;background:none;text-align:left;text-decoration:none;transition:background .15s,border-color .15s}
+    .stage-link:hover{background:var(--soft)}
+    .stage-item.active .stage-link{background:var(--pale);border-color:#cfe0eb}
+    .stage-num{flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:var(--pale);color:var(--navy);font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
+    .stage-item.active .stage-num{background:var(--blue);color:#fff}
+    .stage-title{color:var(--navy);font-weight:800;font-size:.98rem;margin-bottom:3px;transition:color .15s}
+    .stage-item.active .stage-title{color:var(--blue)}
+    .stage-sub{color:var(--muted);font-size:.82rem;line-height:1.4}
+
+    /* Right panel — activities, workshops, quizzes */
+    .content{flex:1;min-width:0}
+    .stage-section{padding:0 0 64px;scroll-margin-top:40px}
+    .stage-section:first-child{padding-top:0}
+    .stage-section+.stage-section{border-top:1px solid var(--line);padding-top:56px}
+    .stage-section h2{color:var(--navy);font-size:1.55rem;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+    .stage-section .lede{color:var(--muted);font-size:.95rem;margin-bottom:22px;max-width:56ch}
+
+    .kicker{text-transform:uppercase;letter-spacing:.18em;color:var(--teal);font-size:.78rem;font-weight:850}
+    .primary{display:inline-block;border:0;border-radius:10px;padding:14px 20px;background:linear-gradient(135deg,var(--blue),#2474cb);color:#fff;font-weight:800;text-decoration:none;transition:transform .15s}
+    .primary:hover{transform:translateY(-2px)}
+    .secondary{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:12px 18px;background:#fff;color:var(--navy);font-weight:750;text-decoration:none;transition:border-color .15s}
+    .secondary:hover{border-color:var(--blue)}
+
+    .pulse-box{background:linear-gradient(135deg,#f5fafc,#eef7f8);border:1px solid #cfe0eb;border-radius:16px;padding:22px;text-align:left}
+    .pulse-box h3{color:var(--navy);font-size:1.3rem;font-weight:800;margin:4px 0 8px}
+    .pulse-box p{color:var(--muted);margin-bottom:16px}
+    .pulse-box+.pulse-box{margin-top:18px}
+
+    .exercises{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+    .exercise{border:1px solid var(--line);border-radius:15px;padding:20px;background:#fff;display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left}
+    .exercise h4{color:var(--navy);font-size:1.02rem;font-weight:800}
+    .exercise p{color:var(--muted);margin:0;font-size:.9rem}
+    .tag{display:inline-block;border-radius:99px;background:var(--pale);color:var(--blue);padding:5px 10px;font-size:.78rem;font-weight:850}
+
+    @media(max-width:900px){
+      .layout{flex-direction:column;padding:28px 20px 60px}
+      .sidebar{position:static;width:100%;flex-basis:auto}
+      .stage-list{flex-direction:row;flex-wrap:wrap;gap:8px}
+      .stage-item{width:auto}
+      .stage-link{padding:9px 12px 9px 9px}
+      .stage-sub{display:none}
+      .sidebar-title,.sidebar-label{display:none}
+    }
+    @media(max-width:650px){
+      .exercises{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Workshop stages">
+      <div class="sidebar-title">TS Forecasting Workshop</div>
+      <div class="sidebar-label">Workshop Stages</div>
+      <ol class="stage-list" id="stageList">
+        <li class="stage-item" data-target="pulse">
+          <a class="stage-link" href="#pulse">
+            <span class="stage-num">1</span>
+            <span>
+              <span class="stage-title" style="display:block">Start of Class</span>
+              <span class="stage-sub">Opening learning pulse</span>
+            </span>
+          </a>
+        </li>
+        <li class="stage-item" data-target="sarima">
+          <a class="stage-link" href="#sarima">
+            <span class="stage-num">2</span>
+            <span>
+              <span class="stage-title" style="display:block">Part 1 · SARIMA</span>
+              <span class="stage-sub">During class — workshop + Checkpoint 1</span>
+            </span>
+          </a>
+        </li>
+        <li class="stage-item" data-target="arimax">
+          <a class="stage-link" href="#arimax">
+            <span class="stage-num">3</span>
+            <span>
+              <span class="stage-title" style="display:block">Part 2 · ARIMAX</span>
+              <span class="stage-sub">During class — workshop + Checkpoint 2</span>
+            </span>
+          </a>
+        </li>
+        <li class="stage-item" data-target="reflect">
+          <a class="stage-link" href="#reflect">
+            <span class="stage-num">4</span>
+            <span>
+              <span class="stage-title" style="display:block">Reflection</span>
+              <span class="stage-sub">End of class</span>
+            </span>
+          </a>
+        </li>
+      </ol>
+    </nav>
+
+    <main class="content">
+      <section class="stage-section" id="pulse">
+        <h2>Start of Class</h2>
+        <p class="lede">Before the workshop begins, share what you hope to learn.</p>
+        <div class="pulse-box">
+          <div class="kicker">On-site form · 2 minutes</div>
+          <h3>Opening learning pulse</h3>
+          <p>Share what you hope to learn, your confidence and the forecasting problem you want to solve.</p>
+          <a class="primary" href="/time-series-workshop-beginning-survey">Open learning pulse ↗</a>
+        </div>
+      </section>
+
+      <section class="stage-section" id="sarima">
+        <h2>Part 1 · SARIMA</h2>
+        <p class="lede">During class — univariate forecasting workshop, then a quick checkpoint.</p>
+        <div class="exercises">
+          <article class="exercise">
+            <span class="tag">SARIMA · Workshop 1A</span>
+            <h4>Airline passengers</h4>
+            <p>Forecast two years of monthly passenger demand for planning. Look for growth, a 12-month cycle and changing seasonal amplitude.</p>
+            <a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a>
+          </article>
+          <article class="exercise">
+            <span class="tag">SARIMA · Workshop 1B</span>
+            <h4>Hotel occupancy</h4>
+            <p>Forecast occupied rooms to support staffing and supply decisions. Connect monthly seasonality to operational planning.</p>
+            <a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a>
+          </article>
+        </div>
+        <div class="pulse-box" id="sarimaQuiz">
+          <div class="kicker">On-site form · Scored automatically</div>
+          <h3>Checkpoint 1 — SARIMA</h3>
+          <p>Quick comprehension check after this section — scored automatically.</p>
+          <a class="primary" href="/time-series-workshop-checkpoint1-survey">Open SARIMA checkpoint ↗</a>
+        </div>
+      </section>
+
+      <section class="stage-section" id="arimax">
+        <h2>Part 2 · ARIMAX</h2>
+        <p class="lede">During class — multivariate forecasting workshop, then a quick checkpoint.</p>
+        <div class="exercises">
+          <article class="exercise">
+            <span class="tag">ARIMAX · Workshop 2</span>
+            <h4>Sales and advertising</h4>
+            <p>Assess whether current and lagged advertising improve forecasts. More inputs do not automatically mean better forecasting.</p>
+            <a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a>
+          </article>
+          <article class="exercise">
+            <span class="tag">ARIMAX · Workshop 3</span>
+            <h4>Platform sales</h4>
+            <p>Compare a univariate baseline with selected lagged drivers, then test whether the improvement is stable and usable.</p>
+            <a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a>
+          </article>
+        </div>
+        <div class="pulse-box" id="arimaxQuiz">
+          <div class="kicker">On-site form · Scored automatically</div>
+          <h3>Checkpoint 2 — ARIMAX</h3>
+          <p>Quick comprehension check after this section — scored automatically.</p>
+          <a class="primary" href="/time-series-workshop-checkpoint2-survey">Open ARIMAX checkpoint ↗</a>
+        </div>
+      </section>
+
+      <section class="stage-section" id="reflect">
+        <h2>Reflection</h2>
+        <p class="lede">End of class — compare your confidence with the opening pulse.</p>
+        <div class="pulse-box">
+          <div class="kicker">On-site form · 2 minutes</div>
+          <h3>Reflection</h3>
+          <p>Compare your confidence with the opening pulse and identify one next action.</p>
+          <a class="primary" href="/time-series-workshop-reflection-survey">Open reflection form ↗</a>
+        </div>
+        <p style="margin-top:24px"><a class="secondary" href="https://christinecheong.com">← christinecheong.com</a></p>
+      </section>
+    </main>
+  </div>
+
+<script>
+(function () {
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.stage-section'));
+  var items = Array.prototype.slice.call(document.querySelectorAll('.stage-item'));
+
+  function setActive(id) {
+    items.forEach(function (li) {
+      li.classList.toggle('active', li.getAttribute('data-target') === id);
+    });
+  }
+
+  if ('IntersectionObserver' in window) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) setActive(en.target.id);
+      });
+    }, { rootMargin: '-35% 0px -55% 0px' });
+    sections.forEach(function (sc) { spy.observe(sc); });
+  }
+
+  setActive('pulse');
+})();
+</script>
+</body>
+</html>
