@@ -115,13 +115,13 @@ const QUESTIONS = {
     // normalize()-comparison path the other questions use.
     {
       headerPrefix: "Open-ended: Model A performs better on the training",
-      question: "Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why?",
+      question: "Open-ended: Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why?",
       type: "open",
       gradingCriteria: "Correct if the student chooses Model B (or otherwise clearly favors test/out-of-sample performance over training fit), and reasons that generalization to unseen data matters more for forecasting than training fit — showing awareness that Model A's training advantage likely reflects overfitting rather than genuine forecasting skill.",
     },
     {
       headerPrefix: "Open-ended: SARIMA forecasts hotel occupancy to peak",
-      question: "SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why?",
+      question: "Open-ended: SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why?",
       type: "open",
       gradingCriteria: "Correct if the answer centers on preparing operationally for the demand peak — e.g. increasing staffing, room availability, supply, or otherwise scaling capacity ahead of time — showing the student understands a forecast should translate into an operational or business decision, not just be observed.",
     },
