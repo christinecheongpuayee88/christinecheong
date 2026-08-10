@@ -301,61 +301,65 @@ For each chosen topic, use exactly this format:
 Every bullet must have exactly two links: the move-name link, and the topic/live-tool link (except "What-if scenario", which only gets the move-name link) — never zero, never more.`;
 }
 
-// Stage 1 (Beginning) has no performance data yet, so it still synthesizes
-// from "AI-Generated Teaching Recommendations" and "Top Teaching Moves"
-// above, same as before. Stages 2-4 (the two checkpoints and the final
-// reflection) instead read straight off that stage's own "Cohort Insights"
-// section (section 1) — its named gap topic drives Clarification, that same
-// gap topic (tied to the cohort's stated profile) drives Application, and
-// its named mastered topic drives Challenge — so this section is a direct
-// extension of the insights above it, not a second independent analysis.
+// Clarify/Apply/Challenge are three distinct facilitation NEEDS, not three
+// difficulty tiers — this definition block is shared by all 4 stages so the
+// model can't drift back to treating Apply as "another practice exercise"
+// or Challenge as "a harder question." Apply specifically means interpret →
+// evaluate/select → business implication; Challenge specifically means
+// surface an assumption, a what-if, a trade-off, or a competing
+// perspective — never just a harder calculation.
+const LEVEL_DEFINITIONS = `Treat Clarify, Apply, and Challenge as three different facilitation needs, not an easy/medium/hard progression:
+- CLARIFY answers "What is still unclear?" — close a specific misconception or knowledge gap revealed by low accuracy, low confidence, or inconsistent answers.
+- APPLY answers "Can they use what they know?" — make them interpret what a specific finding means, and connect it to a real business or operational implication. Not "practice the same skill again."
+- CHALLENGE answers "Where can we deepen their thinking?" — for a concept they've already mastered, surface an assumption worth questioning, a what-if scenario, a trade-off, or a competing stakeholder perspective. Not just a harder version of the same question.`;
+
+// All 4 stages read Clarify/Apply/Challenge straight off that stage's own
+// "Cohort Insights" section (section 1) instead of re-deriving anything from
+// "AI-Generated Teaching Recommendations" or "Top Teaching Moves" — this
+// section is the direct next step built on top of Cohort Insights, anchored
+// on that stage's own evidence:
+// - Stage 1 (Beginning) has no performance data yet, so it's forward-looking:
+//   anchored on the cohort's stated confidence, experience, and concerns/
+//   goals from the intake survey (same evidence Cohort Insights itself uses).
+// - Stages 2-3 (the two checkpoints) anchor on that checkpoint's own named
+//   gap topic (Clarify/Apply) and named mastered topic (Challenge).
+// - Stage 4 (Final) anchors Clarify on the "remaining questions" bullet and
+//   Apply on the "where they'll apply this" bullet — both from its own
+//   Cohort Insights — and, since the final Cohort Insights doesn't itself
+//   name a mastered topic, Challenge falls back to whichever topic the
+//   Checkpoint 1/2 reports (embedded earlier in this prompt) named as
+//   mastered.
 function combinedFocusBlock(stage) {
   const topics = mergedTopicLinks(stage);
+  const isForwardLooking = stage === 1;
 
-  if (stage === 1) {
-    return `Combine what you already recommended in the "AI-Generated Teaching Recommendations" and "Top Teaching Moves" sections above into exactly 3 bullets below — one per action area — so the instructor can compare all three side by side in one place. Every topic named here must already have been named in one of the two sections above; never introduce a new topic in this section.
+  const evidenceBasis = isForwardLooking
+    ? `the "Cohort Insights" section above (section 1) — the stated confidence, experience, and concerns/goals it synthesizes. There is no performance data yet, so Clarify/Apply/Challenge must anchor on what the cohort said about itself, not on quiz accuracy`
+    : stage === 4
+    ? `the "Cohort Insights" section above (section 1) — its "remaining questions" bullet for Clarify, its "where they'll apply this" bullet for Apply, and — since the final Cohort Insights bullets don't themselves name a mastered topic — the topic named as most solidly mastered in the Checkpoint 1 and/or Checkpoint 2 reports referenced earlier in this prompt for Challenge`
+    : `the "Cohort Insights" section above (section 1) — its bullet naming the biggest remaining gap or misconception for Clarify, and its bullet naming the concept mastered most solidly for Challenge`;
+
+  const profileSource = isForwardLooking ? "the intake survey data above" : "the Beginning-of-Class Report above";
+
+  return `${LEVEL_DEFINITIONS}
+
+Base all 3 bullets directly on the specific findings already stated in ${evidenceBasis}. Never pull a fresh topic from "AI-Generated Teaching Recommendations" or "Top Teaching Moves" instead, and never introduce a topic that wasn't already named there${stage === 4 ? " or in the Checkpoint reports referenced above" : ""}.
 
 Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
 ${buildTopicLinksBlock(topics)}
 
-APPLY moves (pick one — ideally different from whichever move "Top Teaching Moves" already used, so this adds a genuinely different activity idea rather than repeating it):
+APPLY moves (pick one to deliver the interpret/business-implication question):
 ${buildMoveLinksBlock(APPLY_MOVES)}
 
-CHALLENGE options (pick one):
+CHALLENGE options (pick one to deliver the assumption/what-if/trade-off/perspective question):
 ${buildMoveLinksBlock(CHALLENGE_MOVES)}
 ${buildChallengeLinksBlock()}
 
 Use exactly this format:
 
-1. **Clarification — [topic already named above]:** [name the specific section of the teaching materials to revisit and why]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
-2. **Application — [topic already named above]:** [name one additional hands-on exercise or quiz that would be relevant]. [chosen APPLY move's exact link text, verbatim](that move's URL from the reference above)
-3. **Challenge — [topic already named above]:** [pose the actual challenge question, exercise, or activity]. [chosen CHALLENGE option's exact link text, verbatim](its URL from the reference above)
-
-If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.`;
-  }
-
-  const insightsBasis =
-    stage === 4
-      ? `the "Cohort Insights" section above (section 1): its "remaining questions" bullet for Clarification, its "where they'll apply this" bullet for Application, and — since the final Cohort Insights bullets don't themselves name a mastered topic — the topic named as most solidly mastered in the Checkpoint 1 and/or Checkpoint 2 reports referenced earlier in this prompt for Challenge`
-      : `the "Cohort Insights" section above (section 1): its bullet naming the biggest remaining gap or misconception for Clarification, and its bullet naming the concept mastered most solidly for Challenge`;
-
-  return `Base this section directly on the specific findings already stated in ${insightsBasis}. Never pull a fresh topic from "AI-Generated Teaching Recommendations" or "Top Teaching Moves" instead, and never introduce a topic that wasn't already named in Cohort Insights${stage === 4 ? " or the Checkpoint reports referenced above" : ""}.
-
-Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
-${buildTopicLinksBlock(topics)}
-
-APPLY moves (pick one that fits a hands-on example or extra practice on the gap area):
-${buildMoveLinksBlock(APPLY_MOVES)}
-
-CHALLENGE options (pick one):
-${buildMoveLinksBlock(CHALLENGE_MOVES)}
-${buildChallengeLinksBlock()}
-
-Use exactly this format:
-
-1. **Clarification — [the exact gap/misconception topic named in Cohort Insights above]:** [name specifically what's still unclear about it and what part of the teaching materials to revisit]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
-2. **Application — [the same gap topic, or another topic this cohort still needs more practice on]:** [suggest one additional hands-on example or exercise tailored to this cohort's stated industries, roles, or business problems from the Beginning-of-Class Report above, so it's relevant to who they actually are rather than generic]. [chosen APPLY move's exact link text, verbatim](that move's URL from the reference above)
-3. **Challenge — [the exact topic named in Cohort Insights above (or, for the final report, in the Checkpoint reports above) as most solidly mastered]:** [pose a genuine challenge question, exercise, or activity that pushes their thinking further, since this concept is already solid]. [chosen CHALLENGE option's exact link text, verbatim](its URL from the reference above)
+1. **Clarify — [the exact gap/misconception topic, or stated concern, named in Cohort Insights above]:** [name specifically what's still unclear about it and what part of the teaching materials closes that gap]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
+2. **Apply — [the same topic, or a closely related one]:** [pose a question that makes the cohort interpret a specific finding and state its real business or operational implication, tailored to this cohort's stated industries, roles, or business problems from ${profileSource} — never "practice this again" or a generic exercise]. [chosen APPLY move's exact link text, verbatim](that move's URL from the reference above)
+3. **Challenge — [the exact topic named in Cohort Insights above (or, for the final report, in the Checkpoint reports above) as most solidly mastered / most confidently understood]:** [pose a question that surfaces an assumption worth questioning, a what-if scenario, a trade-off, or a competing stakeholder perspective on that topic — since it's already solid, push past "correct" toward judgement]. [chosen CHALLENGE option's exact link text, verbatim](its URL from the reference above)
 
 If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.`;
 }
