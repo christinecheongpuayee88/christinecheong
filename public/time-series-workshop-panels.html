@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Time Series Forecasting Workshop — SARIMA &amp; ARIMAX</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Interactive companion for the Time Series Forecasting workshop, organized by stage: start of class, in-class checkpoints, and reflection.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,850;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0b1f3a;--blue:#1d5fa7;--teal:#0b8d95;--ink:#18304d;--muted:#60728b;--line:#d9e3ec;--pale:#eaf3f8;--soft:#f6fafc;--shadow:0 18px 55px rgba(11,31,58,.09)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,textarea{font:inherit}button{cursor:pointer}
+
+    .layout{display:flex;min-height:100vh;align-items:flex-start}
+
+    .side-nav{flex:0 0 33%;max-width:400px;min-width:260px;position:sticky;top:0;height:100vh;overflow-y:auto;background:#fff;border-right:1px solid var(--line);padding:28px 22px;display:flex;flex-direction:column}
+    .side-brand{font-weight:850;color:var(--navy);font-size:1.05rem;margin-bottom:6px}
+    .side-kicker{text-transform:uppercase;letter-spacing:.14em;color:var(--teal);font-size:.7rem;font-weight:850;margin-bottom:28px}
+    .side-list{display:flex;flex-direction:column;gap:6px}
+    .side-item{display:flex;align-items:flex-start;gap:12px;padding:14px 12px;border-radius:12px;text-decoration:none;color:inherit;transition:background .15s}
+    .side-item:hover{background:var(--soft)}
+    .side-item.active{background:var(--pale)}
+    .side-num{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--line);color:var(--navy);font-size:.78rem;font-weight:850;display:grid;place-items:center;margin-top:1px}
+    .side-item.active .side-num{background:var(--blue);color:#fff}
+    .side-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+    .side-title{font-weight:750;color:var(--navy);font-size:.92rem}
+    .side-sub{font-size:.78rem;color:var(--muted)}
+    .side-item.active .side-title{color:var(--blue)}
+    .side-foot{margin-top:auto;padding-top:20px;border-top:1px solid var(--line)}
+    .side-foot a{color:var(--muted);font-weight:700;text-decoration:none;font-size:.85rem}
+    .side-foot a:hover{color:var(--blue)}
+
+    .content-pane{flex:1;min-width:0;padding:8px 0 60px}
+
+    .kicker{text-transform:uppercase;letter-spacing:.18em;color:var(--teal);font-size:.78rem;font-weight:850}.primary{border:0;border-radius:10px;padding:14px 20px;background:linear-gradient(135deg,var(--blue),#2474cb);color:#fff;font-weight:800;transition:transform .15s}.primary:hover{transform:translateY(-2px)}.primary:disabled{opacity:.6;cursor:wait;transform:none}.secondary{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:12px 18px;background:#fff;color:var(--navy);font-weight:750;text-decoration:none;transition:border-color .15s}.secondary:hover{border-color:var(--blue)}
+    .pulse,.section{scroll-margin-top:20px;max-width:900px;margin:auto;padding:36px 22px}.pulse{background:linear-gradient(135deg,#f5fafc,#eef7f8);border:1px solid #cfe0eb;border-radius:16px;padding:22px;margin:0 22px 22px}.pulse h2,.section h2,.pulse h3{color:var(--navy);font-size:1.6rem;font-weight:800;margin:4px 0 8px}.pulse p{color:var(--muted)}.exercise{border:1px solid var(--line);border-radius:15px;padding:20px;background:#fff;display:flex;flex-direction:column;align-items:flex-start;gap:10px}.exercise h3{color:var(--navy)}.exercise p{color:var(--muted);margin:0}.exercises{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0 22px}.tag{display:inline-block;border-radius:99px;background:var(--pale);color:var(--blue);padding:5px 10px;font-size:.78rem;font-weight:850}
+
+    .hint{color:var(--muted);font-size:.85rem;margin:14px 0 0}
+
+    @media(max-width:900px){
+      .layout{flex-direction:column}
+      .side-nav{position:static;flex-direction:row;overflow-x:auto;overflow-y:visible;height:auto;width:100%;max-width:none;border-right:0;border-bottom:1px solid var(--line);padding:16px;gap:8px;align-items:center}
+      .side-brand,.side-kicker,.side-foot{display:none}
+      .side-list{flex-direction:row;gap:8px}
+      .side-item{flex:0 0 auto;padding:10px;white-space:nowrap}
+      .side-sub{display:none}
+      .exercises{grid-template-columns:1fr}
+      .pulse,.section{padding:24px 20px}
+      .pulse{margin:0 20px 20px}
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="side-nav">
+    <div class="side-brand">TS Forecasting Workshop</div>
+    <div class="side-kicker">Workshop stages</div>
+    <nav class="side-list" id="sideList">
+      <a class="side-item" href="#pulse" data-target="pulse">
+        <span class="side-num">1</span>
+        <span class="side-text"><span class="side-title">Start of Class</span><span class="side-sub">Opening learning pulse</span></span>
+      </a>
+      <a class="side-item" href="#sarima" data-target="sarima">
+        <span class="side-num">2</span>
+        <span class="side-text"><span class="side-title">Part 1 · SARIMA</span><span class="side-sub">During class — workshop + Checkpoint 1</span></span>
+      </a>
+      <a class="side-item" href="#arimax" data-target="arimax">
+        <span class="side-num">3</span>
+        <span class="side-text"><span class="side-title">Part 2 · ARIMAX</span><span class="side-sub">During class — workshop + Checkpoint 2</span></span>
+      </a>
+      <a class="side-item" href="#reflect" data-target="reflect">
+        <span class="side-num">4</span>
+        <span class="side-text"><span class="side-title">Reflection</span><span class="side-sub">End of class</span></span>
+      </a>
+    </nav>
+    <div class="side-foot"><a href="https://christinecheong.com">← christinecheong.com</a></div>
+  </aside>
+
+  <main class="content-pane">
+    <section class="pulse" id="pulse"><div class="kicker">On-site form · 2 minutes</div><h2>Opening learning pulse</h2><p>Share what you hope to learn, your confidence and the forecasting problem you want to solve.</p><a class="primary" style="display:inline-block;text-decoration:none" href="/time-series-workshop-beginning-survey">Open learning pulse ↗</a></section>
+
+    <section class="section" id="sarima"><h2>Part 1 · Univariate forecasting (SARIMA)</h2><div class="exercises"><article class="exercise"><span class="tag">SARIMA · Workshop 1A</span><h3>Airline passengers</h3><p>Forecast two years of monthly passenger demand for planning. Look for growth, a 12-month cycle and changing seasonal amplitude.</p><a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a></article><article class="exercise"><span class="tag">SARIMA · Workshop 1B</span><h3>Hotel occupancy</h3><p>Forecast occupied rooms to support staffing and supply decisions. Connect monthly seasonality to operational planning.</p><a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a></article></div><div class="pulse" id="sarimaQuiz"><div class="kicker">On-site form · Scored automatically</div><h3>Checkpoint 1 — SARIMA</h3><p>Quick comprehension check after this section — scored automatically.</p><a class="primary" style="display:inline-block;text-decoration:none" href="/time-series-workshop-checkpoint1-survey">Open SARIMA checkpoint ↗</a></div></section>
+
+    <section class="section" id="arimax"><h2>Part 2 · Multivariate forecasting (ARIMAX)</h2><div class="exercises"><article class="exercise"><span class="tag">ARIMAX · Workshop 2</span><h3>Sales and advertising</h3><p>Assess whether current and lagged advertising improve forecasts. More inputs do not automatically mean better forecasting.</p><a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a></article><article class="exercise"><span class="tag">ARIMAX · Workshop 3</span><h3>Platform sales</h3><p>Compare a univariate baseline with selected lagged drivers, then test whether the improvement is stable and usable.</p><a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on NUS Canvas ↗</a></article></div><div class="pulse" id="arimaxQuiz"><div class="kicker">On-site form · Scored automatically</div><h3>Checkpoint 2 — ARIMAX</h3><p>Quick comprehension check after this section — scored automatically.</p><a class="primary" style="display:inline-block;text-decoration:none" href="/time-series-workshop-checkpoint2-survey">Open ARIMAX checkpoint ↗</a></div></section>
+
+    <section class="pulse" id="reflect"><div class="kicker">On-site form · 2 minutes</div><h2>Reflection</h2><p>Compare your confidence with the opening pulse and identify one next action.</p><a class="primary" style="display:inline-block;text-decoration:none" href="/time-series-workshop-reflection-survey">Open reflection form ↗</a></section>
+  </main>
+</div>
+
+<script>
+  var sideItems = Array.prototype.slice.call(document.querySelectorAll('.side-item'));
+  var sections = sideItems.map(function(item){ return document.getElementById(item.getAttribute('data-target')); });
+
+  function setActive(id){
+    sideItems.forEach(function(item){
+      item.classList.toggle('active', item.getAttribute('data-target') === id);
+    });
+  }
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) setActive(entry.target.id);
+      });
+    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+    sections.forEach(function(s){ if (s) observer.observe(s); });
+  }
+
+  setActive('pulse');
+</script>
+</body>
+</html>
