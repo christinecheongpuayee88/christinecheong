@@ -47,17 +47,34 @@
     .done-state.show{display:block}
     .score-badge{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;font-size:1.5rem;font-weight:850;color:#fff;background:var(--teal)}
     .done-state h2{color:var(--navy);font-size:1.4rem;margin:0 0 22px}
-    .results-list{text-align:left;margin-bottom:26px;display:flex;flex-direction:column;gap:10px}
-    .result-row{display:flex;gap:10px;padding:13px 15px;border-radius:10px}
-    .result-row.correct{background:var(--good-bg)}
-    .result-row.wrong{background:var(--bad-bg)}
-    .result-icon{font-weight:850;flex:0 0 auto}
-    .result-row.correct .result-icon{color:var(--teal)}
-    .result-row.wrong .result-icon{color:var(--bad)}
-    .result-text{font-size:.86rem}
-    .result-q{font-weight:700;color:var(--navy);display:block;margin-bottom:3px}
-    .result-your{color:var(--ink)}
-    .result-correct{color:var(--muted);display:block;margin-top:3px}
+    .results-list{text-align:left;margin-bottom:26px;display:flex;flex-direction:column;gap:22px}
+
+    .q-result{border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+    .q-result-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+    .q-result-icon{font-size:1.2rem;font-weight:850;flex:0 0 auto;line-height:1.4}
+    .q-result.wrong .q-result-icon{color:var(--bad)}
+    .q-result.correct .q-result-icon{color:var(--teal)}
+    .q-result-question{flex:1;font-weight:750;color:var(--navy);font-size:.95rem;line-height:1.4}
+    .q-result-score{flex:0 0 auto;color:var(--muted);font-weight:750;font-size:.88rem}
+
+    .q-options{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+    .q-option{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:9px;font-size:.88rem;color:var(--ink)}
+    .q-radio{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--muted);flex:0 0 auto}
+    .q-option.picked-wrong{background:var(--bad-bg)}
+    .q-option.picked-wrong .q-radio{border-color:var(--bad);background:var(--bad)}
+    .q-option.picked-correct{background:var(--good-bg)}
+    .q-option.picked-correct .q-radio{border-color:var(--teal);background:var(--teal)}
+    .q-option-mark{margin-left:auto;font-weight:850}
+    .q-option.picked-wrong .q-option-mark{color:var(--bad)}
+    .q-option.picked-correct .q-option-mark{color:var(--teal)}
+
+    .q-correct-label{font-size:.82rem;font-weight:750;color:var(--muted);margin:14px 0 8px}
+    .q-correct-answer .q-radio{border-color:var(--ink);background:var(--ink)}
+
+    .q-feedback{background:var(--soft);border-radius:10px;padding:14px 16px;margin-top:16px}
+    .q-feedback-label{font-weight:750;color:var(--navy);font-size:.86rem;margin-bottom:6px}
+    .q-feedback p{margin:0;font-size:.86rem;font-style:italic;color:var(--muted);line-height:1.6}
+
     #beginningForm.hide{display:none}
   </style>
 </head>
@@ -113,6 +130,32 @@
           <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Ignore MAPE and just look at AIC">Ignore MAPE and just look at AIC</button>
         </div>
       </div>
+      <div class="field" data-q="5">
+        <span class="field-label"><span class="qnum">Q6.</span> Lagged advertising improves forecasting more than current advertising. What does this mean for how management plans advertising and sales forecasts? *</span>
+        <div class="mc-group choice-group" data-name="q5">
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Management should plan advertising spend in advance, since its effect on sales shows up with a delay">Management should plan advertising spend in advance, since its effect on sales shows up with a delay</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Management should only track same-day advertising spend, since lagged effects don't matter">Management should only track same-day advertising spend, since lagged effects don't matter</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Management should stop advertising since lagged effects mean it doesn't work">Management should stop advertising since lagged effects mean it doesn't work</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Management should ignore advertising entirely and only look at pricing">Management should ignore advertising entirely and only look at pricing</button>
+        </div>
+      </div>
+      <div class="field" data-q="6">
+        <span class="field-label"><span class="qnum">Q7.</span> ARIMAX provides slightly better forecasts than ARIMA but requires several additional external data inputs. Would you recommend using ARIMAX? What business considerations would influence your decision? *</span>
+        <div class="mc-group choice-group" data-name="q6">
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Yes, always — more accuracy is always worth it regardless of cost">Yes, always — more accuracy is always worth it regardless of cost</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="It depends — weigh the modest accuracy gain against the added cost, complexity, and reliability of maintaining the extra data inputs">It depends — weigh the modest accuracy gain against the added cost, complexity, and reliability of maintaining the extra data inputs</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="No, never use ARIMAX since it's more complex than ARIMA">No, never use ARIMAX since it's more complex than ARIMA</button>
+          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="It doesn't matter which model you use as long as AIC is similar">It doesn't matter which model you use as long as AIC is similar</button>
+        </div>
+      </div>
+      <div class="field" data-q="7">
+        <span class="field-label"><span class="qnum">Q8.</span> Open-ended: Lagged advertising improves forecasting more than current advertising. What does this mean for how management plans advertising and sales forecasts? *</span>
+        <textarea class="open-answer" data-name="q7" rows="3" placeholder="Type your answer…"></textarea>
+      </div>
+      <div class="field" data-q="8">
+        <span class="field-label"><span class="qnum">Q9.</span> Open-ended: ARIMAX provides slightly better forecasts than ARIMA but requires several additional external data inputs. Would you recommend using ARIMAX? What business considerations would influence your decision? *</span>
+        <textarea class="open-answer" data-name="q8" rows="3" placeholder="Type your answer…"></textarea>
+      </div>
       <label class="field">
         <span class="field-label">Reflection — do you have any further questions? <span class="optional">(optional)</span></span>
         <textarea name="reflection" rows="2"></textarea>
@@ -135,7 +178,7 @@
 
 <script>
 (function(){
-  var QUESTION_COUNT = 5;
+  var QUESTION_COUNT = 9;
   var form = document.getElementById('beginningForm');
   var statusEl = document.getElementById('beginningStatus');
   var submitBtn = document.getElementById('beginningSubmit');
@@ -156,6 +199,15 @@
         statusEl.textContent = '';
         statusEl.className = 'form-status';
       });
+    });
+  });
+
+  Array.prototype.forEach.call(form.querySelectorAll('.open-answer'), function(textarea){
+    var name = textarea.getAttribute('data-name');
+    textarea.addEventListener('input', function(){
+      selections[name] = textarea.value.trim();
+      statusEl.textContent = '';
+      statusEl.className = 'form-status';
     });
   });
 
@@ -210,11 +262,54 @@
     document.getElementById('scoreHeading').textContent = 'You scored ' + data.score + ' out of ' + data.total;
     var list = document.getElementById('resultsList');
     list.innerHTML = data.results.map(function(r, i){
-      var cls = r.correct ? 'correct' : 'wrong';
-      var icon = r.correct ? '✓' : '✗';
-      var correctLine = r.correct ? '' : '<span class="result-correct">Correct answer: ' + escapeHtml(r.correctAnswer) + '</span>';
-      return '<div class="result-row ' + cls + '"><span class="result-icon">' + icon + '</span><span class="result-text"><span class="result-q">Q' + (i + 1) + '. ' + escapeHtml(r.question) + '</span><span class="result-your">Your answer: ' + escapeHtml(r.yourAnswer) + '</span>' + correctLine + '</span></div>';
+      return renderQuestionResult(r, i);
     }).join('');
+  }
+
+  function renderQuestionResult(r, i){
+    var cls = r.correct ? 'correct' : 'wrong';
+    var icon = r.correct ? '✓' : '✗';
+    var html = '<div class="q-result ' + cls + '">';
+    html += '<div class="q-result-head">';
+    html += '<span class="q-result-icon">' + icon + '</span>';
+    html += '<span class="q-result-question">Q' + (i + 1) + '. ' + escapeHtml(r.question) + '</span>';
+    html += '<span class="q-result-score">' + (r.correct ? '1/1' : '0/1') + '</span>';
+    html += '</div>';
+
+    if (r.options && r.options.length) {
+      html += '<div class="q-options">';
+      html += r.options.map(function(opt){
+        var isPicked = normalizeAnswer(opt) === normalizeAnswer(r.yourAnswer);
+        var optCls = '';
+        var mark = '';
+        if (isPicked && r.correct) { optCls = ' picked-correct'; mark = '<span class="q-option-mark">✓</span>'; }
+        else if (isPicked && !r.correct) { optCls = ' picked-wrong'; mark = '<span class="q-option-mark">✕</span>'; }
+        return '<div class="q-option' + optCls + '"><span class="q-radio"></span>' + escapeHtml(opt) + mark + '</div>';
+      }).join('');
+      html += '</div>';
+
+      if (!r.correct) {
+        html += '<div class="q-correct-label">Correct answer</div>';
+        html += '<div class="q-options"><div class="q-option q-correct-answer"><span class="q-radio"></span>' + escapeHtml(r.correctAnswer) + '</div></div>';
+      }
+    } else {
+      html += '<div class="q-options"><div class="q-option' + (r.correct ? ' picked-correct' : ' picked-wrong') + '"><span class="q-radio"></span>Your answer: ' + escapeHtml(r.yourAnswer) + '</div></div>';
+      if (!r.correct) {
+        html += '<div class="q-correct-label">Correct answer</div>';
+        html += '<div class="q-options"><div class="q-option q-correct-answer"><span class="q-radio"></span>' + escapeHtml(r.correctAnswer) + '</div></div>';
+      }
+    }
+
+    if (r.feedback) {
+      html += '<div class="q-feedback"><div class="q-feedback-label">Feedback</div><p>' + escapeHtml(r.feedback) + '</p></div>';
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  function normalizeAnswer(s){
+    return (s || '').trim().replace(/\s+/g, ' ').toLowerCase();
   }
 
   function escapeHtml(s){

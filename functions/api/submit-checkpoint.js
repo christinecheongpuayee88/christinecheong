@@ -130,27 +130,95 @@ const QUESTIONS = {
     {
       headerPrefix: "What's the key difference between ARIMA and ARIMAX",
       question: "What's the key difference between ARIMA and ARIMAX?",
+      options: [
+        "ARIMAX only works on daily data",
+        "ARIMAX adds an exogenous predictor (a leading indicator) on top of Y's own past",
+        "ARIMAX cannot handle seasonality",
+        "There's no difference, just different software",
+      ],
       correct: "ARIMAX adds an exogenous predictor (a leading indicator) on top of Y's own past",
+      feedback: "ARIMA models Y using only its own past; ARIMAX adds an exogenous predictor — like advertising spend — as an extra input that helps explain Y's future movements.",
     },
     {
       headerPrefix: "In the Advertising",
       question: "In the Advertising → Sales example, which is X and which is Y?",
+      options: [
+        "X = Sales, Y = Advertising spend",
+        "X = Advertising spend, Y = Sales",
+        "X and Y are interchangeable",
+        "Neither is exogenous",
+      ],
       correct: "X = Advertising spend, Y = Sales",
+      feedback: "Y is the variable you're forecasting (Sales); X is the exogenous predictor believed to lead or influence it (Advertising spend).",
     },
     {
       headerPrefix: "Why include lagged versions of the exogenous variable",
       question: "Why include lagged versions of the exogenous variable (AdvLag1, AdvLag2, …) instead of just its current value?",
+      options: [
+        "It's required by statsmodels syntax",
+        "The effect of X on Y is often delayed/distributed over time — a dynamic transfer-function relationship",
+        "Lags remove the need for differencing",
+        "It has no effect on model performance",
+      ],
       correct: "The effect of X on Y is often delayed/distributed over time — a dynamic transfer-function relationship",
+      feedback: "Advertising today might not move sales until later — lagged X terms let the model capture that delayed, distributed effect instead of assuming an instant same-period impact.",
     },
     {
       headerPrefix: "True or False: in the workshop notebooks",
       question: "True or False: in the workshop notebooks, models were compared using MAPE on a held-out test set.",
+      options: ["True", "False"],
       correct: "True",
+      feedback: "MAPE on a held-out test set checks whether the model actually generalizes to new data, not just how well it fits what it already saw.",
     },
     {
       headerPrefix: "If adding more advertising lags",
       question: "If adding more advertising lags doesn't improve (or worsens) out-of-sample MAPE, what should you do?",
+      options: [
+        "Add even more lags until it improves",
+        "Drop the less useful lags — more lags isn't automatically better; watch for overfitting",
+        "Switch to a pure MA model",
+        "Ignore MAPE and just look at AIC",
+      ],
       correct: "Drop the less useful lags — more lags isn't automatically better; watch for overfitting",
+      feedback: "Worsening out-of-sample performance despite more lags is a classic overfitting signal — the extra lags are fitting noise, not signal. Prune back to the lags that actually help.",
+    },
+    {
+      headerPrefix: "Lagged advertising improves forecasting more than current",
+      question: "Lagged advertising improves forecasting more than current advertising. What does this mean for how management plans advertising and sales forecasts?",
+      options: [
+        "Management should plan advertising spend in advance, since its effect on sales shows up with a delay",
+        "Management should only track same-day advertising spend, since lagged effects don't matter",
+        "Management should stop advertising since lagged effects mean it doesn't work",
+        "Management should ignore advertising entirely and only look at pricing",
+      ],
+      correct: "Management should plan advertising spend in advance, since its effect on sales shows up with a delay",
+      feedback: "Since advertising's effect on sales is delayed rather than immediate, management should plan and commit advertising spend ahead of the sales period it's meant to influence — budgeting for a lagged payoff, not expecting same-period impact.",
+    },
+    {
+      headerPrefix: "ARIMAX provides slightly better forecasts than ARIMA",
+      question: "ARIMAX provides slightly better forecasts than ARIMA but requires several additional external data inputs. Would you recommend using ARIMAX? What business considerations would influence your decision?",
+      options: [
+        "Yes, always — more accuracy is always worth it regardless of cost",
+        "It depends — weigh the modest accuracy gain against the added cost, complexity, and reliability of maintaining the extra data inputs",
+        "No, never use ARIMAX since it's more complex than ARIMA",
+        "It doesn't matter which model you use as long as AIC is similar",
+      ],
+      correct: "It depends — weigh the modest accuracy gain against the added cost, complexity, and reliability of maintaining the extra data inputs",
+      feedback: "A small accuracy improvement isn't automatically worth adopting — the real decision is whether the added data-collection cost, complexity, and pipeline reliability of ARIMAX are justified by that gain for this specific business context.",
+    },
+    // Q8/Q9 are the same two application scenarios as Q6/Q7, but
+    // open-ended — AI-graded, same pattern as Checkpoint 1's Q9/Q10.
+    {
+      headerPrefix: "Open-ended: Lagged advertising improves forecasting more than current",
+      question: "Open-ended: Lagged advertising improves forecasting more than current advertising. What does this mean for how management plans advertising and sales forecasts?",
+      type: "open",
+      gradingCriteria: "Correct if the student recognizes that because advertising's effect on sales is delayed, management should plan or commit advertising spend in advance of the sales period it's meant to influence, rather than expecting an immediate same-period impact.",
+    },
+    {
+      headerPrefix: "Open-ended: ARIMAX provides slightly better forecasts than ARIMA",
+      question: "Open-ended: ARIMAX provides slightly better forecasts than ARIMA but requires several additional external data inputs. Would you recommend using ARIMAX? What business considerations would influence your decision?",
+      type: "open",
+      gradingCriteria: "Correct if the answer weighs the modest forecast accuracy improvement from ARIMAX against real business costs — e.g. the expense, complexity, or reliability of collecting and maintaining the additional external data inputs — rather than giving an unconditional yes or no.",
     },
   ],
 };
