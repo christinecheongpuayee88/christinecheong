@@ -16,7 +16,7 @@
     body{color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff}
     button,input,textarea{font:inherit}button{cursor:pointer}
 
-    .layout{max-width:1160px;margin:0 auto;padding:44px 22px 80px;display:flex;gap:48px;align-items:flex-start}
+    .layout{max-width:1160px;margin:0;padding:44px clamp(22px,4vw,56px) 80px;display:flex;gap:48px;align-items:flex-start}
 
     /* Left panel — persistent stage signpost */
     .sidebar{flex:0 0 280px;width:280px;position:sticky;top:40px}
