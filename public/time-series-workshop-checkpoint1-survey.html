@@ -141,29 +141,11 @@
       </div>
       <div class="field" data-q="6">
         <span class="field-label"><span class="qnum">Q7.</span> Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why? *</span>
-        <div class="mc-group choice-group" data-name="q6">
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Model A, because it fits the training data best">Model A, because it fits the training data best</button>
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Model B, because it generalizes better to unseen data">Model B, because it generalizes better to unseen data</button>
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Either model — training and test performance don't matter for forecasting">Either model — training and test performance don't matter for forecasting</button>
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Neither — you should always use a simpler baseline instead">Neither — you should always use a simpler baseline instead</button>
-        </div>
+        <textarea class="open-answer" data-name="q6" rows="3" placeholder="Type your answer…"></textarea>
       </div>
       <div class="field" data-q="7">
         <span class="field-label"><span class="qnum">Q8.</span> SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why? *</span>
-        <div class="mc-group choice-group" data-name="q7">
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Increase staffing and room availability to meet the anticipated peak demand">Increase staffing and room availability to meet the anticipated peak demand</button>
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Reduce staffing since forecasts are often wrong">Reduce staffing since forecasts are often wrong</button>
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Ignore the forecast since occupancy is inherently unpredictable">Ignore the forecast since occupancy is inherently unpredictable</button>
-          <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Cancel bookings near the peak to avoid overcrowding">Cancel bookings near the peak to avoid overcrowding</button>
-        </div>
-      </div>
-      <div class="field" data-q="8">
-        <span class="field-label"><span class="qnum">Q9.</span> Open-ended: Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why? *</span>
-        <textarea class="open-answer" data-name="q8" rows="3" placeholder="Type your answer…"></textarea>
-      </div>
-      <div class="field" data-q="9">
-        <span class="field-label"><span class="qnum">Q10.</span> Open-ended: SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why? *</span>
-        <textarea class="open-answer" data-name="q9" rows="3" placeholder="Type your answer…"></textarea>
+        <textarea class="open-answer" data-name="q7" rows="3" placeholder="Type your answer…"></textarea>
       </div>
       <label class="field">
         <span class="field-label">Reflection — do you have any further questions? <span class="optional">(optional)</span></span>
@@ -187,7 +169,7 @@
 
 <script>
 (function(){
-  var QUESTION_COUNT = 10;
+  var QUESTION_COUNT = 8;
   var form = document.getElementById('beginningForm');
   var statusEl = document.getElementById('beginningStatus');
   var submitBtn = document.getElementById('beginningSubmit');

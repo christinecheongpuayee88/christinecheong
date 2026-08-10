@@ -85,43 +85,21 @@ const QUESTIONS = {
       correct: "True",
       feedback: "If the model captured all the structure in the series, what's left over should be unpredictable — i.e. white noise. Leftover pattern means the model missed something.",
     },
+    // Application questions — open-ended, AI-graded rather than exact-match,
+    // so type: "open" routes them to gradeOpenEndedAnswers() instead of the
+    // deterministic normalize()-comparison path the other questions use.
+    // The closed-ended (multiple-choice) versions of these two questions
+    // were tried first and dropped in favor of open-ended, which tests the
+    // actual reasoning ("why") rather than just which option was picked.
     {
       headerPrefix: "Model A performs better on the training",
       question: "Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why?",
-      options: [
-        "Model A, because it fits the training data best",
-        "Model B, because it generalizes better to unseen data",
-        "Either model — training and test performance don't matter for forecasting",
-        "Neither — you should always use a simpler baseline instead",
-      ],
-      correct: "Model B, because it generalizes better to unseen data",
-      feedback: "Forecasting is about performance on data the model hasn't seen yet — test-set accuracy predicts real future performance, while a model that only looks good on training data (like Model A) is often just overfitting and won't carry that advantage into actual future occupancy.",
-    },
-    {
-      headerPrefix: "SARIMA forecasts hotel occupancy to peak",
-      question: "SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why?",
-      options: [
-        "Increase staffing and room availability to meet the anticipated peak demand",
-        "Reduce staffing since forecasts are often wrong",
-        "Ignore the forecast since occupancy is inherently unpredictable",
-        "Cancel bookings near the peak to avoid overcrowding",
-      ],
-      correct: "Increase staffing and room availability to meet the anticipated peak demand",
-      feedback: "A forecasted demand peak is only useful if it changes a decision — management should scale up staffing and room availability ahead of the peak so the business is actually prepared for it, rather than treating the forecast as just an interesting number.",
-    },
-    // Q9/Q10 are the same two application scenarios as Q7/Q8, but
-    // open-ended — AI-graded rather than exact-match, so type: "open"
-    // routes them to gradeOpenEndedAnswers() instead of the deterministic
-    // normalize()-comparison path the other questions use.
-    {
-      headerPrefix: "Open-ended: Model A performs better on the training",
-      question: "Open-ended: Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why?",
       type: "open",
       gradingCriteria: "Correct if the student chooses Model B (or otherwise clearly favors test/out-of-sample performance over training fit), and reasons that generalization to unseen data matters more for forecasting than training fit — showing awareness that Model A's training advantage likely reflects overfitting rather than genuine forecasting skill.",
     },
     {
-      headerPrefix: "Open-ended: SARIMA forecasts hotel occupancy to peak",
-      question: "Open-ended: SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why?",
+      headerPrefix: "SARIMA forecasts hotel occupancy to peak",
+      question: "SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why?",
       type: "open",
       gradingCriteria: "Correct if the answer centers on preparing operationally for the demand peak — e.g. increasing staffing, room availability, supply, or otherwise scaling capacity ahead of time — showing the student understands a forecast should translate into an operational or business decision, not just be observed.",
     },
@@ -182,41 +160,18 @@ const QUESTIONS = {
       correct: "Drop the less useful lags — more lags isn't automatically better; watch for overfitting",
       feedback: "Worsening out-of-sample performance despite more lags is a classic overfitting signal — the extra lags are fitting noise, not signal. Prune back to the lags that actually help.",
     },
+    // Application questions — open-ended, AI-graded. The closed-ended
+    // (multiple-choice) versions of these two questions were tried first
+    // and dropped in favor of open-ended, same decision as Checkpoint 1.
     {
       headerPrefix: "Lagged advertising improves forecasting more than current",
       question: "Lagged advertising improves forecasting more than current advertising. What does this mean for how management plans advertising and sales forecasts?",
-      options: [
-        "Management should plan advertising spend in advance, since its effect on sales shows up with a delay",
-        "Management should only track same-day advertising spend, since lagged effects don't matter",
-        "Management should stop advertising since lagged effects mean it doesn't work",
-        "Management should ignore advertising entirely and only look at pricing",
-      ],
-      correct: "Management should plan advertising spend in advance, since its effect on sales shows up with a delay",
-      feedback: "Since advertising's effect on sales is delayed rather than immediate, management should plan and commit advertising spend ahead of the sales period it's meant to influence — budgeting for a lagged payoff, not expecting same-period impact.",
-    },
-    {
-      headerPrefix: "ARIMAX provides slightly better forecasts than ARIMA",
-      question: "ARIMAX provides slightly better forecasts than ARIMA but requires several additional external data inputs. Would you recommend using ARIMAX? What business considerations would influence your decision?",
-      options: [
-        "Yes, always — more accuracy is always worth it regardless of cost",
-        "It depends — weigh the modest accuracy gain against the added cost, complexity, and reliability of maintaining the extra data inputs",
-        "No, never use ARIMAX since it's more complex than ARIMA",
-        "It doesn't matter which model you use as long as AIC is similar",
-      ],
-      correct: "It depends — weigh the modest accuracy gain against the added cost, complexity, and reliability of maintaining the extra data inputs",
-      feedback: "A small accuracy improvement isn't automatically worth adopting — the real decision is whether the added data-collection cost, complexity, and pipeline reliability of ARIMAX are justified by that gain for this specific business context.",
-    },
-    // Q8/Q9 are the same two application scenarios as Q6/Q7, but
-    // open-ended — AI-graded, same pattern as Checkpoint 1's Q9/Q10.
-    {
-      headerPrefix: "Open-ended: Lagged advertising improves forecasting more than current",
-      question: "Open-ended: Lagged advertising improves forecasting more than current advertising. What does this mean for how management plans advertising and sales forecasts?",
       type: "open",
       gradingCriteria: "Correct if the student recognizes that because advertising's effect on sales is delayed, management should plan or commit advertising spend in advance of the sales period it's meant to influence, rather than expecting an immediate same-period impact.",
     },
     {
-      headerPrefix: "Open-ended: ARIMAX provides slightly better forecasts than ARIMA",
-      question: "Open-ended: ARIMAX provides slightly better forecasts than ARIMA but requires several additional external data inputs. Would you recommend using ARIMAX? What business considerations would influence your decision?",
+      headerPrefix: "ARIMAX provides slightly better forecasts than ARIMA",
+      question: "ARIMAX provides slightly better forecasts than ARIMA but requires several additional external data inputs. Would you recommend using ARIMAX? What business considerations would influence your decision?",
       type: "open",
       gradingCriteria: "Correct if the answer weighs the modest forecast accuracy improvement from ARIMAX against real business costs — e.g. the expense, complexity, or reliability of collecting and maintaining the additional external data inputs — rather than giving an unconditional yes or no.",
     },
