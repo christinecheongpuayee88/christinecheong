@@ -157,6 +157,14 @@
           <button type="button" class="choice-btn" role="radio" aria-checked="false" data-value="Cancel bookings near the peak to avoid overcrowding">Cancel bookings near the peak to avoid overcrowding</button>
         </div>
       </div>
+      <div class="field" data-q="8">
+        <span class="field-label"><span class="qnum">Q9.</span> Open-ended: Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why? *</span>
+        <textarea class="open-answer" data-name="q8" rows="3" placeholder="Type your answer…"></textarea>
+      </div>
+      <div class="field" data-q="9">
+        <span class="field-label"><span class="qnum">Q10.</span> Open-ended: SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why? *</span>
+        <textarea class="open-answer" data-name="q9" rows="3" placeholder="Type your answer…"></textarea>
+      </div>
       <label class="field">
         <span class="field-label">Reflection — do you have any further questions? <span class="optional">(optional)</span></span>
         <textarea name="reflection" rows="2"></textarea>
@@ -179,7 +187,7 @@
 
 <script>
 (function(){
-  var QUESTION_COUNT = 8;
+  var QUESTION_COUNT = 10;
   var form = document.getElementById('beginningForm');
   var statusEl = document.getElementById('beginningStatus');
   var submitBtn = document.getElementById('beginningSubmit');
@@ -200,6 +208,15 @@
         statusEl.textContent = '';
         statusEl.className = 'form-status';
       });
+    });
+  });
+
+  Array.prototype.forEach.call(form.querySelectorAll('.open-answer'), function(textarea){
+    var name = textarea.getAttribute('data-name');
+    textarea.addEventListener('input', function(){
+      selections[name] = textarea.value.trim();
+      statusEl.textContent = '';
+      statusEl.className = 'form-status';
     });
   });
 

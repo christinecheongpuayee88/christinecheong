@@ -109,6 +109,22 @@ const QUESTIONS = {
       correct: "Increase staffing and room availability to meet the anticipated peak demand",
       feedback: "A forecasted demand peak is only useful if it changes a decision — management should scale up staffing and room availability ahead of the peak so the business is actually prepared for it, rather than treating the forecast as just an interesting number.",
     },
+    // Q9/Q10 are the same two application scenarios as Q7/Q8, but
+    // open-ended — AI-graded rather than exact-match, so type: "open"
+    // routes them to gradeOpenEndedAnswers() instead of the deterministic
+    // normalize()-comparison path the other questions use.
+    {
+      headerPrefix: "Open-ended: Model A performs better on the training",
+      question: "Model A performs better on the training data for air passenger data while Model B forecasts the test data more accurately. Which would you choose for forecasting future hotel occupancy and why?",
+      type: "open",
+      gradingCriteria: "Correct if the student chooses Model B (or otherwise clearly favors test/out-of-sample performance over training fit), and reasons that generalization to unseen data matters more for forecasting than training fit — showing awareness that Model A's training advantage likely reflects overfitting rather than genuine forecasting skill.",
+    },
+    {
+      headerPrefix: "Open-ended: SARIMA forecasts hotel occupancy to peak",
+      question: "SARIMA forecasts hotel occupancy to peak next month. What should hotel management consider doing more and why?",
+      type: "open",
+      gradingCriteria: "Correct if the answer centers on preparing operationally for the demand peak — e.g. increasing staffing, room availability, supply, or otherwise scaling capacity ahead of time — showing the student understands a forecast should translate into an operational or business decision, not just be observed.",
+    },
   ],
   3: [
     {
@@ -235,6 +251,49 @@ async function appendSheetRow(accessToken, spreadsheetId, range, row) {
   if (!res.ok) throw new Error(data.error?.message || "Failed to append response row");
 }
 
+// Grades every open-ended question in one OpenAI call (not one call per
+// question) — cheap and fast for the small number of open questions this
+// checkpoint has. Returns a map of headerPrefix -> { correct, modelAnswer,
+// feedback }, keyed by headerPrefix since that's already the stable
+// identifier used everywhere else in this file.
+async function gradeOpenEndedAnswers(apiKey, openQuestions, openAnswers) {
+  const blocks = openQuestions
+    .map(
+      (q, i) => `Question ${i + 1}: ${q.question}
+Grading criteria: ${q.gradingCriteria}
+Student's answer: ${openAnswers[i]}`
+    )
+    .join("\n\n");
+
+  const prompt = `You are grading open-ended application questions on a student's SARIMA checkpoint quiz. For each question, judge whether the student's answer satisfies the grading criteria — it doesn't need to match any exact wording, just demonstrate the right reasoning. Then write one sentence of specific feedback that references what the student actually wrote, not generic praise or criticism.
+
+${blocks}
+
+Respond with ONLY a JSON object in exactly this shape, one entry per question in order, keys "q1", "q2", etc.:
+{"q1": {"correct": true or false, "modelAnswer": "one sentence describing what a correct answer looks like", "feedback": "one sentence of specific feedback tied to the student's actual answer"}, "q2": {...}}`;
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: "gpt-4o",
+      max_tokens: 700,
+      response_format: { type: "json_object" },
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || "OpenAI API error while grading open-ended answers");
+
+  const parsed = JSON.parse(data.choices[0].message.content);
+  const byHeaderPrefix = {};
+  openQuestions.forEach((q, i) => {
+    const entry = parsed["q" + (i + 1)] || { correct: false, modelAnswer: "", feedback: "Could not be graded automatically." };
+    byHeaderPrefix[q.headerPrefix] = entry;
+  });
+  return byHeaderPrefix;
+}
+
 export async function onRequestOptions() {
   return new Response(null, { status: 204, headers: CORS });
 }
@@ -242,6 +301,7 @@ export async function onRequestOptions() {
 export async function onRequestPost(context) {
   try {
     const serviceAccountKey = context.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    const apiKey = context.env.OPENAI_API_KEY;
     if (!serviceAccountKey) {
       return new Response(JSON.stringify({ error: "Google service account key not configured" }), {
         status: 500,
@@ -257,11 +317,28 @@ export async function onRequestPost(context) {
     }
 
     const answers = body.answers;
-    if (!Array.isArray(answers) || answers.length !== questions.length || answers.some((a) => !a)) {
+    if (!Array.isArray(answers) || answers.length !== questions.length || answers.some((a) => !a || !a.trim())) {
       return new Response(JSON.stringify({ error: "All questions must be answered" }), {
         status: 400,
         headers: CORS,
       });
+    }
+
+    const openIndices = questions.reduce((acc, q, i) => {
+      if (q.type === "open") acc.push(i);
+      return acc;
+    }, []);
+    if (openIndices.length && !apiKey) {
+      return new Response(JSON.stringify({ error: "API key not configured for grading open-ended answers" }), {
+        status: 500,
+        headers: CORS,
+      });
+    }
+    let openGrades = {};
+    if (openIndices.length) {
+      const openQuestions = openIndices.map((i) => questions[i]);
+      const openAnswers = openIndices.map((i) => answers[i]);
+      openGrades = await gradeOpenEndedAnswers(apiKey, openQuestions, openAnswers);
     }
 
     const accessToken = await getGoogleAccessToken(serviceAccountKey);
@@ -295,14 +372,27 @@ export async function onRequestPost(context) {
 
     await appendSheetRow(accessToken, sheetId, `'${TAB_NAME}'!A:Z`, row);
 
-    const results = questions.map((q, i) => ({
-      question: q.question,
-      options: q.options || null,
-      yourAnswer: answers[i],
-      correctAnswer: q.correct,
-      correct: normalize(answers[i]) === normalize(q.correct),
-      feedback: q.feedback || null,
-    }));
+    const results = questions.map((q, i) => {
+      if (q.type === "open") {
+        const grade = openGrades[q.headerPrefix] || { correct: false, modelAnswer: "", feedback: "Could not be graded automatically." };
+        return {
+          question: q.question,
+          options: null,
+          yourAnswer: answers[i],
+          correctAnswer: grade.modelAnswer,
+          correct: !!grade.correct,
+          feedback: grade.feedback,
+        };
+      }
+      return {
+        question: q.question,
+        options: q.options || null,
+        yourAnswer: answers[i],
+        correctAnswer: q.correct,
+        correct: normalize(answers[i]) === normalize(q.correct),
+        feedback: q.feedback || null,
+      };
+    });
     const score = results.filter((r) => r.correct).length;
 
     return new Response(JSON.stringify({ success: true, score, total: questions.length, results }), {
