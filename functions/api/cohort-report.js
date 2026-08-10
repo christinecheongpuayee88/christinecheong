@@ -413,22 +413,20 @@ Structure your response exactly as follows:
 ## 📊 Checkpoint 1 Report — SARIMA
 
 ### 1. Cohort Insights (from Live Sensing)
-* [2-4 bullets of genuine interpretive insight synthesizing this checkpoint's live signals into what it means right now — bold a short topic header at the start of each bullet, then elaborate after a colon, e.g. "**Confidence vs Performance:** the cohort entered with average confidence of 2.4/5 but is already scoring 92% on differencing — performance is outpacing stated confidence." Cover different angles across the bullets: (1) how actual SARIMA performance compares to the confidence level/concerns stated in the Beginning-of-Class Report, and (2) any recurring theme in the optional "Do you have any further questions?" responses. Don't repeat the same angle twice, and don't restate individual question-by-question accuracy — that's covered in the sections below.]
+Exactly 3-4 bullets synthesizing this checkpoint's full picture in one place — performance vs stated confidence, the strongest concept, and the biggest gap — rather than a per-question breakdown. The bold text at the start of each bullet must itself state the trend/finding in a few words, not a generic label — a reader should get the takeaway from the bold text alone.
 
-### 2. What Went Well
-* [One bullet per question/topic with a strong correct-rate — bold the concept name, then cite the exact % and what it confirms the cohort has grasped, e.g. "**Order of differencing (d):** 100% correct — the cohort has a solid grasp of stationarity." Mark near-universal-correct concepts as "✅ mostly correct" within the elaboration.]
+* **[state the confidence-vs-performance trend, e.g. "Performance outpaces stated confidence" / "Performance matches stated confidence"]:** [one clause citing the overall correct-rate and how it compares to the confidence level/concerns stated in the Beginning-of-Class Report.]
+* **[name the single concept the cohort has mastered most solidly, e.g. "Model selection (AIC/BIC) fully mastered"]:** [one clause citing the exact % correct.]
+* **[name the single biggest remaining misconception, e.g. "ACF/PACF identification still shaky"]:** [one clause naming the specific misconception and the % who picked it.]
+* **[optional 4th bullet, only if the evidence genuinely supports a distinct 4th insight — e.g. a recurring theme in the optional "Do you have any further questions?" responses, or whether the errors are conceptual vs. just notation/labeling confusion]:** [one clause.]
 
-### 3. Remaining Gaps
-* [One bullet per question with meaningful wrong-answer clustering — bold the concept name, then state the misconception, e.g. "**ACF/PACF identification:** 3 respondents / 21.4% picked '...' → confusing decay vs. cutoff patterns."]
-* **Trend vs Beginning:** [compare actual SARIMA performance against the confidence level and stated goals from the Beginning Report — is the cohort over-confident, under-confident, or on track relative to what they said coming in? Note whether the errors are conceptual or just notation/labeling confusion.]
+Never list more than one bullet per concept, and never produce a bullet for every question — that level of per-question detail is already visible live on the instructor dashboard.
 
-Every bullet in sections 2 and 3 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
-
-### 4. AI-Generated Teaching Recommendations
+### 2. AI-Generated Teaching Recommendations
 
 ${buildTeachingRecsBlock(2)}
 
-### 5. Top Teaching Moves Now
+### 3. Top Teaching Moves Now
 
 ${clarifyApplyChallengeBlock(2, "the topics above")}
 
@@ -464,22 +462,21 @@ Structure your response exactly as follows:
 
 ## 📊 Checkpoint 2 Report — ARIMAX
 
-### 1. Cohort Insights (from Live Sensing)
-* [2-4 bullets of genuine interpretive insight synthesizing this checkpoint's live signals into what it means for the rest of class — bold a short topic header at the start of each bullet, then elaborate after a colon. Cover different angles across the bullets: (1) how actual ARIMAX performance compares to the confidence level/concerns stated in the Beginning-of-Class Report and the trajectory since Checkpoint 1, and (2) any recurring theme in the optional "Do you have any further questions?" responses. Don't repeat the same angle twice, and don't restate individual question-by-question accuracy — that's covered in the sections below.]
+### 1. Cohort Insights (from Live Sensing, Across Checkpoints 1 & 2)
+Exactly 3-4 bullets synthesizing the cohort's full picture across BOTH checkpoints in one place — performance vs stated confidence/trajectory, the strongest concept, and the biggest remaining or persisting gap — rather than a per-question breakdown. The bold text at the start of each bullet must itself state the trend/finding in a few words, not a generic label — a reader should get the takeaway from the bold text alone.
 
-### 2. What Went Well (Across Checkpoints 1 & 2)
-* [One bullet per concept/topic the cohort understood well, drawn from both this Checkpoint 2 (ARIMAX) result and the Checkpoint 1 (SARIMA) report above — bold the concept name, then cite which checkpoint(s) and the exact %, e.g. "**Model selection (AIC/BIC):** 100% correct at Checkpoint 1." Cover concepts from both checkpoints; do not collapse them into one vague bullet.]
+* **[state the confidence/trajectory trend across both checkpoints, e.g. "Performance holding steady since Checkpoint 1" / "Performance dipped from Checkpoint 1"]:** [one clause citing overall correct-rates at both checkpoints and how they compare to the confidence/concerns stated in the Beginning-of-Class Report.]
+* **[name the single concept the cohort has mastered most solidly across either checkpoint, naming which one]:** [one clause citing the exact % correct and which checkpoint it's from.]
+* **[name the single biggest remaining misconception, naming which checkpoint(s) it appeared in — and explicitly say so if it persisted from Checkpoint 1 to Checkpoint 2, since that signals the earlier recommendation may not have landed]:** [one clause naming the specific misconception and the % who picked it.]
+* **[optional 4th bullet, only if the evidence genuinely supports a distinct 4th insight — e.g. a recurring theme in the optional "Do you have any further questions?" responses]:** [one clause.]
 
-### 3. Remaining Gaps (Across Checkpoints 1 & 2)
-* [One bullet per concept/topic that showed up as a misconception in this Checkpoint 2 result and/or the Checkpoint 1 report above — bold the concept name, then name the exact misconception and which checkpoint(s) it appeared in, e.g. "**ARIMA vs ARIMAX:** 11.7% incorrect at Checkpoint 2 — believing ARIMAX cannot handle seasonality." If the same concept persisted across both checkpoints, say so explicitly, and note whether the Checkpoint 1 recommendation appears to have landed.]
+Never list more than one bullet per concept, and never produce a bullet for every question — that level of per-question detail is already visible live on the instructor dashboard.
 
-Every bullet in sections 2 and 3 must start with a **bolded concept name** followed by a colon ("**Concept Name:** elaboration") — never a plain, unbolded topic phrase followed by a dash.
-
-### 4. AI-Generated Teaching Recommendations
+### 2. AI-Generated Teaching Recommendations
 
 ${buildTeachingRecsBlock(3)}
 
-### 5. Top Teaching Moves Now
+### 3. Top Teaching Moves Now
 
 ${clarifyApplyChallengeBlock(3, "the topics above")}
 

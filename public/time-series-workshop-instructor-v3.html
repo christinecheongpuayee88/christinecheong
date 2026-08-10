@@ -71,32 +71,14 @@
   .stage-btn:hover:not(:disabled) { border-color: var(--text); }
   .stage-btn:disabled { opacity: .5; cursor: wait; }
   .stage-btn.done { color: var(--good); border-color: var(--good); background: var(--good-bg); }
+  .stage-btn.tab-active { color: var(--info); border-color: var(--info); background: var(--info-bg); }
   .report-status { font-size: 13.5px; color: var(--subtle); }
   .report-status.error { color: var(--bad); }
 
-  .pulse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-  @media (max-width: 700px) { .pulse-grid { grid-template-columns: 1fr; } }
-  .pulse-panel {
-    border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg);
-    padding: 20px; display: flex; flex-direction: column; gap: 12px;
-  }
-  .pulse-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .pulse-panel-title { font-size: 14.5px; font-weight: 600; }
-  .pulse-open-link { font-size: 12px; color: var(--info); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
-  .pulse-current {
-    font-size: 13px; background: var(--surface); border-radius: var(--radius); padding: 10px 12px; color: var(--text);
-  }
-  .pulse-current .pulse-current-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--subtle); margin-bottom: 4px; }
-  .pulse-current.waiting { color: var(--subtle); font-style: italic; }
-  .pulse-row { display: flex; gap: 8px; }
-  .pulse-row input[type="text"] {
-    flex: 1; font-family: inherit; font-size: 13.5px; padding: 8px 12px;
-    border: 1px solid var(--border); border-radius: var(--radius); color: var(--text);
-  }
-  .pulse-row input[type="text"]:focus { outline: none; border-color: var(--info); }
-  .pulse-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .pulse-status { font-size: 12.5px; color: var(--subtle); }
-  .pulse-status.error { color: var(--bad); }
+  .assignments-tab { display: none; flex-direction: column; gap: 18px; padding-top: 4px; }
+  .assignments-tab.show { display: flex; }
+  .assignments-tab .section-desc { margin-bottom: 0; }
+
   .report-box {
     display: none; border: 1px solid var(--border); border-radius: var(--radius);
     background: var(--bg); padding: 24px; font-size: 14.5px; line-height: 1.7;
@@ -270,82 +252,36 @@
   </div>
 
   <p class="section-title">AI-generated cohort reports</p>
-  <p class="section-desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read. Every stage closes with a "Top Teaching Moves" section — up to 3 recommendations in a 🔴 Clarify / 🟢 Apply / 🔵 Challenge framework, each naming a specific micro-intervention move (see the <a href="/micro-interventions" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline;text-underline-offset:2px;">Micro-Interventions Library ↗</a> for how to run each one) alongside the theory recap slide or matching workshop exercise. If you've graded assignments below first (same page load), the Final Report also gets a rubric-informed section appended after that, backed by actual graded work.</p>
+  <p class="section-desc">Run once per stage, after closing that stage's quiz window. Each report compares this cohort against every report before it, then appends itself to the Cohort Intelligence Log for the next stage to read. Every stage closes with a "Top Teaching Moves" section — up to 3 recommendations in a 🔴 Clarify / 🟢 Apply / 🔵 Challenge framework, each naming a specific micro-intervention move (see the <a href="/micro-interventions" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline;text-underline-offset:2px;">Micro-Interventions Library ↗</a> for how to run each one) alongside the theory recap slide or matching workshop exercise. If you've graded assignments via the Assignments tab first (same page load), the Final Report also gets a rubric-informed section appended after that, backed by actual graded work.</p>
   <div class="instructor-panel">
     <div class="instructor-stages">
       <button class="stage-btn" id="stage-btn-1" onclick="runCohortStage(1)">1 · Beginning Report</button>
       <button class="stage-btn" id="stage-btn-2" onclick="runCohortStage(2)">2 · Checkpoint 1 (SARIMA)</button>
       <button class="stage-btn" id="stage-btn-3" onclick="runCohortStage(3)">3 · Checkpoint 2 (ARIMAX)</button>
       <button class="stage-btn" id="stage-btn-4" onclick="runCohortStage(4)">4 · Final Report</button>
+      <button class="stage-btn" id="tab-assignments-btn" onclick="showAssignmentsTab()">📋 Assignments</button>
     </div>
     <div class="report-status" id="report-status"></div>
     <div class="report-box" id="report-box"></div>
     <div class="report-actions" id="report-actions">
       <button class="btn" onclick="emailCurrentReport()">Email this report</button>
     </div>
-  </div>
 
-  <p class="section-title">Live Discussion Pulse</p>
-  <p class="section-desc">Ask an ad-hoc question mid-workshop and see the cohort's reasoning, not just 2–3 vocal answers. Publish a question, share the student page link, then refresh to check responses and get an AI synthesis — themes plus one recommended 🔴 Clarify / 🟢 Apply / 🔵 Challenge move. "Publish" starts a fresh round (new responses only); "Edit current" fixes the question in place — e.g. a typo — without losing responses already collected. Running "Get AI synthesis" also posts the emerging themes (not the recommended move) back to the student page as "Results so far" — AI only ever recommends a facilitation move to you; it never replies to students. "Clear results" resets the count and synthesis shown on this panel only — every response stays in the Google Sheet and students still see everything as normal.</p>
-  <div class="instructor-panel">
-    <div class="pulse-grid">
-      <div class="pulse-panel">
-        <div class="pulse-panel-head">
-          <span class="pulse-panel-title">Part 1 · SARIMA</span>
-          <a class="pulse-open-link" href="/live-pulse.html?part=1" target="_blank" rel="noopener">Open student page ↗</a>
-        </div>
-        <div class="pulse-current waiting" id="pulse-current-1">Loading…</div>
-        <div class="pulse-row">
-          <input type="text" id="pulse-question-1" placeholder="Type an ad-hoc question…">
-          <button class="stage-btn" onclick="publishPulseQuestion(1)">Publish</button>
-          <button class="stage-btn" onclick="editPulseQuestion(1)">Edit current</button>
-        </div>
-        <div class="pulse-actions">
-          <button class="stage-btn" onclick="refreshPulseState(1)">Refresh</button>
-          <button class="stage-btn" id="pulse-synth-btn-1" onclick="synthesizePulse(1)">Get AI synthesis</button>
-          <button class="stage-btn" onclick="clearPulseResults(1)">Clear results</button>
-        </div>
-        <div class="pulse-status" id="pulse-status-1"></div>
-        <div class="report-box" id="pulse-box-1"></div>
+    <div class="assignments-tab" id="assignments-tab">
+      <p class="section-desc">Upload a zip of student notebook submissions (Canvas's bulk-download format — <code>.ipynb</code>/<code>.ipy</code> files named <code>student_id_submissionid_filename</code>). Each submission is graded individually against the 3-item rubric below, then synthesised into cohort-level findings with Clarify/Apply/Challenge recommendations. AI suggestions only — review and finalize grades yourself; nothing is written back to Canvas.</p>
+      <table class="rubric-table">
+        <tr><th>Dimension</th><th>1 — Developing</th><th>2 — Competent</th><th>3 — Strong</th></tr>
+        <tr><td>Model Application</td><td>Model/process is incomplete or inappropriate</td><td>Appropriate model is implemented reasonably</td><td>Model is implemented correctly with appropriate choices and checks</td></tr>
+        <tr><td>Interpretation &amp; Evaluation</td><td>Results mainly reported with little interpretation</td><td>Key results and model performance are interpreted</td><td>Models/results are critically compared and limitations considered</td></tr>
+        <tr><td>Decision Insight</td><td>Limited connection to the business problem</td><td>Findings translated into a reasonable conclusion</td><td>Findings translated into clear, evidence-based business implications</td></tr>
+      </table>
+      <div class="upload-row">
+        <input type="file" id="submissions-file" accept=".zip">
+        <button class="stage-btn" id="grade-btn" onclick="runGradeSubmissions()">Grade submissions</button>
       </div>
-
-      <div class="pulse-panel">
-        <div class="pulse-panel-head">
-          <span class="pulse-panel-title">Part 2 · ARIMAX</span>
-          <a class="pulse-open-link" href="/live-pulse.html?part=2" target="_blank" rel="noopener">Open student page ↗</a>
-        </div>
-        <div class="pulse-current waiting" id="pulse-current-2">Loading…</div>
-        <div class="pulse-row">
-          <input type="text" id="pulse-question-2" placeholder="Type an ad-hoc question…">
-          <button class="stage-btn" onclick="publishPulseQuestion(2)">Publish</button>
-          <button class="stage-btn" onclick="editPulseQuestion(2)">Edit current</button>
-        </div>
-        <div class="pulse-actions">
-          <button class="stage-btn" onclick="refreshPulseState(2)">Refresh</button>
-          <button class="stage-btn" id="pulse-synth-btn-2" onclick="synthesizePulse(2)">Get AI synthesis</button>
-          <button class="stage-btn" onclick="clearPulseResults(2)">Clear results</button>
-        </div>
-        <div class="pulse-status" id="pulse-status-2"></div>
-        <div class="report-box" id="pulse-box-2"></div>
-      </div>
+      <div class="report-status" id="grade-status"></div>
+      <div class="report-box" id="grade-box"></div>
     </div>
-  </div>
-
-  <p class="section-title">Assignments</p>
-  <p class="section-desc">Upload a zip of student notebook submissions (Canvas's bulk-download format — <code>.ipynb</code>/<code>.ipy</code> files named <code>student_id_submissionid_filename</code>). Each submission is graded individually against the 3-item rubric below, then synthesised into cohort-level findings with Clarify/Apply/Challenge recommendations. AI suggestions only — review and finalize grades yourself; nothing is written back to Canvas.</p>
-  <div class="instructor-panel">
-    <table class="rubric-table">
-      <tr><th>Dimension</th><th>1 — Developing</th><th>2 — Competent</th><th>3 — Strong</th></tr>
-      <tr><td>Model Application</td><td>Model/process is incomplete or inappropriate</td><td>Appropriate model is implemented reasonably</td><td>Model is implemented correctly with appropriate choices and checks</td></tr>
-      <tr><td>Interpretation &amp; Evaluation</td><td>Results mainly reported with little interpretation</td><td>Key results and model performance are interpreted</td><td>Models/results are critically compared and limitations considered</td></tr>
-      <tr><td>Decision Insight</td><td>Limited connection to the business problem</td><td>Findings translated into a reasonable conclusion</td><td>Findings translated into clear, evidence-based business implications</td></tr>
-    </table>
-    <div class="upload-row">
-      <input type="file" id="submissions-file" accept=".zip">
-      <button class="stage-btn" id="grade-btn" onclick="runGradeSubmissions()">Grade submissions</button>
-    </div>
-    <div class="report-status" id="grade-status"></div>
-    <div class="report-box" id="grade-box"></div>
   </div>
 </div>
 
@@ -654,12 +590,30 @@
       });
   }
 
+  // The Assignments tab shares this panel with the 4 report stages —
+  // exactly one of "a report stage's output" or "the assignments UI" is
+  // visible at a time. Switching to a report stage hides the assignments
+  // tab (and its active highlight); showAssignmentsTab() does the reverse.
+  function hideAssignmentsTab() {
+    document.getElementById('assignments-tab').classList.remove('show');
+    document.getElementById('tab-assignments-btn').classList.remove('tab-active');
+  }
+
+  function showAssignmentsTab() {
+    document.getElementById('report-box').classList.remove('show');
+    document.getElementById('report-actions').classList.remove('show');
+    document.getElementById('report-status').textContent = '';
+    document.getElementById('assignments-tab').classList.add('show');
+    document.getElementById('tab-assignments-btn').classList.add('tab-active');
+  }
+
   function runCohortStage(stage) {
     const btn = document.getElementById(`stage-btn-${stage}`);
     const statusEl = document.getElementById('report-status');
     const boxEl = document.getElementById('report-box');
     const actionsEl = document.getElementById('report-actions');
 
+    hideAssignmentsTab();
     btn.disabled = true;
     statusEl.classList.remove('error');
     statusEl.textContent = 'Running — reading responses, comparing against prior stages, generating report…';
@@ -800,186 +754,6 @@
     return html;
   }
 
-  // "Clear results" is a purely client-side view reset — instructor panel
-  // only, per the design decision here: nothing is deleted server-side, so
-  // students (who read the same get-state endpoint) keep seeing the real
-  // count and results. The offset is how many responses existed at the
-  // moment of the last clear; the panel always displays (real count -
-  // offset). Stored in localStorage so it survives an accidental page
-  // reload mid-class. Reset to 0 whenever a genuinely new question is
-  // published, since that's already a fresh count at the data level too.
-  function pulseOffsetKey(part) { return `pulseClearOffset_part${part}`; }
-  function getPulseOffset(part) { return Number(localStorage.getItem(pulseOffsetKey(part))) || 0; }
-  function setPulseOffset(part, value) { localStorage.setItem(pulseOffsetKey(part), String(value)); }
-
-  function refreshPulseState(part, statusMessage) {
-    const currentEl = document.getElementById(`pulse-current-${part}`);
-    const statusEl = document.getElementById(`pulse-status-${part}`);
-    statusEl.classList.remove('error');
-    statusEl.textContent = '';
-
-    return fetch('/api/live-pulse', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ part, action: 'get-state' }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          statusEl.classList.add('error');
-          statusEl.textContent = `Error: ${data.error}`;
-          return;
-        }
-        if (data.question) {
-          currentEl.classList.remove('waiting');
-          const displayCount = Math.max(0, data.responseCount - getPulseOffset(part));
-          currentEl.innerHTML = `<span class="pulse-current-label">Current question · ${displayCount} response${displayCount === 1 ? '' : 's'}</span>${escapeHtml(data.question)}`;
-          currentEl.dataset.questionText = data.question;
-          currentEl.dataset.rawResponseCount = data.responseCount;
-        } else {
-          currentEl.classList.add('waiting');
-          currentEl.innerHTML = `<span class="pulse-current-label">Current question</span>No question published yet.`;
-          currentEl.dataset.questionText = '';
-          currentEl.dataset.rawResponseCount = '0';
-        }
-        // Set after the fetch resolves, not before — refreshPulseState
-        // clears the status text itself at the start of every call, so a
-        // message set by the caller beforehand would be wiped before it's
-        // ever seen.
-        if (statusMessage) statusEl.textContent = statusMessage;
-      })
-      .catch((err) => {
-        statusEl.classList.add('error');
-        statusEl.textContent = `Error: ${err.message}`;
-      });
-  }
-
-  function clearPulseResults(part) {
-    const currentEl = document.getElementById(`pulse-current-${part}`);
-    const boxEl = document.getElementById(`pulse-box-${part}`);
-    const rawCount = Number(currentEl.dataset.rawResponseCount || 0);
-    setPulseOffset(part, rawCount);
-    boxEl.classList.remove('show');
-    boxEl.innerHTML = '';
-    refreshPulseState(part, 'Cleared on this panel — every response is still saved in the sheet, and students still see the real count and results.');
-  }
-
-  function publishPulseQuestion(part) {
-    const inputEl = document.getElementById(`pulse-question-${part}`);
-    const statusEl = document.getElementById(`pulse-status-${part}`);
-    const question = inputEl.value.trim();
-    if (!question) return;
-    statusEl.classList.remove('error');
-    statusEl.textContent = 'Publishing…';
-
-    fetch('/api/live-pulse', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ part, action: 'publish-question', question }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          statusEl.classList.add('error');
-          statusEl.textContent = `Error: ${data.error}`;
-          return;
-        }
-        inputEl.value = '';
-        statusEl.textContent = 'Question published.';
-        setPulseOffset(part, 0);
-        document.getElementById(`pulse-box-${part}`).classList.remove('show');
-        refreshPulseState(part);
-      })
-      .catch((err) => {
-        statusEl.classList.add('error');
-        statusEl.textContent = `Error: ${err.message}`;
-      });
-  }
-
-  // First click (empty input) loads the current question into the box for
-  // editing; second click (input has text) saves it in place — unlike
-  // Publish, this keeps responses already collected still counted, since
-  // the row's timestamp is untouched.
-  function editPulseQuestion(part) {
-    const inputEl = document.getElementById(`pulse-question-${part}`);
-    const statusEl = document.getElementById(`pulse-status-${part}`);
-    const currentEl = document.getElementById(`pulse-current-${part}`);
-
-    if (!inputEl.value.trim()) {
-      const currentText = currentEl.dataset.questionText || '';
-      if (!currentText) {
-        statusEl.classList.add('error');
-        statusEl.textContent = 'No question to edit yet — use Publish to start one.';
-        return;
-      }
-      inputEl.value = currentText;
-      inputEl.focus();
-      statusEl.classList.remove('error');
-      statusEl.textContent = 'Edit the text above, then click "Edit current" again to save.';
-      return;
-    }
-
-    const question = inputEl.value.trim();
-    statusEl.classList.remove('error');
-    statusEl.textContent = 'Saving edit…';
-
-    fetch('/api/live-pulse', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ part, action: 'edit-question', question }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          statusEl.classList.add('error');
-          statusEl.textContent = `Error: ${data.error}`;
-          return;
-        }
-        inputEl.value = '';
-        statusEl.textContent = 'Question updated — responses already collected are kept.';
-        refreshPulseState(part);
-      })
-      .catch((err) => {
-        statusEl.classList.add('error');
-        statusEl.textContent = `Error: ${err.message}`;
-      });
-  }
-
-  function synthesizePulse(part) {
-    const btn = document.getElementById(`pulse-synth-btn-${part}`);
-    const statusEl = document.getElementById(`pulse-status-${part}`);
-    const boxEl = document.getElementById(`pulse-box-${part}`);
-    btn.disabled = true;
-    statusEl.classList.remove('error');
-    statusEl.textContent = 'Synthesizing responses…';
-    boxEl.classList.remove('show');
-
-    fetch('/api/live-pulse', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ part, action: 'synthesize' }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        btn.disabled = false;
-        if (data.error) {
-          statusEl.classList.add('error');
-          statusEl.textContent = `Error: ${data.error}`;
-          return;
-        }
-        statusEl.textContent = `Synthesized ${data.responseCount} response${data.responseCount === 1 ? '' : 's'}.`;
-        boxEl.innerHTML = formatReport(data.synthesis);
-        boxEl.classList.add('show');
-      })
-      .catch((err) => {
-        btn.disabled = false;
-        statusEl.classList.add('error');
-        statusEl.textContent = `Error: ${err.message}`;
-      });
-  }
-
-  refreshPulseState(1);
-  refreshPulseState(2);
 </script>
 
 </body>
