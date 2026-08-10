@@ -301,6 +301,36 @@ For each chosen topic, use exactly this format:
 Every bullet must have exactly two links: the move-name link, and the topic/live-tool link (except "What-if scenario", which only gets the move-name link) — never zero, never more.`;
 }
 
+// A comparison-friendly synthesis of the two sections above — never a
+// standalone re-analysis. Exactly 3 bullets, one per action area, each
+// reusing a topic already named in "AI-Generated Teaching Recommendations"
+// or "Top Teaching Moves" rather than introducing a new one. Distinct from
+// Top Teaching Moves in what it links: Application links to a Micro-
+// Interventions Apply move (a genuinely different activity idea) rather
+// than repeating the same workshop-exercise link already shown above.
+function combinedFocusBlock(stage) {
+  const topics = mergedTopicLinks(stage);
+  return `Combine what you already recommended in the "AI-Generated Teaching Recommendations" and "Top Teaching Moves" sections above into exactly 3 bullets below — one per action area — so the instructor can compare all three side by side in one place. Every topic named here must already have been named in one of the two sections above; never introduce a new topic in this section.
+
+Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
+${buildTopicLinksBlock(topics)}
+
+APPLY moves (pick one — ideally different from whichever move "Top Teaching Moves" already used, so this adds a genuinely different activity idea rather than repeating it):
+${buildMoveLinksBlock(APPLY_MOVES)}
+
+CHALLENGE options (pick one):
+${buildMoveLinksBlock(CHALLENGE_MOVES)}
+${buildChallengeLinksBlock()}
+
+Use exactly this format:
+
+1. **Clarification — [topic already named above]:** [name the specific section of the teaching materials to revisit and why]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
+2. **Application — [topic already named above]:** [name one additional hands-on exercise or quiz that would be relevant]. [chosen APPLY move's exact link text, verbatim](that move's URL from the reference above)
+3. **Challenge — [topic already named above]:** [pose the actual challenge question, exercise, or activity]. [chosen CHALLENGE option's exact link text, verbatim](its URL from the reference above)
+
+If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.`;
+}
+
 // Safety net: the model doesn't reliably wrap the reference label in
 // [text](url) markdown even when the text itself is otherwise correct — it
 // sometimes drops the brackets and prints the label as plain trailing text.
@@ -384,6 +414,10 @@ ${buildTeachingRecsBlock(1)}
 
 ${clarifyApplyChallengeBlock(1, "the intake survey data above")}
 
+### 4. Combined Focus Areas
+
+${combinedFocusBlock(1)}
+
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
 
@@ -429,6 +463,10 @@ ${buildTeachingRecsBlock(2)}
 ### 3. Top Teaching Moves Now
 
 ${clarifyApplyChallengeBlock(2, "the topics above")}
+
+### 4. Combined Focus Areas
+
+${combinedFocusBlock(2)}
 
 Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 
@@ -480,6 +518,10 @@ ${buildTeachingRecsBlock(3)}
 
 ${clarifyApplyChallengeBlock(3, "the topics above")}
 
+### 4. Combined Focus Areas
+
+${combinedFocusBlock(3)}
+
 Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
@@ -525,17 +567,21 @@ Do not add a section restating total response counts, a concept-by-concept break
 
 ${clarifyApplyChallengeBlock(4, "the Checkpoint 1 and Checkpoint 2 reports above (both list per-topic accuracy) and this reflection's remaining-questions data")}
 
+### 4. Combined Focus Areas
+
+${combinedFocusBlock(4)}
+
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
 
 // If the instructor already graded assignments (Assignments tab) before
 // generating the Final Report, its cohort synthesis — evidence from actual
 // graded work, already in Clarify/Apply/Challenge format — gets appended as
-// a new section 4, verbatim, rather than run through another OpenAI call.
-// This never touches sections 1-3 above, which stay exactly as generated.
+// a new section 5, verbatim, rather than run through another OpenAI call.
+// This never touches sections 1-4 above, which stay exactly as generated.
 function appendRubricSection(report, rubricSynthesis) {
   if (!rubricSynthesis || !rubricSynthesis.trim()) return report;
-  return `${report}\n\n### 4. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
+  return `${report}\n\n### 5. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
 }
 
 export async function onRequestOptions() {
