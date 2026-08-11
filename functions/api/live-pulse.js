@@ -165,12 +165,12 @@ const ALL_MOVES = {
   CLARIFY: {
     "Quick quiz": `${MICRO_INTERVENTIONS_URL}#clarify-quick-quiz`,
     "Misconception check": `${MICRO_INTERVENTIONS_URL}#clarify-misconception-check`,
-    "Worked example": `${MICRO_INTERVENTIONS_URL}#clarify-worked-example`,
   },
   APPLY: {
-    "Mini case": `${MICRO_INTERVENTIONS_URL}#apply-mini-case`,
-    "Think–Pair–Share": `${MICRO_INTERVENTIONS_URL}#apply-think-pair-share`,
-    "Different context": `${MICRO_INTERVENTIONS_URL}#apply-different-context`,
+    "Retail case": `${MICRO_INTERVENTIONS_URL}#apply-case-retail`,
+    "Hospitality case": `${MICRO_INTERVENTIONS_URL}#apply-case-hospitality`,
+    "Transport case": `${MICRO_INTERVENTIONS_URL}#apply-case-transport`,
+    "Healthcare case": `${MICRO_INTERVENTIONS_URL}#apply-case-healthcare`,
   },
   CHALLENGE: {
     "What-if scenario": `${MICRO_INTERVENTIONS_URL}#challenge-what-if`,
@@ -179,6 +179,7 @@ const ALL_MOVES = {
   },
 };
 const CHALLENGE_LIVE_TOOLS = {
+  "What-if scenario": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
   "Multiple perspectives": { url: "https://christinecheong.com/agents-hub/perspectives-agent.html", label: "Multiple Perspectives Agent" },
   "Challenge assumptions": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
 };
@@ -191,7 +192,7 @@ function buildMovesReferenceBlock() {
       lines.push(`- "${move}" → ${url} (link text must be exactly "${move}")`);
     }
   }
-  lines.push('CHALLENGE live-tool links (only "Multiple perspectives" and "Challenge assumptions" have one):');
+  lines.push('CHALLENGE live-tool links (every CHALLENGE move has one now):');
   for (const [move, l] of Object.entries(CHALLENGE_LIVE_TOOLS)) {
     lines.push(`- If you pick "${move}" → also link: ${l.url} (link text must be "${l.label}")`);
   }

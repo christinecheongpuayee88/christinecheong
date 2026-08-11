@@ -135,29 +135,35 @@ const TOPIC_LINKS = {
   },
 };
 
-// Real, live tools — not placeholders. "What-if scenario" has none; it's a
-// live discussion prompt with no resource to point to.
+// Real, live tools — not placeholders. All 3 Challenge moves now have one
+// (What-if scenario reuses the AI Advisory Council — a panel that can just
+// as well argue "what if this assumption changed" as "which assumption is
+// weakest").
 const CHALLENGE_LINKS = {
+  "What-if scenario": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
   "Multiple perspectives": { url: "https://christinecheong.com/agents-hub/perspectives-agent.html", label: "Multiple Perspectives Agent" },
   "Challenge assumptions": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
 };
 
-// The 3×3 MVP micro-intervention library: each level's 3 fixed move types,
-// each deep-linking to its own placeholder card on micro-interventions.html
-// (public/micro-interventions.html) so an instructor who clicks the move
-// name sees exactly how to run it, in under a minute, without changing the
-// lesson plan. These are distinct from CHALLENGE_LINKS above, which are the
-// live interactive tools for two of the Challenge-level moves.
+// The micro-intervention library: each level's move/case-study set, each
+// deep-linking to its own card on micro-interventions.html (public/
+// micro-interventions.html) so an instructor who clicks the name sees
+// exactly how to run it, in under a minute, without changing the lesson
+// plan. Apply's entries are industry/function case studies rather than
+// generic facilitation moves, so the model can pick whichever one matches
+// this cohort's actual stated industries. These are distinct from
+// CHALLENGE_LINKS above, which are the live interactive tools for the
+// Challenge-level moves.
 const MICRO_INTERVENTIONS_URL = "https://christinecheong.com/micro-interventions";
 const CLARIFY_MOVES = {
   "Quick quiz": `${MICRO_INTERVENTIONS_URL}#clarify-quick-quiz`,
   "Misconception check": `${MICRO_INTERVENTIONS_URL}#clarify-misconception-check`,
-  "Worked example": `${MICRO_INTERVENTIONS_URL}#clarify-worked-example`,
 };
 const APPLY_MOVES = {
-  "Mini case": `${MICRO_INTERVENTIONS_URL}#apply-mini-case`,
-  "Think–Pair–Share": `${MICRO_INTERVENTIONS_URL}#apply-think-pair-share`,
-  "Different context": `${MICRO_INTERVENTIONS_URL}#apply-different-context`,
+  "Retail case": `${MICRO_INTERVENTIONS_URL}#apply-case-retail`,
+  "Hospitality case": `${MICRO_INTERVENTIONS_URL}#apply-case-hospitality`,
+  "Transport case": `${MICRO_INTERVENTIONS_URL}#apply-case-transport`,
+  "Healthcare case": `${MICRO_INTERVENTIONS_URL}#apply-case-healthcare`,
 };
 const CHALLENGE_MOVES = {
   "What-if scenario": `${MICRO_INTERVENTIONS_URL}#challenge-what-if`,
@@ -240,20 +246,17 @@ function depthLevelRecsBlock(stage) {
 Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
 ${buildTopicLinksBlock(topics)}
 
-APPLY moves (pick one to deliver the interpretation/application question):
+APPLY case studies (pick whichever industry/function best matches this cohort's stated background — never generic, always the one that actually fits):
 ${buildMoveLinksBlock(APPLY_MOVES)}
 
-CHALLENGE options (pick one to deliver the critical-judgment question):
-${buildMoveLinksBlock(CHALLENGE_MOVES)}
+CHALLENGE options (pick one to deliver the critical-judgment question) — each runs live via an agent, use that agent link, not a micro-interventions.html link:
 ${buildChallengeLinksBlock()}
 
 > [One sentence of cohort evidence citing exact counts/percentages that justifies the 3 recommendations below]
 
 * **Understanding of Concepts:** [name the specific gap/misconception from Cohort Insights above and what closes it]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
-* **Interpretation & Application:** [pose a question that makes the cohort interpret a specific finding and connect it to a real business or operational context, tailored to this cohort's stated industries, roles, or business problems from ${profileSource}]. [chosen APPLY move's exact link text, verbatim](that move's URL from the reference above)
-* **Critical Judgment:** [pose a question that surfaces an assumption worth questioning, a what-if scenario, a trade-off, or a competing perspective on the topic named as most solidly mastered${stage === 4 ? " in the Checkpoint reports above" : " in Cohort Insights above"}]. [chosen CHALLENGE option's exact link text, verbatim](its URL from the reference above)
-
-If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.
+* **Interpretation & Application:** [pose a question that makes the cohort interpret a specific finding and connect it to a real business or operational context, tailored to this cohort's stated industries, roles, or business problems from ${profileSource}]. [chosen case study's exact link text, verbatim](that case study's URL from the reference above)
+* **Critical Judgment:** [pose a question that surfaces an assumption worth questioning, a what-if scenario, a trade-off, or a competing perspective on the topic named as most solidly mastered${stage === 4 ? " in the Checkpoint reports above" : " in Cohort Insights above"}]. [chosen CHALLENGE option's exact agent-link text, verbatim](its URL from the reference above)
 
 The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.`;
 }

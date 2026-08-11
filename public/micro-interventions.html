@@ -104,6 +104,8 @@
   .move-tool-link:hover { color: #1d4ed8; }
 
   .quiz-bank { margin-top: 4px; }
+  .quiz-group { scroll-margin-top: 24px; border: 1px solid transparent; border-radius: var(--radius); padding: 4px; }
+  .quiz-group:target { border-color: var(--bad); background: var(--bad-bg); }
   .quiz-group + .quiz-group { margin-top: 18px; }
   .quiz-group-label {
     font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
@@ -144,7 +146,7 @@
   <a href="/time-series-workshop" class="back-link">← Time Series Workshop page</a>
   <p class="eyebrow">Instructor reference · linked from cohort sensing reports</p>
   <h1>Micro-Interventions Library</h1>
-  <p class="desc">Nine fast, AI-generatable teaching moves across three levels — Clarify, Apply, Challenge — that a cohort sensing report can recommend by name and an instructor can run on the spot.</p>
+  <p class="desc">Fast, AI-generatable teaching moves across three levels — Clarify, Apply, Challenge — that a cohort sensing report can recommend by name and an instructor can run on the spot.</p>
 
   <div class="principle">
     <strong>MVP principle:</strong> every move on this page is chosen because it's very fast for AI to generate and very easy for an instructor to deploy without changing the lesson plan. No new slides, no rewritten exercises — just a short prompt the instructor reads out or drops into the room.
@@ -155,13 +157,13 @@
     <tr>
       <td class="level-cell">🔴 Clarify</td>
       <td>Check / reinforce understanding</td>
-      <td><a href="#clarify-quick-quiz">Quick quiz</a>, <a href="#clarify-misconception-check">misconception check</a>, <a href="#clarify-worked-example">worked example</a></td>
+      <td><a href="#clarify-quiz-basic">Basic</a>, <a href="#clarify-quiz-intermediate">Intermediate</a>, <a href="#clarify-quiz-advanced">Advanced</a> quiz questions, <a href="#clarify-misconception-check">misconception check</a></td>
       <td class="time-cell">2–5 min</td>
     </tr>
     <tr>
       <td class="level-cell">🟢 Apply</td>
-      <td>Practise in context</td>
-      <td><a href="#apply-mini-case">mini case</a>, <a href="#apply-think-pair-share">Think–Pair–Share</a>, <a href="#apply-different-context">different context</a></td>
+      <td>Interpret and apply in a real context</td>
+      <td>Case studies — <a href="#apply-case-retail">retail</a>, <a href="#apply-case-hospitality">hospitality</a>, <a href="#apply-case-transport">transport</a>, <a href="#apply-case-healthcare">healthcare</a></td>
       <td class="time-cell">5–10 min</td>
     </tr>
     <tr>
@@ -174,15 +176,15 @@
 
   <div class="level-section clarify">
     <div class="level-head"><h2>🔴 Clarify</h2></div>
-    <p class="level-purpose">Check or reinforce understanding of the concept just taught — fast enough to run the moment a checkpoint reveals a gap.</p>
+    <p class="level-purpose">Is anything still unclear or misunderstood? Questions are grouped by difficulty — basic, intermediate, advanced — so a cohort report can point straight at the tier that matches the gap the data actually shows.</p>
 
     <div class="move-card" id="clarify-quick-quiz">
       <div class="move-head"><span class="move-name">Quick quiz</span><span class="move-time">2–3 min</span></div>
       <p class="move-purpose">Curated one-question multiple-choice checks, one per checkpoint topic — trainer-triggered on demand. Pick whichever topic the live checkpoint data flags as weakest, project it, take answers, then click to reveal.</p>
 
       <div class="quiz-bank">
-        <div class="quiz-group">
-          <div class="quiz-group-label">SARIMA — Checkpoint 1 topics</div>
+        <div class="quiz-group" id="clarify-quiz-basic">
+          <div class="quiz-group-label">Basic</div>
 
           <details class="quiz-item" id="quiz-differencing-d">
             <summary><span class="quiz-topic">Differencing (d)</span> In ARIMA(p,d,q), what does d represent?</summary>
@@ -194,19 +196,6 @@
                 <li class="quiz-option"><span class="opt-letter">D.</span> The number of seasonal periods</li>
               </ul>
               <p class="quiz-explain"><span class="explain-label">Why:</span> d counts how many times you difference the series to remove trend and reach stationarity — it says nothing about AR or MA terms.</p>
-            </div>
-          </details>
-
-          <details class="quiz-item" id="quiz-ar-ma-identification">
-            <summary><span class="quiz-topic">AR/MA identification</span> A series' ACF decays gradually while its PACF cuts off sharply after lag 2. What process does this suggest?</summary>
-            <div class="quiz-body">
-              <ul class="quiz-options">
-                <li class="quiz-option"><span class="opt-letter">A.</span> MA(2)</li>
-                <li class="quiz-option correct"><span class="opt-letter">B.</span> AR(2)</li>
-                <li class="quiz-option"><span class="opt-letter">C.</span> ARMA(2,2)</li>
-                <li class="quiz-option"><span class="opt-letter">D.</span> White noise</li>
-              </ul>
-              <p class="quiz-explain"><span class="explain-label">Why:</span> Gradual ACF decay with a sharp PACF cutoff at lag p is the signature of an AR(p) process — the reverse pattern (sharp ACF cutoff, gradual PACF decay) points to MA(q) instead.</p>
             </div>
           </details>
 
@@ -223,6 +212,49 @@
             </div>
           </details>
 
+          <details class="quiz-item" id="quiz-arima-vs-arimax">
+            <summary><span class="quiz-topic">ARIMA vs ARIMAX</span> What's the key difference between ARIMA and ARIMAX?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> ARIMAX can only be used for seasonal data</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> ARIMAX adds an exogenous predictor on top of Y's own past</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> ARIMAX doesn't require differencing</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> ARIMAX is only for classification problems</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> ARIMA models Y using only Y's own history; ARIMAX adds one or more external (exogenous) variables — like advertising spend — as extra predictors.</p>
+            </div>
+          </details>
+
+          <details class="quiz-item" id="quiz-model-evaluation-mape">
+            <summary><span class="quiz-topic">Model evaluation (MAPE)</span> True or False — models were compared using MAPE on a held-out test set.</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option correct"><span class="opt-letter">A.</span> True</li>
+                <li class="quiz-option"><span class="opt-letter">B.</span> False — models were compared using training-set R² only</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> False — models were compared by residual count</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> False — no quantitative comparison was used</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> MAPE (Mean Absolute Percentage Error) on data the model hasn't seen checks whether it actually generalizes, not just fits the training data.</p>
+            </div>
+          </details>
+        </div>
+
+        <div class="quiz-group" id="clarify-quiz-intermediate">
+          <div class="quiz-group-label">Intermediate</div>
+
+          <details class="quiz-item" id="quiz-ar-ma-identification">
+            <summary><span class="quiz-topic">AR/MA identification</span> A series' ACF decays gradually while its PACF cuts off sharply after lag 2. What process does this suggest?</summary>
+            <div class="quiz-body">
+              <ul class="quiz-options">
+                <li class="quiz-option"><span class="opt-letter">A.</span> MA(2)</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> AR(2)</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> ARMA(2,2)</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> White noise</li>
+              </ul>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> Gradual ACF decay with a sharp PACF cutoff at lag p is the signature of an AR(p) process — the reverse pattern (sharp ACF cutoff, gradual PACF decay) points to MA(q) instead.</p>
+            </div>
+          </details>
+
           <details class="quiz-item" id="quiz-seasonal-differencing">
             <summary><span class="quiz-topic">Seasonal differencing</span> Why do we need seasonal differencing in addition to regular differencing?</summary>
             <div class="quiz-body">
@@ -236,19 +268,6 @@
             </div>
           </details>
 
-          <details class="quiz-item" id="quiz-model-selection-aic-bic">
-            <summary><span class="quiz-topic">Model selection (AIC/BIC)</span> Two candidate SARIMA models both have white-noise residuals. Which should you prefer?</summary>
-            <div class="quiz-body">
-              <ul class="quiz-options">
-                <li class="quiz-option"><span class="opt-letter">A.</span> The one with more parameters, since it fits the data more closely</li>
-                <li class="quiz-option correct"><span class="opt-letter">B.</span> The one with the lower AIC/BIC</li>
-                <li class="quiz-option"><span class="opt-letter">C.</span> The one with the higher R²</li>
-                <li class="quiz-option"><span class="opt-letter">D.</span> Either — residual whiteness is the only thing that matters</li>
-              </ul>
-              <p class="quiz-explain"><span class="explain-label">Why:</span> Once residuals are white noise for multiple candidates, AIC/BIC breaks the tie by penalizing unnecessary complexity — lower is better.</p>
-            </div>
-          </details>
-
           <details class="quiz-item" id="quiz-residual-diagnostics">
             <summary><span class="quiz-topic">Residual diagnostics</span> True or False — a well-fitted SARIMA model should leave residuals that look like white noise.</summary>
             <div class="quiz-body">
@@ -259,23 +278,6 @@
                 <li class="quiz-option"><span class="opt-letter">D.</span> False — residual behavior doesn't matter if AIC is low</li>
               </ul>
               <p class="quiz-explain"><span class="explain-label">Why:</span> If the model captured all the structure in the series, what's left over should be unpredictable — i.e. white noise. Leftover pattern means the model missed something.</p>
-            </div>
-          </details>
-        </div>
-
-        <div class="quiz-group">
-          <div class="quiz-group-label">ARIMAX — Checkpoint 2 topics</div>
-
-          <details class="quiz-item" id="quiz-arima-vs-arimax">
-            <summary><span class="quiz-topic">ARIMA vs ARIMAX</span> What's the key difference between ARIMA and ARIMAX?</summary>
-            <div class="quiz-body">
-              <ul class="quiz-options">
-                <li class="quiz-option"><span class="opt-letter">A.</span> ARIMAX can only be used for seasonal data</li>
-                <li class="quiz-option correct"><span class="opt-letter">B.</span> ARIMAX adds an exogenous predictor on top of Y's own past</li>
-                <li class="quiz-option"><span class="opt-letter">C.</span> ARIMAX doesn't require differencing</li>
-                <li class="quiz-option"><span class="opt-letter">D.</span> ARIMAX is only for classification problems</li>
-              </ul>
-              <p class="quiz-explain"><span class="explain-label">Why:</span> ARIMA models Y using only Y's own history; ARIMAX adds one or more external (exogenous) variables — like advertising spend — as extra predictors.</p>
             </div>
           </details>
 
@@ -304,17 +306,21 @@
               <p class="quiz-explain"><span class="explain-label">Why:</span> Advertising today might not move sales until next week — lagged X terms let the model capture that delayed, distributed effect (a dynamic transfer-function relationship).</p>
             </div>
           </details>
+        </div>
 
-          <details class="quiz-item" id="quiz-model-evaluation-mape">
-            <summary><span class="quiz-topic">Model evaluation (MAPE)</span> True or False — models were compared using MAPE on a held-out test set.</summary>
+        <div class="quiz-group" id="clarify-quiz-advanced">
+          <div class="quiz-group-label">Advanced</div>
+
+          <details class="quiz-item" id="quiz-model-selection-aic-bic">
+            <summary><span class="quiz-topic">Model selection (AIC/BIC)</span> Two candidate SARIMA models both have white-noise residuals. Which should you prefer?</summary>
             <div class="quiz-body">
               <ul class="quiz-options">
-                <li class="quiz-option correct"><span class="opt-letter">A.</span> True</li>
-                <li class="quiz-option"><span class="opt-letter">B.</span> False — models were compared using training-set R² only</li>
-                <li class="quiz-option"><span class="opt-letter">C.</span> False — models were compared by residual count</li>
-                <li class="quiz-option"><span class="opt-letter">D.</span> False — no quantitative comparison was used</li>
+                <li class="quiz-option"><span class="opt-letter">A.</span> The one with more parameters, since it fits the data more closely</li>
+                <li class="quiz-option correct"><span class="opt-letter">B.</span> The one with the lower AIC/BIC</li>
+                <li class="quiz-option"><span class="opt-letter">C.</span> The one with the higher R²</li>
+                <li class="quiz-option"><span class="opt-letter">D.</span> Either — residual whiteness is the only thing that matters</li>
               </ul>
-              <p class="quiz-explain"><span class="explain-label">Why:</span> MAPE (Mean Absolute Percentage Error) on data the model hasn't seen checks whether it actually generalizes, not just fits the training data.</p>
+              <p class="quiz-explain"><span class="explain-label">Why:</span> Once residuals are white noise for multiple candidates, AIC/BIC breaks the tie by penalizing unnecessary complexity — lower is better.</p>
             </div>
           </details>
 
@@ -344,56 +350,56 @@
       </div>
     </div>
 
-    <div class="move-card" id="clarify-worked-example">
-      <div class="move-head"><span class="move-name">Worked example</span><span class="move-time">4–5 min</span></div>
-      <p class="move-purpose">AI walks through one complete example of the concept step by step, using the cohort's actual data or a close variant of it.</p>
-      <div class="move-example">
-        <span class="example-label">Ready-to-run example</span>
-        <div class="example-title">Worked Example · 5 min</div>
-        <p>Step through selecting (p,d,q) for a single series live: plot → difference → ACF/PACF → candidate model → AIC/BIC comparison.</p>
-      </div>
-    </div>
   </div>
 
   <div class="level-section apply">
     <div class="level-head"><h2>🟢 Apply</h2></div>
-    <p class="level-purpose">Put the concept to work in a new setting — same underlying model, a context the cohort hasn't seen yet.</p>
+    <p class="level-purpose">Can they interpret a finding and connect it to a real decision — not just repeat the concept back? Case studies are grouped by industry/function so a cohort report can point at whichever one matches this cohort's actual background.</p>
 
-    <div class="move-card" id="apply-mini-case">
-      <div class="move-head"><span class="move-name">Mini case</span><span class="move-time">5 min</span></div>
-      <p class="move-purpose">A short scenario in a different industry that uses the same concept, ending in a concrete decision the cohort has to make.</p>
+    <div class="move-card" id="apply-case-retail">
+      <div class="move-head"><span class="move-name">Retail — Inventory planning</span><span class="move-time">6 min</span></div>
+      <p class="move-purpose">Apply seasonal (SARIMA) forecasting to a retail demand series, then connect the forecast directly to a stock and staffing decision.</p>
       <div class="move-example">
         <span class="example-label">Ready-to-run example</span>
-        <div class="example-title">Hotel mini-case · 5 min</div>
-        <p>Occupancy forecasts show a strong December peak. What staffing or capacity decision would you recommend?</p>
-        <div class="contexts"><strong>Same concept, new context:</strong> Retail → inventory · Hotel → staffing · Transport → capacity · Healthcare → resource planning</div>
+        <div class="example-title">Retail case · 6 min</div>
+        <p>Weekly foot traffic for a retail chain shows a strong pre-holiday peak two months out. Given the forecast, what should the chain do about stock levels and staffing now — and what happens if the forecast is off by 15%?</p>
       </div>
     </div>
 
-    <div class="move-card" id="apply-think-pair-share">
-      <div class="move-head"><span class="move-name">Think–Pair–Share</span><span class="move-time">5–7 min</span></div>
-      <p class="move-purpose">Pair the mini case with peer discussion — learners think alone, compare with a neighbour, then a few pairs share out.</p>
+    <div class="move-card" id="apply-case-hospitality">
+      <div class="move-head"><span class="move-name">Hospitality — Staffing &amp; capacity</span><span class="move-time">5 min</span></div>
+      <p class="move-purpose">Apply SARIMA occupancy forecasting to a staffing and capacity decision with a real deadline attached.</p>
       <div class="move-example">
         <span class="example-label">Ready-to-run example</span>
-        <div class="example-title">Think–Pair–Share · 5 min</div>
-        <p>What would you recommend and why? (1 min think, 2 min pair, 2 min share.)</p>
+        <div class="example-title">Hospitality case · 5 min</div>
+        <p>Occupancy forecasts show a strong December peak. What staffing or capacity decision would you recommend — and by when does that decision need to be made?</p>
       </div>
     </div>
 
-    <div class="move-card" id="apply-different-context">
-      <div class="move-head"><span class="move-name">Different context</span><span class="move-time">5–10 min</span></div>
-      <p class="move-purpose">Re-skin the exact exercise the cohort just completed into a different industry, without changing the underlying math — tests whether the concept transfers.</p>
+    <div class="move-card" id="apply-case-transport">
+      <div class="move-head"><span class="move-name">Transport &amp; logistics — Capacity planning</span><span class="move-time">6 min</span></div>
+      <p class="move-purpose">Apply seasonal forecasting to a fleet or route-capacity decision, weighing the timing of an investment against forecast uncertainty.</p>
       <div class="move-example">
         <span class="example-label">Ready-to-run example</span>
-        <div class="example-title">Different Context · 8 min</div>
-        <p>You just modelled hotel occupancy with SARIMA. Now sketch how you'd set up (p,d,q)(P,D,Q)s for weekly retail foot traffic — what changes, and what stays the same?</p>
+        <div class="example-title">Transport case · 6 min</div>
+        <p>Monthly ridership on a commuter route is forecast to grow 8% over the next two quarters, with a seasonal dip in summer. Would you add capacity now, wait for confirmation, or phase it in — and why?</p>
+      </div>
+    </div>
+
+    <div class="move-card" id="apply-case-healthcare">
+      <div class="move-head"><span class="move-name">Healthcare — Resource planning</span><span class="move-time">7 min</span></div>
+      <p class="move-purpose">Apply an ARIMAX-style forecast — a driver acting ahead of the outcome — to a resource-planning decision under time pressure.</p>
+      <div class="move-example">
+        <span class="example-label">Ready-to-run example</span>
+        <div class="example-title">Healthcare case · 7 min</div>
+        <p>Emergency-department visits are forecast to rise with flu-season onset — the external driver, same role as advertising in the sales example. How far in advance should staffing be adjusted, and what's the cost of waiting too long versus acting too early?</p>
       </div>
     </div>
   </div>
 
   <div class="level-section challenge">
     <div class="level-head"><h2>🔵 Challenge</h2></div>
-    <p class="level-purpose">Push reasoning and judgement past the mechanics — for cohorts who are already solid on the concept.</p>
+    <p class="level-purpose">Can they question an assumption, weigh a trade-off, or reason about a limitation — not just accept the "correct" answer? Every move here can be run live with an agent from the <a href="https://christinecheong.com/agents-hub/" target="_blank" rel="noopener">Agents Hub</a>.</p>
 
     <div class="move-card" id="challenge-what-if">
       <div class="move-head"><span class="move-name">What-if scenario</span><span class="move-time">5 min</span></div>
@@ -403,6 +409,7 @@
         <div class="example-title">What-If · 5 min</div>
         <p>What if the seasonal pattern suddenly weakens next quarter? Would you still use the same model — and the same recommendation?</p>
       </div>
+      <a class="move-tool-link" href="https://christinecheong.com/agents-hub/ai-council-agent.html" target="_blank" rel="noopener">Run it live with the AI Advisory Council →</a>
     </div>
 
     <div class="move-card" id="challenge-multiple-perspectives">
@@ -429,7 +436,7 @@
   </div>
 
   <div class="stretch-note">
-    <strong>Beyond the MVP nine:</strong> once these nine are routine, richer Challenge-level moves are worth adding — e.g. a <strong>systems lens</strong> ("if management acts on this forecast, what downstream consequences could occur elsewhere in the organisation?"). Left out of the MVP set deliberately: it needs more setup than a single prompt, so it's a good second-wave addition rather than a day-one default.
+    <strong>Beyond this library:</strong> once these moves are routine, richer Challenge-level moves are worth adding — e.g. a <strong>systems lens</strong> ("if management acts on this forecast, what downstream consequences could occur elsewhere in the organisation?"). Left out deliberately for now: it needs more setup than a single prompt, so it's a good second-wave addition rather than a day-one default.
   </div>
 </div>
 
