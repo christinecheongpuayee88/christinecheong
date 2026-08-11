@@ -213,6 +213,23 @@
   .question-count { font-weight: 400; color: var(--subtle); }
   .text-summary { font-size: 13.5px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); margin: 0; }
 
+  .quick-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; background: var(--bg); }
+  .quick-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .quick-level-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 100px; }
+  .quick-recommended-pill { font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--good); background: var(--good-bg); padding: 4px 10px; border-radius: 100px; }
+  .quick-signal { margin-bottom: 18px; }
+  .quick-signal-label { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--subtle); margin-bottom: 6px; }
+  .quick-signal-ratings { font-size: 14px; color: var(--text); margin-bottom: 6px; }
+  .quick-signal-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .quick-action { background: var(--surface); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; }
+  .quick-action-duration { font-size: 11.5px; font-weight: 600; color: var(--subtle); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+  .quick-action-prompt { font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 14px; font-style: italic; quotes: "\201C" "\201D"; }
+  .quick-action-prompt::before { content: open-quote; }
+  .quick-action-prompt::after { content: close-quote; }
+  .quick-other-options { font-size: 12.5px; color: var(--subtle); }
+  .quick-other-options a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+  .quick-other-options a:hover { color: var(--text); }
+
   @media (max-width: 680px) {
     .wrap { padding: 36px 20px 72px; }
   }
@@ -281,6 +298,26 @@
       <div class="report-status" id="grade-status"></div>
       <div class="report-box" id="grade-box"></div>
     </div>
+  </div>
+
+  <p class="section-title">Quick instructor view</p>
+  <p class="section-desc">At each stage: one cohort signal, one recommended move, one action — not three recommendations competing for attention.</p>
+  <table class="rubric-table" style="margin-bottom:24px">
+    <tr><th>Stage</th><th>Instructor panel</th></tr>
+    <tr><td>Start</td><td>Cohort Profile + Initial Teaching Emphasis</td></tr>
+    <tr><td>Checkpoint 1</td><td>Cohort Signal + Recommended Move</td></tr>
+    <tr><td>Checkpoint 2</td><td>Updated Signal + Recommended Move + change since CP1</td></tr>
+    <tr><td>Reflection</td><td>Cumulative Insights + Next-Cohort Recommendation</td></tr>
+  </table>
+  <div class="instructor-panel">
+    <div class="instructor-stages">
+      <button class="stage-btn" id="quick-btn-1" onclick="runQuickSignal(1)">Start</button>
+      <button class="stage-btn" id="quick-btn-2" onclick="runQuickSignal(2)">Checkpoint 1</button>
+      <button class="stage-btn" id="quick-btn-3" onclick="runQuickSignal(3)">Checkpoint 2</button>
+      <button class="stage-btn" id="quick-btn-4" onclick="runQuickSignal(4)">Reflection</button>
+    </div>
+    <div class="report-status" id="quick-status"></div>
+    <div id="quick-card"></div>
   </div>
 </div>
 
@@ -763,6 +800,104 @@
     }
 
     return html;
+  }
+
+  const QUICK_LEVEL_META = {
+    clarify: { emoji: '🔴', label: 'CLARIFY', color: 'var(--bad)', bg: 'var(--bad-bg)' },
+    apply: { emoji: '🟢', label: 'APPLY', color: 'var(--good)', bg: 'var(--good-bg)' },
+    challenge: { emoji: '🔵', label: 'CHALLENGE', color: 'var(--info)', bg: 'var(--info-bg)' },
+  };
+  let currentQuickData = null;
+
+  function runQuickSignal(stage) {
+    const statusEl = document.getElementById('quick-status');
+    const cardEl = document.getElementById('quick-card');
+    const btns = [1, 2, 3, 4].map((s) => document.getElementById('quick-btn-' + s));
+
+    btns.forEach((b) => (b.disabled = true));
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Reading cohort data and rating the 3 levels…';
+    cardEl.innerHTML = '';
+
+    fetch('/api/quick-signal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ stage }),
+    })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        btns.forEach((b) => (b.disabled = false));
+        if (!ok || data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error || 'failed to load'}`;
+          return;
+        }
+        statusEl.textContent = '';
+        currentQuickData = data;
+        cardEl.innerHTML = renderQuickCard(data, data.recommended);
+      })
+      .catch((err) => {
+        btns.forEach((b) => (b.disabled = false));
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
+  }
+
+  function selectQuickLevel(level) {
+    if (!currentQuickData) return;
+    document.getElementById('quick-card').innerHTML = renderQuickCard(currentQuickData, level);
+  }
+
+  function capitalizeLevel(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  function renderQuickCard(data, displayLevel) {
+    const meta = QUICK_LEVEL_META[displayLevel];
+    const move = data.moves[displayLevel];
+    const isRecommended = displayLevel === data.recommended;
+    const others = ['clarify', 'apply', 'challenge'].filter((l) => l !== displayLevel);
+    const otherLinks = others
+      .map((l) => {
+        const m = QUICK_LEVEL_META[l];
+        return `<a href="#" onclick="selectQuickLevel('${l}');return false;">${m.emoji} ${escapeHtml(capitalizeLevel(l))}</a>`;
+      })
+      .join(' &nbsp;|&nbsp; ');
+
+    return `
+      <div class="quick-card">
+        <div class="quick-card-head">
+          <span class="quick-level-badge" style="color:${meta.color};background:${meta.bg}">${meta.emoji} ${meta.label}</span>
+          ${isRecommended ? '<span class="quick-recommended-pill">Recommended</span>' : ''}
+        </div>
+        <div class="quick-signal">
+          <div class="quick-signal-label">Cohort signal</div>
+          <div class="quick-signal-ratings">Understanding: <b>${escapeHtml(data.understanding)}</b> &nbsp;·&nbsp; Application: <b>${escapeHtml(data.application)}</b></div>
+          <p class="quick-signal-text">${escapeHtml(data.signal)}</p>
+        </div>
+        <div class="quick-action">
+          <div class="quick-action-duration">${escapeHtml(move.duration)} · ${escapeHtml(move.topic)}</div>
+          <p class="quick-action-prompt">${escapeHtml(move.prompt)}</p>
+          <button class="btn" onclick="copyQuickPrompt(this)">Launch Discussion</button>
+        </div>
+        <div class="quick-other-options">Other options: ${otherLinks}</div>
+      </div>
+    `;
+  }
+
+  function copyQuickPrompt(btn) {
+    const text = btn.closest('.quick-action').querySelector('.quick-action-prompt').textContent;
+    const original = btn.textContent;
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        btn.textContent = 'Copied ✓';
+        setTimeout(() => (btn.textContent = original), 1800);
+      })
+      .catch(() => {
+        btn.textContent = 'Copy failed';
+        setTimeout(() => (btn.textContent = original), 1800);
+      });
   }
 
 </script>
