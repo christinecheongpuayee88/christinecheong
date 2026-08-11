@@ -273,7 +273,7 @@ ${buildTopicLinksBlock(topics)}
 
 End the paragraph with one clickable resource link chosen from the reference list above, tied to whichever topic is most foundational to start with.
 
-Use exactly this format:
+Output nothing except this single line — no separate intro sentence or paragraph before it, start immediately with the bold label:
 
 **Initial Teaching Emphasis:** [the paragraph, ending with the link]`;
 }
