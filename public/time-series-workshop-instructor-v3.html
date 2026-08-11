@@ -234,13 +234,28 @@
       <button class="stage-btn" id="stage-btn-2" onclick="runCohortStage(2)">2 · Checkpoint 1 (SARIMA)</button>
       <button class="stage-btn" id="stage-btn-3" onclick="runCohortStage(3)">3 · Checkpoint 2 (ARIMAX)</button>
       <button class="stage-btn" id="stage-btn-4" onclick="runCohortStage(4)">4 · Final Report</button>
-      <button class="stage-btn" id="tab-assignments-btn" onclick="showAssignmentsTab()">📋 Assignments</button>
       <button class="stage-btn" id="tab-group-btn" onclick="showGroupTab()">👥 Group Assignment</button>
+      <button class="stage-btn" id="tab-assignments-btn" onclick="showAssignmentsTab()">📋 Individual Assignment</button>
     </div>
     <div class="report-status" id="report-status"></div>
     <div class="report-box" id="report-box"></div>
     <div class="report-actions" id="report-actions">
       <button class="btn" onclick="emailCurrentReport()">Email this report</button>
+    </div>
+
+    <div class="group-tab" id="group-tab">
+      <p class="section-desc">Reads the shared <a href="https://docs.google.com/presentation/d/1LigXSWkT_R8C4egGYtyWnz96TTCXbyS6/edit" target="_blank" rel="noopener">Group collaborative space slide deck ↗</a> from the ARIMAX Workshop block, splits it by group, and scores each group's shared work against the 3-item rubric below. AI suggestions only — review and finalize yourself.</p>
+      <table class="rubric-table">
+        <tr><th>Dimension</th><th>1 — Developing</th><th>2 — Competent</th><th>3 — Strong</th></tr>
+        <tr><td>Understanding of Concepts</td><td>Shows a real misconception, low accuracy, or leaves the concept unclear or incomplete</td><td>Explains the concept correctly with no significant misconception</td><td>Explains the concept correctly and proactively surfaces a subtlety or edge case most groups would miss</td></tr>
+        <tr><td>Interpretation &amp; Application</td><td>States the finding without connecting it to a real decision or context</td><td>Connects the finding to a real decision or business context</td><td>Connects the finding to a specific, well-reasoned decision or recommendation, not just a general context</td></tr>
+        <tr><td>Critical Judgment</td><td>Accepts the result at face value; no assumption, trade-off, or limitation is questioned</td><td>Notes at least one real limitation, caveat, or open question on the finding</td><td>Actively questions an assumption, weighs a trade-off, or proposes a concrete way to test the finding further</td></tr>
+      </table>
+      <div class="upload-row">
+        <button class="stage-btn" id="group-grade-btn" onclick="runGroupAssignment()">Analyze group deck</button>
+      </div>
+      <div class="report-status" id="group-status"></div>
+      <div class="report-box" id="group-box"></div>
     </div>
 
     <div class="assignments-tab" id="assignments-tab">
@@ -257,21 +272,6 @@
       </div>
       <div class="report-status" id="grade-status"></div>
       <div class="report-box" id="grade-box"></div>
-    </div>
-
-    <div class="group-tab" id="group-tab">
-      <p class="section-desc">Reads the shared <a href="https://docs.google.com/presentation/d/1LigXSWkT_R8C4egGYtyWnz96TTCXbyS6/edit" target="_blank" rel="noopener">Group collaborative space slide deck ↗</a> from the ARIMAX Workshop block, splits it by group, and scores each group's shared work against the 3-item rubric below. AI suggestions only — review and finalize yourself.</p>
-      <table class="rubric-table">
-        <tr><th>Dimension</th><th>1 — Developing</th><th>2 — Competent</th><th>3 — Strong</th></tr>
-        <tr><td>Understanding of Concepts</td><td>Shows a real misconception, low accuracy, or leaves the concept unclear or incomplete</td><td>Explains the concept correctly with no significant misconception</td><td>Explains the concept correctly and proactively surfaces a subtlety or edge case most groups would miss</td></tr>
-        <tr><td>Interpretation &amp; Application</td><td>States the finding without connecting it to a real decision or context</td><td>Connects the finding to a real decision or business context</td><td>Connects the finding to a specific, well-reasoned decision or recommendation, not just a general context</td></tr>
-        <tr><td>Critical Judgment</td><td>Accepts the result at face value; no assumption, trade-off, or limitation is questioned</td><td>Notes at least one real limitation, caveat, or open question on the finding</td><td>Actively questions an assumption, weighs a trade-off, or proposes a concrete way to test the finding further</td></tr>
-      </table>
-      <div class="upload-row">
-        <button class="stage-btn" id="group-grade-btn" onclick="runGroupAssignment()">Analyze group deck</button>
-      </div>
-      <div class="report-status" id="group-status"></div>
-      <div class="report-box" id="group-box"></div>
     </div>
   </div>
 
