@@ -79,6 +79,11 @@
   .assignments-tab.show { display: flex; }
   .assignments-tab .section-desc { margin-bottom: 0; }
 
+  .group-tab { display: none; flex-direction: column; gap: 18px; padding-top: 4px; }
+  .group-tab.show { display: flex; }
+  .group-tab .section-desc { margin-bottom: 0; }
+  .group-score-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
   .report-box {
     display: none; border: 1px solid var(--border); border-radius: var(--radius);
     background: var(--bg); padding: 24px; font-size: 14.5px; line-height: 1.7;
@@ -247,6 +252,7 @@
       <button class="stage-btn" id="stage-btn-3" onclick="runCohortStage(3)">3 · Checkpoint 2 (ARIMAX)</button>
       <button class="stage-btn" id="stage-btn-4" onclick="runCohortStage(4)">4 · Final Report</button>
       <button class="stage-btn" id="tab-assignments-btn" onclick="showAssignmentsTab()">📋 Assignments</button>
+      <button class="stage-btn" id="tab-group-btn" onclick="showGroupTab()">👥 Group Assignment</button>
     </div>
     <div class="report-status" id="report-status"></div>
     <div class="report-box" id="report-box"></div>
@@ -268,6 +274,21 @@
       </div>
       <div class="report-status" id="grade-status"></div>
       <div class="report-box" id="grade-box"></div>
+    </div>
+
+    <div class="group-tab" id="group-tab">
+      <p class="section-desc">Reads the shared <a href="https://docs.google.com/presentation/d/1LigXSWkT_R8C4egGYtyWnz96TTCXbyS6/edit" target="_blank" rel="noopener">Group collaborative space slide deck ↗</a> from the ARIMAX Workshop block, splits it by group, and scores each group's shared work against the 3-item rubric below. AI suggestions only — review and finalize yourself.</p>
+      <table class="rubric-table">
+        <tr><th>Dimension</th><th>1 — Developing</th><th>2 — Competent</th><th>3 — Strong</th></tr>
+        <tr><td>Understanding of Concepts</td><td>Shows a real misconception, low accuracy, or leaves the concept unclear or incomplete</td><td>Explains the concept correctly with no significant misconception</td><td>Explains the concept correctly and proactively surfaces a subtlety or edge case most groups would miss</td></tr>
+        <tr><td>Interpretation &amp; Application</td><td>States the finding without connecting it to a real decision or context</td><td>Connects the finding to a real decision or business context</td><td>Connects the finding to a specific, well-reasoned decision or recommendation, not just a general context</td></tr>
+        <tr><td>Critical Judgment</td><td>Accepts the result at face value; no assumption, trade-off, or limitation is questioned</td><td>Notes at least one real limitation, caveat, or open question on the finding</td><td>Actively questions an assumption, weighs a trade-off, or proposes a concrete way to test the finding further</td></tr>
+      </table>
+      <div class="upload-row">
+        <button class="stage-btn" id="group-grade-btn" onclick="runGroupAssignment()">Analyze group deck</button>
+      </div>
+      <div class="report-status" id="group-status"></div>
+      <div class="report-box" id="group-box"></div>
     </div>
   </div>
 
@@ -523,8 +544,24 @@
     document.getElementById('report-box').classList.remove('show');
     document.getElementById('report-actions').classList.remove('show');
     document.getElementById('report-status').textContent = '';
+    hideGroupTab();
     document.getElementById('assignments-tab').classList.add('show');
     document.getElementById('tab-assignments-btn').classList.add('tab-active');
+  }
+
+  // Same mutually-exclusive-panel pattern as the Assignments tab above.
+  function hideGroupTab() {
+    document.getElementById('group-tab').classList.remove('show');
+    document.getElementById('tab-group-btn').classList.remove('tab-active');
+  }
+
+  function showGroupTab() {
+    document.getElementById('report-box').classList.remove('show');
+    document.getElementById('report-actions').classList.remove('show');
+    document.getElementById('report-status').textContent = '';
+    hideAssignmentsTab();
+    document.getElementById('group-tab').classList.add('show');
+    document.getElementById('tab-group-btn').classList.add('tab-active');
   }
 
   function runCohortStage(stage) {
@@ -534,6 +571,7 @@
     const actionsEl = document.getElementById('report-actions');
 
     hideAssignmentsTab();
+    hideGroupTab();
     btn.disabled = true;
     statusEl.classList.remove('error');
     statusEl.textContent = 'Running — reading responses, comparing against prior stages, generating report…';
@@ -681,6 +719,66 @@
     }
     if (warnings.length) {
       html += `<div class="grade-warning">${warnings.join('<br>')}</div>`;
+    }
+
+    return html;
+  }
+
+  const GROUP_RUBRIC_DIMENSIONS = [
+    { id: 'understanding', label: 'Understanding of Concepts' },
+    { id: 'interpretation', label: 'Interpretation & Application' },
+    { id: 'judgment', label: 'Critical Judgment' },
+  ];
+
+  function runGroupAssignment() {
+    const btn = document.getElementById('group-grade-btn');
+    const statusEl = document.getElementById('group-status');
+    const boxEl = document.getElementById('group-box');
+
+    btn.disabled = true;
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Reading the shared slide deck and grading each group — this runs one AI call, so it can take a moment…';
+    boxEl.classList.remove('show');
+
+    fetch('/api/grade-group-assignment', { method: 'POST' })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        btn.disabled = false;
+        if (!ok || data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error || 'grading failed'}`;
+          return;
+        }
+        statusEl.textContent = `Graded ${data.groupCount} group(s) from the shared deck.`;
+        boxEl.innerHTML = renderGroupResults(data);
+        boxEl.classList.add('show');
+      })
+      .catch((err) => {
+        btn.disabled = false;
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
+  }
+
+  function renderGroupResults(data) {
+    let html = '';
+
+    if (data.cohortSynthesis) {
+      html += `<p class="summary-heading">Cohort synthesis</p>`;
+      html += formatReport(data.cohortSynthesis);
+    }
+
+    if (data.groups && data.groups.length) {
+      html += `<p class="summary-heading">Per-group scores</p>`;
+      const rows = data.groups.map((g) => {
+        const cells = GROUP_RUBRIC_DIMENSIONS.map((d) => {
+          const score = g.scores && g.scores[d.id];
+          const evidence = (g.evidence && g.evidence[d.id]) || '';
+          return `<td><span class="score-pill level-${score}">${score}</span><div class="score-evidence">${escapeHtml(evidence)}</div></td>`;
+        }).join('');
+        return `<tr><td>${escapeHtml(g.label || '')}</td>${cells}</tr>`;
+      }).join('');
+      html += `<table class="score-table"><tr><th>Group</th><th>Understanding</th><th>Interpretation</th><th>Judgment</th></tr>${rows}</table>`;
     }
 
     return html;
