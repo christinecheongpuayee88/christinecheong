@@ -126,8 +126,9 @@ async function parseZip(bytes) {
 // workshop submissions (observed range ~9k-39k chars across a real batch of
 // 19). This matters because naive front-truncation would disproportionately
 // cut the END of the notebook — exactly where final model evaluation and
-// business interpretation live, starving the rubric's "Interpretation" and
-// "Decision Insight" dimensions of evidence.
+// business interpretation live, starving the rubric's "Interpret Results &
+// Findings" and "Business Implications & Decision-Making" dimensions of
+// evidence.
 const MAX_NOTEBOOK_CHARS = 45000;
 
 // Pulls code, markdown, and text-based outputs (model summaries, printed
@@ -184,17 +185,17 @@ function studentKeyFromFilename(filename) {
 
 const RUBRIC = [
   {
-    id: "model_application",
-    name: "Model Application",
+    id: "understand_concepts",
+    name: "Understand Concepts",
     levels: {
-      1: "Developing — Model/process is incomplete or inappropriate",
-      2: "Competent — Appropriate time-series model is implemented reasonably",
-      3: "Strong — Model is implemented correctly with appropriate choices and checks",
+      1: "Developing — Model/process choice shows little understanding of when or why it applies; implementation is incomplete or inappropriate",
+      2: "Competent — Understands the appropriate model and implements it reasonably, with basic justification",
+      3: "Strong — Implements the model correctly with clear justification for choices, plus appropriate diagnostic checks",
     },
   },
   {
-    id: "interpretation",
-    name: "Interpretation & Evaluation",
+    id: "interpret_results",
+    name: "Interpret Results & Findings",
     levels: {
       1: "Developing — Results mainly reported with little interpretation",
       2: "Competent — Key results and model performance are interpreted",
@@ -202,12 +203,12 @@ const RUBRIC = [
     },
   },
   {
-    id: "decision_insight",
-    name: "Decision Insight",
+    id: "business_implications",
+    name: "Business Implications & Decision-Making",
     levels: {
       1: "Developing — Limited connection to the business problem",
       2: "Competent — Findings translated into a reasonable conclusion",
-      3: "Strong — Findings translated into clear, evidence-based business implications",
+      3: "Strong — Findings translated into clear, evidence-based business implications, weighing trade-offs or alternative courses of action",
     },
   },
 ];
@@ -230,7 +231,7 @@ ${notebook.text}
 #################
 
 Score each of the 3 rubric dimensions 1-3 based only on the evidence above. Return ONLY JSON, no markdown, no commentary, as:
-{"scores": {"model_application": 1, "interpretation": 1, "decision_insight": 1}, "evidence": {"model_application": "one sentence citing what they actually did", "interpretation": "...", "decision_insight": "..."}, "overall_feedback": "1-2 sentences of feedback for the student"}`;
+{"scores": {"understand_concepts": 1, "interpret_results": 1, "business_implications": 1}, "evidence": {"understand_concepts": "one sentence citing what they actually did", "interpret_results": "...", "business_implications": "..."}, "overall_feedback": "1-2 sentences of feedback for the student"}`;
 
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -278,7 +279,7 @@ async function synthesizeCohort(gradedResults, apiKey) {
   const summary = gradedResults
     .map(
       (r) =>
-        `${r.studentKey}: Model Application=${r.scores.model_application}, Interpretation & Evaluation=${r.scores.interpretation}, Decision Insight=${r.scores.decision_insight}`
+        `${r.studentKey}: Understand Concepts=${r.scores.understand_concepts}, Interpret Results & Findings=${r.scores.interpret_results}, Business Implications & Decision-Making=${r.scores.business_implications}`
     )
     .join("\n");
 
@@ -298,9 +299,9 @@ Output in exactly this Markdown table format:
 
 | Rubric evidence | Cohort finding | Teaching recommendation |
 |---|---|---|
-| Model Application: [dominant level name] | [one sentence citing the count/percentage] | [emoji] **[LEVEL]** — [one concrete next step] |
-| Interpretation & Evaluation: [dominant level name] | [...] | [...] |
-| Decision Insight: [dominant level name] | [...] | [...] |
+| Understand Concepts: [dominant level name] | [one sentence citing the count/percentage] | [emoji] **[LEVEL]** — [one concrete next step] |
+| Interpret Results & Findings: [dominant level name] | [...] | [...] |
+| Business Implications & Decision-Making: [dominant level name] | [...] | [...] |
 
 Then one closing line starting with "**Teaching implication:**" summarizing what the next cohort's session should emphasise differently.
 
