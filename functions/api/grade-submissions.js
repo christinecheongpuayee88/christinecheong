@@ -189,7 +189,7 @@ const RUBRIC = [
     levels: {
       1: "Developing — Model/process is incomplete or inappropriate",
       2: "Competent — Appropriate time-series model is implemented reasonably",
-      3: "Strong — Model is implemented correctly with appropriate choices and checks",
+      3: "Strong — Model is implemented correctly with appropriate choices and checks, and the student can justify why this model/approach fits the problem",
     },
   },
   {
