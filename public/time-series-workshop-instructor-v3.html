@@ -271,9 +271,9 @@
       <p class="section-desc">Upload a zip of student notebook submissions (Canvas's bulk-download format — <code>.ipynb</code>/<code>.ipy</code> files named <code>student_id_submissionid_filename</code>). Each submission is graded individually against the 3-item rubric below, then synthesised into cohort-level findings with Clarify/Apply/Challenge recommendations. AI suggestions only — review and finalize grades yourself; nothing is written back to Canvas.</p>
       <table class="rubric-table">
         <tr><th>Dimension</th><th>1 — Developing</th><th>2 — Competent</th><th>3 — Strong</th></tr>
-        <tr><td>Understand Concepts</td><td>Model/process choice shows little understanding of when or why it applies; implementation is incomplete or inappropriate</td><td>Understands the appropriate model and implements it reasonably, with basic justification</td><td>Implements the model correctly with clear justification for choices, plus appropriate diagnostic checks</td></tr>
-        <tr><td>Interpret Results &amp; Findings</td><td>Results mainly reported with little interpretation</td><td>Key results and model performance are interpreted</td><td>Models/results are critically compared and limitations considered</td></tr>
-        <tr><td>Business Implications &amp; Decision-Making</td><td>Limited connection to the business problem</td><td>Findings translated into a reasonable conclusion</td><td>Findings translated into clear, evidence-based business implications, weighing trade-offs or alternative courses of action</td></tr>
+        <tr><td>Model Application</td><td>Model/process is incomplete or inappropriate</td><td>Appropriate model is implemented reasonably</td><td>Model is implemented correctly with appropriate choices and checks</td></tr>
+        <tr><td>Interpretation &amp; Evaluation</td><td>Results mainly reported with little interpretation</td><td>Key results and model performance are interpreted</td><td>Models/results are critically compared and limitations considered</td></tr>
+        <tr><td>Decision Insight</td><td>Limited connection to the business problem</td><td>Findings translated into a reasonable conclusion</td><td>Findings translated into clear, evidence-based business implications</td></tr>
       </table>
       <div class="upload-row">
         <input type="file" id="submissions-file" accept=".zip">
@@ -665,9 +665,9 @@
   }
 
   const RUBRIC_DIMENSIONS = [
-    { id: 'understand_concepts', label: 'Understand Concepts' },
-    { id: 'interpret_results', label: 'Interpret Results & Findings' },
-    { id: 'business_implications', label: 'Business Implications & Decision-Making' },
+    { id: 'model_application', label: 'Model Application' },
+    { id: 'interpretation', label: 'Interpretation & Evaluation' },
+    { id: 'decision_insight', label: 'Decision Insight' },
   ];
 
   function runGradeSubmissions() {
@@ -734,7 +734,7 @@
         }).join('');
         return `<tr><td>${escapeHtml(r.studentKey)}</td>${cells}<td>${escapeHtml(r.overallFeedback || '')}</td></tr>`;
       }).join('');
-      html += `<table class="score-table"><tr><th>Student</th><th>Understand Concepts</th><th>Interpret Results</th><th>Business Implications</th><th>Feedback</th></tr>${rows}</table>`;
+      html += `<table class="score-table"><tr><th>Student</th><th>Model App.</th><th>Interpretation</th><th>Decision Insight</th><th>Feedback</th></tr>${rows}</table>`;
     }
 
     const warnings = [];
