@@ -713,8 +713,20 @@
       });
   }
 
+  function renderRubricDistribution(rubricDistribution) {
+    if (!rubricDistribution || !rubricDistribution.length) return '';
+    const rows = rubricDistribution.map((dim) => {
+      const cells = dim.levels.map((l) => `<td><span class="score-pill level-${l.level}">${l.count}</span> <span class="score-evidence" style="display:inline">(${l.pct}%)</span></td>`).join('');
+      return `<tr><td>${escapeHtml(dim.name)}</td>${cells}</tr>`;
+    }).join('');
+    return `<p class="summary-heading">Cohort rubric summary</p>` +
+      `<table class="score-table"><tr><th>Dimension</th><th>1 — Developing</th><th>2 — Competent</th><th>3 — Strong</th></tr>${rows}</table>`;
+  }
+
   function renderGradeResults(data) {
     let html = '';
+
+    html += renderRubricDistribution(data.rubricDistribution);
 
     if (data.cohortSynthesis) {
       html += `<p class="summary-heading">Cohort synthesis</p>`;

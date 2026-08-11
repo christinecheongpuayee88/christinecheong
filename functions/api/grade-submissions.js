@@ -218,6 +218,32 @@ function rubricText() {
   ).join("\n\n");
 }
 
+// Deterministic cohort-level distribution across the 3 rubric dimensions —
+// computed directly from scores, not an LLM call, so it's exact and free.
+// Rendered before the per-student table as the cohort-level summary,
+// distinct from synthesizeCohort()'s narrative (which only names the
+// dominant level per dimension, not the full 1/2/3 spread).
+function computeRubricDistribution(gradedResults) {
+  if (!gradedResults.length) return null;
+  const total = gradedResults.length;
+  return RUBRIC.map((r) => {
+    const counts = { 1: 0, 2: 0, 3: 0 };
+    for (const result of gradedResults) {
+      const score = result.scores[r.id];
+      if (counts[score] !== undefined) counts[score]++;
+    }
+    return {
+      id: r.id,
+      name: r.name,
+      levels: [1, 2, 3].map((level) => ({
+        level,
+        count: counts[level],
+        pct: Math.round((counts[level] / total) * 100),
+      })),
+    };
+  });
+}
+
 async function gradeSubmission(notebook, apiKey) {
   const prompt = `You are grading a student's time series forecasting workshop submission (SARIMA/ARIMAX) against a 3-item rubric. Be concrete and evidence-based — cite what the student actually did or said in the submission below, never generic praise or generic criticism.
 
@@ -282,7 +308,7 @@ async function synthesizeCohort(gradedResults, apiKey) {
     )
     .join("\n");
 
-  const prompt = `You are synthesizing cohort-level rubric evidence from ${gradedResults.length} graded time series forecasting (SARIMA/ARIMAX) workshop submissions into recommendations for the instructor — both for this current cohort and for how future cohorts should be taught.
+  const prompt = `You are synthesizing cohort-level rubric evidence from ${gradedResults.length} graded time series forecasting (SARIMA/ARIMAX) workshop submissions into recommendations for the instructor.
 
 ### PER-STUDENT SCORES (1 = Developing, 2 = Competent, 3 = Strong) ###
 ${summary}
@@ -299,7 +325,7 @@ Output in exactly this Markdown table format:
 | Interpretation & Evaluation: [dominant level name] | [...] | [...] |
 | Decision Insight: [dominant level name] | [...] | [...] |
 
-Then one closing line starting with "**Teaching implication:**" that covers both horizons — what to do with this current cohort now (e.g. targeted feedback, a follow-up exercise, office-hours focus) and what to change in how the material is taught to future cohorts.
+Then one closing line starting with "**Implication:**" summarizing general implications for how to improve future delivery of this material.
 
 Output plain text only, no code fence — start directly with the table.`;
 
@@ -379,6 +405,7 @@ export async function onRequestPost(context) {
     const perStudent = await gradeAllSubmissions(notebooks, apiKey);
     const graded = perStudent.filter((r) => r.scores);
     const cohortSynthesis = await synthesizeCohort(graded, apiKey);
+    const rubricDistribution = computeRubricDistribution(graded);
 
     return new Response(
       JSON.stringify({
@@ -390,6 +417,7 @@ export async function onRequestPost(context) {
         unparsable,
         perStudent,
         cohortSynthesis,
+        rubricDistribution,
       }),
       { status: 200, headers: CORS }
     );
