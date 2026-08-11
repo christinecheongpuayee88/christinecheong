@@ -255,7 +255,13 @@ ${buildChallengeLinksBlock()}
 
 If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.
 
-The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.`;
+The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.${
+    isForwardLooking
+      ? `
+
+After the 3 bullets, add one more closing line — in addition to them, never replacing any — starting with "**Initial Teaching Emphasis:**" naming in one sentence what to prioritize teaching first today, given this cohort has no performance data yet and class hasn't started.`
+      : ""
+  }`;
 }
 
 // Safety net: the model doesn't reliably wrap the reference label in
