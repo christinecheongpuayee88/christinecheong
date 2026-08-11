@@ -40,8 +40,6 @@
     .primary{border:0;border-radius:10px;padding:14px 20px;background:linear-gradient(135deg,var(--blue),#2474cb);color:#fff;font-weight:800;transition:transform .15s;align-self:flex-start;text-decoration:none;display:inline-block}
     .primary:hover{transform:translateY(-2px)}.primary:disabled{opacity:.6;cursor:wait;transform:none}
     .form-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-    .ghost-link{color:var(--muted);font-weight:700;text-decoration:none;font-size:.88rem}
-    .ghost-link:hover{color:var(--blue)}
 
     .done-state{display:none;text-align:center}
     .done-state.show{display:block}
@@ -79,7 +77,7 @@
   </style>
 </head>
 <body>
-<header><nav><a class="back-link" href="/time-series-workshop-v2">← Back to workshop</a></nav></header>
+<header><nav><a class="back-link" href="/time-series-theory-clean-panel">← Back to workshop</a></nav></header>
 <main>
   <div class="kicker">On-site form · Scored automatically</div>
   <h1>Checkpoint 1 — SARIMA</h1>
@@ -154,7 +152,6 @@
       <div class="form-status" id="beginningStatus" role="status" aria-live="polite"></div>
       <div class="form-actions">
         <button type="submit" class="primary" id="beginningSubmit">Submit ↗</button>
-        <a class="ghost-link" href="/time-series-workshop-v2">← Return to workshop without submitting</a>
       </div>
     </form>
 
