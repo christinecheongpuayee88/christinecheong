@@ -264,6 +264,26 @@ After the 3 bullets, add one more closing line — in addition to them, never re
   }`;
 }
 
+// Trial, Beginning-report-only alternative to section 2's 3-level
+// breakdown: a single direct "what to prioritize first" statement instead
+// of Understanding/Application/Critical Judgment bullets — since before any
+// teaching happens there's no real evidence to differentiate 3 levels.
+// Added as a new section 3 alongside section 2, not replacing it, while
+// deciding which is the better fit for the Beginning report specifically.
+function initialTeachingEmphasisBlock() {
+  const topics = mergedTopicLinks(1);
+  return `Write ONE short paragraph (2-3 sentences) naming what to prioritize teaching first today, based on the specific findings already stated in the "Cohort Insights" section above (section 1) — its stated confidence, experience, and concerns/goals. Do not break this into 3 levels or use Understanding/Application/Critical Judgment language — this is a single, direct teaching-emphasis recommendation, not a classification.
+
+Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
+${buildTopicLinksBlock(topics)}
+
+End the paragraph with one clickable resource link chosen from the reference list above, tied to whichever topic is most foundational to start with.
+
+Use exactly this format:
+
+**Initial Teaching Emphasis:** [the paragraph, ending with the link]`;
+}
+
 // Safety net: the model doesn't reliably wrap the reference label in
 // [text](url) markdown even when the text itself is otherwise correct — it
 // sometimes drops the brackets and prints the label as plain trailing text.
@@ -342,6 +362,10 @@ Structure your response exactly as follows:
 ### 2. Recommendations
 
 ${depthLevelRecsBlock(1)}
+
+### 3. Initial Teaching Emphasis (Simplified — Comparison)
+
+${initialTeachingEmphasisBlock()}
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
