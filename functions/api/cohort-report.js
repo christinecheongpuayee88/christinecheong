@@ -109,59 +109,6 @@ function formatResponses(values) {
     .join("\n\n");
 }
 
-// Shared across all four stage reports so "AI-Generated Teaching Recommendations"
-// means the same thing everywhere, instead of each stage prompt drifting its own
-// slightly-different category list. The 6th category ({{Learning Path}}) activates
-// the 4th of the 4 adaptation levels (Content/Pedagogy/Facilitation/Learning Path) —
-// the first 5 categories' level-tags are unchanged from before, this only adds to them.
-//
-// buildTeachingRecsBlock(stage) is a function (not a static string) so each
-// recommendation can end with a real clickable link: stages 2/3/4 get the
-// checkpoint-topic reference table (same links used by Clarify/Apply/
-// Challenge), stage 1 only gets the three general resources since there's no
-// topic-level evidence yet. linkifyReport() below is the deterministic
-// backend safety net that catches cases where the model names the link text
-// but drops the markdown brackets.
-function buildTeachingRecsBlock(stage) {
-  const topics = mergedTopicLinks(stage);
-  const topicRefs = topics
-    ? Object.entries(topics)
-        .map(([topic, l]) => `- "${topic}" → ${THEORY_URL}#slide-${l.clarifySlide} (link text must be exactly "${l.clarifyLabel}")`)
-        .join("\n")
-    : null;
-
-  return `Consider all six possible teaching-decision categories below, then select ONLY the 3 most important and actionable for this specific cohort's actual data right now. Omit the other three entirely — never list all six. Favor a spread across different categories rather than clustering all 3 picks under one.
-
-Categories and the exact tag to use if you select that category:
-- What to emphasise → {{Content}}
-- How to teach it → {{Pedagogy}}
-- When to adapt → {{Facilitation}}
-- Who needs support → {{Facilitation}}
-- How to challenge → {{Pedagogy}}
-- What to improve next time → {{Learning Path}}
-
-> [One sentence of cohort evidence citing exact counts/percentages from the data above that justifies the 3 recommendations below]
-
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}. [link text](url)
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}. [link text](url)
-* **[chosen category]:** [specific, concrete recommendation] {{tag}}. [link text](url)
-
-Every one of the 3 recommendations must end with one clickable resource link, chosen from the reference list below — never invent a URL or link text, and never leave a recommendation without a link.
-${topicRefs ? `If the recommendation is about one of these specific topics, use its link:\n${topicRefs}\n\nOtherwise use` : "Use"} whichever general resource below fits best:
-${buildGeneralLinksBlock()}
-
-The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.`;
-}
-
-// All four stages get a Clarify/Apply/Challenge section alongside (not
-// replacing) the 6-category TEACHING_RECS_BLOCK above. Beginning has no quiz
-// performance yet, so its version is forward-looking — anchored on the
-// upcoming SARIMA topic set (TOPIC_LINKS[2]) and classified from stated
-// confidence/concerns/goals instead of accuracy — see the isForwardLooking
-// branch in clarifyApplyChallengeBlock() below. Links are resolved from this
-// fixed table (never left for the model to invent) so recommendations are
-// immediately clickable instead of generic advice.
-//
 // clarifySlide values were verified against the actual slide content (not
 // just titles) in ts-theory-slides/ — e.g. "AR/MA identification" points to
 // slide 22 ("Summary of the Behaviors of ACF and PACF", the exact
@@ -224,21 +171,15 @@ function buildMoveLinksBlock(moves) {
     .join("\n");
 }
 
-// Fallback resources for the 6-category teaching recommendations, used when
-// a recommendation isn't about one specific checkpoint topic (e.g. a
-// facilitation or pacing tip) — and the only links available at all for
-// Stage 1, which has no topic-level evidence yet.
+// General resource labels linkifyReport() auto-links if the model names one
+// without markdown brackets — kept even though no prompt block currently
+// builds a reference list from these, since linkifyReport still scans for
+// them appearing unlinked anywhere in the output.
 const GENERAL_RESOURCE_LINKS = {
   Theory: { url: THEORY_URL, label: "Time Series Theory Companion" },
   Workshop: { url: CANVAS_WORKSHOP_URL, label: "Canvas Workshop Folder" },
   AgentsHub: { url: "https://christinecheong.com/agents-hub/", label: "AI Agents Hub" },
 };
-
-function buildGeneralLinksBlock() {
-  return Object.values(GENERAL_RESOURCE_LINKS)
-    .map((l) => `- ${l.url} (link text must be exactly "${l.label}")`)
-    .join("\n");
-}
 
 // Stages 2 and 3 each have their own topic set. Stage 4 has no topics of its
 // own — it reasons over the Checkpoint 1 + Checkpoint 2 reports already
@@ -266,112 +207,22 @@ function buildChallengeLinksBlock() {
     .join("\n");
 }
 
-function clarifyApplyChallengeBlock(stage, evidenceSource) {
-  const topics = mergedTopicLinks(stage);
-  const isForwardLooking = stage === 1;
-  const basis = isForwardLooking
-    ? "this cohort's stated confidence, experience level, and named concerns/goals in the intake survey above (there is no quiz performance yet to base this on — no one has been taught or tested)"
-    : "this cohort's demonstrated performance on each";
-  const evidenceNote = isForwardLooking
-    ? "citing the specific stated confidence, concern, or goal that justifies it"
-    : "citing the % evidence";
-
-  return `Classify up to 3 topics from ${evidenceSource} into CLARIFY / APPLY / CHALLENGE based on ${basis}. Favor a spread across the three levels when the evidence supports it (one topic needing clarification, one solid topic ready to apply, one strong topic ready to be challenged) rather than clustering all 3 picks in one level. Only include a level if a topic's evidence genuinely fits it — omit a level rather than forcing a weak fit. Only choose topics from the reference list below — never a topic that isn't in it.
-
-Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
-${buildTopicLinksBlock(topics)}
-
-MICRO-INTERVENTION MOVE reference links — for each bullet, pick exactly one move from the matching level below and link its name to this exact URL (these are separate from, and additional to, the topic reference links above):
-CLARIFY moves:
-${buildMoveLinksBlock(CLARIFY_MOVES)}
-APPLY moves:
-${buildMoveLinksBlock(APPLY_MOVES)}
-CHALLENGE moves:
-${buildMoveLinksBlock(CHALLENGE_MOVES)}
-
-CHALLENGE live-tool links (only "Multiple perspectives" and "Challenge assumptions" have one; "What-if scenario" has none — its move-name link above is enough, do not add a second link for it):
-${buildChallengeLinksBlock()}
-
-For each chosen topic, use exactly this format:
-
-* 🔴 **CLARIFY — [topic]:** [chosen CLARIFY move's exact link text, verbatim](that move's URL from the MICRO-INTERVENTION reference above) — describe the specific action for that move in one sentence, ${evidenceNote}. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
-* 🟢 **APPLY — [topic]:** [chosen APPLY move's exact link text, verbatim](that move's URL from the MICRO-INTERVENTION reference above) — describe the specific action tied to the named workshop exercise, ${evidenceNote}. [Try: that topic's exact exercise name from the reference above](that topic's APPLY link)
-* 🔵 **CHALLENGE — [topic]:** [chosen CHALLENGE move's exact link text, verbatim](that move's URL from the MICRO-INTERVENTION reference above) — write the actual prompt to pose to the cohort, ${evidenceNote}. If you picked "Multiple perspectives" or "Challenge assumptions", also append [its live-tool link text](its exact CHALLENGE live-tool link) — if you picked "What-if scenario", append nothing further.
-
-Every bullet must have exactly two links: the move-name link, and the topic/live-tool link (except "What-if scenario", which only gets the move-name link) — never zero, never more.`;
-}
-
-// Clarify/Apply/Challenge are three distinct facilitation NEEDS, not three
-// difficulty tiers — this definition block is shared by all 4 stages so the
-// model can't drift back to treating Apply as "another practice exercise"
-// or Challenge as "a harder question." Apply specifically means interpret →
-// evaluate/select → business implication; Challenge specifically means
-// surface an assumption, a what-if, a trade-off, or a competing
-// perspective — never just a harder calculation.
-const LEVEL_DEFINITIONS = `Treat Clarify, Apply, and Challenge as three different facilitation needs, not an easy/medium/hard progression:
-- CLARIFY answers "What is still unclear?" — close a specific misconception or knowledge gap revealed by low accuracy, low confidence, or inconsistent answers.
-- APPLY answers "Can they use what they know?" — make them interpret what a specific finding means, and connect it to a real business or operational implication. Not "practice the same skill again."
-- CHALLENGE answers "Where can we deepen their thinking?" — for a concept they've already mastered, surface an assumption worth questioning, a what-if scenario, a trade-off, or a competing stakeholder perspective. Not just a harder version of the same question.`;
-
-// All 4 stages read Clarify/Apply/Challenge straight off that stage's own
-// "Cohort Insights" section (section 1) instead of re-deriving anything from
-// "AI-Generated Teaching Recommendations" or "Top Teaching Moves" — this
-// section is the direct next step built on top of Cohort Insights, anchored
-// on that stage's own evidence:
+// The report's sole recommendations section (section 2, all 4 stages) —
+// exactly 3 levels (Understanding of Concepts / Interpretation & Application
+// / Critical Judgment), anchored on that stage's own "Cohort Insights"
+// (section 1) rather than re-deriving anything separately:
 // - Stage 1 (Beginning) has no performance data yet, so it's forward-looking:
 //   anchored on the cohort's stated confidence, experience, and concerns/
 //   goals from the intake survey (same evidence Cohort Insights itself uses).
 // - Stages 2-3 (the two checkpoints) anchor on that checkpoint's own named
-//   gap topic (Clarify/Apply) and named mastered topic (Challenge).
-// - Stage 4 (Final) anchors Clarify on the "remaining questions" bullet and
-//   Apply on the "where they'll apply this" bullet — both from its own
-//   Cohort Insights — and, since the final Cohort Insights doesn't itself
-//   name a mastered topic, Challenge falls back to whichever topic the
-//   Checkpoint 1/2 reports (embedded earlier in this prompt) named as
-//   mastered.
-function combinedFocusBlock(stage) {
-  const topics = mergedTopicLinks(stage);
-  const isForwardLooking = stage === 1;
-
-  const evidenceBasis = isForwardLooking
-    ? `the "Cohort Insights" section above (section 1) — the stated confidence, experience, and concerns/goals it synthesizes. There is no performance data yet, so Clarify/Apply/Challenge must anchor on what the cohort said about itself, not on quiz accuracy`
-    : stage === 4
-    ? `the "Cohort Insights" section above (section 1) — its "remaining questions" bullet for Clarify, its "where they'll apply this" bullet for Apply, and — since the final Cohort Insights bullets don't themselves name a mastered topic — the topic named as most solidly mastered in the Checkpoint 1 and/or Checkpoint 2 reports referenced earlier in this prompt for Challenge`
-    : `the "Cohort Insights" section above (section 1) — its bullet naming the biggest remaining gap or misconception for Clarify, and its bullet naming the concept mastered most solidly for Challenge`;
-
-  const profileSource = isForwardLooking ? "the intake survey data above" : "the Beginning-of-Class Report above";
-
-  return `${LEVEL_DEFINITIONS}
-
-Base all 3 bullets directly on the specific findings already stated in ${evidenceBasis}. Never pull a fresh topic from "AI-Generated Teaching Recommendations" or "Top Teaching Moves" instead, and never introduce a topic that wasn't already named there${stage === 4 ? " or in the Checkpoint reports referenced above" : ""}.
-
-Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
-${buildTopicLinksBlock(topics)}
-
-APPLY moves (pick one to deliver the interpret/business-implication question):
-${buildMoveLinksBlock(APPLY_MOVES)}
-
-CHALLENGE options (pick one to deliver the assumption/what-if/trade-off/perspective question):
-${buildMoveLinksBlock(CHALLENGE_MOVES)}
-${buildChallengeLinksBlock()}
-
-Use exactly this format:
-
-1. **Clarify — [the exact gap/misconception topic, or stated concern, named in Cohort Insights above]:** [name specifically what's still unclear about it and what part of the teaching materials closes that gap]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
-2. **Apply — [the same topic, or a closely related one]:** [pose a question that makes the cohort interpret a specific finding and state its real business or operational implication, tailored to this cohort's stated industries, roles, or business problems from ${profileSource} — never "practice this again" or a generic exercise]. [chosen APPLY move's exact link text, verbatim](that move's URL from the reference above)
-3. **Challenge — [the exact topic named in Cohort Insights above (or, for the final report, in the Checkpoint reports above) as most solidly mastered / most confidently understood]:** [pose a question that surfaces an assumption worth questioning, a what-if scenario, a trade-off, or a competing stakeholder perspective on that topic — since it's already solid, push past "correct" toward judgement]. [chosen CHALLENGE option's exact link text, verbatim](its URL from the reference above)
-
-If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.`;
-}
-
-// A trial, plain-language 3-level alternative to the 6-category
-// "AI-Generated Teaching Recommendations" above (section 2) — added
-// side by side, not replacing it, while deciding which framing is more
-// useful. Same Cohort-Insights anchoring as combinedFocusBlock, same
-// evidence-blockquote + bold-label bullet style as buildTeachingRecsBlock,
-// just fixed to exactly 3 levels (Understanding of Concepts / Interpretation
-// & Application / Critical Judgment) instead of picking 3 of 6 categories.
-// Remove this function and its section once a decision is made.
+//   gap topic (Understanding/Application) and named mastered topic
+//   (Critical Judgment).
+// - Stage 4 (Final) anchors Understanding of Concepts on the "remaining
+//   questions" bullet and Interpretation & Application on the "where
+//   they'll apply this" bullet — both from its own Cohort Insights — and,
+//   since the final Cohort Insights doesn't itself name a mastered topic,
+//   Critical Judgment falls back to whichever topic the Checkpoint 1/2
+//   reports (embedded earlier in this prompt) named as mastered.
 function depthLevelRecsBlock(stage) {
   const topics = mergedTopicLinks(stage);
   const isForwardLooking = stage === 1;
@@ -384,7 +235,7 @@ function depthLevelRecsBlock(stage) {
 
   const profileSource = isForwardLooking ? "the intake survey data above" : "the Beginning-of-Class Report above";
 
-  return `This is a plain-language, 3-level alternative to the 6-category "AI-Generated Teaching Recommendations" above — being trialed side by side to compare which framing is more useful, so keep this section independent rather than restating section 2. Base all 3 bullets directly on the specific findings already stated in ${evidenceBasis}. Never introduce a topic that wasn't already named there${stage === 4 ? " or in the Checkpoint reports referenced above" : ""}.
+  return `Write exactly 3 bullets, one per level (Understanding of Concepts / Interpretation & Application / Critical Judgment). Base all 3 bullets directly on the specific findings already stated in ${evidenceBasis}. Never introduce a topic that wasn't already named there${stage === 4 ? " or in the Checkpoint reports referenced above" : ""}.
 
 Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
 ${buildTopicLinksBlock(topics)}
@@ -482,19 +333,7 @@ Structure your response exactly as follows:
 ### 1. Cohort Insights (from Live Sensing)
 * [2-4 bullets of genuine interpretive insight synthesizing the profile mix, confidence distribution, and stated concerns/goals into what it means for today. Bold a short topic header at the start of each bullet, then elaborate after a colon — e.g. "**Confidence Level:** the cohort is skewed low, so expect to spend extra time building comfort before moving fast." Cover different angles (confidence, experience/industry mix, stated concerns) across the bullets — don't repeat the same angle twice. Insight, not a restated breakdown — do not list every industry, role, experience level, or confidence-level count; that's already charted live on the instructor dashboard.]
 
-### 2. AI-Generated Teaching Recommendations
-
-${buildTeachingRecsBlock(1)}
-
-### 3. Top Teaching Moves Today
-
-${clarifyApplyChallengeBlock(1, "the intake survey data above")}
-
-### 4. Combined Focus Areas
-
-${combinedFocusBlock(1)}
-
-### 5. Recommendations by Depth Level (Comparison)
+### 2. Recommendations
 
 ${depthLevelRecsBlock(1)}
 
@@ -536,19 +375,7 @@ Exactly 3-4 bullets synthesizing this checkpoint's full picture in one place —
 
 Never list more than one bullet per concept, and never produce a bullet for every question — that level of per-question detail is already visible live on the instructor dashboard.
 
-### 2. AI-Generated Teaching Recommendations
-
-${buildTeachingRecsBlock(2)}
-
-### 3. Top Teaching Moves Now
-
-${clarifyApplyChallengeBlock(2, "the topics above")}
-
-### 4. Combined Focus Areas
-
-${combinedFocusBlock(2)}
-
-### 5. Recommendations by Depth Level (Comparison)
+### 2. Recommendations
 
 ${depthLevelRecsBlock(2)}
 
@@ -594,19 +421,7 @@ Exactly 3-4 bullets synthesizing the cohort's full picture across BOTH checkpoin
 
 Never list more than one bullet per concept, and never produce a bullet for every question — that level of per-question detail is already visible live on the instructor dashboard.
 
-### 2. AI-Generated Teaching Recommendations
-
-${buildTeachingRecsBlock(3)}
-
-### 3. Top Teaching Moves Now
-
-${clarifyApplyChallengeBlock(3, "the topics above")}
-
-### 4. Combined Focus Areas
-
-${combinedFocusBlock(3)}
-
-### 5. Recommendations by Depth Level (Comparison)
+### 2. Recommendations
 
 ${depthLevelRecsBlock(3)}
 
@@ -645,23 +460,11 @@ Exactly 3 bullets, one per reflection question below — never more, never fewer
 * **[state the dominant theme(s) in "where they'll apply this," e.g. "Applications mostly tied to current work projects" / "Applications split between work and personal use"]:** [one clause naming what that theme actually is.]
 * **[state the dominant theme(s) in "remaining questions," e.g. "Remaining questions mainly about applications and examples" / "Remaining questions mainly about advanced models"]:** [2 clauses, more detailed than the other two bullets since this is the most actionable signal for next steps — first name specifically what's still unclear (which model(s), formula, or step recurs), then a second clause naming what kind of follow-up would close the gap, e.g. "several respondents are still asking how to apply the models to new datasets and want worked examples with real numbers rather than more theory, suggesting the next session should open with a hands-on case."]
 
-### 2. AI-Generated Teaching Recommendations
-
-${buildTeachingRecsBlock(4)}
-
-Do not add a section restating total response counts, a concept-by-concept breakdown of what went well or the remaining gaps, or a bulleted list of where respondents said they'll apply this — all of that is already shown live on the instructor dashboard (including a Beginning-vs-Final confidence comparison). Base the recommendations on that evidence without restating it as its own section — go straight from the raw data above to the recommendations.
-
-### 3. Top Teaching Moves for Next Cohort
-
-${clarifyApplyChallengeBlock(4, "the Checkpoint 1 and Checkpoint 2 reports above (both list per-topic accuracy) and this reflection's remaining-questions data")}
-
-### 4. Combined Focus Areas
-
-${combinedFocusBlock(4)}
-
-### 5. Recommendations by Depth Level (Comparison)
+### 2. Recommendations
 
 ${depthLevelRecsBlock(4)}
+
+Do not add a section restating total response counts, a concept-by-concept breakdown of what went well or the remaining gaps, or a bulleted list of where respondents said they'll apply this — all of that is already shown live on the instructor dashboard (including a Beginning-vs-Final confidence comparison). Base the recommendations on that evidence without restating it as its own section — go straight from the raw data above to the recommendations.
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
@@ -669,11 +472,11 @@ Output plain text using exactly that Markdown structure (## and ### headings, * 
 // If the instructor already graded assignments (Assignments tab) before
 // generating the Final Report, its cohort synthesis — evidence from actual
 // graded work, already in Clarify/Apply/Challenge format — gets appended as
-// a new section 6, verbatim, rather than run through another OpenAI call.
-// This never touches sections 1-5 above, which stay exactly as generated.
+// a new section 3, verbatim, rather than run through another OpenAI call.
+// This never touches sections 1-2 above, which stay exactly as generated.
 function appendRubricSection(report, rubricSynthesis) {
   if (!rubricSynthesis || !rubricSynthesis.trim()) return report;
-  return `${report}\n\n### 6. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
+  return `${report}\n\n### 3. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
 }
 
 export async function onRequestOptions() {
