@@ -285,9 +285,7 @@ ${buildTopicLinksBlock(topics)}
 
 End the paragraph with one clickable resource link chosen from the reference list above, tied to whichever topic is most foundational to start with.
 
-Output nothing except this single line — no separate intro sentence or paragraph before it, start immediately with the bold label:
-
-**Initial Teaching Emphasis:** [the paragraph, ending with the link]`;
+Output nothing except this single paragraph — no bold label, no separate intro sentence before it.`;
 }
 
 // Safety net: the model doesn't reliably wrap the reference label in
@@ -366,10 +364,6 @@ Structure your response exactly as follows:
 * [2-4 bullets of genuine interpretive insight synthesizing the profile mix, confidence distribution, and stated concerns/goals into what it means for today. Bold a short topic header at the start of each bullet, then elaborate after a colon — e.g. "**Confidence Level:** the cohort is skewed low, so expect to spend extra time building comfort before moving fast." Cover different angles (confidence, experience/industry mix, stated concerns) across the bullets — don't repeat the same angle twice. Insight, not a restated breakdown — do not list every industry, role, experience level, or confidence-level count; that's already charted live on the instructor dashboard.]
 
 ### 2. Recommendations
-
-${depthLevelRecsBlock(1)}
-
-### 3. Initial Teaching Emphasis (Simplified — Comparison)
 
 ${initialTeachingEmphasisBlock()}
 
