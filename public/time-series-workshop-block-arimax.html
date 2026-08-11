@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ARIMAX Workshop — Block Preview</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Single-block preview: ARIMAX Workshop, flagged as a group assignment, with a link to the team's collaborative slide space.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,850;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0b1f3a;--blue:#1d5fa7;--teal:#0b8d95;--ink:#18304d;--muted:#60728b;--line:#d9e3ec;--pale:#eaf3f8;--soft:#f6fafc;--shadow:0 18px 55px rgba(11,31,58,.09);--good:#0b8d5a;--good-bg:#e4f7ee}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff}
+    a{color:inherit}button{cursor:pointer;font:inherit}
+
+    .draft-banner{background:var(--navy);color:#fff;text-align:center;padding:9px 16px;font-size:.82rem;font-weight:700}
+    .draft-banner a{color:#9fd4d8}
+
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;border-bottom:1px solid var(--line)}
+    .topbar-title{font-weight:850;color:var(--navy);font-size:.98rem}
+    .topbar-title span{color:var(--muted);font-weight:600}
+    .topbar-right{display:flex;align-items:center;gap:14px}
+    .topbar-link{font-size:.86rem;font-weight:750;color:var(--blue);text-decoration:none}
+    .topbar-link:hover{color:var(--navy)}
+    .expand-btn{width:34px;height:34px;border:1px solid var(--line);border-radius:8px;background:#fff;display:grid;place-items:center;color:var(--navy)}
+
+    .app{display:flex;min-height:calc(100vh - 140px)}
+    .side{width:290px;flex-shrink:0;border-right:1px solid var(--line);padding:18px 12px}
+    .side-item{display:flex;align-items:flex-start;gap:12px;padding:12px 12px;border-radius:10px;margin-bottom:2px}
+    .side-item.active{background:var(--pale)}
+    .side-num{width:24px;height:24px;border-radius:50%;background:var(--line);color:var(--navy);font-size:.72rem;font-weight:800;display:grid;place-items:center;flex-shrink:0;margin-top:1px}
+    .side-item.active .side-num{background:var(--blue);color:#fff}
+    .side-body{flex:1;min-width:0}
+    .side-title{font-size:.88rem;font-weight:750;color:var(--navy)}
+    .side-flag{display:inline-flex;align-items:center;gap:4px;background:var(--pale);color:var(--teal);font-size:.68rem;font-weight:850;letter-spacing:.03em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-top:5px}
+    .side-time{font-size:.76rem;color:var(--muted);margin-top:4px}
+    .side-check{margin-left:auto;color:var(--good);font-weight:800;font-size:.9rem;flex-shrink:0}
+
+    .content{flex:1;padding:44px 5vw;max-width:900px}
+    .crumb{font-size:.88rem;color:var(--muted);font-weight:650;margin-bottom:18px}
+    .crumb b{color:var(--navy)}
+    .kicker{text-transform:uppercase;letter-spacing:.18em;color:var(--teal);font-size:.78rem;font-weight:850}
+    .content h1{color:var(--navy);font-size:2rem;font-weight:800;margin:8px 0 10px;letter-spacing:-.02em}
+    .content .lede{color:var(--muted);font-size:1.02rem;margin-bottom:28px}
+
+    .card{border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:16px}
+    .card-body{flex:1;min-width:0}
+    .tag{display:inline-block;border-radius:99px;background:var(--pale);color:var(--blue);padding:5px 12px;font-size:.78rem;font-weight:850;margin-bottom:10px}
+    .card h3{color:var(--navy);font-size:1.08rem;font-weight:800;margin-bottom:6px}
+    .card p{color:var(--muted);font-size:.92rem}
+    .secondary{flex-shrink:0;display:inline-block;border:1px solid var(--line);border-radius:10px;padding:12px 18px;background:#fff;color:var(--navy);font-weight:750;text-decoration:none;white-space:nowrap;transition:border-color .15s}
+    .secondary:hover{border-color:var(--blue)}
+
+    .card.collab{background:linear-gradient(135deg,#f5fafc,#eef7f8);border-color:#cfe0eb;margin-top:26px}
+    .card.collab .tag{background:#fff;color:var(--teal)}
+    .primary{flex-shrink:0;display:inline-block;border:0;border-radius:10px;padding:12px 20px;background:linear-gradient(135deg,var(--blue),#2474cb);color:#fff;font-weight:800;text-decoration:none;white-space:nowrap;transition:transform .15s}
+    .primary:hover{transform:translateY(-2px)}
+
+    .pagebar{height:64px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:18px}
+    .pagebar button{border:1px solid var(--line);background:#fff;border-radius:8px;width:34px;height:34px;color:var(--navy);font-size:1rem}
+    .pagebar button:disabled{opacity:.35}
+    .pagebar span{font-size:.88rem;color:var(--muted);font-weight:700;min-width:56px;text-align:center}
+    footer{border-top:1px solid var(--line);padding:22px 5vw;color:var(--muted);font-size:.88rem;text-align:center}
+    footer a{color:var(--muted);text-decoration:none}
+    footer a:hover{color:var(--blue)}
+
+    @media(max-width:800px){.side{display:none}.content{padding:32px 20px}.card{flex-direction:column;align-items:flex-start}.secondary,.primary{align-self:stretch;text-align:center}}
+  </style>
+</head>
+<body>
+
+<div class="draft-banner">SINGLE-BLOCK PREVIEW — not yet linked from <a href="/time-series-workshop-v2">the live workshop page</a></div>
+
+<div class="topbar">
+  <div class="topbar-title">TS Forecasting Workshop <span>· Theory companion — just enough, then the workshop</span></div>
+  <div class="topbar-right">
+    <a class="topbar-link" href="/time-series-theory" target="_blank" rel="noopener">Full theory (44 slides) ↗</a>
+    <span class="expand-btn" aria-hidden="true">⤢</span>
+  </div>
+</div>
+
+<div class="app">
+  <nav class="side">
+    <div class="side-item">
+      <span class="side-num">11</span>
+      <div class="side-body">
+        <div class="side-title">ARIMA/SARIMA vs ARIMAX</div>
+        <div class="side-time">Concept · 1 min</div>
+      </div>
+      <span class="side-check">✓</span>
+    </div>
+    <div class="side-item active">
+      <span class="side-num">12</span>
+      <div class="side-body">
+        <div class="side-title">ARIMAX Workshop</div>
+        <span class="side-flag">👥 Group assignment</span>
+        <div class="side-time">During class · 45 min</div>
+      </div>
+      <span class="side-check">✓</span>
+    </div>
+    <div class="side-item">
+      <span class="side-num">13</span>
+      <div class="side-body">
+        <div class="side-title">Checkpoint 2 — ARIMAX</div>
+        <div class="side-time">Scored automatically</div>
+      </div>
+      <span class="side-check">✓</span>
+    </div>
+    <div class="side-item">
+      <span class="side-num">14</span>
+      <div class="side-body">
+        <div class="side-title">Reflection</div>
+        <div class="side-time">End of class · 2 min</div>
+      </div>
+      <span class="side-check">✓</span>
+    </div>
+  </nav>
+
+  <main class="content">
+    <div class="crumb">Part 2 · ARIMAX <b>›</b> Workshop</div>
+    <div class="kicker">During class · 45 minutes · Group assignment</div>
+    <h1>ARIMAX Workshop</h1>
+    <p class="lede">Apply the four concepts above to two forecasting problems, as a group.</p>
+
+    <div class="card">
+      <div class="card-body">
+        <span class="tag">ARIMAX · Workshop 2</span>
+        <h3>Sales and advertising</h3>
+        <p>Assess whether current and lagged advertising improve forecasts.</p>
+      </div>
+      <a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on Canvas ↗</a>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <span class="tag">ARIMAX · Workshop 3</span>
+        <h3>Platform sales</h3>
+        <p>Compare a univariate baseline with selected lagged drivers.</p>
+      </div>
+      <a class="secondary" href="https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop" target="_blank" rel="noopener">Open on Canvas ↗</a>
+    </div>
+
+    <div class="card collab">
+      <div class="card-body">
+        <span class="tag">Group collaborative space</span>
+        <h3>Shared slide deck for this group</h3>
+        <p>Work together in one shared presentation — record your group's model comparisons, decisions, and results for both exercises above.</p>
+      </div>
+      <a class="primary" href="https://docs.google.com/presentation/d/1LigXSWkT_R8C4egGYtyWnz96TTCXbyS6/edit?usp=sharing&ouid=115190268789964980639&rtpof=true&sd=true" target="_blank" rel="noopener">Open collaborative space ↗</a>
+    </div>
+  </main>
+</div>
+
+<div class="pagebar">
+  <button disabled aria-label="Previous">‹</button>
+  <span>12 / 14</span>
+  <button disabled aria-label="Next">›</button>
+</div>
+
+<footer>14 / 14 blocks completed · <a href="/time-series-workshop-v2">← Time Series Workshop page</a></footer>
+
+</body>
+</html>
