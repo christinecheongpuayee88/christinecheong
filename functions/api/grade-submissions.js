@@ -289,16 +289,13 @@ ${summary}
 
 #################
 
-For each of the 3 rubric dimensions, identify the dominant level across the cohort and write one cohort-finding sentence citing the actual count/percentage, then map it to exactly one Clarify/Apply/Challenge recommendation using this rule:
-- Dominant level 1 (Developing) → 🔴 CLARIFY
-- Dominant level 2 (Competent) → 🟢 APPLY
-- Dominant level 3 (Strong) → 🔵 CHALLENGE
+For each of the 3 rubric dimensions, identify the dominant level across the cohort and write one cohort-finding sentence citing the actual count/percentage, then write one concrete next step for the instructor's next delivery. The dominant level is already stated in the Rubric evidence column — never repeat it as a tag or label in the Teaching recommendation column, just state the action directly.
 
 Output in exactly this Markdown table format:
 
 | Rubric evidence | Cohort finding | Teaching recommendation |
 |---|---|---|
-| Model Application: [dominant level name] | [one sentence citing the count/percentage] | [emoji] **[LEVEL]** — [one concrete next step] |
+| Model Application: [dominant level name] | [one sentence citing the count/percentage] | [one concrete next step] |
 | Interpretation & Evaluation: [dominant level name] | [...] | [...] |
 | Decision Insight: [dominant level name] | [...] | [...] |
 
