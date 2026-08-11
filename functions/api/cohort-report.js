@@ -135,14 +135,20 @@ const TOPIC_LINKS = {
   },
 };
 
-// Real, live tools — not placeholders. All 3 Challenge moves now have one
-// (What-if scenario reuses the AI Advisory Council — a panel that can just
-// as well argue "what if this assumption changed" as "which assumption is
-// weakest").
+// Real, live tools — not placeholders. Every Challenge move has one.
+// "What-if scenario" and "Challenge assumptions" both reuse the AI Advisory
+// Council — a panel that can just as well argue "what if this assumption
+// changed" as "which assumption is weakest". The 3 added later push
+// judgement in a different direction each: question the framing itself
+// (Problem Hunter), name and chase down an unknown (Deep Research), or get
+// an independent second read on the evidence (Data Insight).
 const CHALLENGE_LINKS = {
   "What-if scenario": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
   "Multiple perspectives": { url: "https://christinecheong.com/agents-hub/perspectives-agent.html", label: "Multiple Perspectives Agent" },
   "Challenge assumptions": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
+  "Reframe the problem": { url: "https://christinecheong.com/agents-hub/problem-hunter-agent.html", label: "Problem Hunter Agent" },
+  "Fill the evidence gap": { url: "https://christinecheong.com/agents-hub/deep-research-agent.html", label: "Deep Research Agent" },
+  "Independent data check": { url: "https://christinecheong.com/agents-hub/data-insight-agent.html", label: "Data Insight Agent" },
 };
 
 // The micro-intervention library: each level's move/case-study set, each
@@ -169,6 +175,9 @@ const CHALLENGE_MOVES = {
   "What-if scenario": `${MICRO_INTERVENTIONS_URL}#challenge-what-if`,
   "Multiple perspectives": `${MICRO_INTERVENTIONS_URL}#challenge-multiple-perspectives`,
   "Challenge assumptions": `${MICRO_INTERVENTIONS_URL}#challenge-assumptions`,
+  "Reframe the problem": `${MICRO_INTERVENTIONS_URL}#challenge-reframe-problem`,
+  "Fill the evidence gap": `${MICRO_INTERVENTIONS_URL}#challenge-evidence-gap`,
+  "Independent data check": `${MICRO_INTERVENTIONS_URL}#challenge-data-check`,
 };
 
 function buildMoveLinksBlock(moves) {

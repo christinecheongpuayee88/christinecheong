@@ -148,9 +148,6 @@
   <h1>Micro-Interventions Library</h1>
   <p class="desc">Fast, AI-generatable teaching moves across three levels — Clarify, Apply, Challenge — that a cohort sensing report can recommend by name and an instructor can run on the spot.</p>
 
-  <div class="principle">
-    <strong>MVP principle:</strong> every move on this page is chosen because it's very fast for AI to generate and very easy for an instructor to deploy without changing the lesson plan. No new slides, no rewritten exercises — just a short prompt the instructor reads out or drops into the room.
-  </div>
 
   <table class="overview-table">
     <tr><th>Level</th><th>Purpose</th><th>Quick-win examples</th><th>Typical time</th></tr>
@@ -169,7 +166,7 @@
     <tr>
       <td class="level-cell">🔵 Challenge</td>
       <td>Deepen reasoning / judgement</td>
-      <td><a href="#challenge-what-if">what-if scenario</a>, <a href="#challenge-multiple-perspectives">multiple perspectives</a>, <a href="#challenge-assumptions">challenge assumptions</a></td>
+      <td><a href="#challenge-what-if">what-if</a>, <a href="#challenge-multiple-perspectives">perspectives</a>, <a href="#challenge-assumptions">assumptions</a>, <a href="#challenge-reframe-problem">reframe problem</a>, <a href="#challenge-evidence-gap">evidence gap</a>, <a href="#challenge-data-check">data check</a></td>
       <td class="time-cell">5–10 min</td>
     </tr>
   </table>
@@ -342,11 +339,55 @@
 
     <div class="move-card" id="clarify-misconception-check">
       <div class="move-head"><span class="move-name">Misconception check</span><span class="move-time">2–4 min</span></div>
-      <p class="move-purpose">Present a plausible-but-wrong answer or statement and ask the cohort to spot what's wrong and why — surfaces the exact misconception the data flagged.</p>
-      <div class="move-example">
-        <span class="example-label">Ready-to-run example</span>
-        <div class="example-title">Spot the Misconception · 3 min</div>
-        <p>"A rising ACF that decays slowly means we should add more MA terms." What's wrong with this statement, and what should we look at instead?</p>
+      <p class="move-purpose">Present a plausible-but-wrong answer or statement and ask the cohort to spot what's wrong and why — one per checkpoint topic, so a report can point straight at the misconception the data actually flagged.</p>
+
+      <div class="quiz-bank">
+        <div class="quiz-group">
+          <details class="quiz-item" id="misconception-differencing-d">
+            <summary><span class="quiz-topic">Differencing (d)</span> "In ARIMA(p,d,q), increasing d just means we're using more AR terms."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> d has nothing to do with AR terms — it's the order of differencing needed to make the series stationary, unrelated to p (AR order) or q (MA order).</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-ar-ma-identification">
+            <summary><span class="quiz-topic">AR/MA identification</span> "A rising ACF that decays slowly means we should add more MA terms."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> gradual ACF decay with a sharp PACF cutoff is the signature of an AR process, not MA — adding MA terms is solving the wrong problem.</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-seasonal-period-s">
+            <summary><span class="quiz-topic">Seasonal period (s)</span> "Since s is the seasonal AR order, we should set it based on how many AR terms we need."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> s is the number of periods per season (12 for monthly data), not an AR order — that's P. Confusing s with P leads to picking the wrong cycle length entirely.</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-seasonal-differencing">
+            <summary><span class="quiz-topic">Seasonal differencing</span> "We already differenced once to remove the trend, so seasonality should be gone too."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> regular differencing removes trend only. A repeating seasonal pattern needs its own seasonal differencing at lag s — a series with both usually needs both.</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-model-selection-aic-bic">
+            <summary><span class="quiz-topic">Model selection (AIC/BIC)</span> "Model A has more parameters and fits the training data slightly better, so it must be the better model."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> more parameters without a genuinely lower AIC/BIC is an overfitting risk, not an improvement — AIC/BIC exist specifically to penalize unnecessary complexity.</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-residual-diagnostics">
+            <summary><span class="quiz-topic">Residual diagnostics</span> "Our residuals show a repeating dip every 12 months, but the AIC is the lowest we've seen — good enough to ship."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> a low AIC doesn't excuse patterned residuals. A repeating pattern left in the residuals means the model missed real structure in the data — fix that before trusting the AIC.</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-arima-vs-arimax">
+            <summary><span class="quiz-topic">ARIMA vs ARIMAX</span> "ARIMAX can only be used when the series has strong seasonality."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> ARIMAX is about adding an exogenous predictor on top of Y's own past — it's unrelated to whether the series is seasonal. SARIMAX, not ARIMAX, is the seasonal + exogenous combination.</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-identifying-x-and-y">
+            <summary><span class="quiz-topic">Identifying X and Y</span> "Since advertising and sales move together, it doesn't matter which one we call X and which we call Y."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> Y is what you're forecasting; X is the driver believed to lead it. Swapping them changes what the model is actually predicting, not just a labeling choice.</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-lagged-exogenous-effects">
+            <summary><span class="quiz-topic">Lagged exogenous effects</span> "If advertising this month didn't move sales this month, advertising doesn't matter for this product."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> the effect may simply be delayed. Check lagged versions of the driver before concluding it has no relationship to sales at all.</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-model-evaluation-mape">
+            <summary><span class="quiz-topic">Model evaluation (MAPE)</span> "Our training R² is 0.95, so this model will forecast the future well."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> a high in-sample fit says nothing about out-of-sample accuracy — that's exactly what a held-out MAPE check exists to test.</p></div>
+          </details>
+          <details class="quiz-item" id="misconception-overfitting-lag-selection">
+            <summary><span class="quiz-topic">Overfitting / lag selection</span> "Adding more lags always gives the model more information, so it should never hurt accuracy."</summary>
+            <div class="quiz-body"><p class="quiz-explain"><span class="explain-label">What's wrong:</span> more lags can fit noise instead of signal. Worsening out-of-sample MAPE as lags increase is the classic overfitting tell — prune back to the lags that actually help.</p></div>
+          </details>
+        </div>
       </div>
     </div>
 
@@ -432,6 +473,39 @@
         <p>What assumptions must hold for your recommendation to remain valid? Which one are you least sure about?</p>
       </div>
       <a class="move-tool-link" href="https://christinecheong.com/agents-hub/ai-council-agent.html" target="_blank" rel="noopener">Run it live with the AI Advisory Council →</a>
+    </div>
+
+    <div class="move-card" id="challenge-reframe-problem">
+      <div class="move-head"><span class="move-name">Reframe the problem</span><span class="move-time">8 min</span></div>
+      <p class="move-purpose">Before trusting the model's answer, question whether the cohort forecast the right thing in the first place — the deepest form of judgement is challenging the framing, not just the output.</p>
+      <div class="move-example">
+        <span class="example-label">Ready-to-run example</span>
+        <div class="example-title">Reframe the Problem · 8 min</div>
+        <p>We forecast monthly hotel occupancy to plan staffing. Is occupancy really the right thing to forecast — or is the real decision actually about revenue per available room?</p>
+      </div>
+      <a class="move-tool-link" href="https://christinecheong.com/agents-hub/problem-hunter-agent.html" target="_blank" rel="noopener">Run it live with the Problem Hunter Agent →</a>
+    </div>
+
+    <div class="move-card" id="challenge-evidence-gap">
+      <div class="move-head"><span class="move-name">Fill the evidence gap</span><span class="move-time">8 min</span></div>
+      <p class="move-purpose">Name the single biggest unknown that could break this forecast, then go find out whether it's actually a risk.</p>
+      <div class="move-example">
+        <span class="example-label">Ready-to-run example</span>
+        <div class="example-title">Fill the Evidence Gap · 8 min</div>
+        <p>What external factor — a competitor opening nearby, a policy change, a shift in travel demand — could make this SARIMA forecast wrong, and how would we know in time?</p>
+      </div>
+      <a class="move-tool-link" href="https://christinecheong.com/agents-hub/deep-research-agent.html" target="_blank" rel="noopener">Run it live with the Deep Research Agent →</a>
+    </div>
+
+    <div class="move-card" id="challenge-data-check">
+      <div class="move-head"><span class="move-name">Independent data check</span><span class="move-time">6 min</span></div>
+      <p class="move-purpose">Get a second, independent read on whether the observations actually support the recommendation — not just whether the model ran correctly.</p>
+      <div class="move-example">
+        <span class="example-label">Ready-to-run example</span>
+        <div class="example-title">Independent Data Check · 6 min</div>
+        <p>Paste your model's summary and forecast into the Data Insight Agent. Does its independent read of the evidence agree with your recommendation — and if not, why?</p>
+      </div>
+      <a class="move-tool-link" href="https://christinecheong.com/agents-hub/data-insight-agent.html" target="_blank" rel="noopener">Run it live with the Data Insight Agent →</a>
     </div>
   </div>
 

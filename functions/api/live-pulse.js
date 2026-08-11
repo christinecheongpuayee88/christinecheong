@@ -176,12 +176,18 @@ const ALL_MOVES = {
     "What-if scenario": `${MICRO_INTERVENTIONS_URL}#challenge-what-if`,
     "Multiple perspectives": `${MICRO_INTERVENTIONS_URL}#challenge-multiple-perspectives`,
     "Challenge assumptions": `${MICRO_INTERVENTIONS_URL}#challenge-assumptions`,
+    "Reframe the problem": `${MICRO_INTERVENTIONS_URL}#challenge-reframe-problem`,
+    "Fill the evidence gap": `${MICRO_INTERVENTIONS_URL}#challenge-evidence-gap`,
+    "Independent data check": `${MICRO_INTERVENTIONS_URL}#challenge-data-check`,
   },
 };
 const CHALLENGE_LIVE_TOOLS = {
   "What-if scenario": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
   "Multiple perspectives": { url: "https://christinecheong.com/agents-hub/perspectives-agent.html", label: "Multiple Perspectives Agent" },
   "Challenge assumptions": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
+  "Reframe the problem": { url: "https://christinecheong.com/agents-hub/problem-hunter-agent.html", label: "Problem Hunter Agent" },
+  "Fill the evidence gap": { url: "https://christinecheong.com/agents-hub/deep-research-agent.html", label: "Deep Research Agent" },
+  "Independent data check": { url: "https://christinecheong.com/agents-hub/data-insight-agent.html", label: "Data Insight Agent" },
 };
 
 function buildMovesReferenceBlock() {
