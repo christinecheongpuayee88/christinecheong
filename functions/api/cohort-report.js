@@ -364,6 +364,49 @@ Use exactly this format:
 If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.`;
 }
 
+// A trial, plain-language 3-level alternative to the 6-category
+// "AI-Generated Teaching Recommendations" above (section 2) — added
+// side by side, not replacing it, while deciding which framing is more
+// useful. Same Cohort-Insights anchoring as combinedFocusBlock, same
+// evidence-blockquote + bold-label bullet style as buildTeachingRecsBlock,
+// just fixed to exactly 3 levels (Understanding of Concepts / Interpretation
+// & Application / Critical Judgment) instead of picking 3 of 6 categories.
+// Remove this function and its section once a decision is made.
+function depthLevelRecsBlock(stage) {
+  const topics = mergedTopicLinks(stage);
+  const isForwardLooking = stage === 1;
+
+  const evidenceBasis = isForwardLooking
+    ? `the "Cohort Insights" section above (section 1) — the stated confidence, experience, and concerns/goals it synthesizes. There is no performance data yet, so ground all 3 levels in what the cohort said about itself, not quiz accuracy`
+    : stage === 4
+    ? `the "Cohort Insights" section above (section 1) — its "remaining questions" bullet for Understanding of Concepts, its "where they'll apply this" bullet for Interpretation & Application, and — since the final Cohort Insights bullets don't themselves name a mastered topic — the topic named as most solidly mastered in the Checkpoint 1 and/or Checkpoint 2 reports referenced earlier in this prompt for Critical Judgment`
+    : `the "Cohort Insights" section above (section 1) — its bullet naming the biggest remaining gap or misconception for Understanding of Concepts, and its bullet naming the concept mastered most solidly for Critical Judgment`;
+
+  const profileSource = isForwardLooking ? "the intake survey data above" : "the Beginning-of-Class Report above";
+
+  return `This is a plain-language, 3-level alternative to the 6-category "AI-Generated Teaching Recommendations" above — being trialed side by side to compare which framing is more useful, so keep this section independent rather than restating section 2. Base all 3 bullets directly on the specific findings already stated in ${evidenceBasis}. Never introduce a topic that wasn't already named there${stage === 4 ? " or in the Checkpoint reports referenced above" : ""}.
+
+Reference links — use ONLY these exact URLs, copied verbatim, never invented or modified:
+${buildTopicLinksBlock(topics)}
+
+APPLY moves (pick one to deliver the interpretation/application question):
+${buildMoveLinksBlock(APPLY_MOVES)}
+
+CHALLENGE options (pick one to deliver the critical-judgment question):
+${buildMoveLinksBlock(CHALLENGE_MOVES)}
+${buildChallengeLinksBlock()}
+
+> [One sentence of cohort evidence citing exact counts/percentages that justifies the 3 recommendations below]
+
+* **Understanding of Concepts:** [name the specific gap/misconception from Cohort Insights above and what closes it]. [that topic's exact CLARIFY link text from the reference above, verbatim](that topic's CLARIFY link)
+* **Interpretation & Application:** [pose a question that makes the cohort interpret a specific finding and connect it to a real business or operational context, tailored to this cohort's stated industries, roles, or business problems from ${profileSource}]. [chosen APPLY move's exact link text, verbatim](that move's URL from the reference above)
+* **Critical Judgment:** [pose a question that surfaces an assumption worth questioning, a what-if scenario, a trade-off, or a competing perspective on the topic named as most solidly mastered${stage === 4 ? " in the Checkpoint reports above" : " in Cohort Insights above"}]. [chosen CHALLENGE option's exact link text, verbatim](its URL from the reference above)
+
+If you picked a CHALLENGE live-tool option ("Multiple perspectives" or "Challenge assumptions"), that single link is enough — do not also add the CHALLENGE move-name link on top of it.
+
+The evidence line above must literally start with "> " (a Markdown blockquote) so it renders as a highlighted summary box before the bullets — never write it as a plain sentence without the "> " prefix.`;
+}
+
 // Safety net: the model doesn't reliably wrap the reference label in
 // [text](url) markdown even when the text itself is otherwise correct — it
 // sometimes drops the brackets and prints the label as plain trailing text.
@@ -451,6 +494,10 @@ ${clarifyApplyChallengeBlock(1, "the intake survey data above")}
 
 ${combinedFocusBlock(1)}
 
+### 5. Recommendations by Depth Level (Comparison)
+
+${depthLevelRecsBlock(1)}
+
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
   }
 
@@ -500,6 +547,10 @@ ${clarifyApplyChallengeBlock(2, "the topics above")}
 ### 4. Combined Focus Areas
 
 ${combinedFocusBlock(2)}
+
+### 5. Recommendations by Depth Level (Comparison)
+
+${depthLevelRecsBlock(2)}
 
 Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 
@@ -555,6 +606,10 @@ ${clarifyApplyChallengeBlock(3, "the topics above")}
 
 ${combinedFocusBlock(3)}
 
+### 5. Recommendations by Depth Level (Comparison)
+
+${depthLevelRecsBlock(3)}
+
 Do not add a section restating total responses or the raw score distribution — both are already shown live on the instructor dashboard.
 
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
@@ -604,17 +659,21 @@ ${clarifyApplyChallengeBlock(4, "the Checkpoint 1 and Checkpoint 2 reports above
 
 ${combinedFocusBlock(4)}
 
+### 5. Recommendations by Depth Level (Comparison)
+
+${depthLevelRecsBlock(4)}
+
 Output plain text using exactly that Markdown structure (## and ### headings, * bullets, **bold**). Do not wrap the output in a code fence, HTML tags, a <style> block, or a full HTML document — start directly with the ## heading and end after the final bullet, with no other text before or after.`;
 }
 
 // If the instructor already graded assignments (Assignments tab) before
 // generating the Final Report, its cohort synthesis — evidence from actual
 // graded work, already in Clarify/Apply/Challenge format — gets appended as
-// a new section 5, verbatim, rather than run through another OpenAI call.
-// This never touches sections 1-4 above, which stay exactly as generated.
+// a new section 6, verbatim, rather than run through another OpenAI call.
+// This never touches sections 1-5 above, which stay exactly as generated.
 function appendRubricSection(report, rubricSynthesis) {
   if (!rubricSynthesis || !rubricSynthesis.trim()) return report;
-  return `${report}\n\n### 5. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
+  return `${report}\n\n### 6. Rubric-Informed Teaching Recommendations (Assignment Evidence)\n\n${rubricSynthesis.trim()}`;
 }
 
 export async function onRequestOptions() {
