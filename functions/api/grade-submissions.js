@@ -282,24 +282,24 @@ async function synthesizeCohort(gradedResults, apiKey) {
     )
     .join("\n");
 
-  const prompt = `You are synthesizing cohort-level rubric evidence from ${gradedResults.length} graded time series forecasting (SARIMA/ARIMAX) workshop submissions into teaching recommendations for the instructor's next delivery.
+  const prompt = `You are synthesizing cohort-level rubric evidence from ${gradedResults.length} graded time series forecasting (SARIMA/ARIMAX) workshop submissions into recommendations for the instructor — both for this current cohort and for how future cohorts should be taught.
 
 ### PER-STUDENT SCORES (1 = Developing, 2 = Competent, 3 = Strong) ###
 ${summary}
 
 #################
 
-For each of the 3 rubric dimensions, identify the dominant level across the cohort and write one cohort-finding sentence citing the actual count/percentage, then write one concrete next step for the instructor's next delivery. The dominant level is already stated in the Rubric evidence column — never repeat it as a tag or label in the Teaching recommendation column, just state the action directly.
+For each of the 3 rubric dimensions, identify the dominant level across the cohort and write one cohort-finding sentence citing the actual count/percentage, then write one concrete next step. The dominant level is already stated in the Rubric evidence column — never repeat it as a tag or label in the Recommendations column, just state the action directly.
 
 Output in exactly this Markdown table format:
 
-| Rubric evidence | Cohort finding | Teaching recommendation |
+| Rubric evidence | Cohort finding | Recommendations |
 |---|---|---|
 | Model Application: [dominant level name] | [one sentence citing the count/percentage] | [one concrete next step] |
 | Interpretation & Evaluation: [dominant level name] | [...] | [...] |
 | Decision Insight: [dominant level name] | [...] | [...] |
 
-Then one closing line starting with "**Teaching implication:**" summarizing what the next cohort's session should emphasise differently.
+Then one closing line starting with "**Teaching implication:**" that covers both horizons — what to do with this current cohort now (e.g. targeted feedback, a follow-up exercise, office-hours focus) and what to change in how the material is taught to future cohorts.
 
 Output plain text only, no code fence — start directly with the table.`;
 
