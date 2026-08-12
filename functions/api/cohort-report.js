@@ -109,29 +109,33 @@ function formatResponses(values) {
     .join("\n\n");
 }
 
-// clarifySlide values were verified against the actual slide content (not
-// just titles) in ts-theory-slides/ — e.g. "AR/MA identification" points to
-// slide 22 ("Summary of the Behaviors of ACF and PACF", the exact
-// decay-vs-cutoff table the checkpoint question tests), not just the
-// nearest-sounding title.
-const THEORY_URL = "https://christinecheong.com/time-series-theory";
+// clarifyMod values are data-mod keys on the clean-panel theory companion
+// (public/time-series-theory-clean-panel.html) — the page's hash-routing
+// reads the raw key (e.g. "#s2", not "#mod-s2"), see that file's IIFE at the
+// bottom. Each topic is mapped to whichever module's content actually covers
+// it (verified against each module's subcards, not just its title) —
+// "Seasonal differencing" → s2 ("Why stationarity matters", which has an
+// explicit Seasonal differencing subcard), "Model evaluation (MAPE)" → s4
+// ("How do we judge a forecast?", the only module covering forecast-error
+// metrics — ARIMAX has no separate evaluation module of its own).
+const CLEAN_PANEL_URL = "https://christinecheong.com/time-series-theory-clean-panel";
 const CANVAS_WORKSHOP_URL = "https://canvas.nus.edu.sg/courses/98514/files/folder/Day%204%20Time%20Series%20Forecasting/Workshop";
 
 const TOPIC_LINKS = {
   2: {
-    "Differencing (d)": { clarifySlide: 10, clarifyLabel: "Achieving Stationarity — Differencing (slide 10)", exercise: "Workshop 1A — Airline passengers" },
-    "AR/MA identification": { clarifySlide: 22, clarifyLabel: "ACF/PACF Decay vs Cutoff Summary (slide 22)", exercise: "Workshop 1A — Airline passengers" },
-    "Seasonal period (s)": { clarifySlide: 23, clarifyLabel: "Seasonality and ARIMA Models (slide 23)", exercise: "Workshop 1B — Hotel occupancy" },
-    "Seasonal differencing": { clarifySlide: 24, clarifyLabel: "Seasonal Differencing Example (slide 24)", exercise: "Workshop 1B — Hotel occupancy" },
-    "Model selection (AIC/BIC)": { clarifySlide: 31, clarifyLabel: "Model Selection Criteria (slide 31)", exercise: "Workshop 1A — Airline passengers" },
-    "Residual diagnostics": { clarifySlide: 30, clarifyLabel: "Residuals — Portmanteau Test (slide 30)", exercise: "Workshop 1B — Hotel occupancy" },
+    "Differencing (d)": { clarifyMod: "s2", clarifyLabel: "Why Stationarity Matters — Differencing", exercise: "Workshop 1A — Airline passengers" },
+    "AR/MA identification": { clarifyMod: "s3", clarifyLabel: "From ARIMA to SARIMA — AR/MA Components", exercise: "Workshop 1A — Airline passengers" },
+    "Seasonal period (s)": { clarifyMod: "s3", clarifyLabel: "From ARIMA to SARIMA — Seasonal (P,D,Q)", exercise: "Workshop 1B — Hotel occupancy" },
+    "Seasonal differencing": { clarifyMod: "s2", clarifyLabel: "Why Stationarity Matters — Seasonal Differencing", exercise: "Workshop 1B — Hotel occupancy" },
+    "Model selection (AIC/BIC)": { clarifyMod: "s4", clarifyLabel: "How Do We Judge a Forecast — Model Comparison", exercise: "Workshop 1A — Airline passengers" },
+    "Residual diagnostics": { clarifyMod: "s4", clarifyLabel: "How Do We Judge a Forecast — Residual Diagnostics", exercise: "Workshop 1B — Hotel occupancy" },
   },
   3: {
-    "ARIMA vs ARIMAX": { clarifySlide: 33, clarifyLabel: "Introduction to ARIMAX (slide 33)", exercise: "Workshop 2 — Sales and advertising" },
-    "Identifying X and Y": { clarifySlide: 34, clarifyLabel: "Advertising → Sales X/Y Example (slide 34)", exercise: "Workshop 3 — Platform sales" },
-    "Lagged exogenous effects": { clarifySlide: 37, clarifyLabel: "Lagged Relationship Examples (slide 37)", exercise: "Workshop 3 — Platform sales" },
-    "Model evaluation (MAPE)": { clarifySlide: 42, clarifyLabel: "ARIMAX Estimation & MAPE (slide 42)", exercise: "Workshop 2 — Sales and advertising" },
-    "Overfitting / lag selection": { clarifySlide: 42, clarifyLabel: "ARIMAX Lag Coefficients (slide 42)", exercise: "Workshop 3 — Platform sales" },
+    "ARIMA vs ARIMAX": { clarifyMod: "a4", clarifyLabel: "ARIMA/SARIMA vs ARIMAX", exercise: "Workshop 2 — Sales and advertising" },
+    "Identifying X and Y": { clarifyMod: "a2", clarifyLabel: "External Variables", exercise: "Workshop 3 — Platform sales" },
+    "Lagged exogenous effects": { clarifyMod: "a3", clarifyLabel: "Current vs Lagged Variables", exercise: "Workshop 3 — Platform sales" },
+    "Model evaluation (MAPE)": { clarifyMod: "s4", clarifyLabel: "How Do We Judge a Forecast — Forecast Errors", exercise: "Workshop 2 — Sales and advertising" },
+    "Overfitting / lag selection": { clarifyMod: "a3", clarifyLabel: "Current vs Lagged Variables — Lag Selection", exercise: "Workshop 3 — Platform sales" },
   },
 };
 
@@ -191,7 +195,7 @@ function buildMoveLinksBlock(moves) {
 // builds a reference list from these, since linkifyReport still scans for
 // them appearing unlinked anywhere in the output.
 const GENERAL_RESOURCE_LINKS = {
-  Theory: { url: THEORY_URL, label: "Time Series Theory Companion" },
+  Theory: { url: CLEAN_PANEL_URL, label: "Time Series Theory Companion" },
   Workshop: { url: CANVAS_WORKSHOP_URL, label: "Canvas Workshop Folder" },
   AgentsHub: { url: "https://christinecheong.com/agents-hub/", label: "AI Agents Hub" },
 };
@@ -212,7 +216,7 @@ function mergedTopicLinks(stage) {
 
 function buildTopicLinksBlock(topics) {
   return Object.entries(topics)
-    .map(([topic, l]) => `- "${topic}" — CLARIFY link: ${THEORY_URL}#slide-${l.clarifySlide} (link text must be exactly "${l.clarifyLabel}") | APPLY link: ${CANVAS_WORKSHOP_URL} (link text must name "${l.exercise}")`)
+    .map(([topic, l]) => `- "${topic}" — CLARIFY link: ${CLEAN_PANEL_URL}#${l.clarifyMod} (link text must be exactly "${l.clarifyLabel}") | APPLY link: ${CANVAS_WORKSHOP_URL} (link text must name "${l.exercise}")`)
     .join("\n");
 }
 
@@ -221,6 +225,21 @@ function buildChallengeLinksBlock() {
     .map(([move, l]) => `- If you pick "${move}" → link: ${l.url} (link text must be "${l.label}")`)
     .join("\n");
 }
+
+// Picking criteria for the Critical Judgment bullet — without this, the
+// model defaults to "What-if scenario" / "Challenge assumptions" almost
+// every time (both resolve to the same AI Advisory Council link, so that
+// default reads as "no real variety" even across many reports). Tying each
+// option to a distinct kind of thing-worth-questioning makes the pick follow
+// from what the mastered topic actually is, rather than from which option
+// sounds most generically applicable.
+const CHALLENGE_PICKING_GUIDE = `Pick whichever CHALLENGE option below actually fits the mastered topic's nature — do not default to "What-if scenario" or "Challenge assumptions" out of habit; actively consider all 6 first:
+- Topic is a statistical/diagnostic result (a test, a metric, a coefficient) → "Independent data check" — get an independent read on the same evidence
+- Topic is a choice between two models/approaches → "What-if scenario" — explore how the choice would change under different conditions
+- Topic rests on a cause-and-effect claim the cohort hasn't actually verified → "Challenge assumptions" — question that claim directly
+- Topic risks the cohort solving the wrong problem, not just solving it imprecisely → "Reframe the problem"
+- Topic depends on outside context or information the cohort doesn't have yet → "Fill the evidence gap"
+- Topic has a real stakeholder trade-off (e.g. business vs. technical, short- vs long-term) → "Multiple perspectives"`;
 
 // The report's sole recommendations section (section 2, all 4 stages) —
 // exactly 3 levels (Understanding of Concepts / Interpretation & Application
@@ -260,6 +279,8 @@ ${buildMoveLinksBlock(APPLY_MOVES)}
 
 CHALLENGE options (pick one to deliver the critical-judgment question) — each runs live via an agent, use that agent link, not a micro-interventions.html link:
 ${buildChallengeLinksBlock()}
+
+${CHALLENGE_PICKING_GUIDE}
 
 > [One sentence of cohort evidence citing exact counts/percentages that justifies the 3 recommendations below]
 
@@ -311,7 +332,7 @@ function linkifyReport(text, stage) {
     new RegExp(`\\[[^\\]]*${escapeRegex(label)}[^\\]]*\\]\\([^)]*\\)`).test(text);
 
   for (const l of Object.values(topics)) {
-    const clarifyUrl = `${THEORY_URL}#slide-${l.clarifySlide}`;
+    const clarifyUrl = `${CLEAN_PANEL_URL}#${l.clarifyMod}`;
     if (text.includes(l.clarifyLabel) && !alreadyLinked(l.clarifyLabel)) {
       text = text.replace(l.clarifyLabel, `[${l.clarifyLabel}](${clarifyUrl})`);
     }
