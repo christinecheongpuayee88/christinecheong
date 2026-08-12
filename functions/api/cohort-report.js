@@ -139,20 +139,19 @@ const TOPIC_LINKS = {
   },
 };
 
-// Real, live tools — not placeholders. Every Challenge move has one.
-// "What-if scenario" and "Challenge assumptions" both reuse the AI Advisory
-// Council — a panel that can just as well argue "what if this assumption
-// changed" as "which assumption is weakest". The 3 added later push
-// judgement in a different direction each: question the framing itself
-// (Problem Hunter), name and chase down an unknown (Deep Research), or get
-// an independent second read on the evidence (Data Insight).
+// Real, live tools — not placeholders. Every Challenge move has one, and
+// each pushes judgement in a genuinely different direction: see the issue
+// from a different stakeholder's angle (Multiple Perspectives), chase down a
+// missing piece of context (Deep Research), get an independent read on the
+// same evidence (Data Insight), or step back and look at the wider system of
+// causes and effects around the topic (Systems Thinking, via Strategic
+// Signals — deliberately kept to these 4 distinct options, not a longer
+// list, so the model has to actually pick the best fit each time.
 const CHALLENGE_LINKS = {
-  "What-if scenario": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
   "Multiple perspectives": { url: "https://christinecheong.com/agents-hub/perspectives-agent.html", label: "Multiple Perspectives Agent" },
-  "Challenge assumptions": { url: "https://christinecheong.com/agents-hub/ai-council-agent.html", label: "AI Advisory Council" },
-  "Reframe the problem": { url: "https://christinecheong.com/agents-hub/problem-hunter-agent.html", label: "Problem Hunter Agent" },
   "Fill the evidence gap": { url: "https://christinecheong.com/agents-hub/deep-research-agent.html", label: "Deep Research Agent" },
   "Independent data check": { url: "https://christinecheong.com/agents-hub/data-insight-agent.html", label: "Data Insight Agent" },
+  "Systems thinking": { url: "https://christinecheong.com/agents-hub/strategic-signals-agent.html", label: "Strategic Signals Agent" },
 };
 
 // The micro-intervention library: each level's move/case-study set, each
@@ -227,19 +226,15 @@ function buildChallengeLinksBlock() {
 }
 
 // Picking criteria for the Critical Judgment bullet — without this, the
-// model defaults to "What-if scenario" / "Challenge assumptions" almost
-// every time (both resolve to the same AI Advisory Council link, so that
-// default reads as "no real variety" even across many reports). Tying each
-// option to a distinct kind of thing-worth-questioning makes the pick follow
-// from what the mastered topic actually is, rather than from which option
-// sounds most generically applicable.
-const CHALLENGE_PICKING_GUIDE = `Pick whichever CHALLENGE option below actually fits the mastered topic's nature — do not default to "What-if scenario" or "Challenge assumptions" out of habit; actively consider all 6 first:
+// model gravitates to whichever option sounds most generically applicable
+// instead of actually varying its pick. Tying each of the 4 options to a
+// distinct kind of thing-worth-questioning makes the pick follow from what
+// the mastered topic actually is.
+const CHALLENGE_PICKING_GUIDE = `Pick whichever CHALLENGE option below actually fits the mastered topic's nature — actively consider all 4 before picking, don't default to the same one every time:
 - Topic is a statistical/diagnostic result (a test, a metric, a coefficient) → "Independent data check" — get an independent read on the same evidence
-- Topic is a choice between two models/approaches → "What-if scenario" — explore how the choice would change under different conditions
-- Topic rests on a cause-and-effect claim the cohort hasn't actually verified → "Challenge assumptions" — question that claim directly
-- Topic risks the cohort solving the wrong problem, not just solving it imprecisely → "Reframe the problem"
+- Topic has a real stakeholder trade-off (e.g. business vs. technical, short- vs long-term) → "Multiple perspectives"
 - Topic depends on outside context or information the cohort doesn't have yet → "Fill the evidence gap"
-- Topic has a real stakeholder trade-off (e.g. business vs. technical, short- vs long-term) → "Multiple perspectives"`;
+- Topic sits inside a wider chain of causes and effects — changing it would ripple into other variables, feedback loops, or downstream decisions — → "Systems thinking"`;
 
 // The report's sole recommendations section (section 2, all 4 stages) —
 // exactly 3 levels (Understanding of Concepts / Interpretation & Application
