@@ -133,11 +133,6 @@
   .section-desc { font-size: 14px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
 
   .dash-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
-  .dash-expected { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
-  .dash-expected input {
-    width: 56px; font-family: inherit; font-size: 13.5px; padding: 6px 8px;
-    border: 1px solid var(--border); border-radius: var(--radius); text-align: center;
-  }
 
   .dash-box { display: none; margin-top: 18px; }
   .dash-box.show { display: block; }
@@ -219,9 +214,6 @@
         <button class="stage-btn" id="dash-btn-3" onclick="runDashboardStage(3)">3 · Checkpoint 2 (ARIMAX)</button>
         <button class="stage-btn" id="dash-btn-4" onclick="runDashboardStage(4)">4 · Final</button>
       </div>
-      <label class="dash-expected">Expected cohort size
-        <input type="number" id="dash-expected" min="1" placeholder="—">
-      </label>
     </div>
     <div class="report-status" id="dash-status"></div>
     <div class="dash-box" id="dash-box"></div>
@@ -358,12 +350,6 @@
     return html;
   }
 
-  const expectedInput = document.getElementById('dash-expected');
-  expectedInput.value = localStorage.getItem('dashExpectedCohortSize') || '';
-  expectedInput.addEventListener('change', () => {
-    if (expectedInput.value) localStorage.setItem('dashExpectedCohortSize', expectedInput.value);
-  });
-
   function barChart(rows) {
     return `<div class="bar-chart">${rows.map((r) => `<div class="bar-row"><div class="bar-label" title="${escapeHtml(r.label)}">${escapeHtml(r.label)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100, r.percent)}%"></div></div><div class="bar-value">${r.count} (${r.percent}%)</div></div>`).join('')}</div>`;
   }
@@ -472,9 +458,7 @@
     statusEl.textContent = 'Reading responses…';
     boxEl.classList.remove('show');
 
-    const expected = expectedInput.value ? `&expected=${encodeURIComponent(expectedInput.value)}` : '';
-
-    fetch(`/api/cohort-stats?stage=${stage}${expected}`)
+    fetch(`/api/cohort-stats?stage=${stage}`)
       .then((res) => res.json())
       .then((data) => {
         btn.disabled = false;
