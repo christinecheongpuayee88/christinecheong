@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Retail Banking Case — Instructor Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #ffffff;
+    --surface:  #f6f6f5;
+    --border:   #e8e8e6;
+    --text:     #181816;
+    --muted:    #6b6b67;
+    --subtle:   #9b9b96;
+    --good:     #059669;
+    --good-bg:  #d1fae5;
+    --bad:      #dc2626;
+    --bad-bg:   #fee2e2;
+    --amber:    #b45309;
+    --amber-bg: #fef3c7;
+    --info:     #2563eb;
+    --info-bg:  #dbeafe;
+    --radius:   3px;
+  }
+
+  html { font-size: 18px; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  h1, h2 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+
+  .wrap { max-width: 800px; margin: 0 auto; padding: 48px 24px 96px; }
+
+  .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; }
+  h1 { font-size: 28px; font-weight: 600; letter-spacing: -.02em; margin-bottom: 12px; }
+  .desc { font-size: 15px; color: var(--muted); max-width: 640px; line-height: 1.7; margin-bottom: 32px; }
+  .back-link { display: inline-block; font-size: 13px; color: var(--subtle); margin-bottom: 32px; }
+  .back-link:hover { color: var(--muted); }
+
+  .instructor-panel {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px; background: var(--surface);
+    display: flex; flex-direction: column; gap: 18px;
+  }
+
+  .section-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
+  .section-desc a { color: var(--info); text-decoration: underline; text-underline-offset: 2px; }
+
+  .rubric-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12.5px; }
+  .rubric-table th { text-align: left; font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+  .rubric-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  .rubric-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .table-scroll { overflow-x: auto; }
+
+  .upload-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .deck-url-input {
+    flex: 1 1 340px; font-family: inherit; font-size: 13.5px; color: var(--text);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 100px;
+    padding: 10px 16px;
+  }
+  .deck-url-input:focus { outline: none; border-color: var(--info); }
+  .deck-url-input::placeholder { color: var(--subtle); }
+
+  .stage-btn {
+    font-family: inherit; font-size: 13.5px; font-weight: 500;
+    color: var(--text); background: var(--bg); border: 1px solid var(--border);
+    padding: 10px 18px; border-radius: 100px; cursor: pointer; transition: all .15s;
+  }
+  .stage-btn:hover:not(:disabled) { border-color: var(--text); }
+  .stage-btn:disabled { opacity: .5; cursor: wait; }
+
+  .report-status { font-size: 13.5px; color: var(--subtle); }
+  .report-status.error { color: var(--bad); }
+
+  .report-box {
+    display: none; border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg); padding: 24px; font-size: 14.5px; line-height: 1.7;
+  }
+  .report-box.show { display: block; }
+  .report-box h2 { font-size: 18px; margin-bottom: 14px; }
+  .report-box h3 { font-size: 15px; margin: 16px 0 8px; }
+  .report-box p { margin-bottom: 10px; }
+  .report-box ul, .report-box ol { margin-left: 20px; margin-bottom: 8px; }
+  .report-box a { color: #2563eb; text-decoration: underline; text-underline-offset: 2px; }
+  .report-box a:hover { color: #1d4ed8; }
+
+  .summary-heading { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--subtle); margin: 20px 0 10px; }
+  .summary-heading:first-child { margin-top: 0; }
+
+  .score-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .score-table th { text-align: left; font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .score-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .score-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .score-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 100px; font-size: 11.5px; font-weight: 700; }
+  .score-pill.level-1 { background: var(--bad-bg); color: var(--bad); }
+  .score-pill.level-2 { background: var(--amber-bg); color: var(--amber); }
+  .score-pill.level-3 { background: var(--good-bg); color: var(--good); }
+  .score-evidence { font-size: 11.5px; color: var(--subtle); margin-top: 3px; max-width: 260px; }
+</style>
+</head>
+<body>
+<!-- ═══ PASSWORD GATE (injected) ═══ -->
+<div id="pw-gate" style="position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#FAFAF8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <div style="width:100%;max-width:360px;padding:48px 32px;text-align:center;box-sizing:border-box;">
+    <p style="font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#2D5BE3;margin:0 0 8px;">Restricted Access</p>
+    <h2 style="font-size:26px;margin:8px 0 32px;font-weight:600;color:#1C1917;">Enter password to continue</h2>
+    <form id="pw-gate-form" autocomplete="off" style="display:flex;flex-direction:column;gap:12px;">
+      <input type="password" id="pw-gate-input" placeholder="Password" autocomplete="off" autofocus
+        style="width:100%;box-sizing:border-box;padding:12px 16px;font-size:17px;border:1.5px solid #E7E5E0;border-radius:4px;text-align:center;letter-spacing:.1em;" />
+      <button type="submit" style="width:100%;padding:14px 28px;font-size:17px;font-weight:600;border:none;border-radius:4px;background:#2D5BE3;color:#fff;cursor:pointer;">Enter</button>
+    </form>
+    <p id="pw-gate-error" hidden style="margin-top:16px;font-size:14px;color:#B3261E;">Incorrect password. Try again.</p>
+  </div>
+</div>
+<script>
+(function () {
+  var PASSWORD = "8888";
+  var gate = document.getElementById("pw-gate");
+  var form = document.getElementById("pw-gate-form");
+  var input = document.getElementById("pw-gate-input");
+  var error = document.getElementById("pw-gate-error");
+
+  if (sessionStorage.getItem("cc_site_unlocked") === "1") {
+    gate.style.display = "none";
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (input.value === PASSWORD) {
+      sessionStorage.setItem("cc_site_unlocked", "1");
+      gate.style.display = "none";
+    } else {
+      error.hidden = false;
+      input.value = "";
+      input.focus();
+    }
+  });
+})();
+</script>
+
+<div class="wrap">
+  <a class="back-link" href="/decision-intelligence/diai-day2-final-companion.html">← Back to the course companion</a>
+  <p class="eyebrow">Decision Intelligence with AI · Day 2 · Instructor Tools</p>
+  <h1>Retail Banking Case — Group Assignment</h1>
+  <p class="desc">
+    Paste a link to any Google Slides/Drive deck below — e.g. the <a href="https://docs.google.com/presentation/d/1fXKa02k4JAPy8bymaCEQ4hkU1KqbhdVG/edit" target="_blank" rel="noopener">sample-answers deck ↗</a>
+    for testing, or the real <a href="https://docs.google.com/presentation/d/1yz6kVLdIjgeybPX_llnKy2Q4Kd78lOkE/edit" target="_blank" rel="noopener">Group Collaborative Space deck ↗</a>
+    once groups have submitted. Leave it blank to use the sample-answers deck by default. Splits the deck by group and scores each group's shared work against the 4-item rubric below. AI suggestions only — review and finalize yourself.
+  </p>
+
+  <div class="instructor-panel">
+    <div class="table-scroll">
+      <table class="rubric-table">
+        <tr><th>Dimension</th><th>1 — Developing</th><th>2 — Competent</th><th>3 — Strong</th></tr>
+        <tr>
+          <td>Problem Framing</td>
+          <td>States a vague restatement of the case without a clear Problem, Decision, or Gaps, or conflates the finding with the decision</td>
+          <td>Clearly states the Problem, the Decision the analysis should support, and at least one genuine Gap</td>
+          <td>All three are clear and specific enough to rule out a different valid framing — the Decision names a concrete choice, not just "investigate further"</td>
+        </tr>
+        <tr>
+          <td>Information Partner</td>
+          <td>Evidence is asserted without supporting numbers, or numbers are copied without synthesis (a data dump, not a summary)</td>
+          <td>Evidence is organised into clear findings with relevant numbers/percentages, staying descriptive — no causes or hypotheses smuggled in</td>
+          <td>Findings are organised and the group explicitly separates what the data shows from what it might mean — evidence stays evidence</td>
+        </tr>
+        <tr>
+          <td>Thinking Partner</td>
+          <td>Only one explanation is offered, or the AI-broadened alternative is never engaged with</td>
+          <td>At least two plausible explanations are considered, with a stated reason why one is better supported by the evidence</td>
+          <td>The chosen explanation explicitly survives a real challenge — an alternative or assumption was tested, and the group can say why it was weakened</td>
+        </tr>
+        <tr>
+          <td>Decision-Support Partner</td>
+          <td>A recommendation is given with no confidence level, or perspectives are listed without connecting them to it</td>
+          <td>At least one stakeholder perspective stress-tests the finding, and a recommendation with a stated confidence level is given</td>
+          <td>Multiple perspectives are weighed against each other, a genuine blind spot or trade-off is surfaced, and confidence is justified by naming what evidence would change it</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="upload-row">
+      <input type="text" class="deck-url-input" id="deck-url" placeholder="Paste a Google Slides/Drive link (blank = sample-answers deck)">
+      <button class="stage-btn" id="group-grade-btn" onclick="runGroupAssignment()">Analyze group deck</button>
+    </div>
+    <div class="report-status" id="group-status"></div>
+    <div class="report-box" id="group-box"></div>
+  </div>
+</div>
+
+<script>
+  const GROUP_RUBRIC_DIMENSIONS = [
+    { id: 'problemFraming', label: 'Problem Framing' },
+    { id: 'informationPartner', label: 'Information Partner' },
+    { id: 'thinkingPartner', label: 'Thinking Partner' },
+    { id: 'decisionSupportPartner', label: 'Decision-Support Partner' },
+  ];
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function inlineFormat(s) {
+    s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    return s;
+  }
+
+  function formatReport(text) {
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
+      if (line.startsWith('## ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<h2>${inlineFormat(line.slice(3))}</h2>`;
+      } else if (line.startsWith('### ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<h3>${inlineFormat(line.slice(4))}</h3>`;
+      } else if (line.startsWith('* ') || line.startsWith('- ')) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += `<li>${inlineFormat(line.slice(2))}</li>`;
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<p>${inlineFormat(line)}</p>`;
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  function runGroupAssignment() {
+    const btn = document.getElementById('group-grade-btn');
+    const statusEl = document.getElementById('group-status');
+    const boxEl = document.getElementById('group-box');
+
+    btn.disabled = true;
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Reading the slide deck and grading each group — this runs one AI call, so it can take a moment…';
+    boxEl.classList.remove('show');
+
+    const driveUrl = document.getElementById('deck-url').value.trim();
+
+    fetch('/api/grade-di-group-assignment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(driveUrl ? { driveUrl } : {}),
+    })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        btn.disabled = false;
+        if (!ok || data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error || 'grading failed'}`;
+          return;
+        }
+        statusEl.textContent = `Graded ${data.groupCount} group(s) from the shared deck.`;
+        boxEl.innerHTML = renderGroupResults(data);
+        boxEl.classList.add('show');
+      })
+      .catch((err) => {
+        btn.disabled = false;
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
+  }
+
+  function renderGroupResults(data) {
+    let html = '';
+
+    if (data.cohortSynthesis) {
+      html += `<p class="summary-heading">Cohort synthesis</p>`;
+      html += formatReport(data.cohortSynthesis);
+    }
+
+    if (data.groups && data.groups.length) {
+      html += `<p class="summary-heading">Per-group scores</p>`;
+      const rows = data.groups.map((g) => {
+        const cells = GROUP_RUBRIC_DIMENSIONS.map((d) => {
+          const score = g.scores && g.scores[d.id];
+          const evidence = (g.evidence && g.evidence[d.id]) || '';
+          return `<td><span class="score-pill level-${score}">${score}</span><div class="score-evidence">${escapeHtml(evidence)}</div></td>`;
+        }).join('');
+        return `<tr><td>${escapeHtml(g.label || '')}</td>${cells}</tr>`;
+      }).join('');
+      html += `<table class="score-table"><tr><th>Group</th><th>Problem Framing</th><th>Information Partner</th><th>Thinking Partner</th><th>Decision-Support Partner</th></tr>${rows}</table>`;
+    }
+
+    return html;
+  }
+</script>
+
+</body>
+</html>
