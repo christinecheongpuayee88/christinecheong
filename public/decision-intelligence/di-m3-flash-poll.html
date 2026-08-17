@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Module 3 Flash Poll</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box; margin:0; padding:0;}
+  :root{
+    --navy:#0b1f3a; --blue:#1d5fa7; --ink:#18304d; --muted:#60728b;
+    --line:#d9e3ec; --soft:#eef2f7; --good:#0b8d95; --goodpale:#eaf7f6;
+  }
+  html{font-size:17px;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    color:var(--ink); background:#fff; -webkit-font-smoothing:antialiased; line-height:1.5;
+    min-height:100vh; display:flex; justify-content:center;
+  }
+  .wrap{max-width:460px; width:100%; margin:0 auto; padding:28px 18px 60px;}
+  .eyebrow{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--blue); margin-bottom:6px; text-align:center;}
+  h1{font-size:21px; font-weight:800; color:var(--navy); margin-bottom:6px; text-align:center;}
+  .sub{font-size:13.5px; color:var(--muted); text-align:center; margin-bottom:24px;}
+
+  .q-card{border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:16px; background:#fff;}
+  .q-num{font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
+  .q-text{font-size:14.5px; font-weight:700; color:var(--ink); margin-bottom:12px; line-height:1.4;}
+
+  .opt{
+    display:flex; align-items:flex-start; gap:10px; border:1.5px solid var(--line); border-radius:8px;
+    padding:10px 12px; margin-bottom:8px; cursor:pointer; transition:border-color .12s, background .12s;
+    font-size:13.5px; color:var(--ink);
+  }
+  .opt:last-child{margin-bottom:0;}
+  .opt:hover{border-color:var(--blue);}
+  .opt.selected{border-color:var(--blue); background:#eaf3fc;}
+  .opt .letter{
+    flex:none; width:22px; height:22px; border-radius:50%; border:1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--muted);
+  }
+  .opt.selected .letter{border-color:var(--blue); background:var(--blue); color:#fff;}
+
+  .submit-row{margin-top:8px;}
+  button#submitBtn{
+    width:100%; padding:14px 20px; border:none; border-radius:999px; cursor:pointer;
+    background:linear-gradient(90deg,var(--navy),var(--blue)); color:#fff; font-size:15px; font-weight:700;
+  }
+  button#submitBtn:disabled{opacity:.4; cursor:not-allowed;}
+  .status{font-size:13px; color:var(--muted); margin-top:12px; text-align:center;}
+  .status.error{color:#b3261e;}
+
+  .done-card{
+    border:1px solid var(--line); border-radius:10px; background:var(--goodpale); padding:28px 20px; text-align:center;
+  }
+  .done-card .check{font-size:34px; margin-bottom:10px;}
+  .done-card h2{font-size:18px; color:var(--navy); margin-bottom:6px;}
+  .done-card p{font-size:13.5px; color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Module 3 Checkpoint · Flash Poll</p>
+  <h1>Quick Recap: Grounding, Evidence &amp; Tools</h1>
+  <p class="sub">5 quick questions — tap an answer for each, then submit.</p>
+
+  <div id="quiz"></div>
+
+  <div class="submit-row">
+    <button id="submitBtn" disabled>Submit answers</button>
+  </div>
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+  var QUESTIONS = [
+    {
+      text: "Why is grounded AI generally preferred over ungrounded AI for decision work?",
+      options: {
+        A: "It responds faster",
+        B: "It uses supplied sources, documents, data or search results — though it still requires verification",
+        C: "It never makes mistakes",
+        D: "It removes the need for human oversight"
+      }
+    },
+    {
+      text: "Which pairing of evidence category and example is correct?",
+      options: {
+        A: "Internal data → performance, transactions, operations",
+        B: "External signals → customer feedback and complaints",
+        C: "Policies & reports → competitor benchmarks",
+        D: "Customer evidence → market research"
+      }
+    },
+    {
+      text: "Which is the right tool for judging the business significance of a finding?",
+      options: {
+        A: "LLM / document workspace",
+        B: "Spreadsheet / calculator / code",
+        C: "Web search / Deep Research",
+        D: "Human decision-maker"
+      }
+    },
+    {
+      text: "What's the key distinction between Internal Evidence and External Context?",
+      options: {
+        A: "Internal evidence shows what's happening inside your organization; external context shows what's happening in the market",
+        B: "Internal evidence is always more accurate than external context",
+        C: "External context replaces the need for internal evidence",
+        D: "They answer the same question in different formats"
+      }
+    },
+    {
+      text: "What's needed to confirm an external trend actually explains what happened in your organization?",
+      options: {
+        A: "Nothing — the external trend is proof enough",
+        B: "A competitor's press release",
+        C: "Internal evidence showing the same pattern in your own data",
+        D: "A larger sample of external sources"
+      }
+    }
+  ];
+
+  var answers = {};
+  var quizEl = document.getElementById("quiz");
+  var submitBtn = document.getElementById("submitBtn");
+  var statusEl = document.getElementById("status");
+
+  QUESTIONS.forEach(function (q, idx) {
+    var qNum = idx + 1;
+    var card = document.createElement("div");
+    card.className = "q-card";
+
+    var numEl = document.createElement("div");
+    numEl.className = "q-num";
+    numEl.textContent = "Question " + qNum + " of " + QUESTIONS.length;
+    card.appendChild(numEl);
+
+    var textEl = document.createElement("div");
+    textEl.className = "q-text";
+    textEl.textContent = q.text;
+    card.appendChild(textEl);
+
+    Object.keys(q.options).forEach(function (letter) {
+      var opt = document.createElement("div");
+      opt.className = "opt";
+      opt.dataset.q = qNum;
+      opt.dataset.letter = letter;
+
+      var letterEl = document.createElement("div");
+      letterEl.className = "letter";
+      letterEl.textContent = letter;
+      opt.appendChild(letterEl);
+
+      var labelEl = document.createElement("div");
+      labelEl.textContent = q.options[letter];
+      opt.appendChild(labelEl);
+
+      opt.addEventListener("click", function () {
+        answers[qNum] = letter;
+        var siblings = card.querySelectorAll(".opt");
+        siblings.forEach(function (s) { s.classList.remove("selected"); });
+        opt.classList.add("selected");
+        updateSubmitState();
+      });
+
+      card.appendChild(opt);
+    });
+
+    quizEl.appendChild(card);
+  });
+
+  function updateSubmitState() {
+    var answeredCount = Object.keys(answers).length;
+    submitBtn.disabled = answeredCount < QUESTIONS.length;
+  }
+
+  submitBtn.addEventListener("click", function () {
+    submitBtn.disabled = true;
+    statusEl.textContent = "Submitting…";
+    statusEl.className = "status";
+
+    fetch("/api/di-flash-poll", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "submit-vote", answers: answers })
+    })
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        if (!result.ok) throw new Error(result.data.error || "Failed to submit");
+        document.querySelector(".wrap").innerHTML =
+          '<div class="done-card">' +
+            '<div class="check">✅</div>' +
+            '<h2>Thanks — your answers are in!</h2>' +
+            '<p>Your instructor will show the class results shortly.</p>' +
+          '</div>';
+      })
+      .catch(function (err) {
+        statusEl.textContent = err.message;
+        statusEl.className = "status error";
+        submitBtn.disabled = false;
+      });
+  });
+</script>
+</body>
+</html>
