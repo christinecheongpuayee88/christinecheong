@@ -5,24 +5,45 @@ const CORS = {
   "Content-Type": "application/json",
 };
 
-// Response sheet linked from the real Google Form (Responses tab -> Link to
-// Sheets) at https://docs.google.com/forms/d/e/1FAIpQLSfFgQg2XnezYIVH4k126WY8f_eojHj9Holrqfl0NSwKoR4AUw/viewform
-// A native Google-Form-linked sheet always names its tab "Form Responses 1".
-// This sheet must be shared (Editor) with the service account before this
-// endpoint can read it.
-const SHEET_ID = "1m6JpE3AIB_KfL1eHsOocqLTld1_6sMdw8RlF7xSRouA";
 const TAB_NAME = "Form Responses 1";
 const FORM_RANGE = `'${TAB_NAME}'!A1:Z1000`;
 
+// Response sheets linked from the real Google Forms (Responses tab -> Link to
+// Sheets). A native Google-Form-linked sheet always names its tab "Form
+// Responses 1". Each sheet must be shared (Editor) with the service account
+// before this endpoint can read it.
+const SHEETS = {
+  1: {
+    id: "1Tv3CQVM7XBMm5d1DHeMq8-hiZM5zwcmf7n3fsCqzZ4o",
+    label: "Basic Quiz (Sections 3–4)",
+    formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSffppB2Qcaggz8rhJsL0c_1ePCMbpZ6FacaWlinUhROep3ECA/viewform",
+  },
+  2: {
+    id: "1m6JpE3AIB_KfL1eHsOocqLTld1_6sMdw8RlF7xSRouA",
+    label: "Basic Quiz (Sections 5–6)",
+    formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfFgQg2XnezYIVH4k126WY8f_eojHj9Holrqfl0NSwKoR4AUw/viewform",
+  },
+};
+
 // headerPrefix must match the start of each question's exact text in the
-// live Google Form above — keep these in sync if the form questions change.
-const QUESTIONS = [
-  { headerPrefix: "Q1. What is AI particularly useful for during brainstorming", topic: "AI's role in brainstorming", correct: "Generating numerous possible options" },
-  { headerPrefix: "Q2. What is the brainstorming recipe presented in Section 5", topic: "Brainstorming recipe", correct: "Context, options and iteration" },
-  { headerPrefix: "Q3. What should learners do before asking AI to generate explanations", topic: "Explaining before AI does", correct: "Write two or three explanations themselves" },
-  { headerPrefix: "Q4. What is AI sycophancy", topic: "AI sycophancy", correct: "AI agreeing with the user's stated preference" },
-  { headerPrefix: "Q5. Which statement captures the Thinking Partner takeaway", topic: "Thinking Partner takeaway", correct: "AI broadens and tests; humans judge what is supported" },
-];
+// matching live Google Form above — keep these in sync if the form
+// questions change.
+const QUESTIONS = {
+  1: [
+    { headerPrefix: "Q1. What does context mean when working with an LLM", topic: "Context in LLMs", correct: "Everything the LLM can access when answering" },
+    { headerPrefix: "Q2. What is the fastest way to give an LLM direct context from a business report", topic: "Giving an LLM direct context", correct: "Upload the report" },
+    { headerPrefix: "Q3. Which tool is most suitable for an exact numerical calculation", topic: "Choosing the right tool", correct: "Spreadsheet, calculator or code" },
+    { headerPrefix: "Q4. What three elements are used to frame a problem in Section 4", topic: "Framing a problem", correct: "Problem, Decision and Gaps" },
+    { headerPrefix: "Q5. What is the primary role of AI as an evidence organiser", topic: "AI as evidence organiser", correct: "Summarize and structure supplied evidence" },
+  ],
+  2: [
+    { headerPrefix: "Q1. What is AI particularly useful for during brainstorming", topic: "AI's role in brainstorming", correct: "Generating numerous possible options" },
+    { headerPrefix: "Q2. What is the brainstorming recipe presented in Section 5", topic: "Brainstorming recipe", correct: "Context, options and iteration" },
+    { headerPrefix: "Q3. What should learners do before asking AI to generate explanations", topic: "Explaining before AI does", correct: "Write two or three explanations themselves" },
+    { headerPrefix: "Q4. What is AI sycophancy", topic: "AI sycophancy", correct: "AI agreeing with the user's stated preference" },
+    { headerPrefix: "Q5. Which statement captures the Thinking Partner takeaway", topic: "Thinking Partner takeaway", correct: "AI broadens and tests; humans judge what is supported" },
+  ],
+};
 
 function b64url(bytes) {
   const str = typeof bytes === "string" ? bytes : String.fromCharCode(...new Uint8Array(bytes));
@@ -96,11 +117,11 @@ function findColumnIndex(headers, predicate) {
   return headers.findIndex(predicate);
 }
 
-function computeAccuracyStats(values) {
+function computeAccuracyStats(values, questionDefs) {
   const [headers, ...rows] = values.length ? values : [[]];
   if (!rows.length) return { responseCount: 0, accuracy: null };
 
-  const resolved = QUESTIONS.map((q) => ({
+  const resolved = questionDefs.map((q) => ({
     ...q,
     colIdx: findColumnIndex(headers, (h) => (h || "").startsWith(q.headerPrefix)),
     correctNorm: normalize(q.correct),
@@ -176,13 +197,20 @@ export async function onRequestGet(context) {
       });
     }
 
-    const accessToken = await getGoogleAccessToken(serviceAccountKey);
-    const values = await readSheetValues(accessToken, SHEET_ID, FORM_RANGE);
+    const url = new URL(context.request.url);
+    const stage = Number(url.searchParams.get("stage")) || 1;
+    if (!SHEETS[stage]) {
+      return new Response(JSON.stringify({ error: "stage must be 1 or 2" }), { status: 400, headers: CORS });
+    }
 
-    const stats = computeAccuracyStats(values);
+    const accessToken = await getGoogleAccessToken(serviceAccountKey);
+    const { id: sheetId, label: stageLabel } = SHEETS[stage];
+    const values = await readSheetValues(accessToken, sheetId, FORM_RANGE);
+
+    const stats = computeAccuracyStats(values, QUESTIONS[stage]);
 
     const result = {
-      stageLabel: "Basic Quiz (Sections 5–6)",
+      stageLabel,
       responseCount: stats.responseCount,
       accuracy: stats.accuracy,
       readiness: stats.accuracy ? readinessFromPercent(stats.accuracy.meanPercent) : null,

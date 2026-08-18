@@ -196,15 +196,18 @@
   <h1>Instructor Tools</h1>
 
   <div class="sheet-links">
-    <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1m6JpE3AIB_KfL1eHsOocqLTld1_6sMdw8RlF7xSRouA/edit" target="_blank" rel="noopener">📄 Basic Quiz sheet ↗</a>
-    <a class="sheet-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfFgQg2XnezYIVH4k126WY8f_eojHj9Holrqfl0NSwKoR4AUw/viewform" target="_blank" rel="noopener">🔗 Student quiz — Google Form ↗</a>
+    <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1Tv3CQVM7XBMm5d1DHeMq8-hiZM5zwcmf7n3fsCqzZ4o/edit" target="_blank" rel="noopener">📄 Sections 3–4 sheet ↗</a>
+    <a class="sheet-link" href="https://docs.google.com/forms/d/e/1FAIpQLSffppB2Qcaggz8rhJsL0c_1ePCMbpZ6FacaWlinUhROep3ECA/viewform" target="_blank" rel="noopener">🔗 Sections 3–4 — Google Form ↗</a>
+    <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1m6JpE3AIB_KfL1eHsOocqLTld1_6sMdw8RlF7xSRouA/edit" target="_blank" rel="noopener">📄 Sections 5–6 sheet ↗</a>
+    <a class="sheet-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfFgQg2XnezYIVH4k126WY8f_eojHj9Holrqfl0NSwKoR4AUw/viewform" target="_blank" rel="noopener">🔗 Sections 5–6 — Google Form ↗</a>
   </div>
 
   <p class="section-title">Live cohort dashboard</p>
-  <p class="desc" style="margin-bottom:16px;">Instant stats computed directly from responses to the Sections 5–6 Basic Quiz. Refresh anytime during class.</p>
+  <p class="desc" style="margin-bottom:16px;">Instant stats computed directly from responses to the Basic Quizzes. Refresh anytime during class.</p>
   <div class="instructor-panel">
     <div class="upload-row">
-      <button class="stage-btn" id="quiz-dash-btn" onclick="runQuizDashboard()">Basic Quiz (Sections 5–6)</button>
+      <button class="stage-btn" id="quiz-dash-btn-1" onclick="runQuizDashboard(1)">Basic Quiz (Sections 3–4)</button>
+      <button class="stage-btn" id="quiz-dash-btn-2" onclick="runQuizDashboard(2)">Basic Quiz (Sections 5–6)</button>
     </div>
     <div class="report-status" id="quiz-dash-status"></div>
     <div class="dash-box" id="quiz-dash-box"></div>
@@ -306,8 +309,8 @@
     return html;
   }
 
-  function runQuizDashboard() {
-    const btn = document.getElementById('quiz-dash-btn');
+  function runQuizDashboard(stage) {
+    const btn = document.getElementById(`quiz-dash-btn-${stage}`);
     const statusEl = document.getElementById('quiz-dash-status');
     const boxEl = document.getElementById('quiz-dash-box');
 
@@ -316,7 +319,7 @@
     statusEl.textContent = 'Reading responses…';
     boxEl.classList.remove('show');
 
-    fetch('/api/di-am-quiz-stats')
+    fetch(`/api/di-am-quiz-stats?stage=${stage}`)
       .then((res) => res.json())
       .then((data) => {
         btn.disabled = false;
