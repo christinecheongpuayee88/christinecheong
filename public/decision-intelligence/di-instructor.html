@@ -110,6 +110,44 @@
   .score-pill.level-2 { background: var(--amber-bg); color: var(--amber); }
   .score-pill.level-3 { background: var(--good-bg); color: var(--good); }
   .score-evidence { font-size: 11.5px; color: var(--subtle); margin-top: 3px; max-width: 260px; }
+
+  .section-title { font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin: 44px 0 6px; }
+  .sheet-links { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .sheet-link {
+    font-size: 12.5px; font-weight: 500; color: var(--muted); background: var(--surface);
+    border: 1px solid var(--border); padding: 6px 14px; border-radius: 100px; transition: all .15s;
+  }
+  .sheet-link:hover { border-color: var(--text); color: var(--text); }
+
+  .dash-box { display: none; margin-top: 18px; }
+  .dash-box.show { display: block; }
+
+  .readiness-badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 100px;
+    font-size: 13.5px; font-weight: 600; margin-bottom: 18px;
+  }
+  .readiness-badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; }
+  .readiness-green { background: var(--good-bg); color: var(--good); }
+  .readiness-green::before { background: var(--good); }
+  .readiness-amber { background: var(--amber-bg); color: var(--amber); }
+  .readiness-amber::before { background: var(--amber); }
+  .readiness-red { background: var(--bad-bg); color: var(--bad); }
+  .readiness-red::before { background: var(--bad); }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-tile { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; background: var(--surface); }
+  .stat-tile .stat-value { font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
+  .stat-tile .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+  .concept-list { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .concept-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg);
+  }
+  .concept-row:last-child { border-bottom: none; }
+  .concept-topic { font-size: 13.5px; font-weight: 500; }
+  .concept-misconception { font-size: 12px; color: var(--subtle); margin-top: 2px; }
+  .concept-percent { font-size: 15px; font-weight: 600; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -154,9 +192,26 @@
 
 <div class="wrap">
   <a class="back-link" href="/decision-intelligence/diai-day2-final-companion.html">← Back to the course companion</a>
-  <p class="eyebrow">Decision Intelligence with AI · Day 2 · Instructor Tools</p>
-  <h1>Retail Banking Case — Group Assignment</h1>
-  <p class="desc">
+  <p class="eyebrow">Decision Intelligence with AI · Instructor Tools</p>
+  <h1>Instructor Tools</h1>
+
+  <div class="sheet-links">
+    <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1m6JpE3AIB_KfL1eHsOocqLTld1_6sMdw8RlF7xSRouA/edit" target="_blank" rel="noopener">📄 Basic Quiz sheet ↗</a>
+    <a class="sheet-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfFgQg2XnezYIVH4k126WY8f_eojHj9Holrqfl0NSwKoR4AUw/viewform" target="_blank" rel="noopener">🔗 Student quiz — Google Form ↗</a>
+  </div>
+
+  <p class="section-title">Live cohort dashboard</p>
+  <p class="desc" style="margin-bottom:16px;">Instant stats computed directly from responses to the Sections 5–6 Basic Quiz. Refresh anytime during class.</p>
+  <div class="instructor-panel">
+    <div class="upload-row">
+      <button class="stage-btn" id="quiz-dash-btn" onclick="runQuizDashboard()">Basic Quiz (Sections 5–6)</button>
+    </div>
+    <div class="report-status" id="quiz-dash-status"></div>
+    <div class="dash-box" id="quiz-dash-box"></div>
+  </div>
+
+  <p class="section-title">Retail Banking Case — Group Assignment</p>
+  <p class="desc" style="margin-bottom:16px;">
     Paste a link to any Google Slides/Drive deck below — e.g. the <a href="https://docs.google.com/presentation/d/1fXKa02k4JAPy8bymaCEQ4hkU1KqbhdVG/edit" target="_blank" rel="noopener">sample-answers deck ↗</a>
     for testing, or the real <a href="https://docs.google.com/presentation/d/1yz6kVLdIjgeybPX_llnKy2Q4Kd78lOkE/edit" target="_blank" rel="noopener">Group Collaborative Space deck ↗</a>
     once groups have submitted. Leave it blank to use the sample-answers deck by default. Splits the deck by group and scores each group's shared work against the 4-item rubric below. AI suggestions only — review and finalize yourself.
@@ -212,6 +267,73 @@
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function statTile(value, label) {
+    return `<div class="stat-tile"><div class="stat-value">${value}</div><div class="stat-label">${label}</div></div>`;
+  }
+
+  function renderTopicAccuracy(byQuestion) {
+    const rows = byQuestion.map((q) => {
+      const percentText = q.correctPercent == null ? '—' : `${q.correctPercent}%`;
+      const missText = q.correctPercent == null
+        ? 'Question column not found'
+        : q.topMisconception
+        ? `Top miss: "${escapeHtml(q.topMisconception.answer)}" (${q.topMisconception.percent}%)`
+        : '';
+      return `<div class="concept-row"><div><div class="concept-topic">${escapeHtml(q.topic)}</div>${missText ? `<div class="concept-misconception">${missText}</div>` : ''}</div><div class="concept-percent">${percentText}</div></div>`;
+    }).join('');
+    return `<div class="concept-list">${rows}</div>`;
+  }
+
+  function renderQuizDashboard(data) {
+    let html = '';
+    if (data.readiness) {
+      html += `<div class="readiness-badge readiness-${data.readiness.level}">Overall readiness: ${data.readiness.label}</div>`;
+    }
+
+    const tiles = [statTile(data.responseCount, `${data.responseCount} response${data.responseCount === 1 ? '' : 's'}`)];
+    if (data.accuracy) {
+      tiles.push(statTile(`${data.accuracy.meanPercent}%`, 'Mean accuracy'));
+      tiles.push(statTile(`${data.accuracy.meanScore} / ${data.accuracy.maxScore}`, 'Mean score'));
+    }
+    html += `<div class="stat-grid">${tiles.join('')}</div>`;
+
+    if (data.accuracy && data.accuracy.byQuestion.length) {
+      html += renderTopicAccuracy(data.accuracy.byQuestion);
+    }
+
+    return html;
+  }
+
+  function runQuizDashboard() {
+    const btn = document.getElementById('quiz-dash-btn');
+    const statusEl = document.getElementById('quiz-dash-status');
+    const boxEl = document.getElementById('quiz-dash-box');
+
+    btn.disabled = true;
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Reading responses…';
+    boxEl.classList.remove('show');
+
+    fetch('/api/di-am-quiz-stats')
+      .then((res) => res.json())
+      .then((data) => {
+        btn.disabled = false;
+        if (data.error) {
+          statusEl.classList.add('error');
+          statusEl.textContent = `Error: ${data.error}`;
+          return;
+        }
+        statusEl.textContent = `${data.stageLabel} — live, updated just now.`;
+        boxEl.innerHTML = renderQuizDashboard(data);
+        boxEl.classList.add('show');
+      })
+      .catch((err) => {
+        btn.disabled = false;
+        statusEl.classList.add('error');
+        statusEl.textContent = `Error: ${err.message}`;
+      });
   }
 
   function inlineFormat(s) {
